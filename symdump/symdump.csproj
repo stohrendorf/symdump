@@ -42,8 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseType.cs" />
+    <Compile Include="ClassType.cs" />
+    <Compile Include="DerivedType.cs" />
+    <Compile Include="FileUtil.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeDef.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
