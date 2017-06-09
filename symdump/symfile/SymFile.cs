@@ -1,18 +1,26 @@
 ﻿using System;
 using System.IO;
 using symfile.util;
+using System.Collections.Generic;
+using System.CodeDom.Compiler;
 
 namespace symfile
 {
 	public class SymFile
 	{
-		public SymFile(FileStream fs)
+		private readonly Dictionary<int, List<Label>> labels = new Dictionary<int, List<Label>>();
+
+		private readonly IndentedTextWriter writer;
+
+		public SymFile(FileStream fs, TextWriter output)
 		{
+			writer = new IndentedTextWriter(output);
+
 			fs.Seek(0, SeekOrigin.Begin);
 			fs.Skip(3);
 			var version = fs.ReadU1();
 			var targetUnit = fs.ReadU1();
-			Console.WriteLine($"Version = {version}, targetUnit = {targetUnit}");
+			writer.WriteLine($"Version = {version}, targetUnit = {targetUnit}");
 			fs.Skip(3);
 			while (fs.Position < fs.Length)
 			{
@@ -22,68 +30,95 @@ namespace symfile
 
 		private void dumpEntry(FileStream fs)
 		{
-			var typedOffset = new TypedOffset(fs);
-			if (typedOffset.type == 8)
+			var typedValue = new TypedValue(fs);
+			if (typedValue.type == 8)
 			{
-				Console.WriteLine($"${typedOffset.offset:X} MX-info {fs.ReadU1():X}");
+				writer.WriteLine($"${typedValue.value:X} MX-info {fs.ReadU1():X}");
 				return;
 			}
 
-			if ((typedOffset.type & 0x80) == 0)
+			if ((typedValue.type & 0x80) == 0)
 			{
-				Console.WriteLine($"${typedOffset.offset:X} {fs.readPascalString()}");
+				var lbl = new Label(typedValue, fs);
+
+				if(!labels.ContainsKey(lbl.offset))
+					labels.Add(lbl.offset, new List<Label>());
+
+				labels[lbl.offset].Add(lbl);
+				writer.WriteLine(lbl);
 				return;
 			}
 
-			switch (typedOffset.type & 0x7f)
+			switch (typedValue.type & 0x7f)
 			{
 			case 0:
-				Console.WriteLine($"${typedOffset.offset:X} Inc SLD linenum");
+				#if WITH_SLD
+				writer.WriteLine($"${typedValue.value:X} Inc SLD linenum");
+				#endif
 				break;
 			case 2:
-				Console.WriteLine($"${typedOffset.offset:X} Inc SLD linenum by byte {fs.ReadU1()}");
+				#if WITH_SLD
+				writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {fs.ReadU1()}");
+				#else
+				fs.Skip(1);
+				#endif
 				break;
 			case 4:
-				Console.WriteLine($"${typedOffset.offset:X} Inc SLD linenum by word {fs.ReadU2()}");
+				#if WITH_SLD
+				writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by word {fs.ReadU2()}");
+				#else
+				fs.Skip(2);
+				#endif
 				break;
 			case 6:
-				Console.WriteLine($"${typedOffset.offset:X} Set SLD linenum to {fs.ReadU4()}");
+				#if WITH_SLD
+				writer.WriteLine($"${typedValue.value:X} Set SLD linenum to {fs.ReadU4()}");
+				#else
+				fs.Skip(4);
+				#endif
 				break;
 			case 8:
-				Console.WriteLine($"${typedOffset.offset:X} Set SLD to line {fs.ReadU4()} of file " +
+				#if WITH_SLD
+				writer.WriteLine($"${typedValue.value:X} Set SLD to line {fs.ReadU4()} of file " +
 					fs.readPascalString());
+				#else
+				fs.Skip(4);
+				fs.Skip(fs.ReadU1());
+				#endif
 				break;
 			case 10:
-				Console.WriteLine($"${typedOffset.offset:X} End SLD info");
+				#if WITH_SLD
+				writer.WriteLine($"${typedValue.value:X} End SLD info");
+				#endif
 				break;
 			case 12:
-				Console.WriteLine($"${typedOffset.offset:X} Function start");
-				Console.WriteLine($"    fp = {fs.ReadU2()}");
-				Console.WriteLine($"    fsize = {fs.ReadU4()}");
-				Console.WriteLine($"    retreg = {fs.ReadU2()}");
-				Console.WriteLine($"    mask = ${fs.ReadU4():X}");
-				Console.WriteLine($"    maskoffs = ${fs.ReadU4():X}");
-				Console.WriteLine($"    line = {fs.ReadU4()}");
-				Console.WriteLine($"    file = {fs.readPascalString()}");
-				Console.WriteLine($"    name = {fs.readPascalString()}");
+				writer.WriteLine($"${typedValue.value:X} Function start");
+				writer.WriteLine($"    fp = {fs.ReadU2()}");
+				writer.WriteLine($"    fsize = {fs.ReadU4()}");
+				writer.WriteLine($"    retreg = {fs.ReadU2()}");
+				writer.WriteLine($"    mask = ${fs.ReadU4():X}");
+				writer.WriteLine($"    maskoffs = ${fs.ReadU4():X}");
+				writer.WriteLine($"    line = {fs.ReadU4()}");
+				writer.WriteLine($"    file = {fs.readPascalString()}");
+				writer.WriteLine($"    name = {fs.readPascalString()}");
 				break;
 			case 14:
-				Console.WriteLine($"${typedOffset.offset:X} Function end   line {fs.ReadU4()}");
+				writer.WriteLine($"${typedValue.value:X} Function end   line {fs.ReadU4()}");
 				break;
 			case 16:
-				Console.WriteLine($"${typedOffset.offset:X} Block start  line = {fs.ReadU4()}");
+				writer.WriteLine($"${typedValue.value:X} Block start  line = {fs.ReadU4()}");
 				break;
 			case 18:
-				Console.WriteLine($"${typedOffset.offset:X} Block end  line = {fs.ReadU4()}");
+				writer.WriteLine($"${typedValue.value:X} Block end  line = {fs.ReadU4()}");
 				break;
 			case 20:
-				dumpType20(fs, typedOffset.offset);
+				dumpType20(fs, typedValue.value);
 				break;
 			case 22:
-				dumpType22(fs, typedOffset.offset);
+				dumpType22(fs, typedValue.value);
 				break;
 			default:
-				Console.WriteLine($"?? {typedOffset.offset} {typedOffset.type&0x7f} ??");
+				writer.WriteLine($"?? {typedValue.value} {typedValue.type&0x7f} ??");
 				break;
 			}
 		}
@@ -94,7 +129,14 @@ namespace symfile
 			var typex = fs.readTypeDef();
 			var size = fs.ReadU4();
 			var name = fs.readPascalString();
-			Console.WriteLine($"${offset:X} Def class={classx} type={typex} size={size} name={name}");
+
+			if(classx == symdump.ClassType.EndOfStruct)
+				--writer.Indent;
+
+			writer.WriteLine($"${offset:X} Def class={classx} type={typex} size={size} name={name}");
+
+			if(classx == symdump.ClassType.Struct || classx == symdump.ClassType.Union || classx == symdump.ClassType.Enum)
+				++writer.Indent;
 		}
 
 		private void dumpType22(FileStream fs, int offset)
@@ -108,8 +150,15 @@ namespace symfile
 				dimsData[i] = fs.ReadU4();
 			var tag = fs.readPascalString();
 			var name = fs.readPascalString();
-			Console.WriteLine(
+
+			if(classx == symdump.ClassType.EndOfStruct)
+				--writer.Indent;
+
+			writer.WriteLine(
 				$"${offset:X} Def class={classx} type={typex} size={size} dims=[{string.Join(",", dimsData)}] tag={tag} name={name}");
+
+			if(classx == symdump.ClassType.Struct || classx == symdump.ClassType.Union || classx == symdump.ClassType.Enum)
+				++writer.Indent;
 		}
 	}
 }
