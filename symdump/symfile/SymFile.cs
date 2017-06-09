@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
+using symfile.util;
 
-namespace symdump
+namespace symfile
 {
 	public class SymFile
 	{
