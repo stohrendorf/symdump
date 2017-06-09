@@ -53,6 +53,7 @@
     <Compile Include="symfile\util\FileUtil.cs" />
     <Compile Include="symfile\Label.cs" />
     <Compile Include="symfile\TypedValue.cs" />
+    <Compile Include="symfile\EnumDef.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

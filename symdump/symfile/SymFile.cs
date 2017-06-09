@@ -37,7 +37,7 @@ namespace symfile
 				return;
 			}
 
-			if ((typedValue.type & 0x80) == 0)
+			if (typedValue.isLabel)
 			{
 				var lbl = new Label(typedValue, fs);
 
@@ -130,9 +130,15 @@ namespace symfile
 			var size = fs.ReadU4();
 			var name = fs.readPascalString();
 
+			if( classx == symdump.ClassType.Enum && typex.baseType == symdump.BaseType.EnumDef ) {
+				var e = new EnumDef(fs, name);
+				e.dump(writer);
+				return;
+			}
+
 			if(classx == symdump.ClassType.EndOfStruct)
 				--writer.Indent;
-
+			
 			writer.WriteLine($"${offset:X} Def class={classx} type={typex} size={size} name={name}");
 
 			if(classx == symdump.ClassType.Struct || classx == symdump.ClassType.Union || classx == symdump.ClassType.Enum)
@@ -151,6 +157,12 @@ namespace symfile
 			var tag = fs.readPascalString();
 			var name = fs.readPascalString();
 
+			if( classx == symdump.ClassType.Enum && typex.baseType == symdump.BaseType.EnumDef ) {
+				var e = new EnumDef(fs, name);
+				e.dump(writer);
+				return;
+			}
+
 			if(classx == symdump.ClassType.EndOfStruct)
 				--writer.Indent;
 
@@ -162,4 +174,3 @@ namespace symfile
 		}
 	}
 }
-

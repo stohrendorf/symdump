@@ -9,6 +9,8 @@ namespace symfile
 		public readonly int value;
 		public readonly byte type;
 
+		public bool isLabel => (type & 0x80) == 0;
+
 		public TypedValue(FileStream fs)
 		{
 			value = fs.ReadI4();
