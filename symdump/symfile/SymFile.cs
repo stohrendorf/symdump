@@ -22,43 +22,42 @@ namespace symfile
 
 		private void dumpEntry(FileStream fs)
 		{
-			var offset = fs.ReadU4();
-			var type = fs.ReadU1();
-			if (type == 8)
+			var typedOffset = new TypedOffset(fs);
+			if (typedOffset.type == 8)
 			{
-				Console.WriteLine($"${offset:X} MX-info {fs.ReadU1():X}");
+				Console.WriteLine($"${typedOffset.offset:X} MX-info {fs.ReadU1():X}");
 				return;
 			}
 
-			if ((type & 0x80) == 0)
+			if ((typedOffset.type & 0x80) == 0)
 			{
-				Console.WriteLine($"${offset:X} {fs.readPascalString()}");
+				Console.WriteLine($"${typedOffset.offset:X} {fs.readPascalString()}");
 				return;
 			}
 
-			switch (type & 0x7f)
+			switch (typedOffset.type & 0x7f)
 			{
 			case 0:
-				Console.WriteLine($"${offset:X} Inc SLD linenum");
+				Console.WriteLine($"${typedOffset.offset:X} Inc SLD linenum");
 				break;
 			case 2:
-				Console.WriteLine($"${offset:X} Inc SLD linenum by byte {fs.ReadU1()}");
+				Console.WriteLine($"${typedOffset.offset:X} Inc SLD linenum by byte {fs.ReadU1()}");
 				break;
 			case 4:
-				Console.WriteLine($"${offset:X} Inc SLD linenum by word {fs.ReadU2()}");
+				Console.WriteLine($"${typedOffset.offset:X} Inc SLD linenum by word {fs.ReadU2()}");
 				break;
 			case 6:
-				Console.WriteLine($"${offset:X} Set SLD linenum to {fs.ReadU4()}");
+				Console.WriteLine($"${typedOffset.offset:X} Set SLD linenum to {fs.ReadU4()}");
 				break;
 			case 8:
-				Console.WriteLine($"${offset:X} Set SLD to line {fs.ReadU4()} of file " +
+				Console.WriteLine($"${typedOffset.offset:X} Set SLD to line {fs.ReadU4()} of file " +
 					fs.readPascalString());
 				break;
 			case 10:
-				Console.WriteLine($"${offset:X} End SLD info", offset, type);
+				Console.WriteLine($"${typedOffset.offset:X} End SLD info");
 				break;
 			case 12:
-				Console.WriteLine($"${offset:X} Function start", offset, type);
+				Console.WriteLine($"${typedOffset.offset:X} Function start");
 				Console.WriteLine($"    fp = {fs.ReadU2()}");
 				Console.WriteLine($"    fsize = {fs.ReadU4()}");
 				Console.WriteLine($"    retreg = {fs.ReadU2()}");
@@ -69,27 +68,27 @@ namespace symfile
 				Console.WriteLine($"    name = {fs.readPascalString()}");
 				break;
 			case 14:
-				Console.WriteLine($"${offset:X} Function end   line {fs.ReadU4()}");
+				Console.WriteLine($"${typedOffset.offset:X} Function end   line {fs.ReadU4()}");
 				break;
 			case 16:
-				Console.WriteLine($"${offset:X} Block start  line = {fs.ReadU4()}");
+				Console.WriteLine($"${typedOffset.offset:X} Block start  line = {fs.ReadU4()}");
 				break;
 			case 18:
-				Console.WriteLine($"${offset:X} Block end  line = {fs.ReadU4()}");
+				Console.WriteLine($"${typedOffset.offset:X} Block end  line = {fs.ReadU4()}");
 				break;
 			case 20:
-				dumpType20(fs, offset);
+				dumpType20(fs, typedOffset.offset);
 				break;
 			case 22:
-				dumpType22(fs, offset);
+				dumpType22(fs, typedOffset.offset);
 				break;
 			default:
-				Console.WriteLine($"?? {offset} {type&0x7f} ??");
+				Console.WriteLine($"?? {typedOffset.offset} {typedOffset.type&0x7f} ??");
 				break;
 			}
 		}
 
-		private void dumpType20(FileStream fs, uint offset)
+		private void dumpType20(FileStream fs, int offset)
 		{
 			var classx = fs.readClassType();
 			var typex = fs.readTypeDef();
@@ -98,7 +97,7 @@ namespace symfile
 			Console.WriteLine($"${offset:X} Def class={classx} type={typex} size={size} name={name}");
 		}
 
-		private void dumpType22(FileStream fs, uint offset)
+		private void dumpType22(FileStream fs, int offset)
 		{
 			var classx = fs.readClassType();
 			var typex = fs.readTypeDef();
