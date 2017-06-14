@@ -21,7 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Commandlineparameters>/home/sto/devel/MAIN.SYM</Commandlineparameters>
-    <Externalconsole>true</Externalconsole>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,6 +54,7 @@
     <Compile Include="symfile\Label.cs" />
     <Compile Include="symfile\TypedValue.cs" />
     <Compile Include="symfile\EnumDef.cs" />
+    <Compile Include="symfile\StructDef.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

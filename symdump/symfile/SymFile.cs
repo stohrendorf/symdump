@@ -135,6 +135,14 @@ namespace symfile
 				e.dump(writer);
 				return;
 			}
+			else if( classx == symdump.ClassType.FileName ) {
+				return;
+			}
+			else if(classx == symdump.ClassType.Struct && typex.baseType == symdump.BaseType.StructDef) {
+				var s = new StructDef(fs, name);
+				s.dump(writer);
+				return;
+			}
 
 			if(classx == symdump.ClassType.EndOfStruct)
 				--writer.Indent;

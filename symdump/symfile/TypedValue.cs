@@ -16,5 +16,10 @@ namespace symfile
 			value = fs.ReadI4();
 			type = fs.ReadU1();
 		}
+
+		public override string ToString()
+		{
+			return $"value={value} type={type} isLabel={isLabel}";
+		}
 	}
 }
