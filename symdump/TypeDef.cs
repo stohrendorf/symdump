@@ -28,9 +28,11 @@ namespace symdump
 			return attribs.Length == 0 ? baseType.ToString() : $"{baseType}({attribs})";
 		}
 
-		public string asCode(string name, IEnumerable<uint> dims, string tag)
+		public string asCode(string name, uint[] dims, string tag)
 		{
 			Debug.Assert(!string.IsNullOrEmpty(name));
+
+		    int dimIdx = 0;
 
 			string ctype;
 			switch(baseType) {
@@ -90,7 +92,8 @@ namespace symdump
 				case DerivedType.Array:
 					Debug.Assert(name != null);
 					Debug.Assert(dims != null);
-					name += "[" + string.Join("][", dims) + "]";
+					name += $"[{dims[dimIdx]}]";
+				    ++dimIdx;
 					break;
 				case DerivedType.FunctionReturnType:
 					name = $"({name})()"; //TODO function args?
