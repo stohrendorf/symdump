@@ -12,7 +12,7 @@ namespace symfile
 
 		public string name { get; private set; }
 
-		public Label(TypedValue typedValue, FileStream fs)
+		public Label(TypedValue typedValue, BinaryReader fs)
 		{
 			this.typedOffset = typedValue;
 			this.name = fs.readPascalString();

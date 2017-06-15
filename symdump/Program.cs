@@ -8,8 +8,10 @@ namespace symdump
 	{
 		private static void Main(string[] args)
 		{
-			var fs = new FileStream(args[0], FileMode.Open);
-			var symFile = new SymFile(fs, System.Console.Out);
+		    using (var fs = new FileStream(args[0], FileMode.Open))
+		    {
+		        var symFile = new SymFile(new BinaryReader(fs), System.Console.Out);
+		    }
 		}
 	}
 }

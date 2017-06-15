@@ -1,25 +1,23 @@
-﻿using System;
-using System.IO;
-using symfile.util;
+﻿using System.IO;
 
 namespace symfile
 {
-	public class TypedValue
-	{
-		public readonly int value;
-		public readonly byte type;
+    public class TypedValue
+    {
+        public readonly byte type;
+        public readonly int value;
 
-		public bool isLabel => (type & 0x80) == 0;
+        public TypedValue(BinaryReader fs)
+        {
+            value = fs.ReadInt32();
+            type = fs.ReadByte();
+        }
 
-		public TypedValue(FileStream fs)
-		{
-			value = fs.ReadI4();
-			type = fs.ReadU1();
-		}
+        public bool isLabel => (type & 0x80) == 0;
 
-		public override string ToString()
-		{
-			return $"value={value} type={type} isLabel={isLabel}";
-		}
-	}
+        public override string ToString()
+        {
+            return $"value={value} type={type} isLabel={isLabel}";
+        }
+    }
 }

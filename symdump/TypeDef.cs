@@ -12,9 +12,9 @@ namespace symdump
 		public readonly BaseType baseType;
 		public readonly DerivedType[] derivedTypes = new DerivedType[6];
 
-		public TypeDef(FileStream fs)
+		public TypeDef(BinaryReader fs)
 		{
-			var val = fs.ReadU2();
+			var val = fs.ReadUInt16();
 			baseType = (BaseType)(val & 0x0f);
 			for(var i = 0; i < 6; ++i) {
 				var x = (val >> (i * 2 + 4)) & 3;
