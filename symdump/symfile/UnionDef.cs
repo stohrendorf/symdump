@@ -7,12 +7,12 @@ using symfile.util;
 
 namespace symfile
 {
-    public class StructDef
+    public class UnionDef
     {
         public readonly List<string> members = new List<string>();
         public readonly string name;
 
-        public StructDef(BinaryReader stream, string name)
+        public UnionDef(BinaryReader stream, string name)
         {
             this.name = name;
             while (true)
@@ -28,10 +28,7 @@ namespace symfile
                     if (classx == ClassType.EndOfStruct)
                         break;
 
-                    if (classx == ClassType.Bitfield)
-                        members.Add(typex.asCode(memberName, null, null) +
-                                    $" : {size}; // offset={typedValue.value / 8}.{typedValue.value % 8}");
-                    else if (classx == ClassType.StructMember)
+                    if (classx == ClassType.UnionMember)
                         members.Add(typex.asCode(memberName, null, null) +
                                     $"; // size={size}, offset={typedValue.value}");
                     else
@@ -52,10 +49,7 @@ namespace symfile
                     if (classx == ClassType.EndOfStruct)
                         break;
 
-                    if (classx == ClassType.Bitfield)
-                        members.Add(typex.asCode(memberName, dimsData, tag) +
-                                    $" : {size}; // offset={typedValue.value / 8}.{typedValue.value % 8}");
-                    else if (classx == ClassType.StructMember)
+                    if (classx == ClassType.UnionMember)
                         members.Add(typex.asCode(memberName, dimsData, tag) +
                                     $"; // size={size}, offset={typedValue.value}");
                     else
@@ -70,7 +64,7 @@ namespace symfile
 
         public void dump(IndentedTextWriter writer)
         {
-            writer.WriteLine($"struct {name} {{");
+            writer.WriteLine($"union {name} {{");
             ++writer.Indent;
             foreach (var m in members)
                 writer.WriteLine(m);

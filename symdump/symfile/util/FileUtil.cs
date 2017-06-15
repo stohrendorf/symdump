@@ -5,7 +5,7 @@ namespace symfile.util
 {
     public static class FileUtil
     {
-        public static void Skip(this BinaryReader s, int n)
+        public static void skip(this BinaryReader s, int n)
         {
             s.BaseStream.Seek(n, SeekOrigin.Current);
         }

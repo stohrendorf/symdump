@@ -1,6 +1,8 @@
 ﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 using symdump;
 using symfile.util;
 
@@ -17,11 +19,11 @@ namespace symfile
             writer = new IndentedTextWriter(output);
 
             stream.BaseStream.Seek(0, SeekOrigin.Begin);
-            stream.Skip(3);
+            stream.skip(3);
             var version = stream.ReadByte();
             var targetUnit = stream.ReadByte();
             writer.WriteLine($"Version = {version}, targetUnit = {targetUnit}");
-            stream.Skip(3);
+            stream.skip(3);
             while (stream.BaseStream.Position < stream.BaseStream.Length)
                 dumpEntry(stream);
         }
@@ -58,21 +60,21 @@ namespace symfile
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {stream.ReadU1()}");
                 #else
-                    stream.Skip(1);
+                    stream.skip(1);
 #endif
                     break;
                 case 4:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by word {stream.ReadUInt16()}");
                 #else
-                    stream.Skip(2);
+                    stream.skip(2);
 #endif
                     break;
                 case 6:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Set SLD linenum to {stream.ReadUInt32()}");
                 #else
-                    stream.Skip(4);
+                    stream.skip(4);
 #endif
                     break;
                 case 8:
@@ -80,8 +82,8 @@ namespace symfile
                 writer.WriteLine($"${typedValue.value:X} Set SLD to line {stream.ReadUInt32()} of file " +
                     stream.readPascalString());
                 #else
-                    stream.Skip(4);
-                    stream.Skip(stream.ReadByte());
+                    stream.skip(4);
+                    stream.skip(stream.ReadByte());
 #endif
                     break;
                 case 10:
@@ -90,24 +92,19 @@ namespace symfile
                 #endif
                     break;
                 case 12:
-                    writer.WriteLine($"${typedValue.value:X} Function start");
-                    writer.WriteLine($"    fp = {stream.ReadUInt16()}");
-                    writer.WriteLine($"    fsize = {stream.ReadUInt32()}");
-                    writer.WriteLine($"    retreg = {stream.ReadUInt16()}");
-                    writer.WriteLine($"    mask = ${stream.ReadUInt32():X}");
-                    writer.WriteLine($"    maskoffs = ${stream.ReadUInt32():X}");
-                    writer.WriteLine($"    line = {stream.ReadUInt32()}");
-                    writer.WriteLine($"    file = {stream.readPascalString()}");
-                    writer.WriteLine($"    name = {stream.readPascalString()}");
+                    dumpType12(stream, typedValue.value);
                     break;
                 case 14:
-                    writer.WriteLine($"${typedValue.value:X} Function end   line {stream.ReadUInt32()}");
+                    --writer.Indent;
+                    writer.WriteLine($"}} // end of function (offset 0x{typedValue.value:X}, line {stream.ReadUInt32()})");
                     break;
                 case 16:
-                    writer.WriteLine($"${typedValue.value:X} Block start  line = {stream.ReadUInt32()}");
+                    writer.WriteLine($"{{ // offset 0x{typedValue.value:X}, line {stream.ReadUInt32()}");
+                    ++writer.Indent;
                     break;
                 case 18:
-                    writer.WriteLine($"${typedValue.value:X} Block end  line = {stream.ReadUInt32()}");
+                    --writer.Indent;
+                    writer.WriteLine($"}} // offset 0x{typedValue.value:X}, line {stream.ReadUInt32()}");
                     break;
                 case 20:
                     dumpType20(stream, typedValue.value);
@@ -119,6 +116,29 @@ namespace symfile
                     writer.WriteLine($"?? {typedValue.value} {typedValue.type & 0x7f} ??");
                     break;
             }
+        }
+
+        private void dumpType12(BinaryReader stream, int offset)
+        {
+            var fp = stream.ReadUInt16();
+            var fsize = stream.ReadUInt32();
+            var register = stream.ReadUInt16();
+            var mask = stream.ReadUInt32();
+            var maskOffs = stream.ReadUInt32();
+
+            var line = stream.ReadUInt32();
+            var file = stream.readPascalString();
+            var name = stream.readPascalString();
+
+            writer.WriteLine("/*");
+            writer.WriteLine($" * Offset 0x{offset:X}");
+            writer.WriteLine($" * {file} (line {line})");
+            writer.WriteLine($" * Stack frame base ${fp}, size {fsize}");
+            writer.WriteLine("*/");
+
+            writer.WriteLine($"${register} {name}(...)");
+            writer.WriteLine("{");
+            ++writer.Indent;
         }
 
         private void dumpType20(BinaryReader stream, int offset)
@@ -144,6 +164,47 @@ namespace symfile
                 s.dump(writer);
                 return;
             }
+            else if (classx == ClassType.Union && typex.baseType == BaseType.UnionDef)
+            {
+                var s = new UnionDef(stream, name);
+                s.dump(writer);
+                return;
+            }
+            else if (classx == ClassType.Typedef)
+            {
+                writer.WriteLine($"typedef {typex.asCode(name, null, null)};");
+                return;
+            }
+            else if (classx == ClassType.External)
+            {
+                writer.WriteLine($"extern {typex.asCode(name, null, null)};");
+                return;
+            }
+            else if (classx == ClassType.AutoVar)
+            {
+                writer.WriteLine($"{typex.asCode(name, null, null)}; // stack offset {offset}");
+                return;
+            }
+            else if (classx == ClassType.Register)
+            {
+                writer.WriteLine($"{typex.asCode(name, null, null)}; // register ${offset}");
+                return;
+            }
+            else if (classx == ClassType.Argument)
+            {
+                writer.WriteLine($"{typex.asCode(name, null, null)}; // parameter, stack offset {offset}");
+                return;
+            }
+            else if (classx == ClassType.RegParam)
+            {
+                writer.WriteLine($"{typex.asCode(name, null, null)}; // parameter, register ${offset}");
+                return;
+            }
+            else if (classx == ClassType.Static)
+            {
+                writer.WriteLine($"static {typex.asCode(name, null, null)}; // offset 0x{offset:X}");
+                return;
+            }
 
             if (classx == ClassType.EndOfStruct)
                 --writer.Indent;
@@ -152,6 +213,8 @@ namespace symfile
 
             if (classx == ClassType.Struct || classx == ClassType.Union || classx == ClassType.Enum)
                 ++writer.Indent;
+
+            return;
         }
 
         private void dumpType22(BinaryReader stream, int offset)
@@ -170,6 +233,41 @@ namespace symfile
             {
                 var e = new EnumDef(stream, name);
                 e.dump(writer);
+                return;
+            }
+            else if (classx == ClassType.Typedef)
+            {
+                writer.WriteLine($"typedef {typex.asCode(name, dimsData, tag)};");
+                return;
+            }
+            else if (classx == ClassType.External)
+            {
+                writer.WriteLine($"extern {typex.asCode(name, dimsData, tag)};");
+                return;
+            }
+            else if (classx == ClassType.AutoVar)
+            {
+                writer.WriteLine($"{typex.asCode(name, dimsData, tag)}; // stack offset {offset}");
+                return;
+            }
+            else if (classx == ClassType.Register)
+            {
+                writer.WriteLine($"{typex.asCode(name, dimsData, tag)}; // register ${offset}");
+                return;
+            }
+            else if (classx == ClassType.Argument)
+            {
+                writer.WriteLine($"{typex.asCode(name, dimsData, tag)}; // parameter, stack offset {offset}");
+                return;
+            }
+            else if (classx == ClassType.RegParam)
+            {
+                writer.WriteLine($"{typex.asCode(name, dimsData, tag)}; // parameter, register ${offset}");
+                return;
+            }
+            else if (classx == ClassType.Static)
+            {
+                writer.WriteLine($"static {typex.asCode(name, dimsData, tag)}; // offset 0x{offset:X}");
                 return;
             }
 

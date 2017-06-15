@@ -2,8 +2,8 @@
 {
     public enum BaseType
     {
-        NotAssigned = 0,
-        FuncArg = 1,
+        Null = 0,
+        Void = 1,
         Char = 2,
         Short = 3,
         Int = 4,
@@ -17,6 +17,6 @@
         UChar = 12,
         UShort = 13,
         UInt = 14,
-        ULong = 15
+        ULong = 15,
     };
 }

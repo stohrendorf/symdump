@@ -4,7 +4,7 @@
     {
         None,
         Pointer,
-        Function,
+        FunctionReturnType,
         Array
     }
 }
