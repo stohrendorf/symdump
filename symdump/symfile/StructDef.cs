@@ -1,16 +1,20 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using symdump;
-using symfile.util;
 
 namespace symfile
 {
-    public class StructDef
+    public class StructDef : IEquatable<StructDef>
     {
-        public readonly List<string> members = new List<string>();
+        public readonly List<StructMember> members = new List<StructMember>();
         public readonly string name;
+
+        public bool isFake => new Regex(@"^\.\d+fake$").IsMatch(name);
 
         public StructDef(BinaryReader stream, string name)
         {
@@ -20,47 +24,21 @@ namespace symfile
                 var typedValue = new TypedValue(stream);
                 if (typedValue.type == (0x80 | 20))
                 {
-                    var ti = stream.readTypeInfo(false);
-                    var memberName = stream.readPascalString();
+                    var m = new StructMember(typedValue, stream, false);
 
-                    if (ti.classType == ClassType.EndOfStruct)
+                    if (m.typeInfo.classType == ClassType.EndOfStruct)
                         break;
 
-                    switch(ti.classType)
-                    {
-                        case ClassType.Bitfield:
-                            members.Add(ti.asCode(memberName) +
-                                        $" : {ti.size}; // offset={typedValue.value / 8}.{typedValue.value % 8}");
-                            break;
-                        case ClassType.StructMember:
-                            members.Add(ti.asCode(memberName) +
-                                        $"; // size={ti.size}, offset={typedValue.value}");
-                            break;
-                        default:
-                            throw new Exception("Unexpected class");
-                    }
+                    members.Add(m);
                 }
                 else if (typedValue.type == (0x80 | 22))
                 {
-                    var ti = stream.readTypeInfo(true);
-                    var memberName = stream.readPascalString();
+                    var m = new StructMember(typedValue, stream, true);
 
-                    if (ti.classType == ClassType.EndOfStruct)
+                    if (m.typeInfo.classType == ClassType.EndOfStruct)
                         break;
 
-                    switch(ti.classType)
-                    {
-                        case ClassType.Bitfield:
-                            members.Add(ti.asCode(memberName) +
-                                        $" : {ti.size}; // offset={typedValue.value / 8}.{typedValue.value % 8}");
-                            break;
-                        case ClassType.StructMember:
-                            members.Add(ti.asCode(memberName) +
-                                        $"; // size={ti.size}, offset={typedValue.value}");
-                            break;
-                        default:
-                            throw new Exception("Unexpected class");
-                    }
+                    members.Add(m);
                 }
                 else
                 {
@@ -77,6 +55,29 @@ namespace symfile
                 writer.WriteLine(m);
             --writer.Indent;
             writer.WriteLine("};");
+        }
+
+        public bool Equals(StructDef other)
+        {
+            if(ReferenceEquals(null, other)) return false;
+            if(ReferenceEquals(this, other)) return true;
+            return members.SequenceEqual(other.members) && string.Equals(name, other.name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(ReferenceEquals(null, obj)) return false;
+            if(ReferenceEquals(this, obj)) return true;
+            if(obj.GetType() != this.GetType()) return false;
+            return Equals((StructDef)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((members != null ? members.GetHashCode() : 0) * 397) ^ (name != null ? name.GetHashCode() : 0);
+            }
         }
     }
 }

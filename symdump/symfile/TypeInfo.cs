@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using symdump;
 using symfile.util;
 
@@ -13,6 +14,8 @@ namespace symfile
         public readonly uint size;
         public readonly uint[] dims;
         public readonly string tag;
+
+        public bool isFake => tag != null && new Regex(@"^\.\d+fake$").IsMatch(tag);
 
         public TypeInfo(BinaryReader reader, bool extended)
         {
@@ -50,7 +53,11 @@ namespace symfile
         {
             if(ReferenceEquals(null, other)) return false;
             if(ReferenceEquals(this, other)) return true;
-            return classType == other.classType && typeDef.Equals(other.typeDef) && size == other.size && dims.SequenceEqual(other.dims) && string.Equals(tag, other.tag);
+            
+            if(isFake)
+                return classType == other.classType && typeDef.Equals(other.typeDef) && size == other.size && dims.SequenceEqual(other.dims) && other.isFake;
+            else
+                return classType == other.classType && typeDef.Equals(other.typeDef) && size == other.size && dims.SequenceEqual(other.dims) && string.Equals(tag, other.tag);
         }
 
         public override bool Equals(object obj)
@@ -66,10 +73,10 @@ namespace symfile
             unchecked
             {
                 var hashCode = (int)classType;
-                hashCode = (hashCode * 397) ^ (typeDef != null ? typeDef.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ typeDef.GetHashCode();
                 hashCode = (hashCode * 397) ^ (int)size;
-                hashCode = (hashCode * 397) ^ (dims != null ? dims.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (tag != null ? tag.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ dims.GetHashCode();
+                hashCode = (hashCode * 397) ^ (!isFake ? tag.GetHashCode() : 0);
                 return hashCode;
             }
         }

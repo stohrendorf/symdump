@@ -14,6 +14,8 @@ namespace symfile
         private readonly Dictionary<int, List<Label>> labels = new Dictionary<int, List<Label>>();
         private readonly Dictionary<string, EnumDef> enums = new Dictionary<string, EnumDef>();
         private readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
+        private readonly Dictionary<string, StructDef> structs = new Dictionary<string, StructDef>();
+        private readonly Dictionary<string, UnionDef> unions = new Dictionary<string, UnionDef>();
 
         private readonly IndentedTextWriter writer;
 
@@ -30,10 +32,17 @@ namespace symfile
             while(stream.BaseStream.Position < stream.BaseStream.Length)
                 dumpEntry(stream);
             
+            writer.WriteLine();
             writer.WriteLine($"// {enums.Count} enums");
             foreach(var e in enums.Values)
                 e.dump(writer);
             
+            writer.WriteLine();
+            writer.WriteLine($"// {unions.Count} unions");
+            foreach(var e in unions.Values)
+                e.dump(writer);
+            
+            writer.WriteLine();
             writer.WriteLine($"// {typedefs.Count} typedefs");
             foreach(var t in typedefs)
                 writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
@@ -169,6 +178,58 @@ namespace symfile
             enums.Add(name, e);
         }
 
+        private void readUnion(BinaryReader reader, string name)
+        {
+            var e = new UnionDef(reader, name);
+
+            UnionDef already;
+            if(unions.TryGetValue(name, out already))
+            {
+                if(e.Equals(already))
+                    return;
+                
+                if(!e.isFake)
+                    throw new Exception($"Non-uniform definitions of union {name}");
+
+                // generate new "fake fake" name
+                int n = 0;
+                while(unions.ContainsKey($"{name}.{n}"))
+                    ++n;
+
+                unions.Add($"{name}.{n}", e);
+
+                return;
+            }
+
+            unions.Add(name, e);
+        }
+
+        private void readStruct(BinaryReader reader, string name)
+        {
+            var e = new StructDef(reader, name);
+
+            StructDef already;
+            if(structs.TryGetValue(name, out already))
+            {
+                if(e.Equals(already))
+                    return;
+                
+                if(!e.isFake)
+                    throw new Exception($"Non-uniform definitions of struct {name}");
+
+                // generate new "fake fake" name
+                int n = 0;
+                while(structs.ContainsKey($"{name}.{n}"))
+                    ++n;
+
+                structs.Add($"{name}.{n}", e);
+
+                return;
+            }
+
+            structs.Add(name, e);
+        }
+
         private void addTypedef(string name, TypeInfo typeInfo)
         {
             TypeInfo already;
@@ -199,14 +260,12 @@ namespace symfile
             }
             if(ti.classType == ClassType.Struct && ti.typeDef.baseType == BaseType.StructDef)
             {
-                var s = new StructDef(stream, name);
-                s.dump(writer);
+                readStruct(stream, name);
                 return;
             }
             else if(ti.classType == ClassType.Union && ti.typeDef.baseType == BaseType.UnionDef)
             {
-                var s = new UnionDef(stream, name);
-                s.dump(writer);
+                readUnion(stream, name);
                 return;
             }
             else if(ti.classType == ClassType.Typedef)
