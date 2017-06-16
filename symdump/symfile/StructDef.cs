@@ -20,50 +20,51 @@ namespace symfile
                 var typedValue = new TypedValue(stream);
                 if (typedValue.type == (0x80 | 20))
                 {
-                    var classx = stream.readClassType();
-                    var typex = stream.readTypeDef();
-                    var size = stream.ReadUInt32();
+                    var ti = stream.readTypeInfo(false);
                     var memberName = stream.readPascalString();
 
-                    if (classx == ClassType.EndOfStruct)
+                    if (ti.classType == ClassType.EndOfStruct)
                         break;
 
-                    if (classx == ClassType.Bitfield)
-                        members.Add(typex.asCode(memberName, null, null) +
-                                    $" : {size}; // offset={typedValue.value / 8}.{typedValue.value % 8}");
-                    else if (classx == ClassType.StructMember)
-                        members.Add(typex.asCode(memberName, null, null) +
-                                    $"; // size={size}, offset={typedValue.value}");
-                    else
-                        throw new Exception("Unexcpected class");
+                    switch(ti.classType)
+                    {
+                        case ClassType.Bitfield:
+                            members.Add(ti.asCode(memberName) +
+                                        $" : {ti.size}; // offset={typedValue.value / 8}.{typedValue.value % 8}");
+                            break;
+                        case ClassType.StructMember:
+                            members.Add(ti.asCode(memberName) +
+                                        $"; // size={ti.size}, offset={typedValue.value}");
+                            break;
+                        default:
+                            throw new Exception("Unexpected class");
+                    }
                 }
                 else if (typedValue.type == (0x80 | 22))
                 {
-                    var classx = stream.readClassType();
-                    var typex = stream.readTypeDef();
-                    var size = stream.ReadUInt32();
-                    var dims = stream.ReadUInt16();
-                    var dimsData = new uint[dims];
-                    for (var i = 0; i < dims; ++i)
-                        dimsData[i] = stream.ReadUInt32();
-                    var tag = stream.readPascalString();
+                    var ti = stream.readTypeInfo(true);
                     var memberName = stream.readPascalString();
 
-                    if (classx == ClassType.EndOfStruct)
+                    if (ti.classType == ClassType.EndOfStruct)
                         break;
 
-                    if (classx == ClassType.Bitfield)
-                        members.Add(typex.asCode(memberName, dimsData, tag) +
-                                    $" : {size}; // offset={typedValue.value / 8}.{typedValue.value % 8}");
-                    else if (classx == ClassType.StructMember)
-                        members.Add(typex.asCode(memberName, dimsData, tag) +
-                                    $"; // size={size}, offset={typedValue.value}");
-                    else
-                        throw new Exception("Unexcpected class");
+                    switch(ti.classType)
+                    {
+                        case ClassType.Bitfield:
+                            members.Add(ti.asCode(memberName) +
+                                        $" : {ti.size}; // offset={typedValue.value / 8}.{typedValue.value % 8}");
+                            break;
+                        case ClassType.StructMember:
+                            members.Add(ti.asCode(memberName) +
+                                        $"; // size={ti.size}, offset={typedValue.value}");
+                            break;
+                        default:
+                            throw new Exception("Unexpected class");
+                    }
                 }
                 else
                 {
-                    throw new Exception("Unexcpected entry");
+                    throw new Exception("Unexpected entry");
                 }
             }
         }

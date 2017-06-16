@@ -24,6 +24,11 @@ namespace symfile.util
             return new TypeDef(s);
         }
 
+        public static TypeInfo readTypeInfo(this BinaryReader s, bool withDimensions)
+        {
+            return new TypeInfo(s, withDimensions);
+        }
+
         public static ClassType readClassType(this BinaryReader s)
         {
             return (ClassType) s.ReadUInt16();

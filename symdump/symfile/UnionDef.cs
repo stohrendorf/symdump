@@ -20,38 +20,29 @@ namespace symfile
                 var typedValue = new TypedValue(stream);
                 if (typedValue.type == (0x80 | 20))
                 {
-                    var classx = stream.readClassType();
-                    var typex = stream.readTypeDef();
-                    var size = stream.ReadUInt32();
+                    var ti = stream.readTypeInfo(false);
                     var memberName = stream.readPascalString();
 
-                    if (classx == ClassType.EndOfStruct)
+                    if (ti.classType == ClassType.EndOfStruct)
                         break;
 
-                    if (classx == ClassType.UnionMember)
-                        members.Add(typex.asCode(memberName, null, null) +
-                                    $"; // size={size}, offset={typedValue.value}");
+                    if (ti.classType == ClassType.UnionMember)
+                        members.Add(ti.asCode(memberName) +
+                                    $"; // size={ti.size}, offset={typedValue.value}");
                     else
                         throw new Exception("Unexcpected class");
                 }
                 else if (typedValue.type == (0x80 | 22))
                 {
-                    var classx = stream.readClassType();
-                    var typex = stream.readTypeDef();
-                    var size = stream.ReadUInt32();
-                    var dims = stream.ReadUInt16();
-                    var dimsData = new uint[dims];
-                    for (var i = 0; i < dims; ++i)
-                        dimsData[i] = stream.ReadUInt32();
-                    var tag = stream.readPascalString();
+                    var ti = stream.readTypeInfo(true);
                     var memberName = stream.readPascalString();
 
-                    if (classx == ClassType.EndOfStruct)
+                    if (ti.classType == ClassType.EndOfStruct)
                         break;
 
-                    if (classx == ClassType.UnionMember)
-                        members.Add(typex.asCode(memberName, dimsData, tag) +
-                                    $"; // size={size}, offset={typedValue.value}");
+                    if (ti.classType == ClassType.UnionMember)
+                        members.Add(ti.asCode(memberName) +
+                                    $"; // size={ti.size}, offset={typedValue.value}");
                     else
                         throw new Exception("Unexcpected class");
                 }

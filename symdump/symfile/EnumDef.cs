@@ -2,68 +2,111 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using symdump;
 using symfile.util;
 
 namespace symfile
 {
-    public class EnumDef
+    public class EnumDef : IEquatable<EnumDef>
     {
-        public readonly Dictionary<int, string> members = new Dictionary<int, string>();
-        public readonly string name;
+        private readonly Dictionary<string, int> members = new Dictionary<string, int>();
+        private readonly string name;
+        private readonly uint size;
+
+        public bool Equals(EnumDef other)
+        {
+            if(ReferenceEquals(null, other)) return false;
+            if(ReferenceEquals(this, other)) return true;
+            return members.SequenceEqual(other.members) && string.Equals(name, other.name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(ReferenceEquals(null, obj)) return false;
+            if(ReferenceEquals(this, obj)) return true;
+            if(obj.GetType() != this.GetType()) return false;
+            return Equals((EnumDef)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (members.GetHashCode() * 397) ^ name.GetHashCode();
+            }
+        }
 
         public EnumDef(BinaryReader stream, string name)
         {
             this.name = name;
-            while (true)
+            while(true)
             {
                 var typedValue = new TypedValue(stream);
-                if (typedValue.type == (0x80 | 20))
+                if(typedValue.type == (0x80 | 20))
                 {
-                    var classx = stream.readClassType();
-                    var typex = stream.readTypeDef();
-                    var size = stream.ReadUInt32();
+                    var ti = stream.readTypeInfo(false);
                     var memberName = stream.readPascalString();
 
-                    if (classx == ClassType.EndOfStruct)
+                    if(ti.classType == ClassType.EndOfStruct)
                         break;
-                    if (classx != ClassType.EnumMember)
-                        throw new Exception("Unexcpected class");
+                    
+                    if(ti.classType != ClassType.EnumMember)
+                        throw new Exception("Unexpected class");
 
-                    members.Add(typedValue.value, memberName);
+                    members.Add(memberName, typedValue.value);
                 }
-                else if (typedValue.type == (0x80 | 22))
+                else if(typedValue.type == (0x80 | 22))
                 {
-                    var classx = stream.readClassType();
-                    var typex = stream.readTypeDef();
-                    var size = stream.ReadUInt32();
-                    var dims = stream.ReadUInt16();
-                    var dimsData = new uint[dims];
-                    for (var i = 0; i < dims; ++i)
-                        dimsData[i] = stream.ReadUInt32();
+                    var ti = stream.readTypeInfo(true);
+                    if(ti.typeDef.baseType != BaseType.Null)
+                        throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.typeDef.baseType}");
+
+                    if(ti.dims.Length != 0)
+                        throw new Exception($"Expected dims=0, but it's {ti.dims.Length}");
+                    
+                    if(ti.tag != name)
+                        throw new Exception($"Expected name={name}, but it's {ti.tag}");
+
                     var tag = stream.readPascalString();
-                    var memberName = stream.readPascalString();
+                    if(tag != ".eos")
+                        throw new Exception($"Expected tag=.eos, but it's {tag}");
+                    
+                    if(ti.classType != ClassType.EndOfStruct)
+                        throw new Exception($"Expected classType={ClassType.EndOfStruct}, but it's {ti.classType}");
 
-                    if (classx == ClassType.EndOfStruct)
-                        break;
-                    if (classx != ClassType.EnumMember)
-                        throw new Exception("Unexcpected class");
-
-                    members.Add(typedValue.value, memberName);
+                    size = ti.size;
+                    break;
                 }
                 else
                 {
-                    throw new Exception("Unexcpected entry");
+                    throw new Exception("Unexpected entry");
                 }
             }
         }
 
         public void dump(IndentedTextWriter writer)
         {
-            writer.WriteLine($"enum {name} {{");
+            string ctype;
+            switch(size)
+            {
+                    case 1:
+                        ctype = "char";
+                        break;
+                    case 2:
+                        ctype = "short";
+                        break;
+                    case 4:
+                        ctype = "int";
+                        break;
+                    default:
+                        throw new Exception("$Cannot determine primitive type for size {size}");
+            }
+            
+            writer.WriteLine($"enum {name} : {ctype} {{");
             ++writer.Indent;
-            foreach (var kvp in members)
-                writer.WriteLine($"{kvp.Value} = {kvp.Key},");
+            foreach(var kvp in members)
+                writer.WriteLine($"{kvp.Key} = {kvp.Value},");
             --writer.Indent;
             writer.WriteLine("};");
         }

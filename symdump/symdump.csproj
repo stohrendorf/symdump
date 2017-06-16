@@ -48,6 +48,7 @@
     <Compile Include="DerivedType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+      <Compile Include="symfile\TypeInfo.cs"/>
     <Compile Include="symfile\UnionDef.cs" />
     <Compile Include="TypeDef.cs" />
     <Compile Include="symfile\SymFile.cs" />
