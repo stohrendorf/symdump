@@ -33,5 +33,31 @@ namespace symfile.util
         {
             return (ClassType) s.ReadUInt16();
         }
+
+        public static bool skipSLD(this BinaryReader reader, TypedValue typedValue)
+        {
+            switch(typedValue.type & 0x7f)
+            {
+                case 0:
+                    return true;
+                case 2:
+                    reader.skip(1);
+                    return true;
+                case 4:
+                    reader.skip(2);
+                    return true;
+                case 6:
+                    reader.skip(4);
+                    return true;
+                case 8:
+                    reader.skip(4);
+                    reader.skip(reader.ReadByte());
+                    return true;
+                case 10:
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

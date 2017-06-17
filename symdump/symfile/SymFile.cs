@@ -16,6 +16,7 @@ namespace symfile
         private readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
         private readonly Dictionary<string, StructDef> structs = new Dictionary<string, StructDef>();
         private readonly Dictionary<string, UnionDef> unions = new Dictionary<string, UnionDef>();
+        private readonly Dictionary<string, string> funcTypes = new Dictionary<string, string>();
 
         private readonly IndentedTextWriter writer;
 
@@ -114,19 +115,6 @@ namespace symfile
                 case 12:
                     dumpType12(stream, typedValue.value);
                     break;
-                case 14:
-                    --writer.Indent;
-                    writer.WriteLine(
-                        $"}} // end of function (offset 0x{typedValue.value:X}, line {stream.ReadUInt32()})");
-                    break;
-                case 16:
-                    writer.WriteLine($"{{ // offset 0x{typedValue.value:X}, line {stream.ReadUInt32()}");
-                    ++writer.Indent;
-                    break;
-                case 18:
-                    --writer.Indent;
-                    writer.WriteLine($"}} // offset 0x{typedValue.value:X}, line {stream.ReadUInt32()}");
-                    break;
                 case 20:
                     dumpType20(stream, typedValue.value);
                     break;
@@ -134,32 +122,16 @@ namespace symfile
                     dumpType22(stream, typedValue.value);
                     break;
                 default:
-                    writer.WriteLine($"?? {typedValue.value} {typedValue.type & 0x7f} ??");
-                    break;
+                    throw new Exception("Sodom");
             }
         }
 
         private void dumpType12(BinaryReader stream, int offset)
         {
-            var fp = stream.ReadUInt16();
-            var fsize = stream.ReadUInt32();
-            var register = stream.ReadUInt16();
-            var mask = stream.ReadUInt32();
-            var maskOffs = stream.ReadUInt32();
-
-            var line = stream.ReadUInt32();
-            var file = stream.readPascalString();
-            var name = stream.readPascalString();
-
-            writer.WriteLine("/*");
-            writer.WriteLine($" * Offset 0x{offset:X}");
-            writer.WriteLine($" * {file} (line {line})");
-            writer.WriteLine($" * Stack frame base ${fp}, size {fsize}");
-            writer.WriteLine("*/");
-
-            writer.WriteLine($"${register} {name}(...)");
-            writer.WriteLine("{");
-            ++writer.Indent;
+            var f = new Function(stream, (uint)offset, funcTypes);
+            f.dump(writer);
+            //writer.WriteLine("{");
+            //++writer.Indent;
         }
 
         private void readEnum(BinaryReader reader, string name)
@@ -275,27 +247,7 @@ namespace symfile
             }
             else if(ti.classType == ClassType.External)
             {
-                writer.WriteLine($"extern {ti.asCode(name)};");
-                return;
-            }
-            else if(ti.classType == ClassType.AutoVar)
-            {
-                writer.WriteLine($"{ti.asCode(name)}; // stack offset {offset}");
-                return;
-            }
-            else if(ti.classType == ClassType.Register)
-            {
-                writer.WriteLine($"{ti.asCode(name)}; // register ${offset}");
-                return;
-            }
-            else if(ti.classType == ClassType.Argument)
-            {
-                writer.WriteLine($"{ti.asCode(name)}; // parameter, stack offset {offset}");
-                return;
-            }
-            else if(ti.classType == ClassType.RegParam)
-            {
-                writer.WriteLine($"{ti.asCode(name)}; // parameter, register ${offset}");
+                funcTypes[name] = ti.asCode("").Trim();
                 return;
             }
             else if(ti.classType == ClassType.Static)
@@ -303,14 +255,10 @@ namespace symfile
                 writer.WriteLine($"static {ti.asCode(name)}; // offset 0x{offset:X}");
                 return;
             }
-
-            if(ti.classType == ClassType.EndOfStruct)
-                --writer.Indent;
-
-            writer.WriteLine($"${offset:X} Def class={ti.classType} type={ti.typeDef} size={ti.size} name={name}");
-
-            if(ti.classType == ClassType.Struct || ti.classType == ClassType.Union || ti.classType == ClassType.Enum)
-                ++writer.Indent;
+            else
+            {
+                throw new Exception("Gomorrha");
+            }
         }
 
         private void dumpType22(BinaryReader stream, int offset)
@@ -333,40 +281,15 @@ namespace symfile
                 writer.WriteLine($"extern {ti.asCode(name)};");
                 return;
             }
-            else if(ti.classType == ClassType.AutoVar)
-            {
-                writer.WriteLine($"{ti.asCode(name)}; // stack offset {offset}");
-                return;
-            }
-            else if(ti.classType == ClassType.Register)
-            {
-                writer.WriteLine($"{ti.asCode(name)}; // register ${offset}");
-                return;
-            }
-            else if(ti.classType == ClassType.Argument)
-            {
-                writer.WriteLine($"{ti.asCode(name)}; // parameter, stack offset {offset}");
-                return;
-            }
-            else if(ti.classType == ClassType.RegParam)
-            {
-                writer.WriteLine($"{ti.asCode(name)}; // parameter, register ${offset}");
-                return;
-            }
             else if(ti.classType == ClassType.Static)
             {
                 writer.WriteLine($"static {ti.asCode(name)}; // offset 0x{offset:X}");
                 return;
             }
-
-            if(ti.classType == ClassType.EndOfStruct)
-                --writer.Indent;
-
-            writer.WriteLine(
-                $"${offset:X} Def class={ti.classType} type={ti.typeDef} size={ti.size} dims=[{string.Join(",", ti.dims)}] tag={ti.tag} name={name}");
-
-            if(ti.classType == ClassType.Struct || ti.classType == ClassType.Union || ti.classType == ClassType.Enum)
-                ++writer.Indent;
+            else
+            {
+                throw new Exception("Gomorrha");
+            }
         }
     }
 }

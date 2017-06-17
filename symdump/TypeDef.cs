@@ -32,8 +32,6 @@ namespace symdump
 
         public string asCode(string name, TypeInfo typeInfo)
         {
-            Debug.Assert(!string.IsNullOrEmpty(name));
-
             int dimIdx = 0;
 
             string ctype;
@@ -102,7 +100,7 @@ namespace symdump
                         nameNeedsParens = true;
                         break;
                     case DerivedType.FunctionReturnType:
-                        name = nameNeedsParens ? $"({name})()" : $"{name}()"; //TODO function args?
+                        name = nameNeedsParens ? $"({name})" : $"{name}";
                         nameNeedsParens = true;
                         break;
                     case DerivedType.Pointer:
