@@ -95,6 +95,12 @@ namespace symfile
             writer.WriteLine($"{returnType} /*reg ${register}*/ {name}({string.Join(", ", parameters)})");
             
             blocks.ForEach(b => b.dump(writer));
+
+            if (blocks.Count == 0)
+            {
+                writer.WriteLine("{");
+                writer.WriteLine("}");
+            }
         }
     }
 }

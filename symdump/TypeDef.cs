@@ -86,6 +86,7 @@ namespace symdump
                     throw new Exception($"Unexpected base type {baseType}");
             }
 
+            bool needsParens = false;
             foreach(var dt in derivedTypes)
             {
                 switch(dt)
@@ -96,12 +97,21 @@ namespace symdump
                         Debug.Assert(name != null);
                         name += $"[{typeInfo.dims[dimIdx]}]";
                         ++dimIdx;
+                        needsParens = true;
                         break;
                     case DerivedType.FunctionReturnType:
-                        Debug.Assert(name == "");
+                        if (name != "")
+                        {
+                            if (needsParens)
+                                name = $"({name})()";
+                            else
+                                name = $"{name}()";
+                            needsParens = true;
+                        }
                         break;
                     case DerivedType.Pointer:
                         name = $"*{name}";
+                        needsParens = true;
                         break;
                 }
             }
