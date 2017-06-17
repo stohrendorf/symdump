@@ -44,6 +44,11 @@ namespace symfile
                 e.dump(writer);
             
             writer.WriteLine();
+            writer.WriteLine($"// {structs.Count} structs");
+            foreach(var e in structs.Values)
+                e.dump(writer);
+            
+            writer.WriteLine();
             writer.WriteLine($"// {typedefs.Count} typedefs");
             foreach(var t in typedefs)
                 writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
@@ -247,12 +252,18 @@ namespace symfile
             }
             else if(ti.classType == ClassType.External)
             {
-                funcTypes[name] = ti.asCode("").Trim();
+                if(ti.typeDef.isFunctionReturnType)
+                    funcTypes[name] = ti.asCode("").Trim();
+                else
+                    writer.WriteLine($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
                 return;
             }
             else if(ti.classType == ClassType.Static)
             {
-                writer.WriteLine($"static {ti.asCode(name)}; // offset 0x{offset:X}");
+                if(ti.typeDef.isFunctionReturnType)
+                    funcTypes[name] = ti.asCode("").Trim();
+                else
+                    writer.WriteLine($"static {ti.asCode(name)}; // offset 0x{offset:X}");
                 return;
             }
             else
@@ -278,12 +289,18 @@ namespace symfile
             }
             else if(ti.classType == ClassType.External)
             {
-                writer.WriteLine($"extern {ti.asCode(name)};");
+                if(ti.typeDef.isFunctionReturnType)
+                    funcTypes[name] = ti.asCode("").Trim();
+                else
+                    writer.WriteLine($"extern {ti.asCode(name)};");
                 return;
             }
             else if(ti.classType == ClassType.Static)
             {
-                writer.WriteLine($"static {ti.asCode(name)}; // offset 0x{offset:X}");
+                if(ti.typeDef.isFunctionReturnType)
+                    funcTypes[name] = ti.asCode("").Trim();
+                else
+                    writer.WriteLine($"static {ti.asCode(name)}; // offset 0x{offset:X}");
                 return;
             }
             else

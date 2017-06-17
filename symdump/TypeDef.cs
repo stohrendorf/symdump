@@ -1,8 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
-using symfile.util;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using symfile;
 
@@ -12,6 +10,8 @@ namespace symdump
     {
         public readonly BaseType baseType;
         public readonly DerivedType[] derivedTypes = new DerivedType[6];
+
+        public bool isFunctionReturnType => derivedTypes.Contains(DerivedType.FunctionReturnType);
 
         public TypeDef(BinaryReader fs)
         {
@@ -86,7 +86,6 @@ namespace symdump
                     throw new Exception($"Unexpected base type {baseType}");
             }
 
-            bool nameNeedsParens = false;
             foreach(var dt in derivedTypes)
             {
                 switch(dt)
@@ -97,15 +96,12 @@ namespace symdump
                         Debug.Assert(name != null);
                         name += $"[{typeInfo.dims[dimIdx]}]";
                         ++dimIdx;
-                        nameNeedsParens = true;
                         break;
                     case DerivedType.FunctionReturnType:
-                        name = nameNeedsParens ? $"({name})" : $"{name}";
-                        nameNeedsParens = true;
+                        Debug.Assert(name == "");
                         break;
                     case DerivedType.Pointer:
                         name = $"*{name}";
-                        nameNeedsParens = true;
                         break;
                 }
             }

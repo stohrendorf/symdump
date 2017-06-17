@@ -39,7 +39,7 @@ namespace symfile
             name = reader.readPascalString();
 
             if(!funcTypes.TryGetValue(name, out returnType))
-                returnType = "void";
+                returnType = "__UNKNOWN__";
 
             while(true)
             {
