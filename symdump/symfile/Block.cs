@@ -53,7 +53,7 @@ namespace symfile
                         }
                         else if(ti.classType == ClassType.Register)
                         {
-                            vars.Add($"{ti.asCode(memberName)}; // register ${typedValue.value}");
+                            vars.Add($"{ti.asCode(memberName)}; // ${(Register)typedValue.value}");
                         }
                         else if(ti.classType == ClassType.Static)
                         {
@@ -76,7 +76,7 @@ namespace symfile
                         }
                         else if(ti.classType == ClassType.Register)
                         {
-                            vars.Add($"{ti.asCode(memberName)}; // register ${typedValue.value}");
+                            vars.Add($"{ti.asCode(memberName)}; // ${(Register)typedValue.value}");
                         }
                         else if(ti.classType == ClassType.Static)
                         {
