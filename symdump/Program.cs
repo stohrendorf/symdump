@@ -1,18 +1,32 @@
 ﻿using System;
 using System.IO;
+using symdump.exefile;
+using symdump.exefile.util;
 using symfile;
 
 namespace symdump
 {
-	internal class Program
-	{
-		private static void Main(string[] args)
-		{
-		    using (var fs = new FileStream(args[0], FileMode.Open))
-		    {
-		        var symFile = new SymFile(new BinaryReader(fs));
-			    symFile.dump(Console.Out);
-		    }
-		}
-	}
+    internal class Program
+    {
+        private static void Main(string[] args)
+        {
+            SymFile symFile;
+            using (var fs = new FileStream(args[0], FileMode.Open))
+            {
+                symFile = new SymFile(new BinaryReader(fs));
+                symFile.dump(Console.Out);
+            }
+
+            var exeFilename = Path.ChangeExtension(args[0], "EXE");
+
+            if (!File.Exists(exeFilename))
+                return;
+
+            using (var fs = new EndianBinaryReader(new FileStream(exeFilename, FileMode.Open)))
+            {
+                var exeFile = new ExeFile(fs, symFile.labels);
+                exeFile.disassemble();
+            }
+        }
+    }
 }

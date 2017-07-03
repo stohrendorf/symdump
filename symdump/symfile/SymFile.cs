@@ -12,7 +12,7 @@ namespace symfile
         private string mxInfo;
         private readonly Dictionary<string, EnumDef> enums = new Dictionary<string, EnumDef>();
         private readonly Dictionary<string, string> funcTypes = new Dictionary<string, string>();
-        private readonly Dictionary<int, List<Label>> labels = new Dictionary<int, List<Label>>();
+        internal readonly Dictionary<int, List<Label>> labels = new Dictionary<int, List<Label>>();
         private readonly Dictionary<string, StructDef> structs = new Dictionary<string, StructDef>();
         private readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
         private readonly Dictionary<string, UnionDef> unions = new Dictionary<string, UnionDef>();
@@ -24,7 +24,7 @@ namespace symfile
         public SymFile(BinaryReader stream)
         {
             stream.BaseStream.Seek(0, SeekOrigin.Begin);
-            
+
             stream.skip(3);
             version = stream.ReadByte();
             targetUnit = stream.ReadByte();
@@ -62,7 +62,8 @@ namespace symfile
             writer.WriteLine();
             writer.WriteLine($"// {labels.Count} labels");
             foreach (var l in labels)
-                writer.WriteLine(l);
+            foreach (var l2 in l.Value)
+                writer.WriteLine(l2);
 
             writer.WriteLine();
             writer.WriteLine($"// {externs.Count} external declarations");
