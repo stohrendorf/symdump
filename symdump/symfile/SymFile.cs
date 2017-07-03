@@ -9,27 +9,35 @@ namespace symfile
 {
     public class SymFile
     {
+        private string mxInfo;
         private readonly Dictionary<string, EnumDef> enums = new Dictionary<string, EnumDef>();
         private readonly Dictionary<string, string> funcTypes = new Dictionary<string, string>();
         private readonly Dictionary<int, List<Label>> labels = new Dictionary<int, List<Label>>();
         private readonly Dictionary<string, StructDef> structs = new Dictionary<string, StructDef>();
         private readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
         private readonly Dictionary<string, UnionDef> unions = new Dictionary<string, UnionDef>();
+        private readonly List<Function> functions = new List<Function>();
+        private readonly SortedSet<string> externs = new SortedSet<string>();
+        private readonly byte version;
+        private readonly byte targetUnit;
 
-        private readonly IndentedTextWriter writer;
-
-        public SymFile(BinaryReader stream, TextWriter output)
+        public SymFile(BinaryReader stream)
         {
-            writer = new IndentedTextWriter(output);
-
             stream.BaseStream.Seek(0, SeekOrigin.Begin);
+            
             stream.skip(3);
-            var version = stream.ReadByte();
-            var targetUnit = stream.ReadByte();
-            writer.WriteLine($"Version = {version}, targetUnit = {targetUnit}");
+            version = stream.ReadByte();
+            targetUnit = stream.ReadByte();
+
             stream.skip(3);
             while (stream.BaseStream.Position < stream.BaseStream.Length)
                 dumpEntry(stream);
+        }
+
+        public void dump(TextWriter output)
+        {
+            var writer = new IndentedTextWriter(output);
+            writer.WriteLine($"Version = {version}, targetUnit = {targetUnit}");
 
             writer.WriteLine();
             writer.WriteLine($"// {enums.Count} enums");
@@ -50,6 +58,21 @@ namespace symfile
             writer.WriteLine($"// {typedefs.Count} typedefs");
             foreach (var t in typedefs)
                 writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
+
+            writer.WriteLine();
+            writer.WriteLine($"// {labels.Count} labels");
+            foreach (var l in labels)
+                writer.WriteLine(l);
+
+            writer.WriteLine();
+            writer.WriteLine($"// {externs.Count} external declarations");
+            foreach (var e in externs)
+                writer.WriteLine(e);
+
+            writer.WriteLine();
+            writer.WriteLine($"// {functions.Count} functions");
+            foreach (var f in functions)
+                f.dump(writer);
         }
 
         private void dumpEntry(BinaryReader stream)
@@ -57,7 +80,7 @@ namespace symfile
             var typedValue = new TypedValue(stream);
             if (typedValue.type == 8)
             {
-                writer.WriteLine($"${typedValue.value:X} MX-info {stream.ReadByte():X}");
+                mxInfo = $"${typedValue.value:X} MX-info {stream.ReadByte():X}";
                 return;
             }
 
@@ -69,7 +92,6 @@ namespace symfile
                     labels.Add(lbl.offset, new List<Label>());
 
                 labels[lbl.offset].Add(lbl);
-                writer.WriteLine(lbl);
                 return;
             }
 
@@ -131,9 +153,7 @@ namespace symfile
 
         private void dumpType12(BinaryReader stream, int offset)
         {
-            var f = new Function(stream, (uint) offset, funcTypes);
-            writer.WriteLine();
-            f.dump(writer);
+            functions.Add(new Function(stream, (uint) offset, funcTypes));
             //writer.WriteLine("{");
             //++writer.Indent;
         }
@@ -242,12 +262,12 @@ namespace symfile
                 if (ti.typeDef.isFunctionReturnType)
                     funcTypes[name] = ti.asCode("").Trim();
                 else
-                    writer.WriteLine($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
+                    externs.Add($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
             else if (ti.classType == ClassType.Static)
                 if (ti.typeDef.isFunctionReturnType)
                     funcTypes[name] = ti.asCode("").Trim();
                 else
-                    writer.WriteLine($"static {ti.asCode(name)}; // offset 0x{offset:X}");
+                    externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
             else
                 throw new Exception("Gomorrha");
         }
@@ -265,12 +285,12 @@ namespace symfile
                 if (ti.typeDef.isFunctionReturnType)
                     funcTypes[name] = ti.asCode("").Trim();
                 else
-                    writer.WriteLine($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
+                    externs.Add($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
             else if (ti.classType == ClassType.Static)
                 if (ti.typeDef.isFunctionReturnType)
                     funcTypes[name] = ti.asCode("").Trim();
                 else
-                    writer.WriteLine($"static {ti.asCode(name)}; // offset 0x{offset:X}");
+                    externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
             else
                 throw new Exception("Gomorrha");
         }

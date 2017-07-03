@@ -10,7 +10,8 @@ namespace symdump
 		{
 		    using (var fs = new FileStream(args[0], FileMode.Open))
 		    {
-		        var symFile = new SymFile(new BinaryReader(fs), System.Console.Out);
+		        var symFile = new SymFile(new BinaryReader(fs));
+			    symFile.dump(Console.Out);
 		    }
 		}
 	}
