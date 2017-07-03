@@ -33,7 +33,7 @@ namespace symdump.exefile
 
             public Header(EndianBinaryReader reader)
             {
-                id = reader.readBytes(8).Select(b => (char)b).ToArray();
+                id = reader.readBytes(8).Select(b => (char) b).ToArray();
 
                 if (!"PS-X EXE".Equals(new string(id)))
                     throw new Exception("Header ID mismatch");
@@ -60,11 +60,11 @@ namespace symdump.exefile
 
         private readonly Header m_header;
         private readonly byte[] m_data;
-        private readonly Dictionary<int, List<Label>> m_labels;
+        private readonly SymFile m_symFile;
 
-        public ExeFile(EndianBinaryReader reader, Dictionary<int, List<Label>> labels)
+        public ExeFile(EndianBinaryReader reader, SymFile symFile)
         {
-            this.m_labels = labels;
+            m_symFile = symFile;
             reader.baseStream.Seek(0, SeekOrigin.Begin);
 
             m_header = new Header(reader);
@@ -74,14 +74,14 @@ namespace symdump.exefile
         private string getSymbolName(int addr, int rel = 0)
         {
             addr += rel;
-            
+
             List<Label> lbls;
-            if (!m_labels.TryGetValue(addr, out lbls))
+            if (!m_symFile.labels.TryGetValue(addr, out lbls))
                 return $"lbl_{addr:X}";
 
             return lbls.First().name;
         }
-        
+
         public void disassemble()
         {
             var size = m_data.Length;
@@ -90,15 +90,24 @@ namespace symdump.exefile
             while (size > 0)
             {
                 {
+                    var f = m_symFile.findFunction((uint) index);
+                    if (f != null)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine(f.getSignature());
+                    }
+
                     List<Label> lbls;
-                    if (m_labels.TryGetValue(index, out lbls))
+                    if (m_symFile.labels.TryGetValue(index, out lbls))
+                    {
                         foreach (var lbl in lbls)
                         {
                             Console.WriteLine($"{lbl.name}:");
                         }
+                    }
                 }
-                
-                
+
+
                 uint data;
                 data = (uint) m_data[index++];
                 data |= (uint) m_data[index++] << 8;
@@ -182,16 +191,16 @@ namespace symdump.exefile
                                         switch (code4)
                                         {
                                             case 0:
-                                                Console.Write($"mfhi\t{(Register)((data >> 11) & 0x1F)}");
+                                                Console.Write($"mfhi\t{(Register) ((data >> 11) & 0x1F)}");
                                                 break;
                                             case 1:
-                                                Console.Write($"mthi\t{(Register)((data >> 11) & 0x1F)}");
+                                                Console.Write($"mthi\t{(Register) ((data >> 11) & 0x1F)}");
                                                 break;
                                             case 2:
-                                                Console.Write($"mflo\t{(Register)((data >> 11) & 0x1F)}");
+                                                Console.Write($"mflo\t{(Register) ((data >> 11) & 0x1F)}");
                                                 break;
                                             case 3:
-                                                Console.Write($"mtlo\t{(Register)((data >> 11) & 0x1F)}");
+                                                Console.Write($"mtlo\t{(Register) ((data >> 11) & 0x1F)}");
                                                 break;
                                             default:
                                                 Console.Write($"DW\t${data:X}");
@@ -202,19 +211,19 @@ namespace symdump.exefile
                                         switch (code4)
                                         {
                                             case 0:
-                                                Console.Write("mult\t,{0}", (Register)((data >> 21) & 0x1F));
+                                                Console.Write("mult\t,{0}", (Register) ((data >> 21) & 0x1F));
                                                 break;
                                             case 1:
-                                                Console.Write("multu\t{0},{1}", (Register)((data >> 21) & 0x1F),
-                                                    (Register)((data >> 16) & 0x1F));
+                                                Console.Write("multu\t{0},{1}", (Register) ((data >> 21) & 0x1F),
+                                                    (Register) ((data >> 16) & 0x1F));
                                                 break;
                                             case 2:
-                                                Console.Write("div\t{0},{1}", (Register)((data >> 21) & 0x1F),
-                                                    (Register)((data >> 16) & 0x1F));
+                                                Console.Write("div\t{0},{1}", (Register) ((data >> 21) & 0x1F),
+                                                    (Register) ((data >> 16) & 0x1F));
                                                 break;
                                             case 3:
-                                                Console.Write("divu\t{0},{1}", (Register)((data >> 21) & 0x1F),
-                                                    (Register)((data >> 16) & 0x1F));
+                                                Console.Write("divu\t{0},{1}", (Register) ((data >> 21) & 0x1F),
+                                                    (Register) ((data >> 16) & 0x1F));
                                                 break;
                                             default:
                                                 Console.Write($"DW\t${data:X}");
@@ -225,31 +234,40 @@ namespace symdump.exefile
                                         switch (code4)
                                         {
                                             case 0:
-                                                Console.Write($"add\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"add\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 1:
                                                 if (((data >> 16) & 0x1F) == 0)
-                                                    Console.Write($"move\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}");
+                                                    Console.Write(
+                                                        $"move\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}");
                                                 else
-                                                    Console.Write($"addu\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                    Console.Write(
+                                                        $"addu\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 2:
-                                                Console.Write($"sub\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"sub\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 3:
-                                                Console.Write($"subu\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"subu\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 4:
-                                                Console.Write($"and\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"and\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 5:
-                                                Console.Write($"or\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"or\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 6:
-                                                Console.Write($"xor\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"xor\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 7:
-                                                Console.Write($"nor\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"nor\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                         }
                                         break;
@@ -257,10 +275,12 @@ namespace symdump.exefile
                                         switch (code4)
                                         {
                                             case 2:
-                                                Console.Write($"slt\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"slt\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 3:
-                                                Console.Write($"sltu\t{(Register)((data >> 11) & 0x1F)}, {(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"sltu\t{(Register) ((data >> 11) & 0x1F)}, {(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             default:
                                                 Console.Write($"DW\t${data:X}");
@@ -271,22 +291,28 @@ namespace symdump.exefile
                                         switch (code4)
                                         {
                                             case 0:
-                                                Console.Write($"tge\t{(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"tge\t{(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 1:
-                                                Console.Write($"tgeu\t{(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"tgeu\t{(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 2:
-                                                Console.Write($"tlt\t{(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"tlt\t{(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 3:
-                                                Console.Write($"tltu\t{(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"tltu\t{(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 4:
-                                                Console.Write($"teq\t{(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"teq\t{(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             case 6:
-                                                Console.Write($"tne\t{(Register)((data >> 21) & 0x1F)}, {(Register)((data >> 16) & 0x1F)}");
+                                                Console.Write(
+                                                    $"tne\t{(Register) ((data >> 21) & 0x1F)}, {(Register) ((data >> 16) & 0x1F)}");
                                                 break;
                                             default:
                                                 Console.Write($"DW\t${data:X}");
@@ -311,19 +337,19 @@ namespace symdump.exefile
                                         switch (code4)
                                         {
                                             case 0:
-                                                Console.Write("bltz\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                                Console.Write("bltz\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                                     getSymbolName(index, ((short) data) << 2));
                                                 break;
                                             case 1:
-                                                Console.Write("bgez\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                                Console.Write("bgez\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                                     getSymbolName(index, ((short) data) << 2));
                                                 break;
                                             case 2:
-                                                Console.Write("bltzl\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                                Console.Write("bltzl\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                                     getSymbolName(index, ((short) data) << 2));
                                                 break;
                                             case 3:
-                                                Console.Write("bgezl\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                                Console.Write("bgezl\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                                     getSymbolName(index, ((short) data) << 2));
                                                 break;
                                             default:
@@ -338,33 +364,35 @@ namespace symdump.exefile
                                 break;
                             }
                             case 2:
-                                Console.Write("j\t{0}", ((data & 0x03FFFFFF) << 2));
+                                Console.Write("j\t{0}", getSymbolName((int) ((data & 0x03FFFFFF) << 2)));
                                 break;
                             case 3:
-                                Console.Write("jal\t{0}", getSymbolName((int)(data & 0x03FFFFFF) << 2));
+                                Console.Write("jal\t{0}", getSymbolName((int) (data & 0x03FFFFFF) << 2));
                                 break;
                             case 4:
                                 if (((data >> 16) & 0x1F) == 0)
-                                    Console.Write("beqz\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                    Console.Write("beqz\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                         getSymbolName(index, ((short) data) << 2));
                                 else
-                                    Console.Write("beq\t{0},{1},{2}", (Register)((data >> 21) & 0x1F), (Register)((data >> 16) & 0x1F),
+                                    Console.Write("beq\t{0},{1},{2}", (Register) ((data >> 21) & 0x1F),
+                                        (Register) ((data >> 16) & 0x1F),
                                         getSymbolName(index, ((short) data) << 2));
                                 break;
                             case 5:
                                 if (((data >> 16) & 0x1F) == 0)
-                                    Console.Write("bnez\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                    Console.Write("bnez\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                         getSymbolName(index, ((short) data) << 2));
                                 else
-                                    Console.Write("bne\t{0},{1},{2}", (Register)((data >> 21) & 0x1F), (Register)((data >> 16) & 0x1F),
+                                    Console.Write("bne\t{0},{1},{2}", (Register) ((data >> 21) & 0x1F),
+                                        (Register) ((data >> 16) & 0x1F),
                                         getSymbolName(index, ((short) data) << 2));
                                 break;
                             case 6:
-                                Console.Write("blez\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                Console.Write("blez\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                     getSymbolName(index, ((short) data) << 2));
                                 break;
                             case 7:
-                                Console.Write("bgtz\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                Console.Write("bgtz\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                     getSymbolName(index, ((short) data) << 2));
                                 break;
                         }
@@ -373,39 +401,46 @@ namespace symdump.exefile
                         switch (code2)
                         {
                             case 0:
-                                Console.Write("addi\t{0},{1},{2}", (Register)((data >> 16) & 0x1F), (Register)((data >> 21) & 0x1F),
+                                Console.Write("addi\t{0},{1},{2}", (Register) ((data >> 16) & 0x1F),
+                                    (Register) ((data >> 21) & 0x1F),
                                     (short) data);
                                 break;
                             case 1:
                                 if (((data >> 21) & 0x1F) == 0)
-                                    Console.Write("li\t{0},{1}", (Register)((data >> 16) & 0x1F),
+                                    Console.Write("li\t{0},{1}", (Register) ((data >> 16) & 0x1F),
                                         (short) data);
                                 else
-                                    Console.Write("addiu\t{0},{1},{2}", (Register)((data >> 16) & 0x1F), (Register)((data >> 21) & 0x1F),
+                                    Console.Write("addiu\t{0},{1},{2}", (Register) ((data >> 16) & 0x1F),
+                                        (Register) ((data >> 21) & 0x1F),
                                         (short) data);
                                 break;
                             case 2:
-                                Console.Write("slti\t{0},{1},{2}", (Register)((data >> 16) & 0x1F), (Register)((data >> 21) & 0x1F),
+                                Console.Write("slti\t{0},{1},{2}", (Register) ((data >> 16) & 0x1F),
+                                    (Register) ((data >> 21) & 0x1F),
                                     (short) data);
                                 break;
                             case 3:
-                                Console.Write("sltiu\t{0},{1},{2}", (Register)((data >> 16) & 0x1F), (Register)((data >> 21) & 0x1F),
+                                Console.Write("sltiu\t{0},{1},{2}", (Register) ((data >> 16) & 0x1F),
+                                    (Register) ((data >> 21) & 0x1F),
                                     (short) data);
                                 break;
                             case 4:
-                                Console.Write("andi\t{0},{1},{2}", (Register)((data >> 16) & 0x1F), (Register)((data >> 21) & 0x1F),
+                                Console.Write("andi\t{0},{1},{2}", (Register) ((data >> 16) & 0x1F),
+                                    (Register) ((data >> 21) & 0x1F),
                                     (ushort) data);
                                 break;
                             case 5:
-                                Console.Write("ori\t{0},{1},{2}", (Register)((data >> 16) & 0x1F), (Register)((data >> 21) & 0x1F),
+                                Console.Write("ori\t{0},{1},{2}", (Register) ((data >> 16) & 0x1F),
+                                    (Register) ((data >> 21) & 0x1F),
                                     (ushort) data);
                                 break;
                             case 6:
-                                Console.Write("xori\t{0},{1},{2}", (Register)((data >> 16) & 0x1F), (Register)((data >> 21) & 0x1F),
+                                Console.Write("xori\t{0},{1},{2}", (Register) ((data >> 16) & 0x1F),
+                                    (Register) ((data >> 21) & 0x1F),
                                     (ushort) data);
                                 break;
                             case 7:
-                                Console.Write("lui\t{0},{1}", (Register)((data >> 16) & 0x1F),
+                                Console.Write("lui\t{0},{1}", (Register) ((data >> 16) & 0x1F),
                                     (ushort) data);
                                 break;
                         }
@@ -420,12 +455,12 @@ namespace symdump.exefile
                                 switch (code3)
                                 {
                                     case 0:
-                                        Console.Write("mfc0\t{0},{1}", (Register)((data >> 16) & 0x1F),
-                                            (C0Register)((data >> 11) & 0x1F));
+                                        Console.Write("mfc0\t{0},{1}", (Register) ((data >> 16) & 0x1F),
+                                            (C0Register) ((data >> 11) & 0x1F));
                                         break;
                                     case 4:
-                                        Console.Write("mtc0\t{0},{1}", (Register)((data >> 16) & 0x1F),
-                                            (C0Register)((data >> 11) & 0x1F));
+                                        Console.Write("mtc0\t{0},{1}", (Register) ((data >> 16) & 0x1F),
+                                            (C0Register) ((data >> 11) & 0x1F));
                                         break;
                                     case 16:
                                         if ((data & 0x1f) == 16)
@@ -450,7 +485,8 @@ namespace symdump.exefile
                                     switch ((data & 0x1F003FF))
                                     {
                                         case 0x0400012:
-                                            Console.Write("mvmva\t{0},{1},{2},{3},{4}", (data >> 19) & 1, (data >> 17) & 3,
+                                            Console.Write("mvmva\t{0},{1},{2},{3},{4}", (data >> 19) & 1,
+                                                (data >> 17) & 3,
                                                 (data >> 15) & 3, (data >> 13) & 3, (data >> 10) & 1); //	sf,mx,v,cv,lm
                                             break;
                                         case 0x0a00428:
@@ -532,20 +568,20 @@ namespace symdump.exefile
                                     switch (code3)
                                     {
                                         case 0:
-                                            Console.Write("mfc2\t{0},{1}", (Register)((data >> 16) & 0x1F),
-                                                (C2DataRegister)((data >> 11) & 0x1F));
+                                            Console.Write("mfc2\t{0},{1}", (Register) ((data >> 16) & 0x1F),
+                                                (C2DataRegister) ((data >> 11) & 0x1F));
                                             break;
                                         case 2:
-                                            Console.Write("cfc2\t{0},{1}", (Register)((data >> 16) & 0x1F),
-                                                (C2DataRegister)((data >> 11) & 0x1F));
+                                            Console.Write("cfc2\t{0},{1}", (Register) ((data >> 16) & 0x1F),
+                                                (C2DataRegister) ((data >> 11) & 0x1F));
                                             break;
                                         case 4:
-                                            Console.Write("mtc2\t{0},{1}", (Register)((data >> 16) & 0x1F),
-                                                (C2DataRegister)((data >> 11) & 0x1F));
+                                            Console.Write("mtc2\t{0},{1}", (Register) ((data >> 16) & 0x1F),
+                                                (C2DataRegister) ((data >> 11) & 0x1F));
                                             break;
                                         case 6:
-                                            Console.Write("ctc2\t{0},{1}", (Register)((data >> 16) & 0x1F),
-                                                (C2DataRegister)((data >> 11) & 0x1F));
+                                            Console.Write("ctc2\t{0},{1}", (Register) ((data >> 16) & 0x1F),
+                                                (C2DataRegister) ((data >> 11) & 0x1F));
                                             break;
                                         default:
                                             Console.Write($"DW\t${data:X}");
@@ -555,19 +591,21 @@ namespace symdump.exefile
                             }
                                 break;
                             case 4:
-                                Console.Write("beql\t{0},{1},{2}", (Register)((data >> 21) & 0x1F), (Register)((data >> 16) & 0x1F),
+                                Console.Write("beql\t{0},{1},{2}", (Register) ((data >> 21) & 0x1F),
+                                    (Register) ((data >> 16) & 0x1F),
                                     getSymbolName(index, (short) data << 2));
                                 break;
                             case 5:
-                                Console.Write("bnel\t{0},{1},{2}", (Register)((data >> 21) & 0x1F), (Register)((data >> 16) & 0x1F),
+                                Console.Write("bnel\t{0},{1},{2}", (Register) ((data >> 21) & 0x1F),
+                                    (Register) ((data >> 16) & 0x1F),
                                     getSymbolName(index, (short) data << 2));
                                 break;
                             case 6:
-                                Console.Write("blezl\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                Console.Write("blezl\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                     getSymbolName(index, (short) data << 2));
                                 break;
                             case 7:
-                                Console.Write("bgtzl\t{0},{1}", (Register)((data >> 21) & 0x1F),
+                                Console.Write("bgtzl\t{0},{1}", (Register) ((data >> 21) & 0x1F),
                                     getSymbolName(index, (short) data << 2));
                                 break;
                             default:
@@ -579,35 +617,35 @@ namespace symdump.exefile
                         switch (code2)
                         {
                             case 0:
-                                Console.Write("lb\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
+                                Console.Write("lb\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
                                     (short) data,
-                                    (Register)((data >> 21) & 0x1F));
+                                    (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 1:
-                                Console.Write("lh\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
+                                Console.Write("lh\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
                                     (short) data,
-                                    (Register)((data >> 21) & 0x1F));
+                                    (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 2:
-                                Console.Write("lwl\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
-                                    (short) data, (Register)((data >> 21) & 0x1F));
+                                Console.Write("lwl\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
+                                    (short) data, (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 3:
-                                Console.Write("lw\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
+                                Console.Write("lw\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
                                     (short) data,
-                                    (Register)((data >> 21) & 0x1F));
+                                    (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 4:
-                                Console.Write("lbu\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
-                                    (short) data, (Register)((data >> 21) & 0x1F));
+                                Console.Write("lbu\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
+                                    (short) data, (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 5:
-                                Console.Write("lhu\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
-                                    (short) data, (Register)((data >> 21) & 0x1F));
+                                Console.Write("lhu\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
+                                    (short) data, (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 6:
-                                Console.Write("lwr\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
-                                    (short) data, (Register)((data >> 21) & 0x1F));
+                                Console.Write("lwr\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
+                                    (short) data, (Register) ((data >> 21) & 0x1F));
                                 break;
                             default:
                                 Console.Write($"DW\t${data:X}");
@@ -618,27 +656,27 @@ namespace symdump.exefile
                         switch (code2)
                         {
                             case 0:
-                                Console.Write("sb\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
+                                Console.Write("sb\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
                                     (short) data,
-                                    (Register)((data >> 21) & 0x1F));
+                                    (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 1:
-                                Console.Write("sh\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
+                                Console.Write("sh\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
                                     (short) data,
-                                    (Register)((data >> 21) & 0x1F));
+                                    (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 2:
-                                Console.Write("swl\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
-                                    (short) data, (Register)((data >> 21) & 0x1F));
+                                Console.Write("swl\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
+                                    (short) data, (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 3:
-                                Console.Write("sw\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
+                                Console.Write("sw\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
                                     (short) data,
-                                    (Register)((data >> 21) & 0x1F));
+                                    (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 6:
-                                Console.Write("swr\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
-                                    (short) data, (Register)((data >> 21) & 0x1F));
+                                Console.Write("swr\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
+                                    (short) data, (Register) ((data >> 21) & 0x1F));
                                 break;
                             default:
                                 Console.Write($"DW\t${data:X}");
@@ -649,13 +687,13 @@ namespace symdump.exefile
                         switch (code2)
                         {
                             case 0:
-                                Console.Write("ll\t{0},{1}({2})", (Register)((data >> 16) & 0x1F),
+                                Console.Write("ll\t{0},{1}({2})", (Register) ((data >> 16) & 0x1F),
                                     (short) data,
-                                    (Register)((data >> 21) & 0x1F));
+                                    (Register) ((data >> 21) & 0x1F));
                                 break;
                             case 2:
-                                Console.Write("lwc2\t{0},{1}({2})", (C2DataRegister)((data >> 16) & 0x1F),
-                                    (short) data, (Register)((data >> 21) & 0x1F));
+                                Console.Write("lwc2\t{0},{1}({2})", (C2DataRegister) ((data >> 16) & 0x1F),
+                                    (short) data, (Register) ((data >> 21) & 0x1F));
                                 break;
 
                             default:
@@ -667,8 +705,8 @@ namespace symdump.exefile
                         switch (code2)
                         {
                             case 2:
-                                Console.Write("swc2\t{0},{1}({2})", (C2DataRegister)((data >> 16) & 0x1F),
-                                    (short) data, (Register)((data >> 21) & 0x1F));
+                                Console.Write("swc2\t{0},{1}({2})", (C2DataRegister) ((data >> 16) & 0x1F),
+                                    (short) data, (Register) ((data >> 21) & 0x1F));
                                 break;
 
                             default:

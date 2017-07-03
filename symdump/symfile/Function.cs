@@ -10,7 +10,7 @@ namespace symfile
 {
     public class Function
     {
-        private readonly uint address;
+        public readonly uint address;
         private readonly Register stackBase;
         private readonly uint stackFrameSize;
         private readonly Register register;
@@ -99,7 +99,7 @@ namespace symfile
                 writer.WriteLine($" * Saved registers at offset {maskOffs}: {string.Join(" ", savedRegisters)}");
             writer.WriteLine(" */");
 
-            writer.WriteLine($"{returnType} /*${register}*/ {name}({string.Join(", ", parameters)})");
+            writer.WriteLine(getSignature());
 
             blocks.ForEach(b => b.dump(writer));
 
@@ -108,6 +108,11 @@ namespace symfile
                 writer.WriteLine("{");
                 writer.WriteLine("}");
             }
+        }
+
+        public string getSignature()
+        {
+            return $"{returnType} /*${register}*/ {name}({string.Join(", ", parameters)})";
         }
     }
 }

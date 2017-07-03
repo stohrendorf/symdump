@@ -24,7 +24,7 @@ namespace symdump
 
             using (var fs = new EndianBinaryReader(new FileStream(exeFilename, FileMode.Open)))
             {
-                var exeFile = new ExeFile(fs, symFile.labels);
+                var exeFile = new ExeFile(fs, symFile);
                 exeFile.disassemble();
             }
         }

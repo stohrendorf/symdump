@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using symdump;
 using symfile.util;
 
@@ -294,6 +295,11 @@ namespace symfile
                     externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
             else
                 throw new Exception("Gomorrha");
+        }
+
+        public Function findFunction(uint addr)
+        {
+            return functions.FirstOrDefault(f => f.address == addr);
         }
     }
 }
