@@ -12,6 +12,8 @@ namespace symfile
     {
         public readonly List<Block> subBlocks = new List<Block>();
         public readonly List<string> vars = new List<string>();
+        public readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
+        public readonly List<Label> labels = new List<Label>();
 
         public readonly uint startOffset;
         public readonly uint startLine;
@@ -47,21 +49,25 @@ namespace symfile
                         var ti = reader.readTypeInfo(false);
                         var memberName = reader.readPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
-                        if(ti.classType == ClassType.AutoVar)
+                        switch (ti.classType)
                         {
-                            vars.Add($"{ti.asCode(memberName)}; // stack offset {typedValue.value}");
-                        }
-                        else if(ti.classType == ClassType.Register)
-                        {
-                            vars.Add($"{ti.asCode(memberName)}; // ${(Register)typedValue.value}");
-                        }
-                        else if(ti.classType == ClassType.Static)
-                        {
-                            vars.Add($"static {ti.asCode(memberName)}; // offset 0x{typedValue.value:x}");
-                        }
-                        else
-                        {
-                            throw new Exception("Ctulhu");
+                            case ClassType.AutoVar:
+                                vars.Add($"{ti.asCode(memberName)}; // stack offset {typedValue.value}");
+                                break;
+                            case ClassType.Register:
+                                vars.Add($"{ti.asCode(memberName)}; // ${(Register)typedValue.value}");
+                                break;
+                            case ClassType.Static:
+                                vars.Add($"static {ti.asCode(memberName)}; // offset 0x{typedValue.value:x}");
+                                break;
+                            case ClassType.Typedef:
+                                typedefs.Add(memberName, ti);
+                                break;
+                            case ClassType.Label:
+                                labels.Add(new Label(typedValue, memberName));
+                                break;
+                            default:
+                                throw new Exception($"Unexpected class type {ti.classType}");
                         }
                         break;
                     }
@@ -70,21 +76,25 @@ namespace symfile
                         var ti = reader.readTypeInfo(true);
                         var memberName = reader.readPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
-                        if(ti.classType == ClassType.AutoVar)
+                        switch (ti.classType)
                         {
-                            vars.Add($"{ti.asCode(memberName)}; // stack offset {typedValue.value}");
-                        }
-                        else if(ti.classType == ClassType.Register)
-                        {
-                            vars.Add($"{ti.asCode(memberName)}; // ${(Register)typedValue.value}");
-                        }
-                        else if(ti.classType == ClassType.Static)
-                        {
-                            vars.Add($"static {ti.asCode(memberName)}; // offset 0x{typedValue.value:x}");
-                        }
-                        else
-                        {
-                            throw new Exception("Ctulhu");
+                            case ClassType.AutoVar:
+                                vars.Add($"{ti.asCode(memberName)}; // stack offset {typedValue.value}");
+                                break;
+                            case ClassType.Register:
+                                vars.Add($"{ti.asCode(memberName)}; // ${(Register)typedValue.value}");
+                                break;
+                            case ClassType.Static:
+                                vars.Add($"static {ti.asCode(memberName)}; // offset 0x{typedValue.value:x}");
+                                break;
+                            case ClassType.Typedef:
+                                typedefs.Add(memberName, ti);
+                                break;
+                            case ClassType.Label:
+                                labels.Add(new Label(typedValue, memberName));
+                                break;
+                            default:
+                                throw new Exception($"Unexpected class type {ti.classType}");
                         }
                         break;
                     }
@@ -96,7 +106,11 @@ namespace symfile
         {
             writer.WriteLine($"{{ // line {startLine}, offset 0x{startOffset:x}");
             ++writer.Indent;
+            foreach(var t in typedefs)
+                writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
             vars.ForEach(writer.WriteLine);
+            foreach(var l in labels)
+                writer.WriteLine(l);
             subBlocks.ForEach(b => b.dump(writer));
             --writer.Indent;
             writer.WriteLine($"}} // line {endLine}, offset 0x{endOffset:x}");

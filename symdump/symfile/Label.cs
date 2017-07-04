@@ -18,6 +18,12 @@ namespace symfile
 			this.name = fs.readPascalString();
 		}
 
+		public Label(TypedValue typedValue, String name)
+		{
+			this.typedOffset = typedValue;
+			this.name = name;
+		}
+
 		public override string ToString()
 		{
 			return $"0x{offset:X} {name}";

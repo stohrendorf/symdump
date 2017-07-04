@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using symdump;
@@ -206,8 +207,10 @@ namespace symfile
 				if(e.Equals(already))
 					return;
 
-				if(!e.isFake)
-					throw new Exception($"Non-uniform definitions of struct {name}");
+				if (!e.isFake)
+				{
+					Console.WriteLine($"WARNING: Non-uniform definitions of struct {name}");
+				}
 
 				// generate new "fake fake" name
 				var n = 0;
