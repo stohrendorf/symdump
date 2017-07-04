@@ -8,7 +8,7 @@ namespace symfile
 	{
 		private readonly TypedValue typedOffset;
 
-		public int offset => typedOffset.value;
+		public uint offset => (uint)typedOffset.value;
 
 		public string name { get; private set; }
 
