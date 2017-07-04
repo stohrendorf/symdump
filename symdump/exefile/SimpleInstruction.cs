@@ -10,11 +10,6 @@ namespace symdump.exefile
 
 		public IOperand[] operands { get; }
 
-		public SimpleInstruction(string mnemonic, params IOperand[] operands)
-			: this(mnemonic, null, operands)
-		{
-		}
-
 		public SimpleInstruction(string mnemonic, string format, params IOperand[] operands)
 		{
 			this.mnemonic = mnemonic;

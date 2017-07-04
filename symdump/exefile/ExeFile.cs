@@ -84,13 +84,28 @@ namespace symdump.exefile
 
 		private readonly SortedDictionary<uint, IInstruction> instructions = new SortedDictionary<uint, IInstruction>();
 
+		private uint dataAt(uint ofs)
+		{
+			uint data;
+			data = (uint)m_data[ofs++];
+			data |= (uint)m_data[ofs++] << 8;
+			data |= (uint)m_data[ofs++] << 16;
+			data |= (uint)m_data[ofs++] << 24;
+			return data;
+		}
+
+		private static byte extractOp(uint data)
+		{
+			return (byte)(data >> 29);
+		}
+		
 		public void disassemble()
 		{
 			uint index = 0;
 
 			while(index < m_data.Length) {
 				{
-					var f = m_symFile.findFunction((uint)index);
+					var f = m_symFile.findFunction(index);
 					if(f != null) {
 						Console.WriteLine();
 						Console.WriteLine(f.getSignature());
@@ -105,17 +120,14 @@ namespace symdump.exefile
 				}
 
 
-				uint data;
-				data = (uint)m_data[index++];
-				data |= (uint)m_data[index++] << 8;
-				data |= (uint)m_data[index++] << 16;
-				data |= (uint)m_data[index++] << 24;
+				uint data = dataAt(index);
+				index += 4;
 
 				IInstruction insn = null;
 
 				var code2 = (data >> 26) & 0x7;
 
-				switch((data >> 29) & 0x7) {
+				switch(extractOp(data)) {
 				case 0:
 					insn = decodeBranching(index, data);
 					break;
@@ -130,14 +142,14 @@ namespace symdump.exefile
 
 							switch(code3) {
 							case 0:
-								insn = new SimpleInstruction("mfc0", new RegisterOperand(data, 16), new C0RegisterOperand(data, 11));
+								insn = new SimpleInstruction("mfc0", null, new RegisterOperand(data, 16), new C0RegisterOperand(data, 11));
 								break;
 							case 4:
-								insn = new SimpleInstruction("mtc0", new RegisterOperand(data, 16), new C0RegisterOperand(data, 11));
+								insn = new SimpleInstruction("mtc0", null, new RegisterOperand(data, 16), new C0RegisterOperand(data, 11));
 								break;
 							case 16:
 								if((data & 0x1f) == 16)
-									insn = new SimpleInstruction("rfe");
+									insn = new SimpleInstruction("rfe", "__RETURN_FROM_EXCEPTION()");
 								else
 									insn = new WordData(data);
 								break;
@@ -157,6 +169,7 @@ namespace symdump.exefile
 								switch((data & 0x1F003FF)) {
 								case 0x0400012:
 									insn = new SimpleInstruction("mvmva",
+										null,
 										new ImmediateOperand((int)(data >> 19) & 1),
 										new ImmediateOperand((int)(data >> 17) & 3),
 										new ImmediateOperand((int)(data >> 15) & 3),
@@ -165,72 +178,72 @@ namespace symdump.exefile
 									);
 									break;
 								case 0x0a00428:
-									insn = new SimpleInstruction("sqr", new ImmediateOperand((int)(data >> 19) & 1));
+									insn = new SimpleInstruction("sqr", null, new ImmediateOperand((int)(data >> 19) & 1));
 									break;
 								case 0x170000C:
-									insn = new SimpleInstruction("op", new ImmediateOperand((int)(data >> 19) & 1));
+									insn = new SimpleInstruction("op", null, new ImmediateOperand((int)(data >> 19) & 1));
 									break;
 								case 0x190003D:
-									insn = new SimpleInstruction("gpf", new ImmediateOperand((int)(data >> 19) & 1));
+									insn = new SimpleInstruction("gpf", null, new ImmediateOperand((int)(data >> 19) & 1));
 									break;
 								case 0x1A0003E:
-									insn = new SimpleInstruction("gpl", new ImmediateOperand((int)(data >> 19) & 1));
+									insn = new SimpleInstruction("gpl", null, new ImmediateOperand((int)(data >> 19) & 1));
 									break;
 								default:
 									switch(data) {
 									case 0x0180001:
-										insn = new SimpleInstruction("rtps");
+										insn = new SimpleInstruction("rtps", null);
 										break;
 									case 0x0280030:
-										insn = new SimpleInstruction("rtpt");
+										insn = new SimpleInstruction("rtpt", null);
 										break;
 									case 0x0680029:
-										insn = new SimpleInstruction("dcpl");
+										insn = new SimpleInstruction("dcpl", null);
 										break;
 									case 0x0780010:
-										insn = new SimpleInstruction("dcps");
+										insn = new SimpleInstruction("dcps", null);
 										break;
 									case 0x0980011:
-										insn = new SimpleInstruction("intpl");
+										insn = new SimpleInstruction("intpl", null);
 										break;
 									case 0x0C8041E:
-										insn = new SimpleInstruction("ncs");
+										insn = new SimpleInstruction("ncs", null);
 										break;
 									case 0x0D80420:
-										insn = new SimpleInstruction("nct");
+										insn = new SimpleInstruction("nct", null);
 										break;
 									case 0x0E80413:
-										insn = new SimpleInstruction("ncds");
+										insn = new SimpleInstruction("ncds", null);
 										break;
 									case 0x0F80416:
-										insn = new SimpleInstruction("ncdt");
+										insn = new SimpleInstruction("ncdt", null);
 										break;
 									case 0x0F8002A:
-										insn = new SimpleInstruction("dpct");
+										insn = new SimpleInstruction("dpct", null);
 										break;
 									case 0x108041B:
-										insn = new SimpleInstruction("nccs");
+										insn = new SimpleInstruction("nccs", null);
 										break;
 									case 0x118043F:
-										insn = new SimpleInstruction("ncct");
+										insn = new SimpleInstruction("ncct", null);
 										break;
 									case 0x1280414:
-										insn = new SimpleInstruction("cdp");
+										insn = new SimpleInstruction("cdp", null);
 										break;
 									case 0x138041C:
-										insn = new SimpleInstruction("cc");
+										insn = new SimpleInstruction("cc", null);
 										break;
 									case 0x1400006:
-										insn = new SimpleInstruction("nclip");
+										insn = new SimpleInstruction("nclip", null);
 										break;
 									case 0x158002D:
-										insn = new SimpleInstruction("avsz3");
+										insn = new SimpleInstruction("avsz3", null);
 										break;
 									case 0x168002E:
-										insn = new SimpleInstruction("avsz4");
+										insn = new SimpleInstruction("avsz4", null);
 										break;
 									default:
-										insn = new SimpleInstruction("cop2", new ImmediateOperand((int)data & 0x1ffffff));
+										insn = new SimpleInstruction("cop2", null, new ImmediateOperand((int)data & 0x1ffffff));
 										break;
 									}
 									break;
@@ -239,16 +252,16 @@ namespace symdump.exefile
 								code3 = (data >> 21) & 0x1F;
 								switch(code3) {
 								case 0:
-									insn = new SimpleInstruction("mfc2", new RegisterOperand(data, 16), new ImmediateOperand((short)data), new C2RegisterOperand(data, 21));
+									insn = new SimpleInstruction("mfc2", null, new RegisterOperand(data, 16), new ImmediateOperand((short)data), new C2RegisterOperand(data, 21));
 									break;
 								case 2:
-									insn = new SimpleInstruction("cfc2", new RegisterOperand(data, 16), new ImmediateOperand((short)data), new C2RegisterOperand(data, 21));
+									insn = new SimpleInstruction("cfc2", null, new RegisterOperand(data, 16), new ImmediateOperand((short)data), new C2RegisterOperand(data, 21));
 									break;
 								case 4:
-									insn = new SimpleInstruction("mtc2", new RegisterOperand(data, 16), new ImmediateOperand((short)data), new C2RegisterOperand(data, 21));
+									insn = new SimpleInstruction("mtc2", null, new RegisterOperand(data, 16), new ImmediateOperand((short)data), new C2RegisterOperand(data, 21));
 									break;
 								case 6:
-									insn = new SimpleInstruction("ctc2", new RegisterOperand(data, 16), new ImmediateOperand((short)data), new C2RegisterOperand(data, 21));
+									insn = new SimpleInstruction("ctc2", null, new RegisterOperand(data, 16), new ImmediateOperand((short)data), new C2RegisterOperand(data, 21));
 									break;
 								default:
 									insn = new WordData(data);
@@ -258,16 +271,16 @@ namespace symdump.exefile
 						}
 						break;
 					case 4:
-						insn = new SimpleInstruction("beql", new RegisterOperand(data, 21), new RegisterOperand(data, 16), new LabelOperand(getSymbolName(index, (short)data << 2)));
+						insn = new SimpleInstruction("beql", "if({0} == {1}) goto {2}", new RegisterOperand(data, 21), new RegisterOperand(data, 16), new LabelOperand(getSymbolName(index, (short)data << 2)));
 						break;
 					case 5:
-						insn = new SimpleInstruction("bnel", new RegisterOperand(data, 21), new RegisterOperand(data, 16), new LabelOperand(getSymbolName(index, (short)data << 2)));
+						insn = new SimpleInstruction("bnel", "if({0} != {1}) goto {2}", new RegisterOperand(data, 21), new RegisterOperand(data, 16), new LabelOperand(getSymbolName(index, (short)data << 2)));
 						break;
 					case 6:
-						insn = new SimpleInstruction("blezl", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, (short)data << 2)));
+						insn = new SimpleInstruction("blezl", "if((signed){0} <= 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, (short)data << 2)));
 						break;
 					case 7:
-						insn = new SimpleInstruction("bgtzl", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, (short)data << 2)));
+						insn = new SimpleInstruction("bgtzl", "if((signed){0} > 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, (short)data << 2)));
 						break;
 					default:
 						insn = new WordData(data);
@@ -283,10 +296,10 @@ namespace symdump.exefile
 				case 6:
 					switch(code2) {
 					case 0:
-						insn = new SimpleInstruction("ll", new RegisterOperand(data, 16), new ImmediateOperand((short)data), new RegisterOperand(data, 21));
+						insn = new SimpleInstruction("ll", null, new RegisterOperand(data, 16), new ImmediateOperand((short)data), new RegisterOperand(data, 21));
 						break;
 					case 2:
-						insn = new SimpleInstruction("lwc2", new C2RegisterOperand(data, 16), new ImmediateOperand((short)data), new RegisterOperand(data, 21));
+						insn = new SimpleInstruction("lwc2", null, new C2RegisterOperand(data, 16), new ImmediateOperand((short)data), new RegisterOperand(data, 21));
 						break;
 					default:
 						insn = new WordData(data);
@@ -296,7 +309,7 @@ namespace symdump.exefile
 				case 7:
 					switch(code2) {
 					case 2:
-						insn = new SimpleInstruction("swc2", new C2RegisterOperand(data, 16), new ImmediateOperand((short)data), new RegisterOperand(data, 21));
+						insn = new SimpleInstruction("swc2", null, new C2RegisterOperand(data, 16), new ImmediateOperand((short)data), new RegisterOperand(data, 21));
 						break;
 					default:
 						insn = new WordData(data);
@@ -320,58 +333,58 @@ namespace symdump.exefile
 				switch(code4) {
 				case 0:
 					if(data == 0)
-						return new SimpleInstruction("nop");
+						return new SimpleInstruction("nop", null);
 					else
-						return new SimpleInstruction("sll", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new ImmediateOperand((int)(data >> 6) & 0x1F));
+						return new SimpleInstruction("sll", "{0} = (signed){1} << {2}", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new ImmediateOperand((int)(data >> 6) & 0x1F));
 				case 2:
 					return new SimpleInstruction("srl", "{0} = (unsigned){1} >> {2}", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new ImmediateOperand((int)(data >> 6) & 0x1F));
 				case 3:
 					return new SimpleInstruction("sra", "{0} = (signed){1} >> {2}", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new ImmediateOperand((int)(data >> 6) & 0x1F));
 				case 4:
-					return new SimpleInstruction("sllv", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new RegisterOperand(data, 21));
+					return new SimpleInstruction("sllv", "{0} = (signed){1} << {2}", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new RegisterOperand(data, 21));
 				case 6:
-					return new SimpleInstruction("srlv", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new RegisterOperand(data, 21));
+					return new SimpleInstruction("srlv", "{0} = (unsigned){1} >> {2}", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new RegisterOperand(data, 21));
 				case 7:
-					return new SimpleInstruction("srav", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new RegisterOperand(data, 21));
+					return new SimpleInstruction("srav", "{0} = (signed){1} >> {2}", new RegisterOperand(data, 11), new RegisterOperand(data, 16), new RegisterOperand(data, 21));
 				default:
 					return new WordData(data);
 				}
 			case 1:
 				switch(code4) {
 				case 0:
-					return new SimpleInstruction("jr", new RegisterOperand(data, 21));
+					return new SimpleInstruction("jr", "goto *{0}", new RegisterOperand(data, 21));
 				case 1:
-					return new SimpleInstruction("jalr", new RegisterOperand(data, 11), new RegisterOperand(data, 21));
+					return new SimpleInstruction("jalr", "{0} = __RET_ADDR; (*{1})()", new RegisterOperand(data, 11), new RegisterOperand(data, 21));
 				case 4:
-					return new SimpleInstruction("syscall", new ImmediateOperand((int)(data >> 6) & 0xFFFFF));
+					return new SimpleInstruction("syscall", "trap(SYSCALL, {0})", new ImmediateOperand((int)(data >> 6) & 0xFFFFF));
 				case 5:
-					return new SimpleInstruction("break", new ImmediateOperand((int)(data >> 6) & 0xFFFFF));
+					return new SimpleInstruction("break", "trap(BREAK, {0})", new ImmediateOperand((int)(data >> 6) & 0xFFFFF));
 				default:
 					return new WordData(data);
 				}
 			case 2:
 				switch(code4) {
 				case 0:
-					return new SimpleInstruction("mfhi", new RegisterOperand(data, 11));
+					return new SimpleInstruction("mfhi", "{0} = __DIV_REMAINDER_OR_MULT_HI()", new RegisterOperand(data, 11));
 				case 1:
-					return new SimpleInstruction("mthi", new RegisterOperand(data, 11));
+					return new SimpleInstruction("mthi", "__LOAD_DIV_REMAINDER_OR_MULT_HI({0})", new RegisterOperand(data, 11));
 				case 2:
-					return new SimpleInstruction("mflo", new RegisterOperand(data, 11));
+					return new SimpleInstruction("mflo", "{0} = __DIV_OR_MULT_LO()", new RegisterOperand(data, 11));
 				case 3:
-					return new SimpleInstruction("mtlo", new RegisterOperand(data, 11));
+					return new SimpleInstruction("mtlo", "__LOAD_DIV_OR_MULT_LO({0})", new RegisterOperand(data, 11));
 				default:
 					return new WordData(data);
 				}
 			case 3:
 				switch(code4) {
 				case 0:
-					return new SimpleInstruction("mult", new RegisterOperand(data, 21));
+					return new SimpleInstruction("mult", "__MULT((signed){0}, (signed){1})", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 1:
-					return new SimpleInstruction("multu", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("multu", "__MULT((unsigned){0}, (unsigned){1})", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 2:
-					return new SimpleInstruction("div", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("div", "__DIV((signed){0}, (signed){1})", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 3:
-					return new SimpleInstruction("divu", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("divu", "__DIV((unsigned){0}, (unsigned){1})", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				default:
 					return new WordData(data);
 				}
@@ -395,7 +408,7 @@ namespace symdump.exefile
 				case 6:
 					return new SimpleInstruction("xor", "{0} = {1} ^ {2}", new RegisterOperand(data, 11), new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 7:
-					return new SimpleInstruction("nor", new RegisterOperand(data, 11), new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("nor", "{0} = ~({1} | {2})", new RegisterOperand(data, 11), new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				default:
 					return new WordData(data);
 				}
@@ -411,17 +424,17 @@ namespace symdump.exefile
 			case 6:
 				switch(code4) {
 				case 0:
-					return new SimpleInstruction("tge", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("tge", null, new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 1:
-					return new SimpleInstruction("tgeu", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("tgeu", null, new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 2:
-					return new SimpleInstruction("tlt", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("tlt", null, new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 3:
-					return new SimpleInstruction("tltu", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("tltu", null, new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 4:
-					return new SimpleInstruction("teq", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("teq", null, new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				case 6:
-					return new SimpleInstruction("tne", new RegisterOperand(data, 21), new RegisterOperand(data, 16));
+					return new SimpleInstruction("tne", null, new RegisterOperand(data, 21), new RegisterOperand(data, 16));
 				default:
 					return new WordData(data);
 				}
@@ -436,13 +449,13 @@ namespace symdump.exefile
 			case 0:
 				switch((data >> 16) & 0x7) {
 				case 0:
-					return new SimpleInstruction("bltz", "if({0} < 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, ((ushort)data) << 2)));
+					return new SimpleInstruction("bltz", "if((signed){0} < 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, ((ushort)data) << 2)));
 				case 1:
-					return new SimpleInstruction("bgez", "if({0} >= 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, ((ushort)data) << 2)));
+					return new SimpleInstruction("bgez", "if((signed){0} >= 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, ((ushort)data) << 2)));
 				case 2:
-					return new SimpleInstruction("bltzl", "if({0} < 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, ((ushort)data) << 2)));
+					return new SimpleInstruction("bltzl", "if((signed){0} < 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, ((ushort)data) << 2)));
 				case 3:
-					return new SimpleInstruction("bgezl", "if({0} >= 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, ((ushort)data) << 2)));
+					return new SimpleInstruction("bgezl", "if((signed){0} >= 0) goto {1}", new RegisterOperand(data, 21), new LabelOperand(getSymbolName(index, ((ushort)data) << 2)));
 				default:
 					return new WordData(data);
 				}
@@ -459,7 +472,7 @@ namespace symdump.exefile
 			case 1:
 				return new SimpleInstruction("lh", "{0} = (short){1}", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			case 2:
-				return new SimpleInstruction("lwl", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
+				return new SimpleInstruction("lwl", null, new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			case 3:
 				return new SimpleInstruction("lw", "{0} = (int){1}", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			case 4:
@@ -467,7 +480,7 @@ namespace symdump.exefile
 			case 5:
 				return new SimpleInstruction("lhu", "{0} = (unsigned short){1}", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			case 6:
-				return new SimpleInstruction("lwr", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
+				return new SimpleInstruction("lwr", null, new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			default:
 				return new WordData(data);
 			}
@@ -481,11 +494,11 @@ namespace symdump.exefile
 			case 1:
 				return new SimpleInstruction("sh", "{1} = (short){0}", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			case 2:
-				return new SimpleInstruction("swl", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
+				return new SimpleInstruction("swl", null, new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			case 3:
 				return new SimpleInstruction("sw", "{1} = (int){0}", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			case 6:
-				return new SimpleInstruction("swr", new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
+				return new SimpleInstruction("swr", null, new RegisterOperand(data, 16), new RegisterOffsetOperand(data, 21, (short)data));
 			default:
 				return new WordData(data);
 			}
@@ -525,16 +538,16 @@ namespace symdump.exefile
 		{
 			switch((data >> 26) & 0x7) {
 			case 0:
-				return new SimpleInstruction("addi", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((short)data));
+				return new SimpleInstruction("addi", "{0} = {1} + {2}", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((short)data));
 			case 1:
 				if(((data >> 21) & 0x1F) == 0)
 					return new SimpleInstruction("li", "{0} = {1}", new RegisterOperand(data, 16), new ImmediateOperand((short)data));
 				else
-					return new SimpleInstruction("addiu", "{0} = {1} + {2}", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((short)data));
+					return new SimpleInstruction("addiu", "{0} = {1} + {2}", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((ushort)data));
 			case 2:
 				return new SimpleInstruction("slti", "{0} = {1} < {2} ? 1 : 0", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((short)data));
 			case 3:
-				return new SimpleInstruction("sltiu", "{0} = {1} < {2} ? 1 : 0", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((short)data));
+				return new SimpleInstruction("sltiu", "{0} = {1} < {2} ? 1 : 0", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((ushort)data));
 			case 4:
 				return new SimpleInstruction("andi", "{0} = {1} & {2}", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((short)data));
 			case 5:
@@ -542,7 +555,7 @@ namespace symdump.exefile
 			case 6:
 				return new SimpleInstruction("xori", "{0} = {1} ^ {2}", new RegisterOperand(data, 16), new RegisterOperand(data, 21), new ImmediateOperand((short)data));
 			case 7:
-				return new SimpleInstruction("lui", "{0} = {1}", new RegisterOperand(data, 16), new ImmediateOperand((short)data));
+				return new SimpleInstruction("lui", "{0} = {1}", new RegisterOperand(data, 16), new ImmediateOperand((ushort)data));
 			default:
 				return new WordData(data);
 			}

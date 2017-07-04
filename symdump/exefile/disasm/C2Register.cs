@@ -4,7 +4,7 @@ namespace symdump.exefile.disasm
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public enum C2DataRegister
+    public enum C2Register
     {
         vxy0,
         vz0,

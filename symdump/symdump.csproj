@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <Commandlineparameters>/home/sto/devel/MAIN.SYM</Commandlineparameters>
     <ConsolePause>false</ConsolePause>
-    <LangVersion>6</LangVersion>
+      <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,7 +49,7 @@
     <Compile Include="ClassType.cs" />
     <Compile Include="DerivedType.cs" />
     <Compile Include="exefile\disasm\C0Register.cs" />
-    <Compile Include="exefile\disasm\C2DataRegister.cs" />
+      <Compile Include="exefile\disasm\C2Register.cs"/>
     <Compile Include="exefile\disasm\Operator.cs" />
     <Compile Include="exefile\ExeFile.cs" />
     <Compile Include="exefile\util\EndianBinaryReader.cs" />
