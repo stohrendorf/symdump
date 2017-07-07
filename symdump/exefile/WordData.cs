@@ -1,10 +1,10 @@
 ﻿namespace symdump.exefile
 {
-	public class WordData : IInstruction
+	public class WordData : Instruction
 	{
 		public readonly uint data;
 
-		public IOperand[] operands { get; } = new IOperand[0];
+		public override IOperand[] operands { get; } = new IOperand[0];
 
 		public WordData(uint data)
 		{
@@ -16,7 +16,7 @@
 			return $".word 0x{data:x}";
 		}
 
-		public string asReadable()
+		public override string asReadable()
 		{
 			return ToString();
 		}

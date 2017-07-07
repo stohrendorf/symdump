@@ -18,7 +18,7 @@ namespace symfile
 		private readonly Dictionary<string, StructDef> structs = new Dictionary<string, StructDef>();
 		private readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
 		private readonly Dictionary<string, UnionDef> unions = new Dictionary<string, UnionDef>();
-		private readonly List<Function> functions = new List<Function>();
+		public readonly List<Function> functions = new List<Function>();
 		private readonly SortedSet<string> externs = new SortedSet<string>();
 		private readonly byte version;
 		private readonly byte targetUnit;

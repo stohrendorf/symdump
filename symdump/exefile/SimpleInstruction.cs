@@ -2,13 +2,13 @@
 
 namespace symdump.exefile
 {
-	public class SimpleInstruction : IInstruction
+	public class SimpleInstruction : Instruction
 	{
 		public readonly string mnemonic;
 
 		public readonly string format;
 
-		public IOperand[] operands { get; }
+		public override IOperand[] operands { get; }
 
 		public SimpleInstruction(string mnemonic, string format, params IOperand[] operands)
 		{
@@ -20,10 +20,10 @@ namespace symdump.exefile
 		public override string ToString()
 		{
 			var args = string.Join(", ", operands.Select(o => o.ToString()));
-			return $"{mnemonic} {args}";
+			return $"{mnemonic} {args}".Trim();
 		}
 
-		public string asReadable()
+		public override string asReadable()
 		{
 			if(format == null)
 				return ToString();

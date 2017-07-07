@@ -2,9 +2,9 @@
 {
 	public class ImmediateOperand : IOperand
 	{
-		public readonly int value;
+		public readonly long value;
 
-		public ImmediateOperand(int value)
+		public ImmediateOperand(long value)
 		{
 			this.value = value;
 		}

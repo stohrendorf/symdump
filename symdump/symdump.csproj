@@ -50,7 +50,10 @@
     <Compile Include="DerivedType.cs" />
     <Compile Include="exefile\disasm\C0Register.cs" />
       <Compile Include="exefile\disasm\C2Register.cs"/>
-    <Compile Include="exefile\disasm\Operator.cs" />
+      <Compile Include="exefile\disasm\CpuControlOpcode.cs"/>
+      <Compile Include="exefile\disasm\Opcode.cs"/>
+      <Compile Include="exefile\disasm\OpcodeFunction.cs"/>
+      <Compile Include="exefile\disasm\TlbOpcode.cs"/>
     <Compile Include="exefile\ExeFile.cs" />
     <Compile Include="exefile\util\EndianBinaryReader.cs" />
     <Compile Include="Program.cs" />
@@ -68,8 +71,7 @@
     <Compile Include="symfile\TypedValue.cs" />
     <Compile Include="symfile\EnumDef.cs" />
     <Compile Include="symfile\StructDef.cs" />
-    <Compile Include="exefile\Location.cs" />
-    <Compile Include="exefile\IInstruction.cs" />
+      <Compile Include="exefile\Instruction.cs"/>
     <Compile Include="exefile\IOperand.cs" />
     <Compile Include="exefile\RegisterOperand.cs" />
     <Compile Include="exefile\RegisterOffsetOperand.cs" />
