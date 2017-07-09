@@ -11,7 +11,7 @@
 
 		public override string ToString()
 		{
-			return $"{value}";
+			return value >= 0 ? $"0x{value:X}" : $"-0x{-value}";
 		}
 	}
 }

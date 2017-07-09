@@ -13,7 +13,7 @@ namespace symdump.exefile
     {
         [SuppressMessage("ReSharper", "NotAccessedField.Local")]
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-        class Header
+        private class Header
         {
             public readonly char[] id;
             public readonly uint text;
@@ -71,6 +71,7 @@ namespace symdump.exefile
             reader.baseStream.Seek(0, SeekOrigin.Begin);
 
             m_header = new Header(reader);
+            reader.baseStream.Seek(0x800, SeekOrigin.Begin);
             m_data = reader.readBytes((int) m_header.tSize);
         }
 
@@ -88,7 +89,7 @@ namespace symdump.exefile
         private IEnumerable<string> getSymbolNames(uint addr)
         {
             List<Label> lbls;
-            m_symFile.labels.TryGetValue(addr, out lbls);
+            m_symFile.labels.TryGetValue(addr + m_header.tAddr, out lbls);
             return lbls?.Select(l => l.name);
         }
 
@@ -134,10 +135,10 @@ namespace symdump.exefile
         public void disassemble()
         {
             m_analysisQueue.Clear();
-            m_analysisQueue.Enqueue((m_header.pc0 >> 8) - (m_header.tAddr >> 8));
+            m_analysisQueue.Enqueue(m_header.pc0 - m_header.tAddr);
             foreach (var addr in m_symFile.functions.Select(f => f.address))
             {
-                m_analysisQueue.Enqueue(addr);
+                m_analysisQueue.Enqueue(addr - m_header.tAddr);
             }
 
             while (m_analysisQueue.Count != 0)
@@ -243,9 +244,9 @@ namespace symdump.exefile
                             new RegisterOperand(data, 21), new ImmediateOperand((short) data));
                         break;
                     case Opcode.lui:
-                        insn = new SimpleInstruction("lui", "{0} = ((unsigned short){1} << 16)",
+                        insn = new SimpleInstruction("lui", "{0} = {1}",
                             new RegisterOperand(data, 16),
-                            new ImmediateOperand((ushort) data));
+                            new ImmediateOperand(((ushort) data) << 16));
                         break;
                     case Opcode.CpuControl:
                         insn = decodeCpuControl(index, data);
@@ -360,7 +361,7 @@ namespace symdump.exefile
                 if (insn.Value.asReadable().Equals("nop"))
                     continue;
 
-                var f = m_symFile.findFunction(insn.Key);
+                var f = m_symFile.findFunction(insn.Key + m_header.tAddr);
                 if (f != null)
                     Console.WriteLine();
 

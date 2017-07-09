@@ -14,11 +14,11 @@ namespace symdump.exefile.util
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
             if (!stream.BaseStream.CanRead)
             {
-                throw new ArgumentException("Stream isn't writable", "stream");
+                throw new ArgumentException("Stream isn't readable", nameof(stream));
             }
             m_stream = stream;
         }
@@ -36,13 +36,13 @@ namespace symdump.exefile.util
         public short readInt16()
         {
             var tmp = m_stream.ReadBytes(2);
-            return (short) ((tmp[0] << 8) | tmp[1]);
+            return (short) ((tmp[1] << 8) | tmp[0]);
         }
 
         public int readInt32()
         {
             var tmp = m_stream.ReadBytes(4);
-            return (tmp[0] << 8) | (tmp[1] << 16) | (tmp[2] << 24) | tmp[3];
+            return (tmp[3] << 24) | (tmp[2] << 16) | (tmp[1] << 8) | tmp[0];
         }
 
         public ushort readUInt16() => (ushort) readInt16();
