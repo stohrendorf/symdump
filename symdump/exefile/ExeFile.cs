@@ -149,211 +149,23 @@ namespace symdump.exefile
 
                 var data = dataAt(index);
                 index += 4;
-
-                Instruction insn;
-
-                switch (extractOpcode(data))
+                var insn = m_instructions[index - 4] = decodeInstruction(data, index);
+                
+                if (insn is SimpleBranchInstruction)
                 {
-                    case Opcode.RegisterFormat:
-                        insn = decodeRegisterFormat(data);
-                        break;
-                    case Opcode.PCRelative:
-                        insn = decodePcRelative(index, data);
-                        break;
-                    case Opcode.j:
-                        addXref(index - 4, (data & 0x03FFFFFF) << 2);
-                        insn = new SimpleInstruction("j", "goto {0}",
-                            new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)));
-                        break;
-                    case Opcode.jal:
-                        addXref(index - 4, (data & 0x03FFFFFF) << 2);
-                        insn = new SimpleInstruction("jal", "{0}()",
-                            new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)));
-                        break;
-                    case Opcode.beq:
-                        addXref(index - 4, (uint) (index + (short) data << 2));
-                        if (((data >> 16) & 0x1F) == 0)
-                        {
-                            insn = new SimpleInstruction("beqz", "if({0} == 0) goto {1}", new RegisterOperand(data, 21),
-                                new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                        }
-                        else
-                        {
-                            insn = new SimpleInstruction("beq", "if({0} == {1}) goto {2}",
-                                new RegisterOperand(data, 21),
-                                new RegisterOperand(data, 16),
-                                new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                        }
-                        break;
-                    case Opcode.bne:
-                        addXref(index - 4, (uint) (index + (short) data << 2));
-                        if (((data >> 16) & 0x1F) == 0)
-                        {
-                            insn = new SimpleInstruction("bnez", "if({0} != 0) goto {1}", new RegisterOperand(data, 21),
-                                new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                        }
-                        else
-                        {
-                            insn = new SimpleInstruction("bne", "if({0} != {1}) goto {2}",
-                                new RegisterOperand(data, 21),
-                                new RegisterOperand(data, 16),
-                                new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                        }
-                        break;
-                    case Opcode.blez:
-                        addXref(index - 4, (uint) (index + (short) data << 2));
-                        insn = new SimpleInstruction("blez", "if({0} <= 0) goto {1}", new RegisterOperand(data, 21),
-                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                        break;
-                    case Opcode.bgtz:
-                        addXref(index - 4, (uint) (index + (short) data << 2));
-                        insn = new SimpleInstruction("bgtz", "if({0} > 0) goto {1}", new RegisterOperand(data, 21),
-                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                        break;
-                    case Opcode.addi:
-                        insn = new SimpleInstruction("addi", "{0} = {1} + {2}", new RegisterOperand(data, 16),
-                            new RegisterOperand(data, 21), new ImmediateOperand((short) data));
-                        break;
-                    case Opcode.addiu:
-                        if (((data >> 21) & 0x1F) == 0)
-                            insn = new SimpleInstruction("li", "{0} = {1}", new RegisterOperand(data, 16),
-                                new ImmediateOperand((short) data));
-                        else
-                            insn = new SimpleInstruction("addiu", "{0} = {1} + {2}", new RegisterOperand(data, 16),
-                                new RegisterOperand(data, 21), new ImmediateOperand((ushort) data));
-                        break;
-                    case Opcode.subi:
-                        insn = new SimpleInstruction("subi", "{0} = (signed)({1} - {2})", new RegisterOperand(data, 16),
-                            new RegisterOperand(data, 21), new ImmediateOperand((short) data));
-                        break;
-                    case Opcode.subiu:
-                        insn = new SimpleInstruction("subiu", "{0} = (unsigned)({1} - {2})",
-                            new RegisterOperand(data, 16),
-                            new RegisterOperand(data, 21), new ImmediateOperand((ushort) data));
-                        break;
-                    case Opcode.andi:
-                        insn = new SimpleInstruction("andi", "{0} = {1} & {2}", new RegisterOperand(data, 16),
-                            new RegisterOperand(data, 21), new ImmediateOperand((short) data));
-                        break;
-                    case Opcode.ori:
-                        insn = new SimpleInstruction("ori", "{0} = {1} | {2}", new RegisterOperand(data, 16),
-                            new RegisterOperand(data, 21), new ImmediateOperand((short) data));
-                        break;
-                    case Opcode.xori:
-                        insn = new SimpleInstruction("xori", "{0} = {1} ^ {2}", new RegisterOperand(data, 16),
-                            new RegisterOperand(data, 21), new ImmediateOperand((short) data));
-                        break;
-                    case Opcode.lui:
-                        insn = new SimpleInstruction("lui", "{0} = {1}",
-                            new RegisterOperand(data, 16),
-                            new ImmediateOperand(((ushort) data) << 16));
-                        break;
-                    case Opcode.CpuControl:
-                        insn = decodeCpuControl(index, data);
-                        break;
-                    case Opcode.FloatingPoint:
-                        insn = new WordData(data);
-                        break;
-                    case Opcode.lb:
-                        insn = new SimpleInstruction("lb", "{0} = (signed char){1}", new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.lh:
-                        insn = new SimpleInstruction("lh", "{0} = (short){1}", new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.lwl:
-                        insn = new SimpleInstruction("lwl", null, new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.lw:
-                        insn = new SimpleInstruction("lw", "{0} = (int){1}", new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.lbu:
-                        insn = new SimpleInstruction("lbu", "{0} = (unsigned char){1}", new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.lhu:
-                        insn = new SimpleInstruction("lhu", "{0} = (unsigned short){1}", new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.lwr:
-                        insn = new SimpleInstruction("lwr", null, new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.sb:
-                        insn = new SimpleInstruction("sb", "{1} = (char){0}", new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.sh:
-                        insn = new SimpleInstruction("sh", "{1} = (short){0}", new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.swl:
-                        insn = new SimpleInstruction("swl", null, new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.sw:
-                        insn = new SimpleInstruction("sw", "{1} = (int){0}", new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.swr:
-                        insn = new SimpleInstruction("swr", null, new RegisterOperand(data, 16),
-                            new RegisterOffsetOperand(data, 21, (short) data));
-                        break;
-                    case Opcode.swc1:
-                        insn = new SimpleInstruction("swc1", null, new RegisterOperand(data, 16),
-                            new ImmediateOperand((short) data), new RegisterOperand(data, 21));
-                        break;
-                    case Opcode.lwc1:
-                        insn = new SimpleInstruction("lwc1", null, new C2RegisterOperand(data, 16),
-                            new ImmediateOperand((short) data), new RegisterOperand(data, 21));
-                        break;
-                    case Opcode.cop0:
-                        insn = new SimpleInstruction("cop0", null, new ImmediateOperand(data & ((1 << 26) - 1)));
-                        break;
-                    case Opcode.cop1:
-                        insn = new SimpleInstruction("cop1", null, new ImmediateOperand(data & ((1 << 26) - 1)));
-                        break;
-                    case Opcode.cop2:
-                        insn = decodeCop2(data);
-                        break;
-                    case Opcode.cop3:
-                        insn = new SimpleInstruction("cop3", null, new ImmediateOperand(data & ((1 << 26) - 1)));
-                        break;
-                    case Opcode.beql:
-                        addXref(index - 4, (uint) (index + (short) data << 2));
-                        insn = new SimpleInstruction("beql", "if({0} == {1}) goto {2}",
-                            new RegisterOperand(data, 21), new RegisterOperand(data, 16),
-                            new LabelOperand(getSymbolName(index, (short) data << 2)));
-                        break;
-                    case Opcode.bnel:
-                        addXref(index - 4, (uint) (index + (short) data << 2));
-                        insn = new SimpleInstruction("bnel", "if({0} != {1}) goto {2}",
-                            new RegisterOperand(data, 21), new RegisterOperand(data, 16),
-                            new LabelOperand(getSymbolName(index, (short) data << 2)));
-                        break;
-                    case Opcode.blezl:
-                        addXref(index - 4, (uint) (index + (short) data << 2));
-                        insn = new SimpleInstruction("blezl", "if((signed){0} <= 0) goto {1}",
-                            new RegisterOperand(data, 21),
-                            new LabelOperand(getSymbolName(index, (short) data << 2)));
-                        break;
-                    case Opcode.bgtzl:
-                        addXref(index - 4, (uint) (index + (short) data << 2));
-                        insn = new SimpleInstruction("bgtzl", "if((signed){0} > 0) goto {1}",
-                            new RegisterOperand(data, 21),
-                            new LabelOperand(getSymbolName(index, (short) data << 2)));
-                        break;
-                    default:
-                        insn = new WordData(data);
-                        break;
-                }
+                    data = dataAt(index);
+                    index += 4;
+                    m_instructions[index - 4] = decodeInstruction(data, index);
 
-                m_instructions[index - 4] = insn;
-                if (!insn.asReadable().StartsWith("j"))
+                    if (!((SimpleBranchInstruction) insn).isUnconditional)
+                    {
+                        m_analysisQueue.Enqueue(index);
+                    }
+                }
+                else
+                {
                     m_analysisQueue.Enqueue(index);
+                }
             }
 
             foreach (var insn in m_instructions)
@@ -394,6 +206,181 @@ namespace symdump.exefile
             }
         }
 
+        private Instruction decodeInstruction(uint data, uint index)
+        {
+            switch (extractOpcode(data))
+            {
+                case Opcode.RegisterFormat:
+                    return decodeRegisterFormat(data);
+                case Opcode.PCRelative:
+                    return decodePcRelative(index, data);
+                case Opcode.j:
+                    addXref(index - 4, (data & 0x03FFFFFF) << 2);
+                    m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
+                    return new SimpleBranchInstruction("j", "goto {0}", true,
+                        new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)));
+                case Opcode.jal:
+                    addXref(index - 4, (data & 0x03FFFFFF) << 2);
+                    m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
+                    return new SimpleBranchInstruction("jal", "{0}()", false,
+                        new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)));
+                case Opcode.beq:
+                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    if (((data >> 16) & 0x1F) == 0)
+                    {
+                        return new SimpleBranchInstruction("beqz", "if({0} == 0) goto {1}", false,
+                            new RegisterOperand(data, 21),
+                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
+                    }
+                    else
+                    {
+                        return new SimpleBranchInstruction("beq", "if({0} == {1}) goto {2}", false,
+                            new RegisterOperand(data, 21),
+                            new RegisterOperand(data, 16),
+                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
+                    }
+                case Opcode.bne:
+                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    if (((data >> 16) & 0x1F) == 0)
+                    {
+                        return new SimpleBranchInstruction("bnez", "if({0} != 0) goto {1}", false,
+                            new RegisterOperand(data, 21),
+                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
+                    }
+                    else
+                    {
+                        return new SimpleBranchInstruction("bne", "if({0} != {1}) goto {2}", false,
+                            new RegisterOperand(data, 21),
+                            new RegisterOperand(data, 16),
+                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
+                    }
+                case Opcode.blez:
+                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("blez", "if({0} <= 0) goto {1}", false,
+                        new RegisterOperand(data, 21),
+                        new LabelOperand(getSymbolName(index, ((short) data) << 2)));
+                case Opcode.bgtz:
+                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("bgtz", "if({0} > 0) goto {1}", false,
+                        new RegisterOperand(data, 21),
+                        new LabelOperand(getSymbolName(index, ((short) data) << 2)));
+                case Opcode.addi:
+                    return new SimpleInstruction("addi", "{0} = {1} + {2}", new RegisterOperand(data, 16),
+                        new RegisterOperand(data, 21), new ImmediateOperand((short) data));
+                case Opcode.addiu:
+                    if (((data >> 21) & 0x1F) == 0)
+                        return new SimpleInstruction("li", "{0} = {1}", new RegisterOperand(data, 16),
+                            new ImmediateOperand((short) data));
+                    else
+                        return new SimpleInstruction("addiu", "{0} = {1} + {2}", new RegisterOperand(data, 16),
+                            new RegisterOperand(data, 21), new ImmediateOperand((ushort) data));
+                case Opcode.subi:
+                    return new SimpleInstruction("subi", "{0} = (signed)({1} - {2})", new RegisterOperand(data, 16),
+                        new RegisterOperand(data, 21), new ImmediateOperand((short) data));
+                case Opcode.subiu:
+                    return new SimpleInstruction("subiu", "{0} = (unsigned)({1} - {2})",
+                        new RegisterOperand(data, 16),
+                        new RegisterOperand(data, 21), new ImmediateOperand((ushort) data));
+                case Opcode.andi:
+                    return new SimpleInstruction("andi", "{0} = {1} & {2}", new RegisterOperand(data, 16),
+                        new RegisterOperand(data, 21), new ImmediateOperand((short) data));
+                case Opcode.ori:
+                    return new SimpleInstruction("ori", "{0} = {1} | {2}", new RegisterOperand(data, 16),
+                        new RegisterOperand(data, 21), new ImmediateOperand((short) data));
+                case Opcode.xori:
+                    return new SimpleInstruction("xori", "{0} = {1} ^ {2}", new RegisterOperand(data, 16),
+                        new RegisterOperand(data, 21), new ImmediateOperand((short) data));
+                case Opcode.lui:
+                    return new SimpleInstruction("lui", "{0} = {1}",
+                        new RegisterOperand(data, 16),
+                        new ImmediateOperand(((ushort) data) << 16));
+                case Opcode.CpuControl:
+                    return decodeCpuControl(index, data);
+                case Opcode.FloatingPoint:
+                    return new WordData(data);
+                case Opcode.lb:
+                    return new SimpleInstruction("lb", "{0} = (signed char){1}", new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.lh:
+                    return new SimpleInstruction("lh", "{0} = (short){1}", new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.lwl:
+                    return new SimpleInstruction("lwl", null, new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.lw:
+                    return new SimpleInstruction("lw", "{0} = (int){1}", new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.lbu:
+                    return new SimpleInstruction("lbu", "{0} = (unsigned char){1}", new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.lhu:
+                    return new SimpleInstruction("lhu", "{0} = (unsigned short){1}", new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.lwr:
+                    return new SimpleInstruction("lwr", null, new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.sb:
+                    return new SimpleInstruction("sb", "{1} = (char){0}", new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.sh:
+                    return new SimpleInstruction("sh", "{1} = (short){0}", new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.swl:
+                    return new SimpleInstruction("swl", null, new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.sw:
+                    return new SimpleInstruction("sw", "{1} = (int){0}", new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.swr:
+                    return new SimpleInstruction("swr", null, new RegisterOperand(data, 16),
+                        new RegisterOffsetOperand(data, 21, (short) data));
+                case Opcode.swc1:
+                    return new SimpleInstruction("swc1", null, new RegisterOperand(data, 16),
+                        new ImmediateOperand((short) data), new RegisterOperand(data, 21));
+                case Opcode.lwc1:
+                    return new SimpleInstruction("lwc1", null, new C2RegisterOperand(data, 16),
+                        new ImmediateOperand((short) data), new RegisterOperand(data, 21));
+                case Opcode.cop0:
+                    return new SimpleInstruction("cop0", null, new ImmediateOperand(data & ((1 << 26) - 1)));
+                case Opcode.cop1:
+                    return new SimpleInstruction("cop1", null, new ImmediateOperand(data & ((1 << 26) - 1)));
+                case Opcode.cop2:
+                    return decodeCop2(data);
+                case Opcode.cop3:
+                    return new SimpleInstruction("cop3", null, new ImmediateOperand(data & ((1 << 26) - 1)));
+                case Opcode.beql:
+                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("beql", "if({0} == {1}) goto {2}", false,
+                        new RegisterOperand(data, 21), new RegisterOperand(data, 16),
+                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                case Opcode.bnel:
+                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("bnel", "if({0} != {1}) goto {2}", false,
+                        new RegisterOperand(data, 21), new RegisterOperand(data, 16),
+                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                case Opcode.blezl:
+                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("blezl", "if((signed){0} <= 0) goto {1}", false,
+                        new RegisterOperand(data, 21),
+                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                case Opcode.bgtzl:
+                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("bgtzl", "if((signed){0} > 0) goto {1}", false,
+                        new RegisterOperand(data, 21),
+                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                default:
+                    return new WordData(data);
+            }
+        }
+
         private static Instruction decodeRegisterFormat(uint data)
         {
             var rd = new RegisterOperand(data, 11);
@@ -431,9 +418,9 @@ namespace symdump.exefile
                         rd, rs2,
                         rs1);
                 case OpcodeFunction.jr:
-                    return new SimpleInstruction("jr", "goto *{0}", rs1);
+                    return new SimpleBranchInstruction("jr", "goto *{0}", true, rs1);
                 case OpcodeFunction.jalr:
-                    return new SimpleInstruction("jalr", "{0} = __RET_ADDR; (*{1})()",
+                    return new SimpleBranchInstruction("jalr", "{0} = __RET_ADDR; (*{1})()", false, // marked as non-conditional so that analysis continues after call return
                         rd, rs1);
                 case OpcodeFunction.syscall:
                     return new SimpleInstruction("syscall", "trap(SYSCALL, {0})",
@@ -564,22 +551,26 @@ namespace symdump.exefile
             {
                 case 0:
                     addXref(index - 4, (uint) (index + (short) data << 2));
-                    return new SimpleInstruction("bltz", "if((signed){0} < 0) goto {1}",
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("bltz", "if((signed){0} < 0) goto {1}", false,
                         rs,
                         offset);
                 case 1:
                     addXref(index - 4, (uint) (index + (short) data << 2));
-                    return new SimpleInstruction("bgez", "if((signed){0} >= 0) goto {1}",
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("bgez", "if((signed){0} >= 0) goto {1}", false,
                         rs,
                         offset);
                 case 16:
                     addXref(index - 4, (uint) (index + (short) data << 2));
-                    return new SimpleInstruction("bltzal", "if((signed){0} < 0) {1}()",
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("bltzal", "if((signed){0} < 0) {1}()", false,
                         rs,
                         offset);
                 case 17:
                     addXref(index - 4, (uint) (index + (short) data << 2));
-                    return new SimpleInstruction("bgezal", "if((signed){0} >= 0) {1}()",
+                    m_analysisQueue.Enqueue((uint) ((short) data << 2));
+                    return new SimpleBranchInstruction("bgezal", "if((signed){0} >= 0) {1}()", false,
                         rs,
                         offset);
                 default:

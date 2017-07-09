@@ -55,6 +55,7 @@
       <Compile Include="exefile\disasm\OpcodeFunction.cs"/>
       <Compile Include="exefile\disasm\TlbOpcode.cs"/>
     <Compile Include="exefile\ExeFile.cs" />
+      <Compile Include="exefile\SimpleBranchInstruction.cs"/>
     <Compile Include="exefile\util\EndianBinaryReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

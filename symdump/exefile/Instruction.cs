@@ -7,5 +7,12 @@ namespace symdump.exefile
         public abstract IOperand[] operands { get; }
 
         public abstract string asReadable();
+
+        public bool isBranchDelaySlot;
+
+        public Instruction(bool isBranchDelaySlot = false)
+        {
+            this.isBranchDelaySlot = isBranchDelaySlot;
+        }
     }
 }
