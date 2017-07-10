@@ -1,4 +1,4 @@
-﻿namespace symdump.exefile
+﻿namespace symdump.exefile.operands
 {
     public class ImmediateOperand : IOperand
     {
@@ -7,6 +7,12 @@
         public ImmediateOperand(long value)
         {
             this.value = value;
+        }
+
+        public bool Equals(IOperand other)
+        {
+            var o = other as ImmediateOperand;
+            return value == o?.value;
         }
 
         public override string ToString()

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
+using symdump.exefile.operands;
 
-namespace symdump.exefile
+namespace symdump.exefile.instructions
 {
     public class SimpleInstruction : Instruction
     {

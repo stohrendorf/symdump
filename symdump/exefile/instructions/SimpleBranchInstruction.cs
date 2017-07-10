@@ -1,4 +1,6 @@
-﻿namespace symdump.exefile
+﻿using symdump.exefile.operands;
+
+namespace symdump.exefile.instructions
 {
     public class SimpleBranchInstruction : SimpleInstruction
     {

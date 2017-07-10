@@ -1,6 +1,6 @@
 ﻿using symdump.symfile;
 
-namespace symdump.exefile
+namespace symdump.exefile.operands
 {
     public class RegisterOperand : IOperand
     {
@@ -14,6 +14,12 @@ namespace symdump.exefile
         public RegisterOperand(uint data, int offset)
             : this((Register) ((data >> offset) & 0x1f))
         {
+        }
+        
+        public bool Equals(IOperand other)
+        {
+            var o = other as RegisterOperand;
+            return register == o?.register;
         }
 
         public override string ToString()
