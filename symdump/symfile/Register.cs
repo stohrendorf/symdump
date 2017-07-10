@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
-namespace symfile
+
+namespace symdump.symfile
 {
     public enum Register
     {

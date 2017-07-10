@@ -2,7 +2,7 @@
 using System.IO;
 using symdump.exefile;
 using symdump.exefile.util;
-using symfile;
+using symdump.symfile;
 
 namespace symdump
 {

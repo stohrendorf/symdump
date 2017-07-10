@@ -1,8 +1,8 @@
-﻿using System.IO;
-using System.Linq;
-using System;
+﻿using System;
 using System.Diagnostics;
-using symfile;
+using System.IO;
+using System.Linq;
+using symdump.symfile;
 
 namespace symdump
 {
@@ -11,17 +11,24 @@ namespace symdump
         public readonly BaseType baseType;
         public readonly DerivedType[] derivedTypes = new DerivedType[6];
 
-        public bool isFunctionReturnType => derivedTypes.Contains(DerivedType.FunctionReturnType);
-
         public TypeDef(BinaryReader fs)
         {
             var val = fs.ReadUInt16();
-            baseType = (BaseType)(val & 0x0f);
-            for(var i = 0; i < 6; ++i)
+            baseType = (BaseType) (val & 0x0f);
+            for (var i = 0; i < 6; ++i)
             {
                 var x = (val >> (i * 2 + 4)) & 3;
-                derivedTypes[i] = (DerivedType)x;
+                derivedTypes[i] = (DerivedType) x;
             }
+        }
+
+        public bool isFunctionReturnType => derivedTypes.Contains(DerivedType.FunctionReturnType);
+
+        public bool Equals(TypeDef other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return baseType == other.baseType && derivedTypes.SequenceEqual(other.derivedTypes);
         }
 
         public override string ToString()
@@ -32,10 +39,10 @@ namespace symdump
 
         public string asCode(string name, TypeInfo typeInfo)
         {
-            int dimIdx = 0;
+            var dimIdx = 0;
 
             string ctype;
-            switch(baseType)
+            switch (baseType)
             {
                 case BaseType.StructDef:
                     Debug.Assert(!string.IsNullOrEmpty(typeInfo.tag));
@@ -86,10 +93,9 @@ namespace symdump
                     throw new Exception($"Unexpected base type {baseType}");
             }
 
-            bool needsParens = false;
-            foreach(var dt in derivedTypes)
-            {
-                switch(dt)
+            var needsParens = false;
+            foreach (var dt in derivedTypes)
+                switch (dt)
                 {
                     case DerivedType.None:
                         continue;
@@ -102,10 +108,7 @@ namespace symdump
                     case DerivedType.FunctionReturnType:
                         if (name != "")
                         {
-                            if (needsParens)
-                                name = $"({name})()";
-                            else
-                                name = $"{name}()";
+                            name = needsParens ? $"({name})()" : $"{name}()";
                             needsParens = true;
                         }
                         break;
@@ -114,31 +117,23 @@ namespace symdump
                         needsParens = true;
                         break;
                 }
-            }
 
             return $"{ctype} {name}";
         }
 
-        public bool Equals(TypeDef other)
-        {
-            if(ReferenceEquals(null, other)) return false;
-            if(ReferenceEquals(this, other)) return true;
-            return baseType == other.baseType && derivedTypes.SequenceEqual(other.derivedTypes);
-        }
-
         public override bool Equals(object obj)
         {
-            if(ReferenceEquals(null, obj)) return false;
-            if(ReferenceEquals(this, obj)) return true;
-            if(obj.GetType() != this.GetType()) return false;
-            return Equals((TypeDef)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((TypeDef) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((int)baseType * 397) ^ (derivedTypes != null ? derivedTypes.GetHashCode() : 0);
+                return ((int) baseType * 397) ^ (derivedTypes != null ? derivedTypes.GetHashCode() : 0);
             }
         }
     }

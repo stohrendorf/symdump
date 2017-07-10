@@ -1,67 +1,62 @@
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using symdump;
-using symfile.util;
+using symdump.symfile.util;
+using symdump.util;
 
-namespace symfile
+namespace symdump.symfile
 {
     public class Function
     {
         public readonly uint address;
-        private readonly Register stackBase;
-        private readonly uint stackFrameSize;
-        private readonly Register register;
-        private readonly uint mask;
-        private readonly int maskOffs;
-        private readonly uint line;
-        private readonly string file;
-        private readonly string name;
-        private readonly uint lastLine;
-        private readonly string returnType;
+        private readonly List<Block> m_blocks = new List<Block>();
+        private readonly string m_file;
+        private readonly uint m_lastLine;
+        private readonly uint m_line;
+        private readonly uint m_mask;
+        private readonly int m_maskOffs;
+        private readonly string m_name;
 
-        private readonly List<string> parameters = new List<string>();
-        private readonly List<Block> blocks = new List<Block>();
-
-        private IEnumerable<Register> savedRegisters => Enumerable.Range(0, 32)
-            .Where(i => ((1 << i) & mask) != 0)
-            .Select(i => (Register) i);
+        private readonly List<string> m_parameters = new List<string>();
+        private readonly Register m_register;
+        private readonly string m_returnType;
+        private readonly Register m_stackBase;
+        private readonly uint m_stackFrameSize;
 
         public Function(BinaryReader reader, uint ofs, IReadOnlyDictionary<string, string> funcTypes)
         {
             address = ofs;
 
-            stackBase = (Register)reader.ReadUInt16();
-            stackFrameSize = reader.ReadUInt32();
-            register = (Register) reader.ReadUInt16();
-            mask = reader.ReadUInt32();
-            maskOffs = reader.ReadInt32();
+            m_stackBase = (Register) reader.ReadUInt16();
+            m_stackFrameSize = reader.ReadUInt32();
+            m_register = (Register) reader.ReadUInt16();
+            m_mask = reader.ReadUInt32();
+            m_maskOffs = reader.ReadInt32();
 
-            line = reader.ReadUInt32();
-            file = reader.readPascalString();
-            name = reader.readPascalString();
+            m_line = reader.ReadUInt32();
+            m_file = reader.readPascalString();
+            m_name = reader.readPascalString();
 
-            if (!funcTypes.TryGetValue(name, out returnType))
-                returnType = "__UNKNOWN__";
+            if (!funcTypes.TryGetValue(m_name, out m_returnType))
+                m_returnType = "__UNKNOWN__";
 
             while (true)
             {
                 var typedValue = new TypedValue(reader);
 
-                if (reader.skipSLD(typedValue))
+                if (reader.skipSld(typedValue))
                     continue;
 
-                TypeInfo ti = null;
-                string memberName = null;
+                TypeInfo ti;
+                string memberName;
                 switch (typedValue.type & 0x7f)
                 {
                     case 14: // end of function
-                        lastLine = reader.ReadUInt32();
+                        m_lastLine = reader.ReadUInt32();
                         return;
                     case 16: // begin of block
-                        blocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this));
+                        m_blocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this));
                         continue;
                     case 20:
                         ti = reader.readTypeInfo(false);
@@ -79,40 +74,40 @@ namespace symfile
                     break;
 
                 if (ti.classType == ClassType.Argument)
-                {
-                    parameters.Add($"{ti.asCode(memberName)} /*stack {typedValue.value}*/");
-                }
+                    m_parameters.Add($"{ti.asCode(memberName)} /*stack {typedValue.value}*/");
                 else if (ti.classType == ClassType.RegParam)
-                {
-                    parameters.Add($"{ti.asCode(memberName)} /*${(Register)typedValue.value}*/");
-                }
+                    m_parameters.Add($"{ti.asCode(memberName)} /*${(Register) typedValue.value}*/");
             }
         }
+
+        private IEnumerable<Register> savedRegisters => Enumerable.Range(0, 32)
+            .Where(i => ((1 << i) & m_mask) != 0)
+            .Select(i => (Register) i);
 
         public void dump(IndentedTextWriter writer)
         {
             writer.WriteLine("/*");
             writer.WriteLine($" * Offset 0x{address:X}");
-            writer.WriteLine($" * {file} (line {line})");
-            writer.WriteLine($" * Stack frame base ${stackBase}, size {stackFrameSize}");
-            if(mask != 0)
-                writer.WriteLine($" * Saved registers at offset {maskOffs}: {string.Join(" ", savedRegisters)}");
+            writer.WriteLine($" * {m_file} (line {m_line})");
+            writer.WriteLine($" * Stack frame base ${m_stackBase}, size {m_stackFrameSize}");
+            if (m_mask != 0)
+                writer.WriteLine($" * Saved registers at offset {m_maskOffs}: {string.Join(" ", savedRegisters)}");
             writer.WriteLine(" */");
 
             writer.WriteLine(getSignature());
 
-            blocks.ForEach(b => b.dump(writer));
+            m_blocks.ForEach(b => b.dump(writer));
 
-            if (blocks.Count == 0)
-            {
-                writer.WriteLine("{");
-                writer.WriteLine("}");
-            }
+            if (m_blocks.Count != 0)
+                return;
+            
+            writer.WriteLine("{");
+            writer.WriteLine("}");
         }
 
         public string getSignature()
         {
-            return $"{returnType} /*${register}*/ {name}({string.Join(", ", parameters)})";
+            return $"{m_returnType} /*${m_register}*/ {m_name}({string.Join(", ", m_parameters)})";
         }
     }
 }

@@ -1,20 +1,16 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using symdump;
-using symfile.util;
+using symdump.util;
 
-namespace symfile
+namespace symdump.symfile
 {
     public class UnionDef : IEquatable<UnionDef>
     {
         public readonly List<StructMember> members = new List<StructMember>();
         public readonly string name;
-
-        public bool isFake => new Regex(@"^\.\d+fake$").IsMatch(name);
 
         public UnionDef(BinaryReader stream, string name)
         {
@@ -47,29 +43,31 @@ namespace symfile
             }
         }
 
-        public void dump(IndentedTextWriter writer)
-        {
-            writer.WriteLine($"union {name} {{");
-            ++writer.Indent;
-            foreach (var m in members)
-                writer.WriteLine(m);
-            --writer.Indent;
-            writer.WriteLine("};");
-        }
+        public bool isFake => new Regex(@"^\.\d+fake$").IsMatch(name);
 
         public bool Equals(UnionDef other)
         {
-            if(ReferenceEquals(null, other)) return false;
-            if(ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
             return members.SequenceEqual(other.members) && string.Equals(name, other.name);
+        }
+
+        public void dump(IndentedTextWriter writer)
+        {
+            writer.WriteLine($"union {name} {{");
+            ++writer.indent;
+            foreach (var m in members)
+                writer.WriteLine(m);
+            --writer.indent;
+            writer.WriteLine("};");
         }
 
         public override bool Equals(object obj)
         {
-            if(ReferenceEquals(null, obj)) return false;
-            if(ReferenceEquals(this, obj)) return true;
-            if(obj.GetType() != this.GetType()) return false;
-            return Equals((UnionDef)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((UnionDef) obj);
         }
 
         public override int GetHashCode()

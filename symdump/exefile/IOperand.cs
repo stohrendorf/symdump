@@ -1,6 +1,6 @@
 ﻿namespace symdump.exefile
 {
-	public interface IOperand
-	{
-	}
+    public interface IOperand
+    {
+    }
 }

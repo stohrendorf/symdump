@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using symdump;
 
-namespace symfile.util
+namespace symdump.symfile.util
 {
     public static class FileUtil
     {
@@ -34,9 +33,9 @@ namespace symfile.util
             return (ClassType) s.ReadUInt16();
         }
 
-        public static bool skipSLD(this BinaryReader reader, TypedValue typedValue)
+        public static bool skipSld(this BinaryReader reader, TypedValue typedValue)
         {
-            switch(typedValue.type & 0x7f)
+            switch (typedValue.type & 0x7f)
             {
                 case 0:
                     return true;

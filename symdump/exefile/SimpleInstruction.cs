@@ -4,11 +4,8 @@ namespace symdump.exefile
 {
     public class SimpleInstruction : Instruction
     {
-        public readonly string mnemonic;
-
         public readonly string format;
-
-        public override IOperand[] operands { get; }
+        public readonly string mnemonic;
 
         public SimpleInstruction(string mnemonic, string format, bool isBranchDelaySlot, params IOperand[] operands)
             : base(isBranchDelaySlot)
@@ -23,6 +20,8 @@ namespace symdump.exefile
         {
         }
 
+        public override IOperand[] operands { get; }
+
         public override string ToString()
         {
             var args = string.Join(", ", operands.Select(o => o.ToString()));
@@ -31,10 +30,7 @@ namespace symdump.exefile
 
         public override string asReadable()
         {
-            if (format == null)
-                return ToString();
-
-            return string.Format(format, operands);
+            return format == null ? ToString() : string.Format(format, operands);
         }
     }
 }

@@ -5,66 +5,21 @@ using System.IO;
 using System.Linq;
 using symdump.exefile.disasm;
 using symdump.exefile.util;
-using symfile;
+using symdump.symfile;
 
 namespace symdump.exefile
 {
     public class ExeFile
     {
-        [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-        private class Header
-        {
-            public readonly char[] id;
-            public readonly uint text;
-            public readonly uint data;
-            public readonly uint pc0;
-            public readonly uint gp0;
-            public readonly uint tAddr;
-            public readonly uint tSize;
-            public readonly uint dAddr;
-            public readonly uint dSize;
-            public readonly uint bAddr;
-            public readonly uint bSize;
-            public readonly uint sAddr;
-            public readonly uint sSize;
-            public readonly uint savedSp;
-            public readonly uint savedFp;
-            public readonly uint savedGp;
-            public readonly uint savedRa;
-            public readonly uint savedS0;
-
-            public Header(EndianBinaryReader reader)
-            {
-                id = reader.readBytes(8).Select(b => (char) b).ToArray();
-
-                if (!"PS-X EXE".Equals(new string(id)))
-                    throw new Exception("Header ID mismatch");
-
-                text = reader.readUInt32();
-                data = reader.readUInt32();
-                pc0 = reader.readUInt32();
-                gp0 = reader.readUInt32();
-                tAddr = reader.readUInt32();
-                tSize = reader.readUInt32();
-                dAddr = reader.readUInt32();
-                dSize = reader.readUInt32();
-                bAddr = reader.readUInt32();
-                bSize = reader.readUInt32();
-                sAddr = reader.readUInt32();
-                sSize = reader.readUInt32();
-                savedSp = reader.readUInt32();
-                savedFp = reader.readUInt32();
-                savedGp = reader.readUInt32();
-                savedRa = reader.readUInt32();
-                savedS0 = reader.readUInt32();
-            }
-        }
+        private readonly Queue<uint> m_analysisQueue = new Queue<uint>();
+        private readonly byte[] m_data;
+        private readonly uint? m_gpBase;
 
         private readonly Header m_header;
-        private readonly byte[] m_data;
+
+        private readonly SortedDictionary<uint, Instruction> m_instructions = new SortedDictionary<uint, Instruction>();
         private readonly SymFile m_symFile;
-        private readonly uint? m_gpBase;
+        private readonly Dictionary<uint, HashSet<uint>> m_xrefs = new Dictionary<uint, HashSet<uint>>();
 
         public ExeFile(EndianBinaryReader reader, SymFile symFile)
         {
@@ -99,11 +54,6 @@ namespace symdump.exefile
             return lbls?.Select(l => l.name);
         }
 
-        private readonly SortedDictionary<uint, Instruction> m_instructions = new SortedDictionary<uint, Instruction>();
-        private readonly Dictionary<uint, HashSet<uint>> m_xrefs = new Dictionary<uint, HashSet<uint>>();
-
-        private readonly Queue<uint> m_analysisQueue = new Queue<uint>();
-
         private void addXref(uint from, uint to)
         {
             HashSet<uint> froms;
@@ -126,7 +76,7 @@ namespace symdump.exefile
         private uint dataAt(uint ofs)
         {
             uint data;
-            data = (uint) m_data[ofs++];
+            data = m_data[ofs++];
             data |= (uint) m_data[ofs++] << 8;
             data |= (uint) m_data[ofs++] << 16;
             data |= (uint) m_data[ofs++] << 24;
@@ -143,9 +93,7 @@ namespace symdump.exefile
             m_analysisQueue.Clear();
             m_analysisQueue.Enqueue(m_header.pc0 - m_header.tAddr);
             foreach (var addr in m_symFile.functions.Select(f => f.address))
-            {
                 m_analysisQueue.Enqueue(addr - m_header.tAddr);
-            }
 
             while (m_analysisQueue.Count != 0)
             {
@@ -157,17 +105,16 @@ namespace symdump.exefile
                 index += 4;
                 var insn = m_instructions[index - 4] = decodeInstruction(data, index);
 
-                if (insn is SimpleBranchInstruction)
+                var branchInsn = insn as SimpleBranchInstruction;
+                if (branchInsn != null)
                 {
                     data = dataAt(index);
                     index += 4;
                     var insn2 = m_instructions[index - 4] = decodeInstruction(data, index);
                     insn2.isBranchDelaySlot = true;
 
-                    if (!((SimpleBranchInstruction) insn).isUnconditional)
-                    {
+                    if (!branchInsn.isUnconditional)
                         m_analysisQueue.Enqueue(index);
-                    }
                 }
                 else
                 {
@@ -189,21 +136,13 @@ namespace symdump.exefile
                 {
                     Console.WriteLine("# XRefs:");
                     foreach (var xref in xrefsHere)
-                    {
                         Console.WriteLine("# - " + getSymbolName(xref));
-                    }
                     var names = getSymbolNames(insn.Key);
                     if (names != null)
-                    {
                         foreach (var name in names)
-                        {
                             Console.WriteLine(name + ":");
-                        }
-                    }
                     else
-                    {
                         Console.WriteLine(getSymbolName(insn.Key) + ":");
-                    }
                 }
 
                 if (f != null)
@@ -220,9 +159,7 @@ namespace symdump.exefile
                 return regofs;
 
             if (regofs.register == Register.gp)
-            {
                 return new LabelOperand(getSymbolName(m_gpBase.Value, regofs.offset));
-            }
 
             return regofs;
         }
@@ -246,49 +183,41 @@ namespace symdump.exefile
                     return new SimpleBranchInstruction("jal", "{0}()", false,
                         new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)));
                 case Opcode.beq:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
-                    {
                         return new SimpleBranchInstruction("beqz", "if({0} == 0) goto {1}", false,
                             new RegisterOperand(data, 21),
-                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                    }
+                            new LabelOperand(getSymbolName(index, (short) data << 2)));
                     else
-                    {
                         return new SimpleBranchInstruction("beq", "if({0} == {1}) goto {2}", false,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                    }
+                            new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.bne:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
-                    {
                         return new SimpleBranchInstruction("bnez", "if({0} != 0) goto {1}", false,
                             new RegisterOperand(data, 21),
-                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                    }
+                            new LabelOperand(getSymbolName(index, (short) data << 2)));
                     else
-                    {
                         return new SimpleBranchInstruction("bne", "if({0} != {1}) goto {2}", false,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(getSymbolName(index, ((short) data) << 2)));
-                    }
+                            new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.blez:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("blez", "if({0} <= 0) goto {1}", false,
                         new RegisterOperand(data, 21),
-                        new LabelOperand(getSymbolName(index, ((short) data) << 2)));
+                        new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.bgtz:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("bgtz", "if({0} > 0) goto {1}", false,
                         new RegisterOperand(data, 21),
-                        new LabelOperand(getSymbolName(index, ((short) data) << 2)));
+                        new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.addi:
                     return new SimpleInstruction("addi", "{0} = {1} + {2}", new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21), new ImmediateOperand((short) data));
@@ -318,7 +247,7 @@ namespace symdump.exefile
                 case Opcode.lui:
                     return new SimpleInstruction("lui", "{0} = {1}",
                         new RegisterOperand(data, 16),
-                        new ImmediateOperand(((ushort) data) << 16));
+                        new ImmediateOperand((ushort) data << 16));
                 case Opcode.CpuControl:
                     return decodeCpuControl(index, data);
                 case Opcode.FloatingPoint:
@@ -374,25 +303,25 @@ namespace symdump.exefile
                 case Opcode.cop3:
                     return new SimpleInstruction("cop3", null, new ImmediateOperand(data & ((1 << 26) - 1)));
                 case Opcode.beql:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("beql", "if({0} == {1}) goto {2}", false,
                         new RegisterOperand(data, 21), new RegisterOperand(data, 16),
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.bnel:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("bnel", "if({0} != {1}) goto {2}", false,
                         new RegisterOperand(data, 21), new RegisterOperand(data, 16),
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.blezl:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("blezl", "if((signed){0} <= 0) goto {1}", false,
                         new RegisterOperand(data, 21),
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.bgtzl:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("bgtzl", "if((signed){0} > 0) goto {1}", false,
                         new RegisterOperand(data, 21),
@@ -413,11 +342,9 @@ namespace symdump.exefile
                     if (data == 0)
                         return new SimpleInstruction("nop", null);
                     else
-                    {
                         return new SimpleInstruction("sll", "{0} = (signed){1} >> {2}",
                             rd, rs2,
                             new ImmediateOperand((int) (data >> 6) & 0x1F));
-                    }
                 case OpcodeFunction.srl:
                     return new SimpleInstruction("srl", "{0} = (unsigned){1} >> {2}",
                         rd, rs2,
@@ -526,13 +453,13 @@ namespace symdump.exefile
                     switch ((data >> 16) & 0x1f)
                     {
                         case 0:
-                            addXref(index - 4, (uint) (index + (short) data << 2));
+                            addXref(index - 4, (uint) ((index + (short) data) << 2));
                             return new SimpleInstruction("bc0f", null,
-                                new LabelOperand(getSymbolName(index, ((ushort) data) << 2)));
+                                new LabelOperand(getSymbolName(index, (ushort) data << 2)));
                         case 1:
-                            addXref(index - 4, (uint) (index + (short) data << 2));
+                            addXref(index - 4, (uint) ((index + (short) data) << 2));
                             return new SimpleInstruction("bc0t", null,
-                                new LabelOperand(getSymbolName(index, ((ushort) data) << 2)));
+                                new LabelOperand(getSymbolName(index, (ushort) data << 2)));
                         default:
                             return new WordData(data);
                     }
@@ -568,29 +495,29 @@ namespace symdump.exefile
         private Instruction decodePcRelative(uint index, uint data)
         {
             var rs = new RegisterOperand(data, 21);
-            var offset = new LabelOperand(getSymbolName(index, ((ushort) data) << 2));
+            var offset = new LabelOperand(getSymbolName(index, (ushort) data << 2));
             switch ((data >> 16) & 0x1f)
             {
                 case 0:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("bltz", "if((signed){0} < 0) goto {1}", false,
                         rs,
                         offset);
                 case 1:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("bgez", "if((signed){0} >= 0) goto {1}", false,
                         rs,
                         offset);
                 case 16:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("bltzal", "if((signed){0} < 0) {1}()", false,
                         rs,
                         offset);
                 case 17:
-                    addXref(index - 4, (uint) (index + (short) data << 2));
+                    addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new SimpleBranchInstruction("bgezal", "if((signed){0} >= 0) {1}()", false,
                         rs,
@@ -692,6 +619,56 @@ namespace symdump.exefile
                             return new SimpleInstruction("cop2", null,
                                 new ImmediateOperand(data));
                     }
+            }
+        }
+
+        [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
+        private class Header
+        {
+            public readonly uint bAddr;
+            public readonly uint bSize;
+            public readonly uint dAddr;
+            public readonly uint data;
+            public readonly uint dSize;
+            public readonly uint gp0;
+            public readonly char[] id;
+            public readonly uint pc0;
+            public readonly uint sAddr;
+            public readonly uint savedFp;
+            public readonly uint savedGp;
+            public readonly uint savedRa;
+            public readonly uint savedS0;
+            public readonly uint savedSp;
+            public readonly uint sSize;
+            public readonly uint tAddr;
+            public readonly uint text;
+            public readonly uint tSize;
+
+            public Header(EndianBinaryReader reader)
+            {
+                id = reader.readBytes(8).Select(b => (char) b).ToArray();
+
+                if (!"PS-X EXE".Equals(new string(id)))
+                    throw new Exception("Header ID mismatch");
+
+                text = reader.readUInt32();
+                data = reader.readUInt32();
+                pc0 = reader.readUInt32();
+                gp0 = reader.readUInt32();
+                tAddr = reader.readUInt32();
+                tSize = reader.readUInt32();
+                dAddr = reader.readUInt32();
+                dSize = reader.readUInt32();
+                bAddr = reader.readUInt32();
+                bSize = reader.readUInt32();
+                sAddr = reader.readUInt32();
+                sSize = reader.readUInt32();
+                savedSp = reader.readUInt32();
+                savedFp = reader.readUInt32();
+                savedGp = reader.readUInt32();
+                savedRa = reader.readUInt32();
+                savedS0 = reader.readUInt32();
             }
         }
     }

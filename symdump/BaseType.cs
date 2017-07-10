@@ -17,6 +17,6 @@
         UChar = 12,
         UShort = 13,
         UInt = 14,
-        ULong = 15,
-    };
+        ULong = 15
+    }
 }

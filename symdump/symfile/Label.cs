@@ -1,32 +1,31 @@
-﻿using System;
-using System.IO;
-using symfile.util;
+﻿using System.IO;
+using symdump.symfile.util;
 
-namespace symfile
+namespace symdump.symfile
 {
-	public class Label
-	{
-		private readonly TypedValue typedOffset;
+    public class Label
+    {
+        private readonly TypedValue m_typedOffset;
 
-		public uint offset => (uint)typedOffset.value;
+        public Label(TypedValue typedValue, BinaryReader fs)
+        {
+            m_typedOffset = typedValue;
+            name = fs.readPascalString();
+        }
 
-		public string name { get; private set; }
+        public Label(TypedValue typedValue, string name)
+        {
+            m_typedOffset = typedValue;
+            this.name = name;
+        }
 
-		public Label(TypedValue typedValue, BinaryReader fs)
-		{
-			this.typedOffset = typedValue;
-			this.name = fs.readPascalString();
-		}
+        public uint offset => (uint) m_typedOffset.value;
 
-		public Label(TypedValue typedValue, String name)
-		{
-			this.typedOffset = typedValue;
-			this.name = name;
-		}
+        public string name { get; }
 
-		public override string ToString()
-		{
-			return $"0x{offset:X} {name}";
-		}
-	}
+        public override string ToString()
+        {
+            return $"0x{offset:X} {name}";
+        }
+    }
 }
