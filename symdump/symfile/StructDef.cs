@@ -77,5 +77,13 @@ namespace symdump.symfile
                 return ((members != null ? members.GetHashCode() : 0) * 397) ^ (name != null ? name.GetHashCode() : 0);
             }
         }
+
+        public StructMember forOffset(uint ofs)
+        {
+            return members
+                .Where(m => m.typeInfo.classType != ClassType.Bitfield && m.typedValue.value <= ofs)
+                .OrderBy(m => m.typedValue.value)
+                .FirstOrDefault();
+        }
     }
 }

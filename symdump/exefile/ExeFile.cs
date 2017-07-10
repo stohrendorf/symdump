@@ -107,21 +107,31 @@ namespace symdump.exefile
                 index += 4;
                 var insn = m_instructions[index - 4] = decodeInstruction(data, index);
 
-                var branchInsn = insn as SimpleBranchInstruction;
-                if (branchInsn != null)
+                var cbranchInsn = insn as ConditionalBranchInstruction;
+                if (cbranchInsn != null)
                 {
                     data = dataAt(index);
                     index += 4;
                     var insn2 = m_instructions[index - 4] = decodeInstruction(data, index);
                     insn2.isBranchDelaySlot = true;
 
-                    if (!branchInsn.isUnconditional)
-                        m_analysisQueue.Enqueue(index);
-                }
-                else
-                {
                     m_analysisQueue.Enqueue(index);
+
+                    continue;
                 }
+                
+                var callInsn = insn as CallPtrInstruction;
+                if (callInsn != null)
+                {
+                    data = dataAt(index);
+                    index += 4;
+                    var insn2 = m_instructions[index - 4] = decodeInstruction(data, index);
+                    insn2.isBranchDelaySlot = true;
+
+                    continue;
+                }
+                
+                m_analysisQueue.Enqueue(index);
             }
 
             foreach (var insn in m_instructions)
@@ -177,22 +187,21 @@ namespace symdump.exefile
                 case Opcode.j:
                     addXref(index - 4, (data & 0x03FFFFFF) << 2);
                     m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new SimpleBranchInstruction("j", "goto {0}", true,
-                        new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)));
+                    return new CallPtrInstruction(new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)), null);
                 case Opcode.jal:
                     addXref(index - 4, (data & 0x03FFFFFF) << 2);
                     m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new SimpleBranchInstruction("jal", "{0}()", false,
-                        new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)));
+                    return new CallPtrInstruction(new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)), new RegisterOperand(Register.ra));
                 case Opcode.beq:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
-                        return new SimpleBranchInstruction("beqz", "if({0} == 0) goto {1}", false,
+                        return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Equal,
                             new RegisterOperand(data, 21),
+                            new ImmediateOperand(0), 
                             new LabelOperand(getSymbolName(index, (short) data << 2)));
                     else
-                        return new SimpleBranchInstruction("beq", "if({0} == {1}) goto {2}", false,
+                        return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Equal,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
                             new LabelOperand(getSymbolName(index, (short) data << 2)));
@@ -200,25 +209,28 @@ namespace symdump.exefile
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
-                        return new SimpleBranchInstruction("bnez", "if({0} != 0) goto {1}", false,
+                        return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.NotEqual,
                             new RegisterOperand(data, 21),
+                            new ImmediateOperand(0), 
                             new LabelOperand(getSymbolName(index, (short) data << 2)));
                     else
-                        return new SimpleBranchInstruction("bne", "if({0} != {1}) goto {2}", false,
+                        return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.NotEqual,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
                             new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.blez:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("blez", "if({0} <= 0) goto {1}", false,
+                    return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.LessEqual,
                         new RegisterOperand(data, 21),
+                        new ImmediateOperand(0), 
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.bgtz:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("bgtz", "if({0} > 0) goto {1}", false,
+                    return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Greater,
                         new RegisterOperand(data, 21),
+                        new ImmediateOperand(0), 
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.addi:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Add,
@@ -320,26 +332,30 @@ namespace symdump.exefile
                 case Opcode.beql:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("beql", "if({0} == {1}) goto {2}", false,
-                        new RegisterOperand(data, 21), new RegisterOperand(data, 16),
+                    return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Equal,
+                        new RegisterOperand(data, 21),
+                        new RegisterOperand(data, 16),
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.bnel:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("bnel", "if({0} != {1}) goto {2}", false,
-                        new RegisterOperand(data, 21), new RegisterOperand(data, 16),
+                    return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.NotEqual,
+                        new RegisterOperand(data, 21),
+                        new RegisterOperand(data, 16),
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.blezl:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("blezl", "if((signed){0} <= 0) goto {1}", false,
+                    return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedLessEqual,
                         new RegisterOperand(data, 21),
+                        new ImmediateOperand(0), 
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 case Opcode.bgtzl:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("bgtzl", "if((signed){0} > 0) goto {1}", false,
+                    return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Greater,
                         new RegisterOperand(data, 21),
+                        new ImmediateOperand(0), 
                         new LabelOperand(getSymbolName(index, (short) data << 2)));
                 default:
                     return new WordData(data);
@@ -381,11 +397,9 @@ namespace symdump.exefile
                         rd, rs2,
                         rs1);
                 case OpcodeFunction.jr:
-                    return new SimpleBranchInstruction("jr", "goto *{0}", true, rs1);
+                    return new CallPtrInstruction(rs1, null);
                 case OpcodeFunction.jalr:
-                    return new SimpleBranchInstruction("jalr", "{0} = __RET_ADDR; (*{1})()",
-                        false, // marked as non-conditional so that analysis continues after call return
-                        rd, rs1);
+                    return new CallPtrInstruction(rs1, rd);
                 case OpcodeFunction.syscall:
                     return new SimpleInstruction("syscall", "trap(SYSCALL, {0})",
                         new ImmediateOperand((int) (data >> 6) & 0xFFFFF));
@@ -516,26 +530,30 @@ namespace symdump.exefile
                 case 0:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("bltz", "if((signed){0} < 0) goto {1}", false,
+                    return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedLess,
                         rs,
+                        new ImmediateOperand(0), 
                         offset);
                 case 1:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("bgez", "if((signed){0} >= 0) goto {1}", false,
+                    return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedGreaterEqual,
                         rs,
+                        new ImmediateOperand(0), 
                         offset);
                 case 16:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("bltzal", "if((signed){0} < 0) {1}()", false,
+                    return new ConditionalCallInstruction(ConditionalBranchInstruction.Operation.SignedLess,
                         rs,
+                        new ImmediateOperand(0), 
                         offset);
                 case 17:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new SimpleBranchInstruction("bgezal", "if((signed){0} >= 0) {1}()", false,
+                    return new ConditionalCallInstruction(ConditionalBranchInstruction.Operation.SignedGreaterEqual,
                         rs,
+                        new ImmediateOperand(0), 
                         offset);
                 default:
                     return new WordData(data);
