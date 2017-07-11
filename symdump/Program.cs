@@ -14,7 +14,7 @@ namespace symdump
             using (var fs = new FileStream(args[0], FileMode.Open))
             {
                 symFile = new SymFile(new BinaryReader(fs));
-                symFile.dump(Console.Out);
+                //symFile.dump(Console.Out);
             }
 
             var exeFilename = Path.ChangeExtension(args[0], "EXE");

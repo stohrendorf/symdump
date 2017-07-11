@@ -22,6 +22,7 @@ namespace symdump.exefile
         private readonly SortedDictionary<uint, Instruction> m_instructions = new SortedDictionary<uint, Instruction>();
         private readonly SymFile m_symFile;
         private readonly Dictionary<uint, HashSet<uint>> m_xrefs = new Dictionary<uint, HashSet<uint>>();
+        private readonly SortedSet<uint> callees = new SortedSet<uint>();
 
         public ExeFile(EndianBinaryReader reader, SymFile symFile)
         {
@@ -56,6 +57,12 @@ namespace symdump.exefile
             return lbls?.Select(l => l.name);
         }
 
+        private void addCall(uint from, uint to)
+        {
+            addXref(from, to);
+            callees.Add(to);
+        }
+        
         private void addXref(uint from, uint to)
         {
             HashSet<uint> froms;
@@ -133,9 +140,14 @@ namespace symdump.exefile
                 
                 m_analysisQueue.Enqueue(index);
             }
+        }
 
+        public void dump()
+        {
             foreach (var insn in m_instructions)
             {
+                if(callees.Contains(insn.Key))
+                    Console.WriteLine("### FUNCTION");
                 if (insn.Value.asReadable().Equals("nop"))
                     continue;
 
@@ -185,11 +197,11 @@ namespace symdump.exefile
                 case Opcode.PCRelative:
                     return decodePcRelative(index, data);
                 case Opcode.j:
-                    addXref(index - 4, (data & 0x03FFFFFF) << 2);
+                    addCall(index - 4, (data & 0x03FFFFFF) << 2);
                     m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
                     return new CallPtrInstruction(new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)), null);
                 case Opcode.jal:
-                    addXref(index - 4, (data & 0x03FFFFFF) << 2);
+                    addCall(index - 4, (data & 0x03FFFFFF) << 2);
                     m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
                     return new CallPtrInstruction(new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)), new RegisterOperand(Register.ra));
                 case Opcode.beq:
@@ -542,14 +554,14 @@ namespace symdump.exefile
                         new ImmediateOperand(0), 
                         offset);
                 case 16:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
+                    addCall(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalCallInstruction(ConditionalBranchInstruction.Operation.SignedLess,
                         rs,
                         new ImmediateOperand(0), 
                         offset);
                 case 17:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
+                    addCall(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalCallInstruction(ConditionalBranchInstruction.Operation.SignedGreaterEqual,
                         rs,
