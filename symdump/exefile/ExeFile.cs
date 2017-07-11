@@ -97,6 +97,47 @@ namespace symdump.exefile
             return (Opcode) (data >> 26);
         }
 
+        public void decompile()
+        {
+            if (callees.Count == 0)
+                return;
+            
+            var addr = callees.First();
+            Console.WriteLine(m_symFile.findFunction(addr).getSignature());
+            foreach (var insnPair in m_instructions.Where(i => i.Key >= addr))
+            {
+                var xrefs = getXrefs(insnPair.Key);
+                if(xrefs != null)
+                    Console.WriteLine(getSymbolName(insnPair.Key) + ":");
+
+                var insn = insnPair.Value;
+                if(insn.asReadable().Equals("nop"))
+                    continue;
+                
+                if (insn.isBranchDelaySlot)
+                {
+                    Console.WriteLine("--");
+                    continue;
+                }
+
+                if (insn is CallPtrInstruction)
+                {
+                    var i = (CallPtrInstruction) insn;
+                    if (i.returnAddressTarget != null && i.returnAddressTarget.register == Register.ra)
+                    {
+                        Console.WriteLine(m_instructions[insnPair.Key + 4].asReadable());
+                        Console.WriteLine("return");
+                        break;
+                    }
+                }
+
+                if(m_instructions[insnPair.Key+4].isBranchDelaySlot)
+                    Console.WriteLine("^^ " + m_instructions[insnPair.Key + 4].asReadable());
+
+                Console.WriteLine(insn.asReadable());
+            }
+        }
+        
         public void disassemble()
         {
             m_analysisQueue.Clear();

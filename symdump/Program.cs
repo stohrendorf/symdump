@@ -26,6 +26,7 @@ namespace symdump
             {
                 var exeFile = new ExeFile(fs, symFile);
                 exeFile.disassemble();
+                exeFile.decompile();
             }
         }
     }
