@@ -1,24 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using symdump.exefile.expression;
 using symdump.exefile.operands;
+using symdump.symfile;
 
 namespace symdump.exefile.instructions
 {
     public class ConditionalBranchInstruction : Instruction
     {
-        public enum Operation
-        {
-            Equal,
-            NotEqual,
-            Less,
-            SignedLess,
-            Greater,
-            SignedGreater,
-            LessEqual,
-            SignedLessEqual,
-            GreaterEqual,
-            SignedGreaterEqual
-        }
-
         public readonly Operation operation;
 
         public ConditionalBranchInstruction(Operation operation, IOperand lhs, IOperand rhs, IOperand target)
@@ -35,44 +24,14 @@ namespace symdump.exefile.instructions
 
         public override string asReadable()
         {
-            string op;
-            switch (operation)
-            {
-                case Operation.Less:
-                    op = "<";
-                    break;
-                case Operation.SignedLess:
-                    op = "<";
-                    break;
-                case Operation.LessEqual:
-                    op = "<=";
-                    break;
-                case Operation.SignedLessEqual:
-                    op = "<=";
-                    break;
-                case Operation.Equal:
-                    op = "==";
-                    break;
-                case Operation.NotEqual:
-                    op = "!=";
-                    break;
-                case Operation.Greater:
-                    op = ">";
-                    break;
-                case Operation.SignedGreater:
-                    op = ">";
-                    break;
-                case Operation.GreaterEqual:
-                    op = ">=";
-                    break;
-                case Operation.SignedGreaterEqual:
-                    op = ">=";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            var op = operation.toCode();
 
             return $"if({lhs} {op} {rhs}) goto {target}";
+        }
+
+        public override IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,8 @@
-﻿namespace symdump.exefile.operands
+﻿using System.Collections.Generic;
+using symdump.exefile.expression;
+using symdump.symfile;
+
+namespace symdump.exefile.operands
 {
     public class LabelOperand : IOperand
     {
@@ -13,6 +17,11 @@
         {
             var o = other as LabelOperand;
             return label == o?.label;
+        }
+
+        public IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        {
+            return new LabelNode(label);
         }
 
         public override string ToString()

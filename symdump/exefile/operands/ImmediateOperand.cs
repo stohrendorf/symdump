@@ -1,4 +1,8 @@
-﻿namespace symdump.exefile.operands
+﻿using System.Collections.Generic;
+using symdump.exefile.expression;
+using symdump.symfile;
+
+namespace symdump.exefile.operands
 {
     public class ImmediateOperand : IOperand
     {
@@ -13,6 +17,11 @@
         {
             var o = other as ImmediateOperand;
             return value == o?.value;
+        }
+
+        public IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        {
+            return new ValueNode(value);
         }
 
         public override string ToString()

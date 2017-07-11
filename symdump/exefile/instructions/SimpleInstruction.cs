@@ -1,5 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using symdump.exefile.expression;
 using symdump.exefile.operands;
+using symdump.symfile;
 
 namespace symdump.exefile.instructions
 {
@@ -32,6 +36,11 @@ namespace symdump.exefile.instructions
         public override string asReadable()
         {
             return format == null ? ToString() : string.Format(format, operands);
+        }
+
+        public override IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        {
+            throw new Exception("Cannot convert simple instruction to expression node");
         }
     }
 }

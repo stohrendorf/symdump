@@ -1,4 +1,7 @@
-﻿using symdump.exefile.disasm;
+﻿using System.Collections.Generic;
+using symdump.exefile.disasm;
+using symdump.exefile.expression;
+using symdump.symfile;
 
 namespace symdump.exefile.operands
 {
@@ -20,6 +23,11 @@ namespace symdump.exefile.operands
         {
             var o = other as C0RegisterOperand;
             return register == o?.register;
+        }
+
+        public IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        {
+            throw new System.NotImplementedException();
         }
 
         public override string ToString()

@@ -1,4 +1,8 @@
-﻿using symdump.exefile.operands;
+﻿using System;
+using System.Collections.Generic;
+using symdump.exefile.expression;
+using symdump.exefile.operands;
+using symdump.symfile;
 
 namespace symdump.exefile.instructions
 {
@@ -21,6 +25,11 @@ namespace symdump.exefile.instructions
         public override string asReadable()
         {
             return ToString();
+        }
+
+        public override IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        {
+            throw new Exception("Cannot convert word data to expression node");
         }
     }
 }

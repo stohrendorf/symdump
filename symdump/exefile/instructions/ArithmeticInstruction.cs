@@ -1,24 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using symdump.exefile.expression;
 using symdump.exefile.operands;
+using symdump.symfile;
 
 namespace symdump.exefile.instructions
 {
     public class ArithmeticInstruction : Instruction
     {
-        public enum Operation
-        {
-            Add,
-            Sub,
-            Mul,
-            Div,
-            Shl,
-            Shr,
-            Sar,
-            BitAnd,
-            BitOr,
-            BitXor
-        }
-
         public readonly Operation operation;
 
         public ArithmeticInstruction(Operation operation, IOperand dest, IOperand lhs, IOperand rhs)
@@ -37,46 +26,16 @@ namespace symdump.exefile.instructions
 
         public override string asReadable()
         {
-            string op;
-            switch (operation)
-            {
-                case Operation.Add:
-                    op = "+";
-                    break;
-                case Operation.Sub:
-                    op = "-";
-                    break;
-                case Operation.Mul:
-                    op = "*";
-                    break;
-                case Operation.Div:
-                    op = "/";
-                    break;
-                case Operation.Shl:
-                    op = "<<";
-                    break;
-                case Operation.Shr:
-                    op = ">>>";
-                    break;
-                case Operation.Sar:
-                    op = ">>";
-                    break;
-                case Operation.BitAnd:
-                    op = "&";
-                    break;
-                case Operation.BitOr:
-                    op = "|";
-                    break;
-                case Operation.BitXor:
-                    op = "^";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            var op = operation.toCode();
 
             return isInplace
                 ? $"{destination} {op}= {rhs}"
                 : $"{destination} = {lhs} {op} {rhs}";
+        }
+
+        public override IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        {
+            return new ExpressionNode(operation, lhs.toExpressionNode(registers), rhs.toExpressionNode(registers));
         }
     }
 }
