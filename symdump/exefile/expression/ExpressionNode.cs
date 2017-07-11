@@ -17,7 +17,23 @@ namespace symdump.exefile.expression
 
         public string toCode()
         {
-            return $"({lhs.toCode()}) {operation.toCode()} ({rhs.toCode()})";
+            var lhsCode = lhs.toCode();
+            var rhsCode = rhs.toCode();
+
+            var selfPrecedence = operation.getPrecedence();
+            if (lhs is ExpressionNode)
+            {
+                if (selfPrecedence > ((ExpressionNode) lhs).operation.getPrecedence())
+                    lhsCode = $"({lhsCode})";
+            }
+            
+            if (rhs is ExpressionNode)
+            {
+                if (selfPrecedence > ((ExpressionNode) rhs).operation.getPrecedence())
+                    rhsCode = $"({rhsCode})";
+            }
+
+            return $"{lhsCode} {operation.toCode()} {rhsCode}";
         }
     }
 }

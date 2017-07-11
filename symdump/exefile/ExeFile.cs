@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using symdump.exefile.dataflow;
 using symdump.exefile.disasm;
-using symdump.exefile.expression;
 using symdump.exefile.instructions;
 using symdump.exefile.operands;
 using symdump.exefile.util;
@@ -104,111 +103,36 @@ namespace symdump.exefile
             if (callees.Count == 0)
                 return;
 
-            var addr = callees.First();
+            var addr = callees.Skip(2).First();
             Console.WriteLine(m_symFile.findFunction(addr).getSignature());
+            addr -= m_header.tAddr;
 
-            var registers = new SortedDictionary<Register, IExpressionNode>();
+            var flowState = new DataFlowState();
 
+            bool skipNext = false;
             foreach (var insnPair in m_instructions.Where(i => i.Key >= addr))
             {
+                if (skipNext)
+                {
+                    skipNext = false;
+                    continue;
+                }
+                
                 var xrefs = getXrefs(insnPair.Key);
                 if (xrefs != null)
                     Console.WriteLine(getSymbolName(insnPair.Key) + ":");
 
                 var insn = insnPair.Value;
-                if (insn.asReadable().Equals("nop"))
+                if (insn is NopInstruction)
                     continue;
+                
+                //Console.WriteLine($"??? 0x{insnPair.Key:X}  " + insn.asReadable());
 
-                if (insn.isBranchDelaySlot)
-                {
-                    Console.WriteLine("--");
-                    continue;
-                }
+                var nextInsn = m_instructions[insnPair.Key + 4];
+                skipNext = nextInsn.isBranchDelaySlot;
 
-                if (insn is CallPtrInstruction)
-                {
-                    var i = (CallPtrInstruction) insn;
-                    if (i.returnAddressTarget != null && i.returnAddressTarget.register == Register.ra)
-                    {
-                        Console.WriteLine(m_instructions[insnPair.Key + 4].asReadable());
-                        Console.WriteLine("return");
-                        break;
-                    }
-                }
-                else if (insn is ArithmeticInstruction)
-                {
-                    var dst = ((ArithmeticInstruction) insn).destination;
-                    if (dst is RegisterOperand)
-                    {
-                        registers[((RegisterOperand) dst).register] = insn.toExpressionNode(registers);
-                    }
-                    else
-                    {
-                        Console.WriteLine("@@@ " + insn.toExpressionNode(registers).toCode());
-                    }
-                }
-                else if (insn is DataCopyInstruction)
-                {
-                    var dst = ((DataCopyInstruction) insn).to;
-                    if (dst is RegisterOperand)
-                    {
-                        registers[((RegisterOperand) dst).register] = ((DataCopyInstruction) insn).from.toExpressionNode(registers);
-                    }
-                    else
-                    {
-                        Console.WriteLine("@@@ " + insn.toExpressionNode(registers).toCode());
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Unhandled instruction following, dumping and cleaning registers...");
-                    foreach (var regExpr in registers)
-                    {
-                        Console.WriteLine("    " + regExpr.Key + " = " + regExpr.Value.toCode());
-                    }
-                    registers.Clear();
-                }
-
-                var next = m_instructions[insnPair.Key + 4];
-                if (next.isBranchDelaySlot)
-                {
-                    if (next is ArithmeticInstruction)
-                    {
-                        var dst = ((ArithmeticInstruction) next).destination;
-                        if (dst is RegisterOperand)
-                        {
-                            registers[((RegisterOperand) dst).register] = next.toExpressionNode(registers);
-                        }
-                        else
-                        {
-                            Console.WriteLine("@@@ " + next.toExpressionNode(registers).toCode());
-                        }
-                    }
-                    else if (next is DataCopyInstruction)
-                    {
-                        var dst = ((DataCopyInstruction) next).to;
-                        if (dst is RegisterOperand)
-                        {
-                            registers[((RegisterOperand) dst).register] = ((DataCopyInstruction) next).from.toExpressionNode(registers);
-                        }
-                        else
-                        {
-                            Console.WriteLine("@@@ " + next.toExpressionNode(registers).toCode());
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unhandled instruction following, dumping and cleaning registers...");
-                        foreach (var regExpr in registers)
-                        {
-                            Console.WriteLine("    " + regExpr.Key + " = " + regExpr.Value.toCode());
-                        }
-                        registers.Clear();
-                    }
-                    Console.WriteLine("^^ " + next.asReadable());
-                }
-
-                Console.WriteLine(insn.asReadable());
+                if (!flowState.process(insn, nextInsn))
+                    break;
             }
         }
 
@@ -263,7 +187,7 @@ namespace symdump.exefile
             {
                 if (callees.Contains(insn.Key))
                     Console.WriteLine("### FUNCTION");
-                if (insn.Value.asReadable().Equals("nop"))
+                if (insn.Value is NopInstruction)
                     continue;
 
                 var f = m_symFile.findFunction(insn.Key + m_header.tAddr);
@@ -418,7 +342,8 @@ namespace symdump.exefile
                     return new SimpleInstruction("lwl", null, new RegisterOperand(data, 16),
                         makeGpBasedOperand(data, 21, (short) data));
                 case Opcode.lw:
-                    return new SimpleInstruction("lw", "{0} = (int){1}", new RegisterOperand(data, 16),
+                    return new DataCopyInstruction(
+                        new RegisterOperand(data, 16),
                         makeGpBasedOperand(data, 21, (short) data));
                 case Opcode.lbu:
                     return new SimpleInstruction("lbu", "{0} = (unsigned char){1}", new RegisterOperand(data, 16),
@@ -439,8 +364,9 @@ namespace symdump.exefile
                     return new SimpleInstruction("swl", null, new RegisterOperand(data, 16),
                         makeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sw:
-                    return new SimpleInstruction("sw", "{1} = (int){0}", new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                    return new DataCopyInstruction(
+                        makeGpBasedOperand(data, 21, (short) data),
+                        new RegisterOperand(data, 16));
                 case Opcode.swr:
                     return new SimpleInstruction("swr", null, new RegisterOperand(data, 16),
                         makeGpBasedOperand(data, 21, (short) data));
@@ -500,7 +426,7 @@ namespace symdump.exefile
             {
                 case OpcodeFunction.sll:
                     if (data == 0)
-                        return new SimpleInstruction("nop", null);
+                        return new NopInstruction();
                     else
                         return new ArithmeticInstruction(Operation.Shl,
                             rd, rs2,
@@ -564,11 +490,9 @@ namespace symdump.exefile
                         rd, rs1, rs2);
                 case OpcodeFunction.addu:
                     if (((data >> 16) & 0x1F) == 0)
-                        return new SimpleInstruction("move", "{0} = {1}", rd,
-                            rs1);
+                        return new DataCopyInstruction(rd, rs1);
                     else
-                        return new ArithmeticInstruction(Operation.Add,
-                            rd, rs1, rs2);
+                        return new ArithmeticInstruction(Operation.Add, rd, rs1, rs2);
                 case OpcodeFunction.sub:
                     return new ArithmeticInstruction(Operation.Sub,
                         rd, rs1, rs2);

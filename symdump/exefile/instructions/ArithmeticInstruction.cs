@@ -13,6 +13,11 @@ namespace symdump.exefile.instructions
         public ArithmeticInstruction(Operation operation, IOperand dest, IOperand lhs, IOperand rhs)
         {
             this.operation = operation;
+            if (operation == Operation.Add && dest.Equals(lhs) && (dest is RegisterOperand) &&
+                ((RegisterOperand) dest).register == Register.sp && (rhs is ImmediateOperand))
+            {
+                rhs = new ImmediateOperand((short)((ImmediateOperand) rhs).value);
+            }
             operands = new[] {dest, lhs, rhs};
         }
 

@@ -15,7 +15,7 @@ namespace symdump.exefile.expression
 
         public string toCode()
         {
-            return offset >= 0 ? $"${register}+{offset}" : $"${register}-{-offset}";
+            return offset >= 0 ? $"*(${register}+{offset})" : $"*(${register}-{-offset})";
         }
     }
 }
