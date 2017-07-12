@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using symdump.exefile.dataflow;
 using symdump.exefile.expression;
 using symdump.exefile.operands;
-using symdump.symfile;
 
 namespace symdump.exefile.instructions
 {
@@ -29,7 +28,7 @@ namespace symdump.exefile.instructions
             return $"if({lhs} {op} {rhs}) goto {target}";
         }
 
-        public override IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        public override IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
             throw new NotImplementedException();
         }

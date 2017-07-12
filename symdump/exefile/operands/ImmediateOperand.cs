@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using symdump.exefile.dataflow;
 using symdump.exefile.expression;
-using symdump.symfile;
 
 namespace symdump.exefile.operands
 {
@@ -19,7 +18,7 @@ namespace symdump.exefile.operands
             return value == o?.value;
         }
 
-        public IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        public IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
             return new ValueNode(value);
         }

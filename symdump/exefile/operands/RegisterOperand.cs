@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using symdump.exefile.dataflow;
 using symdump.exefile.expression;
 using symdump.symfile;
 
@@ -24,13 +25,10 @@ namespace symdump.exefile.operands
             return register == o?.register;
         }
 
-        public IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        public IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
-            IExpressionNode expr;
-            if (registers.TryGetValue(register, out expr))
-                return expr;
-
-            return new RegisterNode(register);
+            var expression = dataFlowState.getRegisterExpression(register);
+            return expression ?? new RegisterNode(register);
         }
 
         public override string ToString()

@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using symdump.exefile.dataflow;
 using symdump.exefile.disasm;
 using symdump.exefile.expression;
-using symdump.symfile;
 
 namespace symdump.exefile.operands
 {
@@ -25,7 +24,7 @@ namespace symdump.exefile.operands
             return register == o?.register;
         }
 
-        public IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        public IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
             throw new System.NotImplementedException();
         }

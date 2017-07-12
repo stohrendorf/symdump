@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using symdump.exefile.dataflow;
 using symdump.exefile.expression;
 using symdump.exefile.operands;
 using symdump.symfile;
@@ -13,7 +12,7 @@ namespace symdump.exefile.instructions
         public ArithmeticInstruction(Operation operation, IOperand dest, IOperand lhs, IOperand rhs)
         {
             this.operation = operation;
-            if (operation == Operation.Add && dest.Equals(lhs) && (dest is RegisterOperand) &&
+            if ((operation == Operation.Add || operation == Operation.Sub) && dest.Equals(lhs) && (dest is RegisterOperand) &&
                 ((RegisterOperand) dest).register == Register.sp && (rhs is ImmediateOperand))
             {
                 rhs = new ImmediateOperand((short)((ImmediateOperand) rhs).value);
@@ -38,9 +37,9 @@ namespace symdump.exefile.instructions
                 : $"{destination} = {lhs} {op} {rhs}";
         }
 
-        public override IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        public override IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
-            return new ExpressionNode(operation, lhs.toExpressionNode(registers), rhs.toExpressionNode(registers));
+            return new ExpressionNode(operation, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState));
         }
     }
 }

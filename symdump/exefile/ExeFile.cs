@@ -103,8 +103,10 @@ namespace symdump.exefile
             if (callees.Count == 0)
                 return;
 
-            var addr = callees.Skip(2).First();
-            Console.WriteLine(m_symFile.findFunction(addr).getSignature());
+            var addr = callees.First();
+            var func = m_symFile.findFunction(addr);
+            if (func != null)
+                Console.WriteLine(func.getSignature());
             addr -= m_header.tAddr;
 
             var flowState = new DataFlowState();
@@ -117,7 +119,7 @@ namespace symdump.exefile
                     skipNext = false;
                     continue;
                 }
-                
+
                 var xrefs = getXrefs(insnPair.Key);
                 if (xrefs != null)
                     Console.WriteLine(getSymbolName(insnPair.Key) + ":");
@@ -125,7 +127,7 @@ namespace symdump.exefile
                 var insn = insnPair.Value;
                 if (insn is NopInstruction)
                     continue;
-                
+
                 //Console.WriteLine($"??? 0x{insnPair.Key:X}  " + insn.asReadable());
 
                 var nextInsn = m_instructions[insnPair.Key + 4];

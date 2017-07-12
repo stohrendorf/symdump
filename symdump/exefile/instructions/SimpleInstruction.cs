@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using symdump.exefile.dataflow;
 using symdump.exefile.expression;
 using symdump.exefile.operands;
-using symdump.symfile;
 
 namespace symdump.exefile.instructions
 {
@@ -38,7 +37,7 @@ namespace symdump.exefile.instructions
             return format == null ? ToString() : string.Format(format, operands);
         }
 
-        public override IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        public override IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
             throw new Exception("Cannot convert simple instruction to expression node");
         }

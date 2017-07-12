@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using symdump.exefile.dataflow;
 using symdump.exefile.expression;
 using symdump.exefile.operands;
-using symdump.symfile;
 
 namespace symdump.exefile.instructions
 {
@@ -27,7 +26,7 @@ namespace symdump.exefile.instructions
             return ToString();
         }
 
-        public override IExpressionNode toExpressionNode(IReadOnlyDictionary<Register, IExpressionNode> registers)
+        public override IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
             throw new Exception("Cannot convert word data to expression node");
         }
