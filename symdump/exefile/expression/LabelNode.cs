@@ -11,7 +11,7 @@
 
         public string toCode()
         {
-            return label;
+            return "(char*)&" + label;
         }
     }
 }

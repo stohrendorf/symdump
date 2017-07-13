@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using symdump.exefile.expression;
 using symdump.exefile.instructions;
 using symdump.exefile.operands;
@@ -32,7 +33,7 @@ namespace symdump.exefile.dataflow
                 {
                     dumpState();
                     Console.WriteLine("[raw] " + insn.asReadable());
-                    m_registers.Clear();
+                    m_registers.Remove(Register.a0);
                     return true;
                 }
 
@@ -117,15 +118,14 @@ namespace symdump.exefile.dataflow
 
         private void dumpState()
         {
-            foreach (var regExpr in m_registers)
-            {
-                Console.WriteLine("    # " + regExpr.Key + " = " + regExpr.Value.toCode());
-            }
-            for (int i = 0; i < m_stack.Count; ++i)
-            {
-                if (m_stack[i] != null)
-                    Console.WriteLine("    # sp+" + (i * 4) + " = " + m_stack[i].toCode());
-            }
+            var regDump = string.Join("; ", m_registers.Select(reg => reg.Key + " = " + reg.Value.toCode()));
+            var sel = Enumerable
+                .Range(0, m_stack.Count)
+                .Where(i => m_stack[i] != null)
+                .Select(i => "sp[" + (i * 4) + "] = " + m_stack[i].toCode());
+            var stackDump = string.Join("; ", sel);
+            Console.WriteLine("    # Registers: " + regDump);
+            Console.WriteLine("    # Stack: " + stackDump);
         }
 
         public IExpressionNode getRegisterExpression(Register register)
