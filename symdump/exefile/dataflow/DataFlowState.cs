@@ -28,83 +28,17 @@ namespace symdump.exefile.dataflow
 
             if (insn is CallPtrInstruction)
             {
-                var i = (CallPtrInstruction) insn;
-                if (i.returnAddressTarget != null)
-                {
-                    dumpState();
-                    Console.WriteLine("[raw] " + insn.asReadable());
-                    m_registers.Remove(Register.a0);
-                    return true;
-                }
-
-                Debug.Assert(nextInsn != null);
-                process(nextInsn, null);
-                if (i.target is RegisterOperand && ((RegisterOperand) i.target).register == Register.ra)
-                    Console.WriteLine("return");
-                else
-                    Console.WriteLine("[jmp] " + insn.asReadable());
-                return false;
+                return pocess((CallPtrInstruction) insn, nextInsn);
             }
             else if (insn is ArithmeticInstruction)
             {
-                var arith = (ArithmeticInstruction) insn;
-                var dst = arith.destination;
-                if (dst is RegisterOperand)
-                {
-                    var reg = (RegisterOperand) dst;
-                    m_registers[reg.register] = insn.toExpressionNode(this);
-                    if (reg.register != Register.sp || !arith.isInplace || !(arith.rhs is ImmediateOperand))
-                        return true;
-
-                    // stack frame size change
-                    var delta = (int) ((ImmediateOperand) arith.rhs).value;
-                    Debug.Assert(delta % 4 == 0);
-                    delta /= 4;
-                    if (arith.operation == Operation.Sub)
-                        delta = -delta;
-
-                    if (delta > 0)
-                    {
-                        m_stack.RemoveRange(0, delta);
-                    }
-                    else if (delta < 0)
-                    {
-                        for (; delta < 0; ++delta)
-                            m_stack.Insert(0, null);
-                    }
-                }
-                else if (dst is RegisterOffsetOperand && ((RegisterOffsetOperand) dst).register == Register.sp)
-                {
-                    var ofs = ((RegisterOffsetOperand) dst).offset;
-                    Debug.Assert(ofs % 4 == 0);
-                    m_stack[ofs / 4] = arith.toExpressionNode(this);
-                }
-                else
-                {
-                    dumpState();
-                    Console.WriteLine("[ram access] " + insn.toExpressionNode(this).toCode());
-                }
+                return process((ArithmeticInstruction) insn);
             }
             else if (insn is DataCopyInstruction)
             {
                 var copy = (DataCopyInstruction) insn;
-                var copyTo = ((DataCopyInstruction) insn).to;
-                if (copyTo is RegisterOperand)
-                {
-                    m_registers[((RegisterOperand) copyTo).register] = copy.from.toExpressionNode(this);
-                }
-                else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).register == Register.sp)
-                {
-                    var ofs = ((RegisterOffsetOperand) copyTo).offset;
-                    Debug.Assert(ofs % 4 == 0);
-                    m_stack[ofs / 4] = copy.from.toExpressionNode(this);
-                }
-                else
-                {
-                    dumpState();
-                    Console.WriteLine("[ram access] " + insn.toExpressionNode(this).toCode());
-                    m_registers.Clear();
-                }
+                process(copy);
+                return true;
             }
             else
             {
@@ -114,6 +48,87 @@ namespace symdump.exefile.dataflow
             }
 
             return true;
+        }
+
+        private void process(DataCopyInstruction insn)
+        {
+            var copyTo = insn.to;
+            if (copyTo is RegisterOperand)
+            {
+                m_registers[((RegisterOperand) copyTo).register] = insn.@from.toExpressionNode(this);
+            }
+            else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).register == Register.sp)
+            {
+                var ofs = ((RegisterOffsetOperand) copyTo).offset;
+                Debug.Assert(ofs % 4 == 0);
+                m_stack[ofs / 4] = insn.@from.toExpressionNode(this);
+            }
+            else
+            {
+                dumpState();
+                Console.WriteLine("[ram access] " + insn.toExpressionNode(this).toCode());
+                m_registers.Clear();
+            }
+        }
+
+        private bool process(ArithmeticInstruction arith)
+        {
+            var dst = arith.destination;
+            if (dst is RegisterOperand)
+            {
+                var reg = (RegisterOperand) dst;
+                m_registers[reg.register] = arith.toExpressionNode(this);
+                if (reg.register != Register.sp || !arith.isInplace || !(arith.rhs is ImmediateOperand))
+                    return true;
+
+                // stack frame size change
+                var delta = (int) ((ImmediateOperand) arith.rhs).value;
+                Debug.Assert(delta % 4 == 0);
+                delta /= 4;
+                if (arith.operation == Operation.Sub)
+                    delta = -delta;
+
+                if (delta > 0)
+                {
+                    m_stack.RemoveRange(0, delta);
+                }
+                else if (delta < 0)
+                {
+                    for (; delta < 0; ++delta)
+                        m_stack.Insert(0, null);
+                }
+            }
+            else if (dst is RegisterOffsetOperand && ((RegisterOffsetOperand) dst).register == Register.sp)
+            {
+                var ofs = ((RegisterOffsetOperand) dst).offset;
+                Debug.Assert(ofs % 4 == 0);
+                m_stack[ofs / 4] = arith.toExpressionNode(this);
+            }
+            else
+            {
+                dumpState();
+                Console.WriteLine("[ram access] " + arith.toExpressionNode(this).toCode());
+            }
+            return true;
+        }
+
+        private bool pocess(CallPtrInstruction insn, Instruction nextInsn)
+        {
+            if (insn.returnAddressTarget != null)
+            {
+                dumpState();
+                Console.WriteLine("[raw] " + insn.asReadable());
+                m_registers.Remove(Register.a0);
+                return true;
+            }
+
+            Debug.Assert(nextInsn != null);
+            process(nextInsn, null);
+            if (insn.target is RegisterOperand && ((RegisterOperand) insn.target).register == Register.ra)
+                Console.WriteLine("return");
+            else
+                Console.WriteLine("[jmp] " + insn.asReadable());
+            return false;
         }
 
         private void dumpState()

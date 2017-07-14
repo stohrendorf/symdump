@@ -9,6 +9,32 @@ namespace symdump.symfile
 {
     public class Function
     {
+        private class ArgumentInfo
+        {
+            public readonly string name;
+            public readonly TypedValue typedValue;
+            public readonly TypeInfo typeInfo;
+            public readonly Register stackBase;
+
+            public ArgumentInfo(string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
+            {
+                this.name = name;
+                this.typedValue = typedValue;
+                this.typeInfo = typeInfo;
+                this.stackBase = stackBase;
+            }
+
+            public override string ToString()
+            {
+                if (typeInfo.classType == ClassType.Argument)
+                    return $"{typeInfo.asCode(name)} /*${stackBase} {typedValue.value}*/";
+                else if (typeInfo.classType == ClassType.RegParam)
+                    return $"{typeInfo.asCode(name)} /*${(Register) typedValue.value}*/";
+                else
+                    throw new Exception("Meh");
+            }
+        }
+
         public readonly uint address;
         private readonly List<Block> m_blocks = new List<Block>();
         private readonly string m_file;
@@ -18,7 +44,10 @@ namespace symdump.symfile
         private readonly int m_maskOffs;
         private readonly string m_name;
 
-        private readonly List<string> m_parameters = new List<string>();
+        private readonly IDictionary<Register, ArgumentInfo> m_registerParameters =
+            new SortedDictionary<Register, ArgumentInfo>();
+
+        private readonly IDictionary<int, ArgumentInfo> m_stackParameters = new SortedDictionary<int, ArgumentInfo>();
         private readonly Register m_register;
         private readonly string m_returnType;
         private readonly Register m_stackBase;
@@ -73,10 +102,13 @@ namespace symdump.symfile
                 if (ti == null || memberName == null)
                     break;
 
+                var argInfo = new ArgumentInfo(memberName, typedValue, ti, m_stackBase);
                 if (ti.classType == ClassType.Argument)
-                    m_parameters.Add($"{ti.asCode(memberName)} /*stack {typedValue.value}*/");
+                    m_stackParameters.Add(typedValue.value, argInfo);
                 else if (ti.classType == ClassType.RegParam)
-                    m_parameters.Add($"{ti.asCode(memberName)} /*${(Register) typedValue.value}*/");
+                    m_registerParameters.Add((Register) typedValue.value, argInfo);
+                else
+                    throw new Exception("Mehmeh");
             }
         }
 
@@ -100,14 +132,15 @@ namespace symdump.symfile
 
             if (m_blocks.Count != 0)
                 return;
-            
+
             writer.WriteLine("{");
             writer.WriteLine("}");
         }
 
         public string getSignature()
         {
-            return $"{m_returnType} /*${m_register}*/ {m_name}({string.Join(", ", m_parameters)})";
+            var parameters = m_registerParameters.Values.Concat(m_stackParameters.Values);
+            return $"{m_returnType} /*${m_register}*/ {m_name}({string.Join(", ", parameters)})";
         }
     }
 }
