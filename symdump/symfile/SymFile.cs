@@ -12,7 +12,7 @@ namespace symdump.symfile
         private readonly Dictionary<string, EnumDef> m_enums = new Dictionary<string, EnumDef>();
         private readonly SortedSet<string> m_externs = new SortedSet<string>();
         public readonly List<Function> functions = new List<Function>();
-        private readonly Dictionary<string, string> m_funcTypes = new Dictionary<string, string>();
+        private readonly Dictionary<string, TypeInfo> m_funcTypes = new Dictionary<string, TypeInfo>();
         internal readonly Dictionary<uint, List<Label>> labels = new Dictionary<uint, List<Label>>();
         private readonly Dictionary<string, StructDef> m_structs = new Dictionary<string, StructDef>();
         private readonly byte m_targetUnit;
@@ -261,12 +261,12 @@ namespace symdump.symfile
                 addTypedef(name, ti);
             else if (ti.classType == ClassType.External)
                 if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes[name] = ti.asCode("").Trim();
+                    m_funcTypes.Add(name, ti);
                 else
                     m_externs.Add($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
             else if (ti.classType == ClassType.Static)
                 if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes[name] = ti.asCode("").Trim();
+                    m_funcTypes.Add(name, ti);
                 else
                     m_externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
             else
@@ -284,12 +284,12 @@ namespace symdump.symfile
                 addTypedef(name, ti);
             else if (ti.classType == ClassType.External)
                 if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes[name] = ti.asCode("").Trim();
+                    m_funcTypes.Add(name, ti);
                 else
                     m_externs.Add($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
             else if (ti.classType == ClassType.Static)
                 if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes[name] = ti.asCode("").Trim();
+                    m_funcTypes.Add(name, ti);
                 else
                     m_externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
             else

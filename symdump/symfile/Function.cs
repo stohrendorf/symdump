@@ -36,7 +36,7 @@ namespace symdump.symfile
         }
 
         public readonly uint address;
-        private readonly List<Block> m_blocks = new List<Block>();
+        private readonly Block m_body;
         private readonly string m_file;
         private readonly uint m_lastLine;
         private readonly uint m_line;
@@ -44,16 +44,16 @@ namespace symdump.symfile
         private readonly int m_maskOffs;
         private readonly string m_name;
 
-        private readonly IDictionary<Register, ArgumentInfo> m_registerParameters =
-            new SortedDictionary<Register, ArgumentInfo>();
+        private readonly IDictionary<Register, List<ArgumentInfo>> m_registerParameters =
+            new SortedDictionary<Register, List<ArgumentInfo>>();
 
         private readonly IDictionary<int, ArgumentInfo> m_stackParameters = new SortedDictionary<int, ArgumentInfo>();
         private readonly Register m_register;
-        private readonly string m_returnType;
+        private readonly TypeInfo m_returnType;
         private readonly Register m_stackBase;
         private readonly uint m_stackFrameSize;
 
-        public Function(BinaryReader reader, uint ofs, IReadOnlyDictionary<string, string> funcTypes)
+        public Function(BinaryReader reader, uint ofs, IReadOnlyDictionary<string, TypeInfo> funcTypes)
         {
             address = ofs;
 
@@ -66,9 +66,11 @@ namespace symdump.symfile
             m_line = reader.ReadUInt32();
             m_file = reader.readPascalString();
             m_name = reader.readPascalString();
+            
+            m_body = new Block(address, m_line, this);
 
             if (!funcTypes.TryGetValue(m_name, out m_returnType))
-                m_returnType = "__UNKNOWN__";
+                m_returnType = null;
 
             while (true)
             {
@@ -85,7 +87,7 @@ namespace symdump.symfile
                         m_lastLine = reader.ReadUInt32();
                         return;
                     case 16: // begin of block
-                        m_blocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this));
+                        m_body.subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this));
                         continue;
                     case 20:
                         ti = reader.readTypeInfo(false);
@@ -103,13 +105,24 @@ namespace symdump.symfile
                     break;
 
                 var argInfo = new ArgumentInfo(memberName, typedValue, ti, m_stackBase);
-                if (ti.classType == ClassType.Argument)
-                    m_stackParameters.Add(typedValue.value, argInfo);
-                else if (ti.classType == ClassType.RegParam)
-                    m_registerParameters.Add((Register) typedValue.value, argInfo);
-                else
-                    throw new Exception("Mehmeh");
+                switch (ti.classType)
+                {
+                    case ClassType.Argument:
+                        m_stackParameters.Add(typedValue.value, argInfo);
+                        break;
+                    case ClassType.RegParam:
+                        List<ArgumentInfo> infoList;
+                        if (!m_registerParameters.TryGetValue((Register) typedValue.value, out infoList))
+                            m_registerParameters.Add((Register) typedValue.value, infoList = new List<ArgumentInfo>());
+                        infoList.Add(argInfo);
+                        break;
+                    default:
+                        m_body.vars.Add(memberName, new Block.VarInfo(memberName, ti, typedValue));
+                        break;
+                }
             }
+            
+            throw new Exception("Should never reach this");
         }
 
         private IEnumerable<Register> savedRegisters => Enumerable.Range(0, 32)
@@ -128,19 +141,13 @@ namespace symdump.symfile
 
             writer.WriteLine(getSignature());
 
-            m_blocks.ForEach(b => b.dump(writer));
-
-            if (m_blocks.Count != 0)
-                return;
-
-            writer.WriteLine("{");
-            writer.WriteLine("}");
+            m_body.dump(writer);
         }
 
         public string getSignature()
         {
-            var parameters = m_registerParameters.Values.Concat(m_stackParameters.Values);
-            return $"{m_returnType} /*${m_register}*/ {m_name}({string.Join(", ", parameters)})";
+            var parameters = m_registerParameters.Values.SelectMany(p => p).Concat(m_stackParameters.Values);
+            return $"{m_returnType?.asCode("")} /*${m_register}*/ {m_name}({string.Join(", ", parameters)})";
         }
     }
 }

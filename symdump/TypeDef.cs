@@ -118,7 +118,7 @@ namespace symdump
                         break;
                 }
 
-            return $"{ctype} {name}";
+            return string.IsNullOrEmpty(name) ? ctype : $"{ctype} {name}";
         }
 
         public override bool Equals(object obj)

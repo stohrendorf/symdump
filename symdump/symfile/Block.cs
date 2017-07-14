@@ -9,6 +9,36 @@ namespace symdump.symfile
 {
     public class Block
     {
+        public class VarInfo
+        {
+            public readonly string name;
+            public readonly TypeInfo typeInfo;
+            public readonly TypedValue typedValue;
+
+            public VarInfo(string name, TypeInfo typeInfo, TypedValue typedValue)
+            {
+                this.name = name;
+                this.typeInfo = typeInfo;
+                this.typedValue = typedValue;
+            }
+
+            public override string ToString()
+            {
+                switch (typeInfo.classType)
+                {
+                    case ClassType.AutoVar:
+                        return $"{typeInfo.asCode(name)}; /* sp {typedValue.value} */";
+                    case ClassType.Register:
+                        return $"{typeInfo.asCode(name)}; /* ${(Register) typedValue.value} */";
+                    case ClassType.Static:
+                        return $"static {typeInfo.asCode(name)}; // offset 0x{typedValue.value:x}";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+        
         public readonly uint endLine;
         public readonly uint endOffset;
 
@@ -19,13 +49,21 @@ namespace symdump.symfile
         public readonly uint startOffset;
         public readonly List<Block> subBlocks = new List<Block>();
         public readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
-        public readonly List<string> vars = new List<string>();
+        public readonly Dictionary<string, VarInfo> vars = new Dictionary<string, VarInfo>();
+
+        public Block(uint ofs, uint ln, Function f)
+            : this(null, ofs, ln, f)
+        {
+        }
 
         public Block(BinaryReader reader, uint ofs, uint ln, Function f)
         {
             startOffset = ofs;
             startLine = ln;
             function = f;
+
+            if (reader == null)
+                return;
 
             while (true)
             {
@@ -51,13 +89,9 @@ namespace symdump.symfile
                         switch (ti.classType)
                         {
                             case ClassType.AutoVar:
-                                vars.Add($"{ti.asCode(memberName)}; // stack offset {typedValue.value}");
-                                break;
                             case ClassType.Register:
-                                vars.Add($"{ti.asCode(memberName)}; // ${(Register) typedValue.value}");
-                                break;
                             case ClassType.Static:
-                                vars.Add($"static {ti.asCode(memberName)}; // offset 0x{typedValue.value:x}");
+                                vars.Add(memberName, new VarInfo(memberName, ti, typedValue));
                                 break;
                             case ClassType.Typedef:
                                 typedefs.Add(memberName, ti);
@@ -78,13 +112,9 @@ namespace symdump.symfile
                         switch (ti.classType)
                         {
                             case ClassType.AutoVar:
-                                vars.Add($"{ti.asCode(memberName)}; // stack offset {typedValue.value}");
-                                break;
                             case ClassType.Register:
-                                vars.Add($"{ti.asCode(memberName)}; // ${(Register) typedValue.value}");
-                                break;
                             case ClassType.Static:
-                                vars.Add($"static {ti.asCode(memberName)}; // offset 0x{typedValue.value:x}");
+                                vars.Add(memberName, new VarInfo(memberName, ti, typedValue));
                                 break;
                             case ClassType.Typedef:
                                 typedefs.Add(memberName, ti);
@@ -107,7 +137,8 @@ namespace symdump.symfile
             ++writer.indent;
             foreach (var t in typedefs)
                 writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
-            vars.ForEach(writer.WriteLine);
+            foreach (var varInfo in vars)
+                writer.WriteLine(varInfo.Value);
             foreach (var l in labels)
                 writer.WriteLine(l);
             subBlocks.ForEach(b => b.dump(writer));
