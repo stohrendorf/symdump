@@ -16,11 +16,11 @@ namespace symdump.exefile.dataflow
 
         private readonly List<IExpressionNode> m_stack = new List<IExpressionNode>();
 
-        private readonly SymFile m_symFile;
+        public SymFile symFile { get; }
 
         public DataFlowState(SymFile symFile, Function func)
         {
-            m_symFile = symFile;
+            this.symFile = symFile;
 
             if (func == null)
                 return;
@@ -28,9 +28,13 @@ namespace symdump.exefile.dataflow
             foreach (var param in func.registerParameters)
             {
                 if (param.Value.Count > 1)
+                {
+                    Console.WriteLine($"Ignoring multiple values in register ${param.Key}");
                     continue;
-                
-                m_registers[param.Key] = new LabelNode(param.Value.First().name);
+                }
+
+                var p = param.Value.First();
+                m_registers[param.Key] = new LabelNode(p.name, p.typeDefinition);
             }
             
             dumpState();
@@ -147,7 +151,7 @@ namespace symdump.exefile.dataflow
 
                 if (insn.target is LabelOperand)
                 {
-                    var fn = m_symFile.findFunction(((LabelOperand) insn.target).label);
+                    var fn = symFile.findFunction(((LabelOperand) insn.target).label);
                     if (fn != null)
                     {
                         Console.WriteLine("// " + fn.getSignature());
@@ -170,7 +174,7 @@ namespace symdump.exefile.dataflow
             return false;
         }
 
-        private void dumpState()
+        public void dumpState()
         {
             var regDump = string.Join("; ", m_registers.Select(reg => reg.Key + " = " + reg.Value.toCode()));
             var sel = Enumerable

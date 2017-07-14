@@ -1,4 +1,5 @@
 ﻿using symdump.symfile;
+using symdump.symfile.type;
 
 namespace symdump.exefile.expression
 {
@@ -6,6 +7,8 @@ namespace symdump.exefile.expression
     {
         public readonly Register register;
         public readonly int offset;
+
+        public ITypeDefinition typeDefinition { get; set; }
 
         public RegisterOffsetNode(Register register, int offset)
         {
@@ -16,6 +19,14 @@ namespace symdump.exefile.expression
         public string toCode()
         {
             return offset >= 0 ? $"*(${register}+{offset})" : $"*(${register}-{-offset})";
+        }
+
+        public string tryDeref()
+        {
+            if (typeDefinition is StructDef)
+                return ((StructDef) typeDefinition).forOffset((uint) offset).ToString();
+
+            return null;
         }
     }
 }

@@ -5,9 +5,9 @@ using System.Linq;
 using symdump.symfile.util;
 using symdump.util;
 
-namespace symdump.symfile
+namespace symdump.symfile.type
 {
-    public class EnumDef : IEquatable<EnumDef>
+    public class EnumDef : ITypeDefinition, IEquatable<EnumDef>
     {
         private readonly Dictionary<string, int> m_members = new Dictionary<string, int>();
         private readonly string m_name;

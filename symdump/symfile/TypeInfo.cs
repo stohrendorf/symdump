@@ -60,6 +60,8 @@ namespace symdump.symfile
             return typeDef.asCode(name, this);
         }
 
+        public bool isStruct => typeDef.isStruct;
+        
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

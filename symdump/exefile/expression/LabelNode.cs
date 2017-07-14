@@ -1,19 +1,22 @@
-﻿namespace symdump.exefile.expression
+﻿using symdump.symfile.type;
+
+namespace symdump.exefile.expression
 {
     public class LabelNode : IExpressionNode
     {
-        // TODO provide type and address information here
         public readonly string label;
 
-        public LabelNode(string label)
+        public ITypeDefinition typeDefinition { get; }
+
+        public LabelNode(string label, ITypeDefinition typeDefinition)
         {
             this.label = label;
+            this.typeDefinition = typeDefinition;
         }
 
         public string toCode()
         {
-            // FIXME: This is simply wrong.
-            return "(char*)&" + label;
+            return typeDefinition == null ? label : typeDefinition.ToString();
         }
     }
 }

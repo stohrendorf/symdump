@@ -1,4 +1,5 @@
 ﻿using symdump.exefile.instructions;
+using symdump.symfile.type;
 
 namespace symdump.exefile.expression
 {
@@ -8,6 +9,8 @@ namespace symdump.exefile.expression
         public readonly IExpressionNode lhs;
         public readonly IExpressionNode rhs;
         public readonly LabelNode target;
+
+        public ITypeDefinition typeDefinition => null;
 
         public ConditionalBranchNode(Operation operation, IExpressionNode lhs, IExpressionNode rhs, LabelNode target)
         {
@@ -28,7 +31,7 @@ namespace symdump.exefile.expression
                 if (selfPrecedence > ((ExpressionNode) lhs).operation.getPrecedence())
                     lhsCode = $"({lhsCode})";
             }
-            
+
             if (rhs is ExpressionNode)
             {
                 if (selfPrecedence > ((ExpressionNode) rhs).operation.getPrecedence())

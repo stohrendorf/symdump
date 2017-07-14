@@ -32,7 +32,6 @@ namespace symdump.symfile
                         return $"{typeInfo.asCode(name)}; /* ${(Register) typedValue.value} */";
                     case ClassType.Static:
                         return $"static {typeInfo.asCode(name)}; // offset 0x{typedValue.value:x}";
-                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

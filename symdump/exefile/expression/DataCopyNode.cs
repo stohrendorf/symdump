@@ -1,9 +1,13 @@
-﻿namespace symdump.exefile.expression
+﻿using symdump.symfile.type;
+
+namespace symdump.exefile.expression
 {
     public class DataCopyNode : IExpressionNode
     {
         public readonly IExpressionNode to;
         public readonly IExpressionNode from;
+
+        public ITypeDefinition typeDefinition => null;
 
         public DataCopyNode(IExpressionNode to, IExpressionNode @from)
         {

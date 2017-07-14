@@ -2,9 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using symdump.symfile;
 
-namespace symdump
+namespace symdump.symfile
 {
     public class TypeDef : IEquatable<TypeDef>
     {
@@ -37,6 +36,8 @@ namespace symdump
             return attribs.Length == 0 ? baseType.ToString() : $"{baseType}({attribs})";
         }
 
+        public bool isStruct => baseType == BaseType.StructDef;
+        
         public string asCode(string name, TypeInfo typeInfo)
         {
             var dimIdx = 0;

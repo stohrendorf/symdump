@@ -5,6 +5,7 @@ namespace symdump.exefile.operands
 {
     public class LabelOperand : IOperand
     {
+        // TODO address
         public readonly string label;
 
         public LabelOperand(string label)
@@ -20,7 +21,7 @@ namespace symdump.exefile.operands
 
         public IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
-            return new LabelNode(label);
+            return new LabelNode(label, dataFlowState.symFile.findTypeDefinitionForLabel(label));
         }
 
         public override string ToString()

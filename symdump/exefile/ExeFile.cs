@@ -23,7 +23,7 @@ namespace symdump.exefile
         private readonly SortedDictionary<uint, Instruction> m_instructions = new SortedDictionary<uint, Instruction>();
         private readonly SymFile m_symFile;
         private readonly Dictionary<uint, HashSet<uint>> m_xrefs = new Dictionary<uint, HashSet<uint>>();
-        private readonly SortedSet<uint> callees = new SortedSet<uint>();
+        private readonly SortedSet<uint> m_callees = new SortedSet<uint>();
 
         public ExeFile(EndianBinaryReader reader, SymFile symFile)
         {
@@ -40,17 +40,6 @@ namespace symdump.exefile
                 .FirstOrDefault();
         }
 
-        private string getSymbolName(uint addr, int rel = 0)
-        {
-            addr = (uint) (addr + rel);
-
-            List<Label> lbls;
-            if (!m_symFile.labels.TryGetValue(addr, out lbls))
-                return $"lbl_{addr:X}";
-
-            return lbls.First().name;
-        }
-
         private IEnumerable<string> getSymbolNames(uint addr)
         {
             List<Label> lbls;
@@ -61,7 +50,7 @@ namespace symdump.exefile
         private void addCall(uint from, uint to)
         {
             addXref(from, to);
-            callees.Add(to);
+            m_callees.Add(to);
         }
 
         private void addXref(uint from, uint to)
@@ -100,10 +89,10 @@ namespace symdump.exefile
 
         public void decompile()
         {
-            if (callees.Count == 0)
+            if (m_callees.Count == 0)
                 return;
 
-            var addr = callees.Skip(300).First();
+            var addr = m_callees.Skip(200).First();
             var func = m_symFile.findFunction(addr);
             if (func != null)
                 Console.WriteLine(func.getSignature());
@@ -122,7 +111,10 @@ namespace symdump.exefile
 
                 var xrefs = getXrefs(insnPair.Key);
                 if (xrefs != null)
-                    Console.WriteLine(getSymbolName(insnPair.Key) + ":");
+                {
+                    flowState.dumpState();
+                    Console.WriteLine(m_symFile.getSymbolName(insnPair.Key) + ":");
+                }
 
                 var insn = insnPair.Value;
                 if (insn is NopInstruction)
@@ -187,7 +179,7 @@ namespace symdump.exefile
         {
             foreach (var insn in m_instructions)
             {
-                if (callees.Contains(insn.Key))
+                if (m_callees.Contains(insn.Key))
                     Console.WriteLine("### FUNCTION");
                 if (insn.Value is NopInstruction)
                     continue;
@@ -201,13 +193,13 @@ namespace symdump.exefile
                 {
                     Console.WriteLine("# XRefs:");
                     foreach (var xref in xrefsHere)
-                        Console.WriteLine("# - " + getSymbolName(xref));
+                        Console.WriteLine("# - " + m_symFile.getSymbolName(xref));
                     var names = getSymbolNames(insn.Key);
                     if (names != null)
                         foreach (var name in names)
                             Console.WriteLine(name + ":");
                     else
-                        Console.WriteLine(getSymbolName(insn.Key) + ":");
+                        Console.WriteLine(m_symFile.getSymbolName(insn.Key) + ":");
                 }
 
                 if (f != null)
@@ -224,7 +216,7 @@ namespace symdump.exefile
                 return regofs;
 
             if (regofs.register == Register.gp)
-                return new LabelOperand(getSymbolName(m_gpBase.Value, regofs.offset));
+                return new LabelOperand(m_symFile.getSymbolName(m_gpBase.Value, regofs.offset));
 
             return regofs;
         }
@@ -240,11 +232,11 @@ namespace symdump.exefile
                 case Opcode.j:
                     addCall(index - 4, (data & 0x03FFFFFF) << 2);
                     m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)), null);
+                    return new CallPtrInstruction(new LabelOperand(m_symFile.getSymbolName((data & 0x03FFFFFF) << 2)), null);
                 case Opcode.jal:
                     addCall(index - 4, (data & 0x03FFFFFF) << 2);
                     m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(new LabelOperand(getSymbolName((data & 0x03FFFFFF) << 2)),
+                    return new CallPtrInstruction(new LabelOperand(m_symFile.getSymbolName((data & 0x03FFFFFF) << 2)),
                         new RegisterOperand(Register.ra));
                 case Opcode.beq:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
@@ -253,12 +245,12 @@ namespace symdump.exefile
                         return new ConditionalBranchInstruction(Operation.Equal,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(getSymbolName(index, (short) data << 2)));
+                            new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                     else
                         return new ConditionalBranchInstruction(Operation.Equal,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(getSymbolName(index, (short) data << 2)));
+                            new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.bne:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
@@ -266,26 +258,26 @@ namespace symdump.exefile
                         return new ConditionalBranchInstruction(Operation.NotEqual,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(getSymbolName(index, (short) data << 2)));
+                            new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                     else
                         return new ConditionalBranchInstruction(Operation.NotEqual,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(getSymbolName(index, (short) data << 2)));
+                            new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.blez:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operation.LessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.bgtz:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operation.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.addi:
                     return new ArithmeticInstruction(Operation.Add,
                         new RegisterOperand(data, 16),
@@ -392,28 +384,28 @@ namespace symdump.exefile
                     return new ConditionalBranchInstruction(Operation.Equal,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.bnel:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operation.NotEqual,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.blezl:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operation.SignedLessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.bgtzl:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operation.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 default:
                     return new WordData(data);
             }
@@ -539,11 +531,11 @@ namespace symdump.exefile
                         case 0:
                             addXref(index - 4, (uint) ((index + (short) data) << 2));
                             return new SimpleInstruction("bc0f", null,
-                                new LabelOperand(getSymbolName(index, (ushort) data << 2)));
+                                new LabelOperand(m_symFile.getSymbolName(index, (ushort) data << 2)));
                         case 1:
                             addXref(index - 4, (uint) ((index + (short) data) << 2));
                             return new SimpleInstruction("bc0t", null,
-                                new LabelOperand(getSymbolName(index, (ushort) data << 2)));
+                                new LabelOperand(m_symFile.getSymbolName(index, (ushort) data << 2)));
                         default:
                             return new WordData(data);
                     }
@@ -579,7 +571,7 @@ namespace symdump.exefile
         private Instruction decodePcRelative(uint index, uint data)
         {
             var rs = new RegisterOperand(data, 21);
-            var offset = new LabelOperand(getSymbolName(index, (ushort) data << 2));
+            var offset = new LabelOperand(m_symFile.getSymbolName(index, (ushort) data << 2));
             switch ((data >> 16) & 0x1f)
             {
                 case 0:

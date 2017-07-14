@@ -1,4 +1,5 @@
 ﻿using symdump.exefile.instructions;
+using symdump.symfile.type;
 
 namespace symdump.exefile.expression
 {
@@ -7,6 +8,8 @@ namespace symdump.exefile.expression
         public Operation operation { get; }
         public readonly IExpressionNode lhs;
         public readonly IExpressionNode rhs;
+
+        public ITypeDefinition typeDefinition => null;
 
         public ExpressionNode(Operation operation, IExpressionNode lhs, IExpressionNode rhs)
         {
@@ -34,6 +37,21 @@ namespace symdump.exefile.expression
             }
 
             return $"{lhsCode} {operation.toCode()} {rhsCode}";
+        }
+
+        public string tryDeref()
+        {
+            if (operation != Operation.Add || !(lhs is LabelNode) || !(rhs is ValueNode))
+                return null;
+
+            var sdef = (StructDef) ((LabelNode) lhs).typeDefinition;
+            if (sdef == null)
+                return null;
+            
+            var member = sdef.tryDeref(
+                (uint) ((ValueNode)rhs).value
+            );
+            return ((LabelNode) lhs).label + "->" + member;
         }
     }
 }

@@ -31,12 +31,16 @@ namespace symdump.exefile.operands
         public IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
             var expression = dataFlowState.getRegisterExpression(register);
-            if (expression != null)
-            {
-                return new DerefNode(new ExpressionNode(Operation.Add, expression, new ValueNode(offset)));
-            }
+            if (expression == null)
+                return new RegisterOffsetNode(register, offset);
             
-            return new RegisterOffsetNode(register, offset);
+            if (expression is ValueNode)
+            {
+                var name = dataFlowState.symFile.getSymbolName((uint) (((ValueNode) expression).value + offset));
+                return new LabelNode(name, dataFlowState.symFile.findTypeDefinitionForLabel(name));
+            }
+                
+            return new DerefNode(new ExpressionNode(Operation.Add, expression, new ValueNode(offset)));
         }
 
         public override string ToString()

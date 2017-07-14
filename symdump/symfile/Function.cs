@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using symdump.symfile.type;
 using symdump.symfile.util;
 using symdump.util;
 
@@ -16,12 +17,15 @@ namespace symdump.symfile
             public readonly TypeInfo typeInfo;
             public readonly Register stackBase;
 
-            public ArgumentInfo(string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
+            public readonly ITypeDefinition typeDefinition;
+
+            public ArgumentInfo(SymFile symFile, string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
             {
                 this.name = name;
                 this.typedValue = typedValue;
                 this.typeInfo = typeInfo;
                 this.stackBase = stackBase;
+                this.typeDefinition = symFile.findTypeDefinition(typeInfo.tag);
             }
 
             public override string ToString()
@@ -33,6 +37,8 @@ namespace symdump.symfile
                 else
                     throw new Exception("Meh");
             }
+
+            public bool isStruct => typeInfo.isStruct;
         }
 
         public readonly uint address;
@@ -53,7 +59,7 @@ namespace symdump.symfile
         private readonly Register m_stackBase;
         private readonly uint m_stackFrameSize;
 
-        public Function(BinaryReader reader, uint ofs, IReadOnlyDictionary<string, TypeInfo> funcTypes)
+        public Function(BinaryReader reader, uint ofs, SymFile symFile)
         {
             address = ofs;
 
@@ -69,8 +75,7 @@ namespace symdump.symfile
             
             m_body = new Block(address, m_line, this);
 
-            if (!funcTypes.TryGetValue(name, out m_returnType))
-                m_returnType = null;
+            symFile.funcTypes.TryGetValue(name, out m_returnType);
 
             while (true)
             {
@@ -104,7 +109,7 @@ namespace symdump.symfile
                 if (ti == null || memberName == null)
                     break;
 
-                var argInfo = new ArgumentInfo(memberName, typedValue, ti, m_stackBase);
+                var argInfo = new ArgumentInfo(symFile, memberName, typedValue, ti, m_stackBase);
                 switch (ti.classType)
                 {
                     case ClassType.Argument:

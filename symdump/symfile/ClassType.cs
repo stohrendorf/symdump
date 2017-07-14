@@ -1,4 +1,4 @@
-﻿namespace symdump
+﻿namespace symdump.symfile
 {
     public enum ClassType
     {

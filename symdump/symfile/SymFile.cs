@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using symdump.symfile.type;
 using symdump.symfile.util;
 using symdump.util;
 
@@ -10,9 +11,9 @@ namespace symdump.symfile
     public class SymFile
     {
         private readonly Dictionary<string, EnumDef> m_enums = new Dictionary<string, EnumDef>();
-        private readonly SortedSet<string> m_externs = new SortedSet<string>();
+        private readonly Dictionary<string, TypeInfo> m_externs = new Dictionary<string, TypeInfo>();
         public readonly List<Function> functions = new List<Function>();
-        private readonly Dictionary<string, TypeInfo> m_funcTypes = new Dictionary<string, TypeInfo>();
+        public readonly Dictionary<string, TypeInfo> funcTypes = new Dictionary<string, TypeInfo>();
         internal readonly Dictionary<uint, List<Label>> labels = new Dictionary<uint, List<Label>>();
         private readonly Dictionary<string, StructDef> m_structs = new Dictionary<string, StructDef>();
         private readonly byte m_targetUnit;
@@ -34,6 +35,44 @@ namespace symdump.symfile
                 dumpEntry(stream);
         }
 
+        public StructDef findStructDef(string tag)
+        {
+            if (tag == null)
+                return null;
+            
+            StructDef result;
+            if (!m_structs.TryGetValue(tag, out result))
+                return null;
+
+            return result;
+        }
+
+        public UnionDef findUnionDef(string tag)
+        {
+            if (tag == null)
+                return null;
+            
+            UnionDef result;
+            if (!m_unions.TryGetValue(tag, out result))
+                return null;
+
+            return result;
+        }
+
+        public ITypeDefinition findTypeDefinition(string tag)
+        {
+            return findStructDef(tag);
+        }
+        
+        public ITypeDefinition findTypeDefinitionForLabel(string label)
+        {
+            TypeInfo ti;
+            if (!m_externs.TryGetValue(label, out ti))
+                return null;
+            
+            return findStructDef(ti.tag);
+        }
+        
         public void dump(TextWriter output)
         {
             var writer = new IndentedTextWriter(output);
@@ -68,7 +107,7 @@ namespace symdump.symfile
             writer.WriteLine();
             writer.WriteLine($"// {m_externs.Count} external declarations");
             foreach (var e in m_externs)
-                writer.WriteLine(e);
+                writer.WriteLine(e.Value.asCode(e.Key));
 
             writer.WriteLine();
             writer.WriteLine($"// {functions.Count} functions");
@@ -154,7 +193,7 @@ namespace symdump.symfile
 
         private void dumpType12(BinaryReader stream, int offset)
         {
-            functions.Add(new Function(stream, (uint) offset, m_funcTypes));
+            functions.Add(new Function(stream, (uint) offset, this));
             //writer.WriteLine("{");
             //++writer.Indent;
         }
@@ -177,7 +216,7 @@ namespace symdump.symfile
 
         private void readUnion(BinaryReader reader, string name)
         {
-            var e = new UnionDef(reader, name);
+            var e = new UnionDef(reader, name, this);
 
             UnionDef already;
             if (m_unions.TryGetValue(name, out already))
@@ -203,7 +242,7 @@ namespace symdump.symfile
 
         private void readStruct(BinaryReader reader, string name)
         {
-            var e = new StructDef(reader, name);
+            var e = new StructDef(reader, name, this);
 
             StructDef already;
             if (m_structs.TryGetValue(name, out already))
@@ -261,14 +300,14 @@ namespace symdump.symfile
                 addTypedef(name, ti);
             else if (ti.classType == ClassType.External)
                 if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes.Add(name, ti);
+                    funcTypes.Add(name, ti);
                 else
-                    m_externs.Add($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
+                    m_externs.Add(name, ti);
             else if (ti.classType == ClassType.Static)
                 if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes.Add(name, ti);
+                    funcTypes.Add(name, ti);
                 else
-                    m_externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
+                    m_externs.Add(name, ti);
             else
                 throw new Exception("Gomorrha");
         }
@@ -284,14 +323,14 @@ namespace symdump.symfile
                 addTypedef(name, ti);
             else if (ti.classType == ClassType.External)
                 if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes.Add(name, ti);
+                    funcTypes.Add(name, ti);
                 else
-                    m_externs.Add($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
+                    m_externs.Add(name, ti);
             else if (ti.classType == ClassType.Static)
                 if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes.Add(name, ti);
+                    funcTypes.Add(name, ti);
                 else
-                    m_externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
+                    m_externs.Add(name, ti);
             else
                 throw new Exception("Gomorrha");
         }
@@ -304,6 +343,17 @@ namespace symdump.symfile
         public Function findFunction(string name)
         {
             return functions.FirstOrDefault(f => f.name.Equals(name));
+        }
+        
+        public string getSymbolName(uint addr, int rel = 0)
+        {
+            addr = (uint) (addr + rel);
+
+            List<Label> lbls;
+            if (!labels.TryGetValue(addr, out lbls))
+                return $"lbl_{addr:X}";
+
+            return lbls.First().name;
         }
     }
 }

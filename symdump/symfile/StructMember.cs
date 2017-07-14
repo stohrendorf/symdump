@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using symdump.symfile.type;
 using symdump.symfile.util;
 
 namespace symdump.symfile
@@ -9,8 +10,9 @@ namespace symdump.symfile
         public readonly string name;
         public readonly TypedValue typedValue;
         public readonly TypeInfo typeInfo;
+        public readonly ITypeDefinition typeDefinition;
 
-        public StructMember(TypedValue tv, BinaryReader reader, bool extended)
+        public StructMember(TypedValue tv, BinaryReader reader, bool extended, SymFile symFile)
         {
             typeInfo = reader.readTypeInfo(extended);
             name = reader.readPascalString();
@@ -19,6 +21,8 @@ namespace symdump.symfile
             if (typeInfo.classType != ClassType.Bitfield && typeInfo.classType != ClassType.StructMember &&
                 typeInfo.classType != ClassType.UnionMember && typeInfo.classType != ClassType.EndOfStruct)
                 throw new Exception($"Unexpected class {typeInfo.classType}");
+
+            typeDefinition = symFile.findTypeDefinition(typeInfo.tag);
         }
 
         public bool Equals(StructMember other)
