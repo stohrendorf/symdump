@@ -103,13 +103,13 @@ namespace symdump.exefile
             if (callees.Count == 0)
                 return;
 
-            var addr = callees.First();
+            var addr = callees.Skip(300).First();
             var func = m_symFile.findFunction(addr);
             if (func != null)
                 Console.WriteLine(func.getSignature());
             addr -= m_header.tAddr;
 
-            var flowState = new DataFlowState();
+            var flowState = new DataFlowState(m_symFile, func);
 
             bool skipNext = false;
             foreach (var insnPair in m_instructions.Where(i => i.Key >= addr))
@@ -492,7 +492,7 @@ namespace symdump.exefile
                         rd, rs1, rs2);
                 case OpcodeFunction.addu:
                     if (((data >> 16) & 0x1F) == 0)
-                        return new DataCopyInstruction(rd, rs1);
+                        return new DataCopyInstruction(rs1, rd);
                     else
                         return new ArithmeticInstruction(Operation.Add, rd, rs1, rs2);
                 case OpcodeFunction.sub:

@@ -300,5 +300,10 @@ namespace symdump.symfile
         {
             return functions.FirstOrDefault(f => f.address == addr);
         }
+
+        public Function findFunction(string name)
+        {
+            return functions.FirstOrDefault(f => f.name.Equals(name));
+        }
     }
 }

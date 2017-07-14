@@ -16,12 +16,32 @@ namespace symdump.exefile.dataflow
 
         private readonly List<IExpressionNode> m_stack = new List<IExpressionNode>();
 
+        private readonly SymFile m_symFile;
+
+        public DataFlowState(SymFile symFile, Function func)
+        {
+            m_symFile = symFile;
+
+            if (func == null)
+                return;
+            
+            foreach (var param in func.registerParameters)
+            {
+                if (param.Value.Count > 1)
+                    continue;
+                
+                m_registers[param.Key] = new LabelNode(param.Value.First().name);
+            }
+            
+            dumpState();
+        }
+
         public bool process(Instruction insn, Instruction nextInsn)
         {
             if (insn is NopInstruction)
                 return true;
 
-            Console.WriteLine("[eval] " + insn.asReadable());
+            //Console.WriteLine("[eval] " + insn.asReadable());
 
             if (nextInsn != null && nextInsn.isBranchDelaySlot)
                 process(nextInsn, null);
@@ -40,6 +60,11 @@ namespace symdump.exefile.dataflow
                 process(copy);
                 return true;
             }
+            else if (insn is ConditionalBranchInstruction)
+            {
+                process(nextInsn, null);
+                Console.WriteLine(((ConditionalBranchInstruction) insn).toExpressionNode(this).toCode());
+            }
             else
             {
                 dumpState();
@@ -55,13 +80,15 @@ namespace symdump.exefile.dataflow
             var copyTo = insn.to;
             if (copyTo is RegisterOperand)
             {
-                m_registers[((RegisterOperand) copyTo).register] = insn.@from.toExpressionNode(this);
+                m_registers[((RegisterOperand) copyTo).register] = insn.from.toExpressionNode(this);
             }
             else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).register == Register.sp)
             {
                 var ofs = ((RegisterOffsetOperand) copyTo).offset;
                 Debug.Assert(ofs % 4 == 0);
-                m_stack[ofs / 4] = insn.@from.toExpressionNode(this);
+                // FIXME: If ofs exceeds the stack frame size, assume it's a parameter...
+                Debug.Assert(ofs >= 0 && ofs / 4 < m_stack.Count);
+                m_stack[ofs / 4] = insn.from.toExpressionNode(this);
             }
             else
             {
@@ -117,7 +144,19 @@ namespace symdump.exefile.dataflow
             if (insn.returnAddressTarget != null)
             {
                 dumpState();
-                Console.WriteLine("[raw] " + insn.asReadable());
+
+                if (insn.target is LabelOperand)
+                {
+                    var fn = m_symFile.findFunction(((LabelOperand) insn.target).label);
+                    if (fn != null)
+                    {
+                        Console.WriteLine("// " + fn.getSignature());
+                        Console.WriteLine(insn.asReadable());
+                        return true;
+                    }
+                }
+                
+                Console.WriteLine(insn.asReadable());
                 m_registers.Remove(Register.a0);
                 return true;
             }

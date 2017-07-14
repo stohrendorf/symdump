@@ -30,7 +30,7 @@ namespace symdump.exefile.instructions
 
         public override IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
-            throw new NotImplementedException();
+            return new ConditionalBranchNode(operation, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState), target.toExpressionNode(dataFlowState) as LabelNode);
         }
     }
 }

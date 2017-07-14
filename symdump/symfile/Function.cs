@@ -9,7 +9,7 @@ namespace symdump.symfile
 {
     public class Function
     {
-        private class ArgumentInfo
+        public class ArgumentInfo
         {
             public readonly string name;
             public readonly TypedValue typedValue;
@@ -42,9 +42,9 @@ namespace symdump.symfile
         private readonly uint m_line;
         private readonly uint m_mask;
         private readonly int m_maskOffs;
-        private readonly string m_name;
+        public readonly string name;
 
-        private readonly IDictionary<Register, List<ArgumentInfo>> m_registerParameters =
+        public readonly IDictionary<Register, List<ArgumentInfo>> registerParameters =
             new SortedDictionary<Register, List<ArgumentInfo>>();
 
         private readonly IDictionary<int, ArgumentInfo> m_stackParameters = new SortedDictionary<int, ArgumentInfo>();
@@ -65,11 +65,11 @@ namespace symdump.symfile
 
             m_line = reader.ReadUInt32();
             m_file = reader.readPascalString();
-            m_name = reader.readPascalString();
+            name = reader.readPascalString();
             
             m_body = new Block(address, m_line, this);
 
-            if (!funcTypes.TryGetValue(m_name, out m_returnType))
+            if (!funcTypes.TryGetValue(name, out m_returnType))
                 m_returnType = null;
 
             while (true)
@@ -112,8 +112,8 @@ namespace symdump.symfile
                         break;
                     case ClassType.RegParam:
                         List<ArgumentInfo> infoList;
-                        if (!m_registerParameters.TryGetValue((Register) typedValue.value, out infoList))
-                            m_registerParameters.Add((Register) typedValue.value, infoList = new List<ArgumentInfo>());
+                        if (!registerParameters.TryGetValue((Register) typedValue.value, out infoList))
+                            registerParameters.Add((Register) typedValue.value, infoList = new List<ArgumentInfo>());
                         infoList.Add(argInfo);
                         break;
                     default:
@@ -146,8 +146,8 @@ namespace symdump.symfile
 
         public string getSignature()
         {
-            var parameters = m_registerParameters.Values.SelectMany(p => p).Concat(m_stackParameters.Values);
-            return $"{m_returnType?.asCode("")} /*${m_register}*/ {m_name}({string.Join(", ", parameters)})";
+            var parameters = registerParameters.Values.SelectMany(p => p).Concat(m_stackParameters.Values);
+            return $"{m_returnType?.asCode("")} /*${m_register}*/ {name}({string.Join(", ", parameters)})";
         }
     }
 }
