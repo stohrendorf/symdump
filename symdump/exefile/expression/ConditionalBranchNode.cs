@@ -5,16 +5,16 @@ namespace symdump.exefile.expression
 {
     public class ConditionalBranchNode : IExpressionNode
     {
-        public Operation operation { get; }
+        public Operator @operator { get; }
         public readonly IExpressionNode lhs;
         public readonly IExpressionNode rhs;
         public readonly LabelNode target;
 
-        public ITypeDefinition typeDefinition => null;
+        public ICompoundType compoundType => null;
 
-        public ConditionalBranchNode(Operation operation, IExpressionNode lhs, IExpressionNode rhs, LabelNode target)
+        public ConditionalBranchNode(Operator @operator, IExpressionNode lhs, IExpressionNode rhs, LabelNode target)
         {
-            this.operation = operation;
+            this.@operator = @operator;
             this.lhs = lhs;
             this.rhs = rhs;
             this.target = target;
@@ -25,20 +25,14 @@ namespace symdump.exefile.expression
             var lhsCode = lhs.toCode();
             var rhsCode = rhs.toCode();
 
-            var selfPrecedence = operation.getPrecedence();
-            if (lhs is ExpressionNode)
-            {
-                if (selfPrecedence > ((ExpressionNode) lhs).operation.getPrecedence())
-                    lhsCode = $"({lhsCode})";
-            }
+            var selfPrecedence = @operator.getPrecedence(false);
+            if (selfPrecedence > (lhs as ExpressionNode)?.@operator.getPrecedence(false))
+                lhsCode = $"({lhsCode})";
 
-            if (rhs is ExpressionNode)
-            {
-                if (selfPrecedence > ((ExpressionNode) rhs).operation.getPrecedence())
-                    rhsCode = $"({rhsCode})";
-            }
+            if (selfPrecedence > (rhs as ExpressionNode)?.@operator.getPrecedence(false))
+                rhsCode = $"({rhsCode})";
 
-            return $"if({lhsCode} {operation.toCode()} {rhsCode}) goto {target.toCode()}";
+            return $"if({lhsCode} {@operator.toCode()} {rhsCode}) goto {target.toCode()}";
         }
     }
 }

@@ -17,7 +17,7 @@ namespace symdump.symfile
             public readonly TypeInfo typeInfo;
             public readonly Register stackBase;
 
-            public readonly ITypeDefinition typeDefinition;
+            public readonly ICompoundType compoundType;
 
             public ArgumentInfo(SymFile symFile, string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
             {
@@ -25,7 +25,7 @@ namespace symdump.symfile
                 this.typedValue = typedValue;
                 this.typeInfo = typeInfo;
                 this.stackBase = stackBase;
-                this.typeDefinition = symFile.findTypeDefinition(typeInfo.tag);
+                this.compoundType = symFile.findTypeDefinition(typeInfo.tag);
             }
 
             public override string ToString()
@@ -54,7 +54,7 @@ namespace symdump.symfile
             new SortedDictionary<Register, List<ArgumentInfo>>();
 
         private readonly IDictionary<int, ArgumentInfo> m_stackParameters = new SortedDictionary<int, ArgumentInfo>();
-        private readonly Register m_register;
+        private readonly Register m_returnAddressRegister;
         private readonly TypeInfo m_returnType;
         private readonly Register m_stackBase;
         private readonly uint m_stackFrameSize;
@@ -65,7 +65,7 @@ namespace symdump.symfile
 
             m_stackBase = (Register) reader.ReadUInt16();
             m_stackFrameSize = reader.ReadUInt32();
-            m_register = (Register) reader.ReadUInt16();
+            m_returnAddressRegister = (Register) reader.ReadUInt16();
             m_mask = reader.ReadUInt32();
             m_maskOffs = reader.ReadInt32();
 
@@ -140,6 +140,7 @@ namespace symdump.symfile
             writer.WriteLine($" * Offset 0x{address:X}");
             writer.WriteLine($" * {m_file} (line {m_line})");
             writer.WriteLine($" * Stack frame base ${m_stackBase}, size {m_stackFrameSize}");
+            writer.WriteLine($" * Caller return address in ${m_returnAddressRegister}");
             if (m_mask != 0)
                 writer.WriteLine($" * Saved registers at offset {m_maskOffs}: {string.Join(" ", savedRegisters)}");
             writer.WriteLine(" */");
@@ -152,7 +153,7 @@ namespace symdump.symfile
         public string getSignature()
         {
             var parameters = registerParameters.Values.SelectMany(p => p).Concat(m_stackParameters.Values);
-            return $"{m_returnType?.asCode("")} /*${m_register}*/ {name}({string.Join(", ", parameters)})";
+            return m_returnType?.asCode(name, string.Join(", ", parameters));
         }
     }
 }

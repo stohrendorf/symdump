@@ -34,6 +34,8 @@ namespace symdump.symfile
                 dims = new uint[0];
                 tag = null;
             }
+            
+            typeDef.applyTypeInfo(this);
         }
 
         public bool isFake => tag != null && new Regex(@"^\.\d+fake$").IsMatch(tag);
@@ -55,9 +57,9 @@ namespace symdump.symfile
             return $"classType={classType} typeDef={typeDef} size={size}, dims=[{string.Join(",", dims)}]";
         }
 
-        public string asCode(string name)
+        public string asCode(string name, string argList = null)
         {
-            return typeDef.asCode(name, this);
+            return typeDef.asCode(name, this, argList);
         }
 
         public bool isStruct => typeDef.isStruct;

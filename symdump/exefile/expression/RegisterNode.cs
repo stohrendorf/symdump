@@ -7,7 +7,7 @@ namespace symdump.exefile.expression
     {
         public readonly Register register;
 
-        public ITypeDefinition typeDefinition => null;
+        public ICompoundType compoundType => null;
 
         public RegisterNode(Register register)
         {

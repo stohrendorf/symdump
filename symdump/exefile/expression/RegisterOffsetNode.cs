@@ -8,7 +8,7 @@ namespace symdump.exefile.expression
         public readonly Register register;
         public readonly int offset;
 
-        public ITypeDefinition typeDefinition { get; set; }
+        public ICompoundType compoundType { get; set; }
 
         public RegisterOffsetNode(Register register, int offset)
         {
@@ -23,8 +23,8 @@ namespace symdump.exefile.expression
 
         public string tryDeref()
         {
-            if (typeDefinition is StructDef)
-                return ((StructDef) typeDefinition).forOffset((uint) offset).ToString();
+            if (compoundType is StructDef)
+                return ((StructDef) compoundType).forOffset((uint) offset).ToString();
 
             return null;
         }

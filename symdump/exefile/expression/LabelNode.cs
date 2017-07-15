@@ -6,17 +6,17 @@ namespace symdump.exefile.expression
     {
         public readonly string label;
 
-        public ITypeDefinition typeDefinition { get; }
+        public ICompoundType compoundType { get; }
 
-        public LabelNode(string label, ITypeDefinition typeDefinition)
+        public LabelNode(string label, ICompoundType compoundType)
         {
             this.label = label;
-            this.typeDefinition = typeDefinition;
+            this.compoundType = compoundType;
         }
 
         public string toCode()
         {
-            return typeDefinition == null ? label : typeDefinition.ToString();
+            return compoundType == null ? label : compoundType.ToString();
         }
     }
 }

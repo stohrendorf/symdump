@@ -7,7 +7,7 @@ using symdump.util;
 
 namespace symdump.symfile.type
 {
-    public class UnionDef : ITypeDefinition, IEquatable<UnionDef>
+    public class UnionDef : ICompoundType, IEquatable<UnionDef>
     {
         public readonly List<StructMember> members = new List<StructMember>();
         public readonly string name;

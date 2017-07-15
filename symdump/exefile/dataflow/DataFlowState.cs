@@ -34,7 +34,7 @@ namespace symdump.exefile.dataflow
                 }
 
                 var p = param.Value.First();
-                m_registers[param.Key] = new LabelNode(p.name, p.typeDefinition);
+                m_registers[param.Key] = new LabelNode(p.name, p.compoundType);
             }
             
             dumpState();
@@ -116,7 +116,7 @@ namespace symdump.exefile.dataflow
                 var delta = (int) ((ImmediateOperand) arith.rhs).value;
                 Debug.Assert(delta % 4 == 0);
                 delta /= 4;
-                if (arith.operation == Operation.Sub)
+                if (arith.@operator == Operator.Sub)
                     delta = -delta;
 
                 if (delta > 0)

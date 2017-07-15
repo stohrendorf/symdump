@@ -7,7 +7,7 @@ using symdump.util;
 
 namespace symdump.symfile.type
 {
-    public class StructDef : ITypeDefinition, IEquatable<StructDef>
+    public class StructDef : ICompoundType, IEquatable<StructDef>
     {
         public readonly List<StructMember> members = new List<StructMember>();
         public readonly string name;
@@ -96,10 +96,10 @@ namespace symdump.symfile.type
             if (member == null)
                 return null;
 
-            if (!(member.typeDefinition is StructDef))
+            if (!(member.compoundType is StructDef))
                 return member.name;
 
-            var sdef = (StructDef) member.typeDefinition;
+            var sdef = (StructDef) member.compoundType;
             
             ofs -= (uint) member.typedValue.value;
             var subMember = sdef.forOffset(ofs);

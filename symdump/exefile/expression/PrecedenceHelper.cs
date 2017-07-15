@@ -5,41 +5,49 @@ namespace symdump.exefile.expression
 {
     public static class PrecedenceHelper
     {
-        public static int getPrecedence(this Operation operation)
+        public static int getPrecedence(this Operator @operator, bool inplace)
         {
             // from http://en.cppreference.com/w/c/language/operator_precedence
-            switch (operation)
+            switch (@operator)
             {
-                case Operation.Mul:
-                case Operation.Div:
-                    return 3;
-                case Operation.Add:
-                case Operation.Sub:
-                    return 4;
-                case Operation.Shl:
-                case Operation.Shr:
-                case Operation.Sar:
-                    return 5;
-                case Operation.Less:
-                case Operation.SignedLess:
-                case Operation.Greater:
-                case Operation.SignedGreater:
-                case Operation.LessEqual:
-                case Operation.SignedLessEqual:
-                case Operation.GreaterEqual:
-                case Operation.SignedGreaterEqual:
+                case Operator.FunctionCall:
+                case Operator.Array:
+                case Operator.MemberAccess:
+                    return 1;
+                case Operator.Cast:
+                case Operator.Dereference:
+                    return 2;
+                case Operator.Mul:
+                case Operator.Div:
+                case Operator.Mod:
+                    return inplace ? 14 : 3;
+                case Operator.Add:
+                case Operator.Sub:
+                    return inplace ? 14 : 4;
+                case Operator.Shl:
+                case Operator.Shr:
+                case Operator.Sar:
+                    return inplace ? 14 : 5;
+                case Operator.Less:
+                case Operator.SignedLess:
+                case Operator.Greater:
+                case Operator.SignedGreater:
+                case Operator.LessEqual:
+                case Operator.SignedLessEqual:
+                case Operator.GreaterEqual:
+                case Operator.SignedGreaterEqual:
                     return 6;
-                case Operation.Equal:
-                case Operation.NotEqual:
+                case Operator.Equal:
+                case Operator.NotEqual:
                     return 7;
-                case Operation.BitAnd:
-                    return 8;
-                case Operation.BitXor:
-                    return 9;
-                case Operation.BitOr:
-                    return 10;
+                case Operator.BitAnd:
+                    return inplace ? 14 : 8;
+                case Operator.BitXor:
+                    return inplace ? 14 : 9;
+                case Operator.BitOr:
+                    return inplace ? 14 : 10;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(operation), operation, null);
+                    throw new ArgumentOutOfRangeException(nameof(@operator), @operator, null);
             }
         }
     }

@@ -1,47 +1,71 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using symdump.symfile.type;
 
 namespace symdump.symfile
 {
     public class TypeDef : IEquatable<TypeDef>
     {
         public readonly BaseType baseType;
-        public readonly DerivedType[] derivedTypes = new DerivedType[6];
 
-        public TypeDef(BinaryReader fs)
+        public IWrappedType wrappedType { get; private set; }
+
+        public bool isFunctionReturnType { get; private set; }
+
+        private readonly DerivedType[] m_derivedTypes = new DerivedType[6];
+
+        public TypeDef(BinaryReader reader)
         {
-            var val = fs.ReadUInt16();
+            var val = reader.ReadUInt16();
             baseType = (BaseType) (val & 0x0f);
+
             for (var i = 0; i < 6; ++i)
             {
                 var x = (val >> (i * 2 + 4)) & 3;
-                derivedTypes[i] = (DerivedType) x;
+                m_derivedTypes[i] = (DerivedType) x;
             }
         }
 
-        public bool isFunctionReturnType => derivedTypes.Contains(DerivedType.FunctionReturnType);
-
-        public bool Equals(TypeDef other)
+        public void applyTypeInfo(TypeInfo typeInfo)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return baseType == other.baseType && derivedTypes.SequenceEqual(other.derivedTypes);
+            IWrappedType wrapped = new NameWrapped();
+            var dimIdx = 0;
+
+            foreach (var dt in m_derivedTypes)
+            {
+                switch (dt)
+                {
+                    case DerivedType.None:
+                        continue;
+                    case DerivedType.Array:
+                        wrapped = new ArrayWrapped(typeInfo.dims[dimIdx], wrapped);
+                        ++dimIdx;
+                        break;
+                    case DerivedType.FunctionReturnType:
+                        wrapped = new FunctionWrapped(wrapped);
+                        isFunctionReturnType = true;
+                        break;
+                    case DerivedType.Pointer:
+                        wrapped = new PointerWrapped(wrapped);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            wrappedType = wrapped;
         }
 
         public override string ToString()
         {
-            var attribs = string.Join(",", derivedTypes.Where(e => e != DerivedType.None));
-            return attribs.Length == 0 ? baseType.ToString() : $"{baseType}({attribs})";
+            return wrappedType.asCode("__NAME__", null);
         }
 
         public bool isStruct => baseType == BaseType.StructDef;
-        
-        public string asCode(string name, TypeInfo typeInfo)
-        {
-            var dimIdx = 0;
 
+        public string asCode(string name, TypeInfo typeInfo, string argList)
+        {
             string ctype;
             switch (baseType)
             {
@@ -94,39 +118,22 @@ namespace symdump.symfile
                     throw new Exception($"Unexpected base type {baseType}");
             }
 
-            var needsParens = false;
-            foreach (var dt in derivedTypes)
-                switch (dt)
-                {
-                    case DerivedType.None:
-                        continue;
-                    case DerivedType.Array:
-                        Debug.Assert(name != null);
-                        name += $"[{typeInfo.dims[dimIdx]}]";
-                        ++dimIdx;
-                        needsParens = true;
-                        break;
-                    case DerivedType.FunctionReturnType:
-                        if (name != "")
-                        {
-                            name = needsParens ? $"({name})()" : $"{name}()";
-                            needsParens = true;
-                        }
-                        break;
-                    case DerivedType.Pointer:
-                        name = $"*{name}";
-                        needsParens = true;
-                        break;
-                }
+            return ctype + " " + wrappedType.asCode(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
+        }
 
-            return string.IsNullOrEmpty(name) ? ctype : $"{ctype} {name}";
+        public bool Equals(TypeDef other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return baseType == other.baseType && Equals(wrappedType, other.wrappedType) &&
+                   isFunctionReturnType == other.isFunctionReturnType;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (obj.GetType() != this.GetType()) return false;
             return Equals((TypeDef) obj);
         }
 
@@ -134,7 +141,10 @@ namespace symdump.symfile
         {
             unchecked
             {
-                return ((int) baseType * 397) ^ (derivedTypes != null ? derivedTypes.GetHashCode() : 0);
+                var hashCode = (int) baseType;
+                hashCode = (hashCode * 397) ^ (wrappedType != null ? wrappedType.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ isFunctionReturnType.GetHashCode();
+                return hashCode;
             }
         }
     }

@@ -18,9 +18,9 @@ namespace symdump.symfile.util
             return result;
         }
 
-        public static TypeDef readTypeDef(this BinaryReader s)
+        public static TypeDef readTypeDef(this BinaryReader reader)
         {
-            return new TypeDef(s);
+            return new TypeDef(reader);
         }
 
         public static TypeInfo readTypeInfo(this BinaryReader s, bool withDimensions)

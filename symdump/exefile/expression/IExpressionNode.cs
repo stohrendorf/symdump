@@ -7,6 +7,6 @@ namespace symdump.exefile.expression
     {
         string toCode();
 
-        ITypeDefinition typeDefinition { get; }
+        ICompoundType compoundType { get; }
     }
 }

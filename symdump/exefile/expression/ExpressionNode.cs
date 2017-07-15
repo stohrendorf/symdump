@@ -5,15 +5,15 @@ namespace symdump.exefile.expression
 {
     public class ExpressionNode : IExpressionNode
     {
-        public Operation operation { get; }
+        public Operator @operator { get; }
         public readonly IExpressionNode lhs;
         public readonly IExpressionNode rhs;
 
-        public ITypeDefinition typeDefinition => null;
+        public ICompoundType compoundType => null;
 
-        public ExpressionNode(Operation operation, IExpressionNode lhs, IExpressionNode rhs)
+        public ExpressionNode(Operator @operator, IExpressionNode lhs, IExpressionNode rhs)
         {
-            this.operation = operation;
+            this.@operator = @operator;
             this.lhs = lhs;
             this.rhs = rhs;
         }
@@ -23,28 +23,22 @@ namespace symdump.exefile.expression
             var lhsCode = lhs.toCode();
             var rhsCode = rhs.toCode();
 
-            var selfPrecedence = operation.getPrecedence();
-            if (lhs is ExpressionNode)
-            {
-                if (selfPrecedence > ((ExpressionNode) lhs).operation.getPrecedence())
-                    lhsCode = $"({lhsCode})";
-            }
+            var selfPrecedence = @operator.getPrecedence(false);
+            if (selfPrecedence > (lhs as ExpressionNode)?.@operator.getPrecedence(false))
+                lhsCode = $"({lhsCode})";
             
-            if (rhs is ExpressionNode)
-            {
-                if (selfPrecedence > ((ExpressionNode) rhs).operation.getPrecedence())
-                    rhsCode = $"({rhsCode})";
-            }
+            if (selfPrecedence > (rhs as ExpressionNode)?.@operator.getPrecedence(false))
+                rhsCode = $"({rhsCode})";
 
-            return $"{lhsCode} {operation.toCode()} {rhsCode}";
+            return $"{lhsCode} {@operator.toCode()} {rhsCode}";
         }
 
         public string tryDeref()
         {
-            if (operation != Operation.Add || !(lhs is LabelNode) || !(rhs is ValueNode))
+            if (@operator != Operator.Add || !(lhs is LabelNode) || !(rhs is ValueNode))
                 return null;
 
-            var sdef = (StructDef) ((LabelNode) lhs).typeDefinition;
+            var sdef = (StructDef) ((LabelNode) lhs).compoundType;
             if (sdef == null)
                 return null;
             

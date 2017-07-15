@@ -59,12 +59,12 @@ namespace symdump.symfile
             return result;
         }
 
-        public ITypeDefinition findTypeDefinition(string tag)
+        public ICompoundType findTypeDefinition(string tag)
         {
             return findStructDef(tag);
         }
         
-        public ITypeDefinition findTypeDefinitionForLabel(string label)
+        public ICompoundType findTypeDefinitionForLabel(string label)
         {
             TypeInfo ti;
             if (!m_externs.TryGetValue(label, out ti))

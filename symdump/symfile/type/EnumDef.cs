@@ -7,7 +7,7 @@ using symdump.util;
 
 namespace symdump.symfile.type
 {
-    public class EnumDef : ITypeDefinition, IEquatable<EnumDef>
+    public class EnumDef : IEquatable<EnumDef>
     {
         private readonly Dictionary<string, int> m_members = new Dictionary<string, int>();
         private readonly string m_name;

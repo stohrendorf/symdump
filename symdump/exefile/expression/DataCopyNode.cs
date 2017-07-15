@@ -7,7 +7,7 @@ namespace symdump.exefile.expression
         public readonly IExpressionNode to;
         public readonly IExpressionNode from;
 
-        public ITypeDefinition typeDefinition => null;
+        public ICompoundType compoundType => null;
 
         public DataCopyNode(IExpressionNode to, IExpressionNode @from)
         {

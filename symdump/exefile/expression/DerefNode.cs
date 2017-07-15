@@ -6,7 +6,7 @@ namespace symdump.exefile.expression
     {
         public readonly IExpressionNode inner;
 
-        public ITypeDefinition typeDefinition => null;
+        public ICompoundType compoundType => null;
 
         public DerefNode(IExpressionNode inner)
         {

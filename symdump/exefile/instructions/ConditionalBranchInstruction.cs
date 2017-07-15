@@ -7,11 +7,11 @@ namespace symdump.exefile.instructions
 {
     public class ConditionalBranchInstruction : Instruction
     {
-        public readonly Operation operation;
+        public readonly Operator @operator;
 
-        public ConditionalBranchInstruction(Operation operation, IOperand lhs, IOperand rhs, IOperand target)
+        public ConditionalBranchInstruction(Operator @operator, IOperand lhs, IOperand rhs, IOperand target)
         {
-            this.operation = operation;
+            this.@operator = @operator;
             operands = new[] {lhs, rhs, target};
         }
 
@@ -23,14 +23,14 @@ namespace symdump.exefile.instructions
 
         public override string asReadable()
         {
-            var op = operation.toCode();
+            var op = @operator.toCode();
 
             return $"if({lhs} {op} {rhs}) goto {target}";
         }
 
         public override IExpressionNode toExpressionNode(DataFlowState dataFlowState)
         {
-            return new ConditionalBranchNode(operation, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState), target.toExpressionNode(dataFlowState) as LabelNode);
+            return new ConditionalBranchNode(@operator, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState), target.toExpressionNode(dataFlowState) as LabelNode);
         }
     }
 }

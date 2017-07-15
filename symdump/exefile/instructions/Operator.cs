@@ -4,49 +4,49 @@ namespace symdump.exefile.instructions
 {
     public static class OperationUtil
     {
-        public static string toCode(this Operation operation)
+        public static string toCode(this Operator @operator)
         {
-            switch (operation)
+            switch (@operator)
             {
-                case Operation.Add:
+                case Operator.Add:
                     return "+";
-                case Operation.Sub:
+                case Operator.Sub:
                     return "-";
-                case Operation.Mul:
+                case Operator.Mul:
                     return "*";
-                case Operation.Div:
+                case Operator.Div:
                     return "/";
-                case Operation.Shl:
+                case Operator.Shl:
                     return "<<";
-                case Operation.Shr:
+                case Operator.Shr:
                     return ">>>";
-                case Operation.Sar:
+                case Operator.Sar:
                     return ">>";
-                case Operation.BitAnd:
+                case Operator.BitAnd:
                     return "&";
-                case Operation.BitOr:
+                case Operator.BitOr:
                     return "|";
-                case Operation.BitXor:
+                case Operator.BitXor:
                     return "^";
-                case Operation.Less:
+                case Operator.Less:
                     return "<";
-                case Operation.SignedLess:
+                case Operator.SignedLess:
                     return "<";
-                case Operation.LessEqual:
+                case Operator.LessEqual:
                     return "<=";
-                case Operation.SignedLessEqual:
+                case Operator.SignedLessEqual:
                     return "<=";
-                case Operation.Equal:
+                case Operator.Equal:
                     return "==";
-                case Operation.NotEqual:
+                case Operator.NotEqual:
                     return "!=";
-                case Operation.Greater:
+                case Operator.Greater:
                     return ">";
-                case Operation.SignedGreater:
+                case Operator.SignedGreater:
                     return ">";
-                case Operation.GreaterEqual:
+                case Operator.GreaterEqual:
                     return ">=";
-                case Operation.SignedGreaterEqual:
+                case Operator.SignedGreaterEqual:
                     return ">=";
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -54,12 +54,13 @@ namespace symdump.exefile.instructions
         }
     }
 
-    public enum Operation
+    public enum Operator
     {
         Add,
         Sub,
         Mul,
         Div,
+        Mod,
         Shl,
         Shr,
         Sar,
@@ -75,6 +76,11 @@ namespace symdump.exefile.instructions
         LessEqual,
         SignedLessEqual,
         GreaterEqual,
-        SignedGreaterEqual
+        SignedGreaterEqual,
+        FunctionCall,
+        Array,
+        MemberAccess,
+        Cast,
+        Dereference
     }
 }

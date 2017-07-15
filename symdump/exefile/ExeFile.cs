@@ -242,12 +242,12 @@ namespace symdump.exefile
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
-                        return new ConditionalBranchInstruction(Operation.Equal,
+                        return new ConditionalBranchInstruction(Operator.Equal,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
                             new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                     else
-                        return new ConditionalBranchInstruction(Operation.Equal,
+                        return new ConditionalBranchInstruction(Operator.Equal,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
                             new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
@@ -255,31 +255,31 @@ namespace symdump.exefile
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
-                        return new ConditionalBranchInstruction(Operation.NotEqual,
+                        return new ConditionalBranchInstruction(Operator.NotEqual,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
                             new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                     else
-                        return new ConditionalBranchInstruction(Operation.NotEqual,
+                        return new ConditionalBranchInstruction(Operator.NotEqual,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
                             new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.blez:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operation.LessEqual,
+                    return new ConditionalBranchInstruction(Operator.LessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.bgtz:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operation.Greater,
+                    return new ConditionalBranchInstruction(Operator.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.addi:
-                    return new ArithmeticInstruction(Operation.Add,
+                    return new ArithmeticInstruction(Operator.Add,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
@@ -289,32 +289,32 @@ namespace symdump.exefile
                             new RegisterOperand(data, 16),
                             new ImmediateOperand((short) data));
                     else
-                        return new ArithmeticInstruction(Operation.Add,
+                        return new ArithmeticInstruction(Operator.Add,
                             new RegisterOperand(data, 16),
                             new RegisterOperand(data, 21),
                             new ImmediateOperand((ushort) data));
                 case Opcode.subi:
-                    return new ArithmeticInstruction(Operation.Sub,
+                    return new ArithmeticInstruction(Operator.Sub,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.subiu:
-                    return new ArithmeticInstruction(Operation.Sub,
+                    return new ArithmeticInstruction(Operator.Sub,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
                         new ImmediateOperand((ushort) data));
                 case Opcode.andi:
-                    return new ArithmeticInstruction(Operation.BitAnd,
+                    return new ArithmeticInstruction(Operator.BitAnd,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.ori:
-                    return new ArithmeticInstruction(Operation.BitOr,
+                    return new ArithmeticInstruction(Operator.BitOr,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.xori:
-                    return new ArithmeticInstruction(Operation.BitXor,
+                    return new ArithmeticInstruction(Operator.BitXor,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
@@ -381,28 +381,28 @@ namespace symdump.exefile
                 case Opcode.beql:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operation.Equal,
+                    return new ConditionalBranchInstruction(Operator.Equal,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
                         new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.bnel:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operation.NotEqual,
+                    return new ConditionalBranchInstruction(Operator.NotEqual,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
                         new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.blezl:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operation.SignedLessEqual,
+                    return new ConditionalBranchInstruction(Operator.SignedLessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
                 case Opcode.bgtzl:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operation.Greater,
+                    return new ConditionalBranchInstruction(Operator.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
@@ -422,27 +422,27 @@ namespace symdump.exefile
                     if (data == 0)
                         return new NopInstruction();
                     else
-                        return new ArithmeticInstruction(Operation.Shl,
+                        return new ArithmeticInstruction(Operator.Shl,
                             rd, rs2,
                             new ImmediateOperand((int) (data >> 6) & 0x1F));
                 case OpcodeFunction.srl:
-                    return new ArithmeticInstruction(Operation.Shr,
+                    return new ArithmeticInstruction(Operator.Shr,
                         rd, rs2,
                         new ImmediateOperand((int) (data >> 6) & 0x1F));
                 case OpcodeFunction.sra:
-                    return new ArithmeticInstruction(Operation.Sar,
+                    return new ArithmeticInstruction(Operator.Sar,
                         rd, rs2,
                         new ImmediateOperand((int) (data >> 6) & 0x1F));
                 case OpcodeFunction.sllv:
-                    return new ArithmeticInstruction(Operation.Shl,
+                    return new ArithmeticInstruction(Operator.Shl,
                         rd, rs2,
                         rs1);
                 case OpcodeFunction.srlv:
-                    return new ArithmeticInstruction(Operation.Shr,
+                    return new ArithmeticInstruction(Operator.Shr,
                         rd, rs2,
                         rs1);
                 case OpcodeFunction.srav:
-                    return new ArithmeticInstruction(Operation.Sar,
+                    return new ArithmeticInstruction(Operator.Sar,
                         rd, rs2,
                         rs1);
                 case OpcodeFunction.jr:
@@ -480,27 +480,27 @@ namespace symdump.exefile
                     return new SimpleInstruction("divu", "__DIV((unsigned){0}, (unsigned){1})",
                         rs1, rs2);
                 case OpcodeFunction.add:
-                    return new ArithmeticInstruction(Operation.Add,
+                    return new ArithmeticInstruction(Operator.Add,
                         rd, rs1, rs2);
                 case OpcodeFunction.addu:
                     if (((data >> 16) & 0x1F) == 0)
                         return new DataCopyInstruction(rs1, rd);
                     else
-                        return new ArithmeticInstruction(Operation.Add, rd, rs1, rs2);
+                        return new ArithmeticInstruction(Operator.Add, rd, rs1, rs2);
                 case OpcodeFunction.sub:
-                    return new ArithmeticInstruction(Operation.Sub,
+                    return new ArithmeticInstruction(Operator.Sub,
                         rd, rs1, rs2);
                 case OpcodeFunction.subu:
-                    return new ArithmeticInstruction(Operation.Sub,
+                    return new ArithmeticInstruction(Operator.Sub,
                         rd, rs1, rs2);
                 case OpcodeFunction.and:
-                    return new ArithmeticInstruction(Operation.BitAnd,
+                    return new ArithmeticInstruction(Operator.BitAnd,
                         rd, rs1, rs2);
                 case OpcodeFunction.or:
-                    return new ArithmeticInstruction(Operation.BitOr,
+                    return new ArithmeticInstruction(Operator.BitOr,
                         rd, rs1, rs2);
                 case OpcodeFunction.xor:
-                    return new ArithmeticInstruction(Operation.BitXor,
+                    return new ArithmeticInstruction(Operator.BitXor,
                         rd, rs1, rs2);
                 case OpcodeFunction.nor:
                     return new SimpleInstruction("nor", "{0} = ~({1} | {2})", rd,
@@ -577,28 +577,28 @@ namespace symdump.exefile
                 case 0:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operation.SignedLess,
+                    return new ConditionalBranchInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 1:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operation.SignedGreaterEqual,
+                    return new ConditionalBranchInstruction(Operator.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 16:
                     addCall(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalCallInstruction(Operation.SignedLess,
+                    return new ConditionalCallInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 17:
                     addCall(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
-                    return new ConditionalCallInstruction(Operation.SignedGreaterEqual,
+                    return new ConditionalCallInstruction(Operator.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
                         offset);

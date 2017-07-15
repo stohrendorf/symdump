@@ -40,7 +40,7 @@ namespace symdump.exefile.operands
                 return new LabelNode(name, dataFlowState.symFile.findTypeDefinitionForLabel(name));
             }
                 
-            return new DerefNode(new ExpressionNode(Operation.Add, expression, new ValueNode(offset)));
+            return new DerefNode(new ExpressionNode(Operator.Add, expression, new ValueNode(offset)));
         }
 
         public override string ToString()

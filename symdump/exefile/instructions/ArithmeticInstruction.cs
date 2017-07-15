@@ -8,12 +8,12 @@ namespace symdump.exefile.instructions
 {
     public class ArithmeticInstruction : Instruction
     {
-        public readonly Operation operation;
+        public readonly Operator @operator;
 
-        public ArithmeticInstruction(Operation operation, IOperand dest, IOperand lhs, IOperand rhs)
+        public ArithmeticInstruction(Operator @operator, IOperand dest, IOperand lhs, IOperand rhs)
         {
-            this.operation = operation;
-            if ((operation == Operation.Add || operation == Operation.Sub) && dest.Equals(lhs) && (dest is RegisterOperand) &&
+            this.@operator = @operator;
+            if ((@operator == Operator.Add || @operator == Operator.Sub) && dest.Equals(lhs) && (dest is RegisterOperand) &&
                 ((RegisterOperand) dest).register == Register.sp && (rhs is ImmediateOperand))
             {
                 rhs = new ImmediateOperand((short)((ImmediateOperand) rhs).value);
@@ -31,7 +31,7 @@ namespace symdump.exefile.instructions
 
         public override string asReadable()
         {
-            var op = operation.toCode();
+            var op = @operator.toCode();
 
             return isInplace
                 ? $"{destination} {op}= {rhs}"
@@ -45,45 +45,45 @@ namespace symdump.exefile.instructions
             
             if (!(lhsExpr is ValueNode) || !(rhsExpr is ValueNode))
             {
-                return new ExpressionNode(operation, lhsExpr, rhsExpr);
+                return new ExpressionNode(@operator, lhsExpr, rhsExpr);
             }
 
             var lhsVal = ((ValueNode) lhsExpr).value;
             var rhsVal = ((ValueNode) rhsExpr).value;
 
-            switch (operation)
+            switch (@operator)
             {
-                case Operation.Add:
+                case Operator.Add:
                     return new ValueNode(lhsVal + rhsVal);
-                case Operation.Sub:
+                case Operator.Sub:
                     return new ValueNode(lhsVal - rhsVal);
-                case Operation.Mul:
+                case Operator.Mul:
                     return new ValueNode(lhsVal * rhsVal);
-                case Operation.Div:
+                case Operator.Div:
                     return new ValueNode(lhsVal / rhsVal);
-                case Operation.Shl:
+                case Operator.Shl:
                     return new ValueNode(lhsVal << (int)rhsVal);
-                case Operation.Shr:
+                case Operator.Shr:
                     return new ValueNode(lhsVal >> (int)rhsVal);
-                case Operation.Sar:
+                case Operator.Sar:
                     return new ValueNode(lhsVal >> (int)rhsVal);
-                case Operation.BitAnd:
+                case Operator.BitAnd:
                     return new ValueNode(lhsVal & rhsVal);
-                case Operation.BitOr:
+                case Operator.BitOr:
                     return new ValueNode(lhsVal | rhsVal);
-                case Operation.BitXor:
+                case Operator.BitXor:
                     return new ValueNode(lhsVal ^ rhsVal);
-                case Operation.Equal:
-                case Operation.NotEqual:
-                case Operation.Less:
-                case Operation.SignedLess:
-                case Operation.Greater:
-                case Operation.SignedGreater:
-                case Operation.LessEqual:
-                case Operation.SignedLessEqual:
-                case Operation.GreaterEqual:
-                case Operation.SignedGreaterEqual:
-                    return new ExpressionNode(operation, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState));
+                case Operator.Equal:
+                case Operator.NotEqual:
+                case Operator.Less:
+                case Operator.SignedLess:
+                case Operator.Greater:
+                case Operator.SignedGreater:
+                case Operator.LessEqual:
+                case Operator.SignedLessEqual:
+                case Operator.GreaterEqual:
+                case Operator.SignedGreaterEqual:
+                    return new ExpressionNode(@operator, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState));
                 default:
                     throw new ArgumentOutOfRangeException();
             }

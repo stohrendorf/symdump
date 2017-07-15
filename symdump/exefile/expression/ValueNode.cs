@@ -6,7 +6,7 @@ namespace symdump.exefile.expression
     {
         public readonly long value;
 
-        public ITypeDefinition typeDefinition => null;
+        public ICompoundType compoundType => null;
 
         public ValueNode(long value)
         {
