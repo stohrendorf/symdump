@@ -6,8 +6,6 @@ namespace symfile.type
     {
         public int precedence => int.MinValue;
 
-        public ITypeDecorator inner => null;
-        
         public string asDeclaration(string identifier, string argList)
         {
             return identifier;

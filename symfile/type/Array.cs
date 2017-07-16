@@ -1,6 +1,7 @@
 ﻿using System;
 using core;
 using core.util;
+using Xunit;
 
 namespace symfile.type
 {
@@ -47,6 +48,23 @@ namespace symfile.type
             {
                 return ((int) dimension * 397) ^ (inner != null ? inner.GetHashCode() : 0);
             }
+        }
+    }
+
+    public static class ArrayTest
+    {
+        [Fact]
+        public static void testDeclarationSimple()
+        {
+            var tmp = new Array(10, new Identifier());
+            Assert.Equal("foo[10]", tmp.asDeclaration("foo", null));
+        }
+
+        [Fact]
+        public static void testDeclarationPrecedence()
+        {
+            var tmp = new Array(10, new Pointer(new Identifier()));
+            Assert.Equal("(*foo)[10]", tmp.asDeclaration("foo", null));
         }
     }
 }
