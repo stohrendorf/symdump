@@ -9,7 +9,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <LangVersion>7</LangVersion>
-      <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,4 +24,9 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\core\core.csproj"/>
+    <ProjectReference Include="..\exefile\exefile.csproj"/>
+    <ProjectReference Include="..\symfile\symfile.csproj"/>
+  </ItemGroup>
 </Project>

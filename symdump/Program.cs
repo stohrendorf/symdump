@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
-using symdump.exefile;
-using symdump.exefile.util;
-using symdump.symfile;
+﻿using System.IO;
+using core.util;
+using exefile;
+using symfile;
 
 namespace symdump
 {
