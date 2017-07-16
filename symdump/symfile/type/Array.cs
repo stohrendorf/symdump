@@ -4,15 +4,15 @@ using symdump.exefile.instructions;
 
 namespace symdump.symfile.type
 {
-    public class ArrayWrapped : IWrappedType, IEquatable<ArrayWrapped>
+    public class Array : ITypeDecorator, IEquatable<Array>
     {
         public int precedence => Operator.Array.getPrecedence(false);
 
-        public IWrappedType inner { get; }
+        public ITypeDecorator inner { get; }
 
-        public string asCode(string name, string argList)
+        public string asDeclaration(string identifier, string argList)
         {
-            var innerCode = inner.asCode(name, argList);
+            var innerCode = inner.asDeclaration(identifier, argList);
             return inner.precedence >= precedence
                 ? $"({innerCode})[{dimension}]"
                 : $"{innerCode}[{dimension}]";
@@ -20,13 +20,13 @@ namespace symdump.symfile.type
 
         public readonly uint dimension;
 
-        public ArrayWrapped(uint dimension, IWrappedType inner)
+        public Array(uint dimension, ITypeDecorator inner)
         {
             this.dimension = dimension;
             this.inner = inner;
         }
 
-        public bool Equals(ArrayWrapped other)
+        public bool Equals(Array other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -38,7 +38,7 @@ namespace symdump.symfile.type
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((ArrayWrapped) obj);
+            return Equals((Array) obj);
         }
 
         public override int GetHashCode()

@@ -35,7 +35,7 @@ namespace symdump.symfile
                 tag = null;
             }
             
-            typeDef.applyTypeInfo(this);
+            typeDef.applyDecoration(dims);
         }
 
         public bool isFake => tag != null && new Regex(@"^\.\d+fake$").IsMatch(tag);

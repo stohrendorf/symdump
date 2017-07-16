@@ -2,18 +2,18 @@
 
 namespace symdump.symfile.type
 {
-    public class NameWrapped : IWrappedType, IEquatable<NameWrapped>
+    public class Identifier : ITypeDecorator, IEquatable<Identifier>
     {
         public int precedence => int.MinValue;
 
-        public IWrappedType inner => null;
+        public ITypeDecorator inner => null;
         
-        public string asCode(string name, string argList)
+        public string asDeclaration(string identifier, string argList)
         {
-            return name;
+            return identifier;
         }
 
-        public bool Equals(NameWrapped other)
+        public bool Equals(Identifier other)
         {
             return true;
         }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using symdump.symfile.type;
+using Array = symdump.symfile.type.Array;
 
 namespace symdump.symfile
 {
@@ -9,7 +11,7 @@ namespace symdump.symfile
     {
         public readonly BaseType baseType;
 
-        public IWrappedType wrappedType { get; private set; }
+        public ITypeDecorator typeDecorator { get; private set; }
 
         public bool isFunctionReturnType { get; private set; }
 
@@ -27,39 +29,35 @@ namespace symdump.symfile
             }
         }
 
-        public void applyTypeInfo(TypeInfo typeInfo)
+        public void applyDecoration(uint[] arrayDims)
         {
-            IWrappedType wrapped = new NameWrapped();
+            typeDecorator = new Identifier();
             var dimIdx = 0;
 
-            foreach (var dt in m_derivedTypes)
+            foreach (var dt in m_derivedTypes.Where(dt => dt != DerivedType.None))
             {
                 switch (dt)
                 {
-                    case DerivedType.None:
-                        continue;
                     case DerivedType.Array:
-                        wrapped = new ArrayWrapped(typeInfo.dims[dimIdx], wrapped);
+                        typeDecorator = new Array(arrayDims[dimIdx], typeDecorator);
                         ++dimIdx;
                         break;
                     case DerivedType.FunctionReturnType:
-                        wrapped = new FunctionWrapped(wrapped);
+                        typeDecorator = new type.Function(typeDecorator);
                         isFunctionReturnType = true;
                         break;
                     case DerivedType.Pointer:
-                        wrapped = new PointerWrapped(wrapped);
+                        typeDecorator = new Pointer(typeDecorator);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
-
-            wrappedType = wrapped;
         }
 
         public override string ToString()
         {
-            return wrappedType.asCode("__NAME__", null);
+            return typeDecorator.asDeclaration("__NAME__", null);
         }
 
         public bool isStruct => baseType == BaseType.StructDef;
@@ -118,14 +116,14 @@ namespace symdump.symfile
                     throw new Exception($"Unexpected base type {baseType}");
             }
 
-            return ctype + " " + wrappedType.asCode(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
+            return ctype + " " + typeDecorator.asDeclaration(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
         }
 
         public bool Equals(TypeDef other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return baseType == other.baseType && Equals(wrappedType, other.wrappedType) &&
+            return baseType == other.baseType && Equals(typeDecorator, other.typeDecorator) &&
                    isFunctionReturnType == other.isFunctionReturnType;
         }
 
@@ -142,7 +140,7 @@ namespace symdump.symfile
             unchecked
             {
                 var hashCode = (int) baseType;
-                hashCode = (hashCode * 397) ^ (wrappedType != null ? wrappedType.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (typeDecorator != null ? typeDecorator.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ isFunctionReturnType.GetHashCode();
                 return hashCode;
             }

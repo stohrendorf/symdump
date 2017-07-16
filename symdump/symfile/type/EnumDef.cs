@@ -99,7 +99,7 @@ namespace symdump.symfile.type
                     ctype = "int";
                     break;
                 default:
-                    throw new Exception("$Cannot determine primitive type for size {size}");
+                    throw new Exception($"Cannot determine primitive type for size {m_size}");
             }
 
             writer.WriteLine($"enum {m_name} : {ctype} {{");

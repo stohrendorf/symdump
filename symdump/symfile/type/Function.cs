@@ -4,26 +4,29 @@ using symdump.exefile.instructions;
 
 namespace symdump.symfile.type
 {
-    public class PointerWrapped : IWrappedType, IEquatable<PointerWrapped>
+    public class Function : ITypeDecorator, IEquatable<Function>
     {
-        public int precedence => Operator.Dereference.getPrecedence(false);
-        
-        public IWrappedType inner { get; }
+        public int precedence => Operator.FunctionCall.getPrecedence(false);
 
-        public PointerWrapped(IWrappedType inner)
+        public ITypeDecorator inner { get; }
+
+        public Function(ITypeDecorator inner)
         {
             this.inner = inner;
         }
-        
-        public string asCode(string name, string argList)
+
+        public string asDeclaration(string identifier, string argList)
         {
-            var innerCode = inner.asCode(name, argList);
+            var innerCode = inner.asDeclaration(identifier, argList);
+
+            if (argList == null)
+                argList = "";
             return inner.precedence >= precedence
-                ? $"*({innerCode})"
-                : $"*{innerCode}";
+                ? $"({innerCode})({argList})"
+                : $"{innerCode}({argList})";
         }
 
-        public bool Equals(PointerWrapped other)
+        public bool Equals(Function other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -35,7 +38,7 @@ namespace symdump.symfile.type
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((PointerWrapped) obj);
+            return Equals((Function) obj);
         }
 
         public override int GetHashCode()
