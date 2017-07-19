@@ -8,7 +8,7 @@ using core.util;
 
 namespace symfile.type
 {
-    public class StructDef : ICompoundType, IEquatable<StructDef>
+    public class StructDef : IMemoryLayout, IEquatable<StructDef>
     {
         public readonly List<StructMember> members = new List<StructMember>();
         public readonly string name;
@@ -84,30 +84,23 @@ namespace symfile.type
             }
         }
 
-        public StructMember forOffset(uint ofs)
+        public string getAccessPathTo(uint ofs)
         {
-            return members
+            var member = members
                 .LastOrDefault(m => m.typeInfo.classType != ClassType.Bitfield && m.typedValue.value <= ofs);
-        }
-
-        public string tryDeref(uint ofs)
-        {
-            var member = forOffset(ofs);
 
             if (member == null)
                 return null;
 
-            if (!(member.compoundType is StructDef))
+            if (member.memoryLayout == null)
                 return member.name;
-
-            var sdef = (StructDef) member.compoundType;
             
             ofs -= (uint) member.typedValue.value;
-            var subMember = sdef.forOffset(ofs);
+            var subMember = member.memoryLayout.getAccessPathTo(ofs);
             if (subMember == null)
                 return null;
 
-            return member.name + "." + sdef.tryDeref(ofs);
+            return member.name + "." + subMember;
         }
     }
 }

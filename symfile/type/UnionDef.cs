@@ -8,7 +8,7 @@ using core.util;
 
 namespace symfile.type
 {
-    public class UnionDef : ICompoundType, IEquatable<UnionDef>
+    public class UnionDef : IMemoryLayout, IEquatable<UnionDef>
     {
         public readonly List<StructMember> members = new List<StructMember>();
         public readonly string name;
@@ -79,7 +79,7 @@ namespace symfile.type
             }
         }
 
-        public string tryDeref(uint offset)
+        public string getAccessPathTo(uint offset)
         {
             throw new NotImplementedException();
         }

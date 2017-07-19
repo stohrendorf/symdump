@@ -29,7 +29,7 @@ namespace exefile.dataflow
             foreach (var param in func.registerParameters)
             {
                 var p = param.Value;
-                m_registers[(Register) param.Key] = new LabelNode(p.name, p.compoundType);
+                m_registers[(Register) param.Key] = new LabelNode(p.name, p.memoryLayout);
             }
             
             dumpState();

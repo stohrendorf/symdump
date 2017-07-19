@@ -10,7 +10,7 @@ namespace core
         
         IFunction findFunction(uint addr);
         IFunction findFunction(string name);
-        ICompoundType findTypeDefinitionForLabel(string label);
+        IMemoryLayout findTypeDefinitionForLabel(string label);
         string getSymbolName(uint addr, int rel = 0);
     }
 }

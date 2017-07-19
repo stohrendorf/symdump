@@ -4,7 +4,7 @@
     {
         public readonly IExpressionNode inner;
 
-        public ICompoundType compoundType => null;
+        public IMemoryLayout memoryLayout => null;
 
         public DerefNode(IExpressionNode inner)
         {

@@ -18,7 +18,7 @@ namespace symfile
             public readonly TypeInfo typeInfo;
             public readonly Register stackBase;
 
-            public ICompoundType compoundType { get; }
+            public IMemoryLayout memoryLayout { get; }
 
             public ArgumentInfo(SymFile symFile, string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
             {
@@ -26,7 +26,7 @@ namespace symfile
                 this.typedValue = typedValue;
                 this.typeInfo = typeInfo;
                 this.stackBase = stackBase;
-                this.compoundType = symFile.findTypeDefinition(typeInfo.tag);
+                this.memoryLayout = symFile.findTypeDefinition(typeInfo.tag);
             }
 
             public override string ToString()

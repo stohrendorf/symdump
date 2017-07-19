@@ -5,7 +5,7 @@
         public readonly IExpressionNode to;
         public readonly IExpressionNode from;
 
-        public ICompoundType compoundType => null;
+        public IMemoryLayout memoryLayout => null;
 
         public DataCopyNode(IExpressionNode to, IExpressionNode @from)
         {

@@ -9,7 +9,7 @@ namespace core.expression
         public readonly IExpressionNode rhs;
         public readonly LabelNode target;
 
-        public ICompoundType compoundType => null;
+        public IMemoryLayout memoryLayout => null;
 
         public ConditionalBranchNode(Operator @operator, IExpressionNode lhs, IExpressionNode rhs, LabelNode target)
         {

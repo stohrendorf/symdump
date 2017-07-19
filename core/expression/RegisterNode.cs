@@ -4,7 +4,7 @@
     {
         public readonly int registerId;
 
-        public ICompoundType compoundType => null;
+        public IMemoryLayout memoryLayout => null;
 
         public RegisterNode(int registerId)
         {

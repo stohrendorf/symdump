@@ -8,8 +8,6 @@ namespace core.expression
         public readonly IExpressionNode lhs;
         public readonly IExpressionNode rhs;
 
-        public ICompoundType compoundType => null;
-
         public ExpressionNode(Operator @operator, IExpressionNode lhs, IExpressionNode rhs)
         {
             this.@operator = @operator;
@@ -37,11 +35,11 @@ namespace core.expression
             if (@operator != Operator.Add || !(lhs is LabelNode) || !(rhs is ValueNode))
                 return null;
 
-            var compound = ((LabelNode) lhs).compoundType;
-            if (compound == null)
+            var memoryLayout = ((LabelNode) lhs).memoryLayout;
+            if (memoryLayout == null)
                 return null;
             
-            var member = compound.tryDeref(
+            var member = memoryLayout.getAccessPathTo(
                 (uint) ((ValueNode)rhs).value
             );
             return ((LabelNode) lhs).label + "->" + member;

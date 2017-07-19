@@ -10,7 +10,7 @@ namespace symfile
         public readonly string name;
         public readonly TypedValue typedValue;
         public readonly TypeInfo typeInfo;
-        public readonly ICompoundType compoundType;
+        public readonly IMemoryLayout memoryLayout;
 
         public StructMember(TypedValue tv, BinaryReader reader, bool extended, SymFile symFile)
         {
@@ -22,7 +22,7 @@ namespace symfile
                 typeInfo.classType != ClassType.UnionMember && typeInfo.classType != ClassType.EndOfStruct)
                 throw new Exception($"Unexpected class {typeInfo.classType}");
 
-            compoundType = symFile.findTypeDefinition(typeInfo.tag);
+            memoryLayout = symFile.findTypeDefinition(typeInfo.tag);
         }
 
         public bool Equals(StructMember other)

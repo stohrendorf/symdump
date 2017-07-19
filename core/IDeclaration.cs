@@ -3,6 +3,6 @@
     public interface IDeclaration
     {
         string name { get; }
-        ICompoundType compoundType { get; }
+        IMemoryLayout memoryLayout { get; }
     }
 }

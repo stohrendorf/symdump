@@ -5,7 +5,7 @@
         public readonly int registerId;
         public readonly int offset;
 
-        public ICompoundType compoundType { get; set; }
+        public IMemoryLayout memoryLayout { get; set; }
 
         public RegisterOffsetNode(int registerId, int offset)
         {
@@ -20,7 +20,7 @@
 
         public string tryDeref()
         {
-            return compoundType.tryDeref((uint) offset);
+            return memoryLayout.getAccessPathTo((uint) offset);
         }
     }
 }

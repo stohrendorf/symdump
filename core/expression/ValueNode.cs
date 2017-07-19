@@ -4,7 +4,7 @@
     {
         public readonly long value;
 
-        public ICompoundType compoundType => null;
+        public IMemoryLayout memoryLayout => null;
 
         public ValueNode(long value)
         {

@@ -60,12 +60,12 @@ namespace symfile
             return result;
         }
 
-        public ICompoundType findTypeDefinition(string tag)
+        public IMemoryLayout findTypeDefinition(string tag)
         {
             return findStructDef(tag);
         }
         
-        public ICompoundType findTypeDefinitionForLabel(string label)
+        public IMemoryLayout findTypeDefinitionForLabel(string label)
         {
             TypeInfo ti;
             if (!m_externs.TryGetValue(label, out ti))

@@ -4,17 +4,17 @@
     {
         public readonly string label;
 
-        public ICompoundType compoundType { get; }
+        public IMemoryLayout memoryLayout { get; }
 
-        public LabelNode(string label, ICompoundType compoundType)
+        public LabelNode(string label, IMemoryLayout memoryLayout)
         {
             this.label = label;
-            this.compoundType = compoundType;
+            this.memoryLayout = memoryLayout;
         }
 
         public string toCode()
         {
-            return compoundType == null ? label : compoundType.ToString();
+            return memoryLayout == null ? label : memoryLayout.ToString();
         }
     }
 }
