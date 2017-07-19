@@ -1,10 +1,13 @@
 ﻿using System;
+using core;
 
 namespace symfile.type
 {
-    public class Identifier : ITypeDecorator, IEquatable<Identifier>
+    public class Identifier : IMemoryLayout, IEquatable<Identifier>
     {
         public int precedence => int.MinValue;
+
+        public uint dataSize => 1; // TODO ???
 
         public string asDeclaration(string identifier, string argList)
         {
@@ -26,6 +29,11 @@ namespace symfile.type
         public override int GetHashCode()
         {
             return 0;
+        }
+
+        public string getAccessPathTo(uint offset)
+        {
+            throw new NotImplementedException();
         }
     }
 }

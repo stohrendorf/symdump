@@ -74,7 +74,7 @@ namespace symfile
             m_file = reader.readPascalString();
             name = reader.readPascalString();
             
-            m_body = new Block(address, m_line, this);
+            m_body = new Block(address, m_line, this, symFile);
 
             symFile.funcTypes.TryGetValue(name, out m_returnType);
 
@@ -93,14 +93,14 @@ namespace symfile
                         m_lastLine = reader.ReadUInt32();
                         return;
                     case 16: // begin of block
-                        m_body.subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this));
+                        m_body.subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this, symFile));
                         continue;
                     case 20:
-                        ti = reader.readTypeInfo(false);
+                        ti = reader.readTypeInfo(false, symFile);
                         memberName = reader.readPascalString();
                         break;
                     case 22:
-                        ti = reader.readTypeInfo(true);
+                        ti = reader.readTypeInfo(true, symFile);
                         memberName = reader.readPascalString();
                         break;
                     default:

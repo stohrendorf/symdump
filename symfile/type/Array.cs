@@ -5,15 +5,17 @@ using Xunit;
 
 namespace symfile.type
 {
-    public class Array : ITypeDecorator, IEquatable<Array>
+    public class Array : IMemoryLayout, IEquatable<Array>
     {
         public int precedence => Operator.Array.getPrecedence(false);
 
-        public ITypeDecorator inner { get; }
+        public uint dataSize => dimension * inner.dataSize;
+
+        public IMemoryLayout inner { get; }
 
         public readonly uint dimension;
 
-        public Array(uint dimension, ITypeDecorator inner)
+        public Array(uint dimension, IMemoryLayout inner)
         {
             this.dimension = dimension;
             this.inner = inner;
@@ -25,6 +27,14 @@ namespace symfile.type
             return inner.precedence >= precedence
                 ? $"({innerCode})[{dimension}]"
                 : $"{innerCode}[{dimension}]";
+        }
+
+        public string getAccessPathTo(uint offset)
+        {
+            var idx = offset / inner.dataSize;
+            var subOfs = offset % inner.dataSize;
+            var innerAccess = inner.getAccessPathTo(subOfs);
+            return $"[{idx}]{innerAccess}";
         }
 
         public bool Equals(Array other)

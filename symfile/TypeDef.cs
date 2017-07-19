@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using core;
 using symfile.type;
 using Array = symfile.type.Array;
 
@@ -11,7 +12,7 @@ namespace symfile
     {
         public readonly BaseType baseType;
 
-        public ITypeDecorator typeDecorator { get; private set; }
+        public IMemoryLayout typeDecorator { get; private set; }
 
         public bool isFunctionReturnType { get; private set; }
 
@@ -29,9 +30,50 @@ namespace symfile
             }
         }
 
-        public void applyDecoration(uint[] arrayDims)
+        public void applyDecoration(uint[] arrayDims, IMemoryLayout inner)
         {
-            typeDecorator = new Identifier();
+            switch (baseType)
+            {
+                case BaseType.Null:
+                case BaseType.Void:
+                case BaseType.Char:
+                case BaseType.Short:
+                case BaseType.Int:
+                case BaseType.Long:
+                case BaseType.Float:
+                case BaseType.Double:
+                case BaseType.UChar:
+                case BaseType.UShort:
+                case BaseType.UInt:
+                case BaseType.ULong:
+                    Debug.Assert(inner == null);
+                    break;
+                case BaseType.StructDef:
+                case BaseType.UnionDef:
+                case BaseType.EnumDef:
+                case BaseType.EnumMember:
+                    if(inner == null)
+                        return;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            try
+            {
+                typeDecorator = new PrimitiveType(baseType);
+                
+                if(inner != null)
+                    throw new Exception("Primitive types must not have a memory layout");
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                if(inner == null)
+                    throw new Exception("Non-primitive types must have a memory layout");
+
+                typeDecorator = inner;
+            }
+
             var dimIdx = 0;
 
             foreach (var dt in m_derivedTypes.Where(dt => dt != DerivedType.None))
@@ -64,59 +106,7 @@ namespace symfile
 
         public string asCode(string name, TypeInfo typeInfo, string argList)
         {
-            string ctype;
-            switch (baseType)
-            {
-                case BaseType.StructDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.tag));
-                    ctype = $"struct {typeInfo.tag}";
-                    break;
-                case BaseType.UnionDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.tag));
-                    ctype = $"union {typeInfo.tag}";
-                    break;
-                case BaseType.EnumDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.tag));
-                    ctype = $"enum {typeInfo.tag}";
-                    break;
-                case BaseType.Char:
-                    ctype = "char";
-                    break;
-                case BaseType.Short:
-                    ctype = "short";
-                    break;
-                case BaseType.Int:
-                    ctype = "int";
-                    break;
-                case BaseType.Long:
-                    ctype = "long";
-                    break;
-                case BaseType.Float:
-                    ctype = "float";
-                    break;
-                case BaseType.Double:
-                    ctype = "double";
-                    break;
-                case BaseType.UChar:
-                    ctype = "unsigned char";
-                    break;
-                case BaseType.UShort:
-                    ctype = "unsigned short";
-                    break;
-                case BaseType.UInt:
-                    ctype = "unsigned int";
-                    break;
-                case BaseType.ULong:
-                    ctype = "unsigned long";
-                    break;
-                case BaseType.Void:
-                    ctype = "void";
-                    break;
-                default:
-                    throw new Exception($"Unexpected base type {baseType}");
-            }
-
-            return ctype + " " + typeDecorator.asDeclaration(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
+            return typeDecorator.asDeclaration(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
         }
 
         public bool Equals(TypeDef other)

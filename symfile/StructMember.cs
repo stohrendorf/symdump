@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using core;
 using symfile.util;
@@ -12,9 +13,9 @@ namespace symfile
         public readonly TypeInfo typeInfo;
         public readonly IMemoryLayout memoryLayout;
 
-        public StructMember(TypedValue tv, BinaryReader reader, bool extended, SymFile symFile)
+        public StructMember(TypedValue tv, BinaryReader reader, bool extended, IDebugSource debugSource)
         {
-            typeInfo = reader.readTypeInfo(extended);
+            typeInfo = reader.readTypeInfo(extended, debugSource);
             name = reader.readPascalString();
             typedValue = tv;
 
@@ -22,7 +23,7 @@ namespace symfile
                 typeInfo.classType != ClassType.UnionMember && typeInfo.classType != ClassType.EndOfStruct)
                 throw new Exception($"Unexpected class {typeInfo.classType}");
 
-            memoryLayout = symFile.findTypeDefinition(typeInfo.tag);
+            memoryLayout = typeInfo.typeDef.typeDecorator; // symFile.findTypeDefinition(typeInfo.tag);
         }
 
         public bool Equals(StructMember other)

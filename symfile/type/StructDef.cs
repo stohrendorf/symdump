@@ -13,6 +13,15 @@ namespace symfile.type
         public readonly List<StructMember> members = new List<StructMember>();
         public readonly string name;
 
+        public uint dataSize { get; }
+
+        public int precedence => int.MinValue;
+
+        public string asDeclaration(string identifier, string argList)
+        {
+            return $"struct {name}";
+        }
+
         public StructDef(BinaryReader stream, string name, SymFile symFile)
         {
             this.name = name;
@@ -24,7 +33,10 @@ namespace symfile.type
                     var m = new StructMember(typedValue, stream, false, symFile);
 
                     if (m.typeInfo.classType == ClassType.EndOfStruct)
+                    {
+                        dataSize = (uint) m.typedValue.value;
                         break;
+                    }
 
                     members.Add(m);
                 }
@@ -33,7 +45,10 @@ namespace symfile.type
                     var m = new StructMember(typedValue, stream, true, symFile);
 
                     if (m.typeInfo.classType == ClassType.EndOfStruct)
+                    {
+                        dataSize = (uint) m.typedValue.value;
                         break;
+                    }
 
                     members.Add(m);
                 }
@@ -98,7 +113,7 @@ namespace symfile.type
             ofs -= (uint) member.typedValue.value;
             var subMember = member.memoryLayout.getAccessPathTo(ofs);
             if (subMember == null)
-                return null;
+                return member.name;
 
             return member.name + "." + subMember;
         }

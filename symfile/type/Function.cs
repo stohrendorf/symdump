@@ -4,13 +4,15 @@ using core.util;
 
 namespace symfile.type
 {
-    public class Function : ITypeDecorator, IEquatable<Function>
+    public class Function : IMemoryLayout, IEquatable<Function>
     {
         public int precedence => Operator.FunctionCall.getPrecedence(false);
 
-        public ITypeDecorator inner { get; }
+        public uint dataSize => 4; // TODO assumes 32 bit architecture
 
-        public Function(ITypeDecorator inner)
+        public IMemoryLayout inner { get; }
+
+        public Function(IMemoryLayout inner)
         {
             this.inner = inner;
         }
@@ -44,6 +46,11 @@ namespace symfile.type
         public override int GetHashCode()
         {
             return (inner != null ? inner.GetHashCode() : 0);
+        }
+
+        public string getAccessPathTo(uint offset)
+        {
+            throw new NotImplementedException();
         }
     }
 }

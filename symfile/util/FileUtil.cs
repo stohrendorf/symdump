@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using core;
 
 namespace symfile.util
 {
@@ -23,9 +24,9 @@ namespace symfile.util
             return new TypeDef(reader);
         }
 
-        public static TypeInfo readTypeInfo(this BinaryReader s, bool withDimensions)
+        public static TypeInfo readTypeInfo(this BinaryReader s, bool withDimensions, IDebugSource debugSource)
         {
-            return new TypeInfo(s, withDimensions);
+            return new TypeInfo(s, withDimensions, debugSource);
         }
 
         public static ClassType readClassType(this BinaryReader s)

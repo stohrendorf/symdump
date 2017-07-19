@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using core;
 using core.util;
 using symfile.util;
 
@@ -13,7 +14,7 @@ namespace symfile.type
         private readonly string m_name;
         private readonly uint m_size;
 
-        public EnumDef(BinaryReader stream, string name)
+        public EnumDef(BinaryReader stream, string name, IDebugSource debugSource)
         {
             m_name = name;
             while (true)
@@ -21,7 +22,7 @@ namespace symfile.type
                 var typedValue = new TypedValue(stream);
                 if (typedValue.type == (0x80 | 20))
                 {
-                    var ti = stream.readTypeInfo(false);
+                    var ti = stream.readTypeInfo(false, debugSource);
                     var memberName = stream.readPascalString();
 
                     if (ti.classType == ClassType.EndOfStruct)
@@ -34,7 +35,7 @@ namespace symfile.type
                 }
                 else if (typedValue.type == (0x80 | 22))
                 {
-                    var ti = stream.readTypeInfo(true);
+                    var ti = stream.readTypeInfo(true, debugSource);
                     if (ti.typeDef.baseType != BaseType.Null)
                         throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.typeDef.baseType}");
 

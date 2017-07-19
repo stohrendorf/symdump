@@ -62,7 +62,8 @@ namespace symfile
 
         public IMemoryLayout findTypeDefinition(string tag)
         {
-            return findStructDef(tag);
+            IMemoryLayout def = findStructDef(tag);
+            return def ?? findUnionDef(tag);
         }
         
         public IMemoryLayout findTypeDefinitionForLabel(string label)
@@ -71,7 +72,7 @@ namespace symfile
             if (!m_externs.TryGetValue(label, out ti))
                 return null;
             
-            return findStructDef(ti.tag);
+            return findTypeDefinition(ti.tag);
         }
         
         public void dump(TextWriter output)
@@ -182,10 +183,10 @@ namespace symfile
                     dumpType12(stream, typedValue.value);
                     break;
                 case 20:
-                    dumpType20(stream, typedValue.value);
+                    dumpType20(stream);
                     break;
                 case 22:
-                    dumpType22(stream, typedValue.value);
+                    dumpType22(stream);
                     break;
                 default:
                     throw new Exception("Sodom");
@@ -201,7 +202,7 @@ namespace symfile
 
         private void readEnum(BinaryReader reader, string name)
         {
-            var e = new EnumDef(reader, name);
+            var e = new EnumDef(reader, name, this);
 
             EnumDef already;
             if (m_enums.TryGetValue(name, out already))
@@ -281,9 +282,9 @@ namespace symfile
             m_typedefs.Add(name, typeInfo);
         }
 
-        private void dumpType20(BinaryReader stream, int offset)
+        private void dumpType20(BinaryReader stream)
         {
-            var ti = stream.readTypeInfo(false);
+            var ti = stream.readTypeInfo(false, this);
             var name = stream.readPascalString();
 
             if (ti.classType == ClassType.Enum && ti.typeDef.baseType == BaseType.EnumDef)
@@ -313,9 +314,9 @@ namespace symfile
                 throw new Exception("Gomorrha");
         }
 
-        private void dumpType22(BinaryReader stream, int offset)
+        private void dumpType22(BinaryReader stream)
         {
-            var ti = stream.readTypeInfo(true);
+            var ti = stream.readTypeInfo(true, this);
             var name = stream.readPascalString();
 
             if (ti.classType == ClassType.Enum && ti.typeDef.baseType == BaseType.EnumDef)

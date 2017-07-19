@@ -52,12 +52,12 @@ namespace symfile
         public readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
         public readonly Dictionary<string, VarInfo> vars = new Dictionary<string, VarInfo>();
 
-        public Block(uint ofs, uint ln, Function f)
-            : this(null, ofs, ln, f)
+        public Block(uint ofs, uint ln, Function f, IDebugSource debugSource)
+            : this(null, ofs, ln, f, debugSource)
         {
         }
 
-        public Block(BinaryReader reader, uint ofs, uint ln, Function f)
+        public Block(BinaryReader reader, uint ofs, uint ln, Function f, IDebugSource debugSource)
         {
             startOffset = ofs;
             startLine = ln;
@@ -76,7 +76,7 @@ namespace symfile
                 switch (typedValue.type & 0x7f)
                 {
                     case 16:
-                        subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), function));
+                        subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), function, debugSource));
                         break;
                     case 18:
                         endOffset = (uint) typedValue.value;
@@ -84,7 +84,7 @@ namespace symfile
                         return;
                     case 20:
                     {
-                        var ti = reader.readTypeInfo(false);
+                        var ti = reader.readTypeInfo(false, debugSource);
                         var memberName = reader.readPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
                         switch (ti.classType)
@@ -107,7 +107,7 @@ namespace symfile
                     }
                     case 22:
                     {
-                        var ti = reader.readTypeInfo(true);
+                        var ti = reader.readTypeInfo(true, debugSource);
                         var memberName = reader.readPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
                         switch (ti.classType)

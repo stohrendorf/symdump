@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using core;
 using symfile.util;
 
 namespace symfile
@@ -14,7 +15,7 @@ namespace symfile
         public readonly string tag;
         public readonly TypeDef typeDef;
 
-        public TypeInfo(BinaryReader reader, bool extended)
+        public TypeInfo(BinaryReader reader, bool extended, IDebugSource debugSource)
         {
             classType = reader.readClassType();
             typeDef = reader.readTypeDef();
@@ -34,8 +35,38 @@ namespace symfile
                 dims = new uint[0];
                 tag = null;
             }
-            
-            typeDef.applyDecoration(dims);
+
+            switch (classType)
+            {
+                case ClassType.Null:
+                case ClassType.Label:
+                case ClassType.UndefinedLabel:
+                case ClassType.Struct:
+                case ClassType.Union:
+                case ClassType.Enum:
+                case ClassType.LastEntry:
+                case ClassType.EndOfStruct:
+                case ClassType.FileName:
+                    break;
+                case ClassType.AutoVar:
+                case ClassType.External:
+                case ClassType.Static:
+                case ClassType.Register:
+                case ClassType.ExternalDefinition:
+                case ClassType.StructMember:
+                case ClassType.Argument:
+                case ClassType.UnionMember:
+                case ClassType.UndefinedStatic:
+                case ClassType.Typedef:
+                case ClassType.EnumMember:
+                case ClassType.RegParam:
+                case ClassType.Bitfield:
+                case ClassType.AutoArgument:
+                    typeDef.applyDecoration(dims, debugSource.findTypeDefinition(tag));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public bool isFake => tag != null && new Regex(@"^\.\d+fake$").IsMatch(tag);

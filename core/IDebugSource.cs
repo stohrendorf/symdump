@@ -12,5 +12,6 @@ namespace core
         IFunction findFunction(string name);
         IMemoryLayout findTypeDefinitionForLabel(string label);
         string getSymbolName(uint addr, int rel = 0);
+        IMemoryLayout findTypeDefinition(string tag);
     }
 }
