@@ -92,7 +92,7 @@ namespace exefile
             if (m_callees.Count == 0)
                 return;
 
-            var addr = m_callees.Skip(200).First();
+            var addr = m_symFile.functions.Skip(50).First().address;
             var func = m_symFile.findFunction(addr);
             if (func != null)
                 Console.WriteLine(func.getSignature());

@@ -40,10 +40,10 @@ namespace exefile.dataflow
             if (insn is NopInstruction)
                 return true;
 
-            //Console.WriteLine("[eval] " + insn.asReadable());
-
             if (nextInsn != null && nextInsn.isBranchDelaySlot)
                 process(nextInsn, null);
+
+            Console.WriteLine("[eval] " + insn.asReadable());
 
             if (insn is CallPtrInstruction)
             {
@@ -61,7 +61,6 @@ namespace exefile.dataflow
             }
             else if (insn is ConditionalBranchInstruction)
             {
-                process(nextInsn, null);
                 Console.WriteLine(((ConditionalBranchInstruction) insn).toExpressionNode(this).toCode());
             }
             else
@@ -160,8 +159,6 @@ namespace exefile.dataflow
                 return true;
             }
 
-            Debug.Assert(nextInsn != null);
-            process(nextInsn, null);
             if (insn.target is RegisterOperand && ((RegisterOperand) insn.target).register == Register.ra)
                 Console.WriteLine("return");
             else
