@@ -31,7 +31,7 @@ namespace mips.instructions
 
         public override string asReadable()
         {
-            var op = @operator.toCode();
+            var op = @operator.asCode();
 
             return isInplace
                 ? $"{destination} {op}= {rhs}"

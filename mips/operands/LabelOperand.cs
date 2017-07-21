@@ -21,7 +21,7 @@ namespace mips.operands
 
         public IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
         {
-            return new LabelNode(label, dataFlowState.debugSource.findTypeDefinitionForLabel(label));
+            return new NamedMemoryLayout(label, dataFlowState.debugSource.findTypeDefinitionForLabel(label));
         }
 
         public override string ToString()

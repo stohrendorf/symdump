@@ -12,7 +12,7 @@ namespace symfile
     {
         public readonly BaseType baseType;
 
-        public IMemoryLayout typeDecorator { get; private set; }
+        public IMemoryLayout memoryLayout { get; private set; }
 
         public bool isFunctionReturnType { get; private set; }
 
@@ -61,7 +61,7 @@ namespace symfile
             
             try
             {
-                typeDecorator = new PrimitiveType(baseType);
+                memoryLayout = new PrimitiveType(baseType);
                 
                 if(inner != null)
                     throw new Exception("Primitive types must not have a memory layout");
@@ -71,7 +71,7 @@ namespace symfile
                 if(inner == null)
                     throw new Exception("Non-primitive types must have a memory layout");
 
-                typeDecorator = inner;
+                memoryLayout = inner;
             }
 
             var dimIdx = 0;
@@ -81,15 +81,15 @@ namespace symfile
                 switch (dt)
                 {
                     case DerivedType.Array:
-                        typeDecorator = new Array(arrayDims[dimIdx], typeDecorator);
+                        memoryLayout = new Array(arrayDims[dimIdx], memoryLayout);
                         ++dimIdx;
                         break;
                     case DerivedType.FunctionReturnType:
-                        typeDecorator = new type.Function(typeDecorator);
+                        memoryLayout = new type.Function(memoryLayout);
                         isFunctionReturnType = true;
                         break;
                     case DerivedType.Pointer:
-                        typeDecorator = new Pointer(typeDecorator);
+                        memoryLayout = new Pointer(memoryLayout);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -99,21 +99,19 @@ namespace symfile
 
         public override string ToString()
         {
-            return typeDecorator.asDeclaration("__NAME__", null);
+            return memoryLayout.fundamentalType + " " + memoryLayout.asIncompleteDeclaration("__NAME__", null);
         }
 
-        public bool isStruct => baseType == BaseType.StructDef;
-
-        public string asCode(string name, TypeInfo typeInfo, string argList)
+        public string asDeclaration(string name, TypeInfo typeInfo, string argList)
         {
-            return typeDecorator.asDeclaration(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
+            return memoryLayout.fundamentalType + " " +memoryLayout.asIncompleteDeclaration(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
         }
 
         public bool Equals(TypeDef other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return baseType == other.baseType && Equals(typeDecorator, other.typeDecorator) &&
+            return baseType == other.baseType && Equals(memoryLayout, other.memoryLayout) &&
                    isFunctionReturnType == other.isFunctionReturnType;
         }
 
@@ -130,7 +128,7 @@ namespace symfile
             unchecked
             {
                 var hashCode = (int) baseType;
-                hashCode = (hashCode * 397) ^ (typeDecorator != null ? typeDecorator.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (memoryLayout != null ? memoryLayout.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ isFunctionReturnType.GetHashCode();
                 return hashCode;
             }

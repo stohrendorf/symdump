@@ -8,8 +8,18 @@
         uint dataSize { get; }
 
         int precedence { get; }
+        
+        /// <summary>
+        /// Eg, in a wrapped type like "struct Foo*", this will return only "struct Foo",
+        /// so should be used together with <see cref="asIncompleteDeclaration"/>.
+        /// </summary>
+        string fundamentalType { get; }
 
-        string asDeclaration(string identifier, string argList);
+        /// <summary>
+        /// Eg, in a wrapped type like "struct Foo* bar", this will return only "* bar",
+        /// so must be used together with <see cref="fundamentalType"/>.
+        /// </summary>
+        string asIncompleteDeclaration(string identifier, string argList);
 
         /// <summary>
         /// Generates the C-style access path to an element within this memory area.

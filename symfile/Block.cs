@@ -29,11 +29,11 @@ namespace symfile
                 switch (typeInfo.classType)
                 {
                     case ClassType.AutoVar:
-                        return $"{typeInfo.asCode(name)}; /* sp {typedValue.value} */";
+                        return $"{typeInfo.asDeclaration(name)}; /* sp {typedValue.value} */";
                     case ClassType.Register:
-                        return $"{typeInfo.asCode(name)}; /* ${(Register) typedValue.value} */";
+                        return $"{typeInfo.asDeclaration(name)}; /* ${(Register) typedValue.value} */";
                     case ClassType.Static:
-                        return $"static {typeInfo.asCode(name)}; // offset 0x{typedValue.value:x}";
+                        return $"static {typeInfo.asDeclaration(name)}; // offset 0x{typedValue.value:x}";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -137,7 +137,7 @@ namespace symfile
             writer.WriteLine($"{{ // line {startLine}, offset 0x{startOffset:x}");
             ++writer.indent;
             foreach (var t in typedefs)
-                writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
+                writer.WriteLine($"typedef {t.Value.asDeclaration(t.Key)};");
             foreach (var varInfo in vars)
                 writer.WriteLine(varInfo.Value);
             foreach (var l in labels)

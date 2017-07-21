@@ -23,7 +23,7 @@ namespace symfile
                 typeInfo.classType != ClassType.UnionMember && typeInfo.classType != ClassType.EndOfStruct)
                 throw new Exception($"Unexpected class {typeInfo.classType}");
 
-            memoryLayout = typeInfo.typeDef.typeDecorator; // symFile.findTypeDefinition(typeInfo.tag);
+            memoryLayout = typeInfo.typeDef.memoryLayout; // symFile.findTypeDefinition(typeInfo.tag);
         }
 
         public bool Equals(StructMember other)
@@ -39,11 +39,11 @@ namespace symfile
             switch (typeInfo.classType)
             {
                 case ClassType.Bitfield:
-                    return typeInfo.asCode(name) +
+                    return typeInfo.asDeclaration(name) +
                            $" : {typeInfo.size}; // offset={typedValue.value / 8}.{typedValue.value % 8}";
                 case ClassType.StructMember:
                 case ClassType.UnionMember:
-                    return typeInfo.asCode(name) +
+                    return typeInfo.asDeclaration(name) +
                            $"; // size={typeInfo.size}, offset={typedValue.value}";
                 default:
                     throw new Exception($"Unexpected class {typeInfo.classType}");

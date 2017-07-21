@@ -9,54 +9,54 @@ namespace symfile.type
 
         public int precedence => int.MinValue;
 
-        private readonly string m_ctype;
+        public string fundamentalType { get; }
 
         public PrimitiveType(BaseType baseType)
         {
             switch (baseType)
             {
                 case BaseType.Void:
-                    m_ctype = "void";
+                    fundamentalType = "void";
                     dataSize = 0;
                     break;
                 case BaseType.Char:
-                    m_ctype = "char";
+                    fundamentalType = "char";
                     dataSize = 1;
                     break;
                 case BaseType.Short:
-                    m_ctype = "short";
+                    fundamentalType = "short";
                     dataSize = 2;
                     break;
                 case BaseType.Int:
-                    m_ctype = "int";
+                    fundamentalType = "int";
                     dataSize = 4;
                     break;
                 case BaseType.Long:
-                    m_ctype = "long";
+                    fundamentalType = "long";
                     dataSize = 4;
                     break;
                 case BaseType.Float:
-                    m_ctype = "float";
+                    fundamentalType = "float";
                     dataSize = 4;
                     break;
                 case BaseType.Double:
-                    m_ctype = "double";
+                    fundamentalType = "double";
                     dataSize = 8;
                     break;
                 case BaseType.UChar:
-                    m_ctype = "unsigned char";
+                    fundamentalType = "unsigned char";
                     dataSize = 1;
                     break;
                 case BaseType.UShort:
-                    m_ctype = "unsigned short";
+                    fundamentalType = "unsigned short";
                     dataSize = 2;
                     break;
                 case BaseType.UInt:
-                    m_ctype = "unsigned int";
+                    fundamentalType = "unsigned int";
                     dataSize = 4;
                     break;
                 case BaseType.ULong:
-                    m_ctype = "unsigned long";
+                    fundamentalType = "unsigned long";
                     dataSize = 4;
                     break;
                 default:
@@ -64,9 +64,9 @@ namespace symfile.type
             }
         }
         
-        public string asDeclaration(string identifier, string argList)
+        public string asIncompleteDeclaration(string identifier, string argList)
         {
-            return $"{m_ctype} {identifier}";
+            return identifier;
         }
 
         public string getAccessPathTo(uint offset)
@@ -81,7 +81,7 @@ namespace symfile.type
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(m_ctype, other.m_ctype) && dataSize == other.dataSize;
+            return string.Equals(fundamentalType, other.fundamentalType) && dataSize == other.dataSize;
         }
 
         public override bool Equals(object obj)
@@ -96,7 +96,7 @@ namespace symfile.type
         {
             unchecked
             {
-                return ((m_ctype != null ? m_ctype.GetHashCode() : 0) * 397) ^ (int) dataSize;
+                return ((fundamentalType != null ? fundamentalType.GetHashCode() : 0) * 397) ^ (int) dataSize;
             }
         }
     }

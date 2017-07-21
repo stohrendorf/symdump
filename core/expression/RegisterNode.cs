@@ -4,8 +4,6 @@
     {
         public readonly int registerId;
 
-        public IMemoryLayout memoryLayout => null;
-
         public RegisterNode(int registerId)
         {
             this.registerId = registerId;

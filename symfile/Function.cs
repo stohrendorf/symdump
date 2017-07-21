@@ -14,27 +14,27 @@ namespace symfile
         public class ArgumentInfo : IDeclaration
         {
             public string name { get; }
+            
+            public IMemoryLayout memoryLayout => typeInfo.typeDef.memoryLayout;
+            
             public readonly TypedValue typedValue;
             public readonly TypeInfo typeInfo;
             public readonly Register stackBase;
 
-            public IMemoryLayout memoryLayout { get; }
-
-            public ArgumentInfo(SymFile symFile, string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
+            public ArgumentInfo(IDebugSource debugSource, string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
             {
                 this.name = name;
                 this.typedValue = typedValue;
                 this.typeInfo = typeInfo;
                 this.stackBase = stackBase;
-                this.memoryLayout = symFile.findTypeDefinition(typeInfo.tag);
             }
 
             public override string ToString()
             {
                 if (typeInfo.classType == ClassType.Argument)
-                    return $"{typeInfo.asCode(name)} /*${stackBase} {typedValue.value}*/";
+                    return $"{typeInfo.asDeclaration(name)} /*${stackBase} {typedValue.value}*/";
                 else if (typeInfo.classType == ClassType.RegParam)
-                    return $"{typeInfo.asCode(name)} /*${(Register) typedValue.value}*/";
+                    return $"{typeInfo.asDeclaration(name)} /*${(Register) typedValue.value}*/";
                 else
                     throw new Exception("Meh");
             }
@@ -154,7 +154,7 @@ namespace symfile
         public string getSignature()
         {
             var parameters = m_registerParameters.Values.SelectMany(p => p).Concat(m_stackParameters.Values);
-            return m_returnType?.asCode(name, string.Join(", ", parameters));
+            return m_returnType?.asDeclaration(name, string.Join(", ", parameters));
         }
     }
 }

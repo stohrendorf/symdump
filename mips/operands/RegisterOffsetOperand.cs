@@ -35,7 +35,7 @@ namespace mips.operands
             if (expression is ValueNode)
             {
                 var name = dataFlowState.debugSource.getSymbolName((uint) (((ValueNode) expression).value + offset));
-                return new LabelNode(name, dataFlowState.debugSource.findTypeDefinitionForLabel(name));
+                return new NamedMemoryLayout(name, dataFlowState.debugSource.findTypeDefinitionForLabel(name));
             }
                 
             return new DerefNode(new ExpressionNode(Operator.Add, expression, new ValueNode(offset)));

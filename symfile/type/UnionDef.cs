@@ -13,13 +13,15 @@ namespace symfile.type
         public readonly List<StructMember> members = new List<StructMember>();
         public readonly string name;
 
+        public string fundamentalType => $"union {name}";
+
         public uint dataSize { get; }
 
         public int precedence => int.MinValue;
 
-        public string asDeclaration(string identifier, string argList)
+        public string asIncompleteDeclaration(string identifier, string argList)
         {
-            return $"union {name}";
+            return identifier;
         }
 
         public UnionDef(BinaryReader stream, string name, SymFile symFile)

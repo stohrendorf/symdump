@@ -4,8 +4,6 @@
     {
         public readonly IExpressionNode inner;
 
-        public IMemoryLayout memoryLayout => null;
-
         public DerefNode(IExpressionNode inner)
         {
             this.inner = inner;

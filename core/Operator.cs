@@ -4,7 +4,7 @@ namespace core
 {
     public static class OperationUtil
     {
-        public static string toCode(this Operator @operator)
+        public static string asCode(this Operator @operator)
         {
             switch (@operator)
             {

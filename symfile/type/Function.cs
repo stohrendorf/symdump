@@ -8,6 +8,8 @@ namespace symfile.type
     {
         public int precedence => Operator.FunctionCall.getPrecedence(false);
 
+        public string fundamentalType => inner.fundamentalType;
+
         public uint dataSize => 4; // TODO assumes 32 bit architecture
 
         public IMemoryLayout inner { get; }
@@ -17,12 +19,10 @@ namespace symfile.type
             this.inner = inner;
         }
 
-        public string asDeclaration(string identifier, string argList)
+        public string asIncompleteDeclaration(string identifier, string argList)
         {
-            var innerCode = inner.asDeclaration(identifier, argList);
+            var innerCode = inner.asIncompleteDeclaration(identifier, argList);
 
-            if (argList == null)
-                argList = "";
             return inner.precedence >= precedence
                 ? $"({innerCode})({argList})"
                 : $"{innerCode}({argList})";

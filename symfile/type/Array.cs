@@ -9,6 +9,8 @@ namespace symfile.type
     {
         public int precedence => Operator.Array.getPrecedence(false);
 
+        public string fundamentalType => inner.fundamentalType;
+
         public uint dataSize => dimension * inner.dataSize;
 
         public IMemoryLayout inner { get; }
@@ -21,9 +23,9 @@ namespace symfile.type
             this.inner = inner;
         }
 
-        public string asDeclaration(string identifier, string argList)
+        public string asIncompleteDeclaration(string identifier, string argList)
         {
-            var innerCode = inner.asDeclaration(identifier, argList);
+            var innerCode = inner.asIncompleteDeclaration(identifier, argList);
             return inner.precedence >= precedence
                 ? $"({innerCode})[{dimension}]"
                 : $"{innerCode}[{dimension}]";
@@ -66,15 +68,15 @@ namespace symfile.type
         [Fact]
         public static void testDeclarationSimple()
         {
-            var tmp = new Array(10, new Identifier());
-            Assert.Equal("foo[10]", tmp.asDeclaration("foo", null));
+            var tmp = new Array(10, new PrimitiveType(BaseType.Char));
+            Assert.Equal("foo[10]", tmp.asIncompleteDeclaration("foo", null));
         }
 
         [Fact]
         public static void testDeclarationPrecedence()
         {
-            var tmp = new Array(10, new Pointer(new Identifier()));
-            Assert.Equal("(*foo)[10]", tmp.asDeclaration("foo", null));
+            var tmp = new Array(10, new Pointer(new PrimitiveType(BaseType.Char)));
+            Assert.Equal("(*foo)[10]", tmp.asIncompleteDeclaration("foo", null));
         }
     }
 }

@@ -21,14 +21,14 @@ namespace mips.instructions
 
         public override string asReadable()
         {
-            var op = @operator.toCode();
+            var op = @operator.asCode();
 
             return $"if({lhs} {op} {rhs}) goto {target}";
         }
 
         public override IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
         {
-            return new ConditionalBranchNode(@operator, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState), target.toExpressionNode(dataFlowState) as LabelNode);
+            return new ConditionalBranchNode(@operator, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState), target.toExpressionNode(dataFlowState) as NamedMemoryLayout);
         }
     }
 }

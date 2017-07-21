@@ -27,22 +27,22 @@ namespace core.expression
             if (selfPrecedence > (rhs as ExpressionNode)?.@operator.getPrecedence(false))
                 rhsCode = $"({rhsCode})";
 
-            return $"{lhsCode} {@operator.toCode()} {rhsCode}";
+            return $"{lhsCode} {@operator.asCode()} {rhsCode}";
         }
 
         public string tryDeref()
         {
-            if (@operator != Operator.Add || !(lhs is LabelNode) || !(rhs is ValueNode))
+            if (@operator != Operator.Add || !(lhs is NamedMemoryLayout) || !(rhs is ValueNode))
                 return null;
 
-            var memoryLayout = ((LabelNode) lhs).memoryLayout;
+            var memoryLayout = ((NamedMemoryLayout) lhs).memoryLayout;
             if (memoryLayout == null)
                 return null;
             
             var member = memoryLayout.getAccessPathTo(
                 (uint) ((ValueNode)rhs).value
             );
-            return ((LabelNode) lhs).label + "->" + member;
+            return ((NamedMemoryLayout) lhs).label + "->" + member;
         }
     }
 }

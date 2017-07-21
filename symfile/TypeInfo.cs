@@ -88,13 +88,11 @@ namespace symfile
             return $"classType={classType} typeDef={typeDef} size={size}, dims=[{string.Join(",", dims)}]";
         }
 
-        public string asCode(string name, string argList = null)
+        public string asDeclaration(string name, string argList = null)
         {
-            return typeDef.asCode(name, this, argList);
+            return typeDef.asDeclaration(name, this, argList);
         }
 
-        public bool isStruct => typeDef.isStruct;
-        
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

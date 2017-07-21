@@ -98,7 +98,7 @@ namespace symfile
             writer.WriteLine();
             writer.WriteLine($"// {m_typedefs.Count} typedefs");
             foreach (var t in m_typedefs)
-                writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
+                writer.WriteLine($"typedef {t.Value.asDeclaration(t.Key)};");
 
             writer.WriteLine();
             writer.WriteLine($"// {labels.Count} labels");
@@ -109,7 +109,7 @@ namespace symfile
             writer.WriteLine();
             writer.WriteLine($"// {m_externs.Count} external declarations");
             foreach (var e in m_externs)
-                writer.WriteLine(e.Value.asCode(e.Key));
+                writer.WriteLine(e.Value.asDeclaration(e.Key));
 
             writer.WriteLine();
             writer.WriteLine($"// {functions.Count} functions");

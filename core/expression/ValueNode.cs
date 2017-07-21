@@ -4,8 +4,6 @@
     {
         public readonly long value;
 
-        public IMemoryLayout memoryLayout => null;
-
         public ValueNode(long value)
         {
             this.value = value;
