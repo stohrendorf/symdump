@@ -31,5 +31,10 @@ namespace core.expression
 
             return memoryLayout.getAccessPathTo((uint) offset);
         }
+
+        public override string ToString()
+        {
+            return $"offset=${registerId}+{offset} memoryLayout={memoryLayout}";
+        }
     }
 }

@@ -6,11 +6,6 @@ namespace core
     {
         public bool isBranchDelaySlot;
 
-        protected Instruction(bool isBranchDelaySlot = false)
-        {
-            this.isBranchDelaySlot = isBranchDelaySlot;
-        }
-
         [NotNull]
         [ItemNotNull]
         public abstract IOperand[] operands { get; }

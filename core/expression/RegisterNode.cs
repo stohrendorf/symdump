@@ -13,5 +13,10 @@
         {
             return $"${registerId}";
         }
+
+        public override string ToString()
+        {
+            return $"${registerId}";
+        }
     }
 }

@@ -45,5 +45,10 @@ namespace core.expression
             );
             return ((NamedMemoryLayout) lhs).label + "->" + member;
         }
+
+        public override string ToString()
+        {
+            return $"{lhs} {@operator} {rhs}";
+        }
     }
 }

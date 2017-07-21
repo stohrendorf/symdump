@@ -43,7 +43,7 @@ namespace exefile.dataflow
             if (nextInsn != null && nextInsn.isBranchDelaySlot)
                 process(nextInsn, null);
 
-            //Console.WriteLine("[eval] " + insn.asReadable());
+            // Console.WriteLine("[eval] " + insn.asReadable());
 
             if (insn is CallPtrInstruction)
             {
@@ -83,8 +83,9 @@ namespace exefile.dataflow
             else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).register == Register.sp)
             {
                 var ofs = ((RegisterOffsetOperand) copyTo).offset;
+                // FIXME: handle non-dword data
                 Debug.Assert(ofs % 4 == 0);
-                // FIXME: If ofs exceeds the stack frame size, assume it's a parameter...
+                // FIXME: If ofs is <0, assume it's a parameter...
                 Debug.Assert(ofs >= 0 && ofs / 4 < m_stack.Count);
                 m_stack[ofs / 4] = insn.src.toExpressionNode(this);
             }
@@ -159,9 +160,14 @@ namespace exefile.dataflow
             }
 
             if (insn.target is RegisterOperand && ((RegisterOperand) insn.target).register == Register.ra)
+            {
                 Console.WriteLine("return");
+            }
             else
+            {
+                dumpState();
                 Console.WriteLine("[jmp] " + insn.asReadable());
+            }
             return false;
         }
 

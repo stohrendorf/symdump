@@ -92,7 +92,7 @@ namespace exefile
             if (m_callees.Count == 0)
                 return;
 
-            var addr = m_symFile.functions.Skip(50).First().address;
+            var addr = m_symFile.functions.Skip(600).First().address;
             var func = m_symFile.findFunction(addr);
             if (func != null)
                 Console.WriteLine(func.getSignature());
@@ -100,15 +100,8 @@ namespace exefile
 
             var flowState = new DataFlowState(m_symFile, func);
 
-            bool skipNext = false;
             foreach (var insnPair in m_instructions.Where(i => i.Key >= addr))
             {
-                if (skipNext)
-                {
-                    skipNext = false;
-                    continue;
-                }
-
                 var xrefs = getXrefs(insnPair.Key);
                 if (xrefs != null)
                 {
@@ -117,14 +110,14 @@ namespace exefile
                 }
 
                 var insn = insnPair.Value;
-                if (insn is NopInstruction)
+                if (insn is NopInstruction || insn.isBranchDelaySlot)
+                {
                     continue;
+                }
 
                 //Console.WriteLine($"??? 0x{insnPair.Key:X}  " + insn.asReadable());
 
                 var nextInsn = m_instructions[insnPair.Key + 4];
-                skipNext = nextInsn.isBranchDelaySlot;
-
                 if (!flowState.process(insn, nextInsn))
                     break;
             }
@@ -167,6 +160,9 @@ namespace exefile
                     index += 4;
                     var insn2 = m_instructions[index - 4] = decodeInstruction(data, index);
                     insn2.isBranchDelaySlot = true;
+
+                    if(callInsn.returnAddressTarget?.register == Register.ra)
+                        m_analysisQueue.Enqueue(index);
 
                     continue;
                 }
@@ -495,8 +491,8 @@ namespace exefile
                     return new ArithmeticInstruction(Operator.Add,
                         rd, rs1, rs2);
                 case OpcodeFunction.addu:
-                    if (((data >> 16) & 0x1F) == 0)
-                        return new DataCopyInstruction(rs1, 4, rd, 4);
+                    if (rs2.register == Register.zero)
+                        return new DataCopyInstruction(rd, 4, rs1, 4);
                     else
                         return new ArithmeticInstruction(Operator.Add, rd, rs1, rs2);
                 case OpcodeFunction.sub:

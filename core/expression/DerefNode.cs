@@ -4,8 +4,7 @@ namespace core.expression
 {
     public class DerefNode : IExpressionNode
     {
-        [NotNull]
-        public readonly IExpressionNode inner;
+        [NotNull] public readonly IExpressionNode inner;
 
         public DerefNode([NotNull] IExpressionNode inner)
         {
@@ -27,6 +26,11 @@ namespace core.expression
                     return c;
             }
             return $"*({inner.toCode()})";
+        }
+
+        public override string ToString()
+        {
+            return $"pointer to {inner}";
         }
     }
 }

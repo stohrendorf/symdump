@@ -52,23 +52,23 @@ namespace symfile
                 case BaseType.UnionDef:
                 case BaseType.EnumDef:
                 case BaseType.EnumMember:
-                    if(inner == null)
+                    if (inner == null)
                         return;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             try
             {
                 memoryLayout = new PrimitiveType(baseType);
-                
-                if(inner != null)
+
+                if (inner != null)
                     throw new Exception("Primitive types must not have a memory layout");
             }
             catch (ArgumentOutOfRangeException)
             {
-                if(inner == null)
+                if (inner == null)
                     throw new Exception("Non-primitive types must have a memory layout");
 
                 memoryLayout = inner;
@@ -99,12 +99,20 @@ namespace symfile
 
         public override string ToString()
         {
-            return memoryLayout.fundamentalType + " " + memoryLayout.asIncompleteDeclaration("__NAME__", null);
+            return asDeclaration(null, null);
         }
 
-        public string asDeclaration(string name, TypeInfo typeInfo, string argList)
+        public string asDeclaration(string name, string argList)
         {
-            return memoryLayout.fundamentalType + " " +memoryLayout.asIncompleteDeclaration(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
+            if (memoryLayout == null)
+            {
+                // FIXME can happen if a struct uses itself, e.g.:
+                // struct Foo { struct Foo* next }
+                return name;
+            }
+
+            return memoryLayout.fundamentalType + " " +
+                   memoryLayout.asIncompleteDeclaration(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
         }
 
         public bool Equals(TypeDef other)

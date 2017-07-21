@@ -33,5 +33,10 @@ namespace core.expression
 
             return $"if({lhsCode} {@operator.asCode()} {rhsCode}) goto {target.toCode()}";
         }
+
+        public override string ToString()
+        {
+            return $"if({lhs} {@operator} {rhs}) goto {target}";
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using core;
@@ -14,27 +15,35 @@ namespace symfile
         public class ArgumentInfo : IDeclaration
         {
             public string name { get; }
-            
+
             public IMemoryLayout memoryLayout => typeInfo.typeDef.memoryLayout;
-            
-            public readonly TypedValue typedValue;
+
             public readonly TypeInfo typeInfo;
             public readonly Register stackBase;
+            public readonly uint? stackOffset;
+            public readonly Register? register;
 
-            public ArgumentInfo(string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
+            public ArgumentInfo(string name, TypeInfo typeInfo, Register stackBase, uint? stackOffset, Register? register)
             {
                 this.name = name;
-                this.typedValue = typedValue;
                 this.typeInfo = typeInfo;
                 this.stackBase = stackBase;
+                this.stackOffset = stackOffset;
+                this.register = register;
             }
 
             public override string ToString()
             {
                 if (typeInfo.classType == ClassType.Argument)
-                    return $"{typeInfo.asDeclaration(name)} /*${stackBase} {typedValue.value}*/";
+                {
+                    Debug.Assert(stackOffset != null);
+                    return $"{typeInfo.asDeclaration(name)} /*${stackBase} {stackOffset}*/";
+                }
                 else if (typeInfo.classType == ClassType.RegParam)
-                    return $"{typeInfo.asDeclaration(name)} /*${(Register) typedValue.value}*/";
+                {
+                    Debug.Assert(register != null);
+                    return $"{typeInfo.asDeclaration(name)} /*${register}*/";
+                }
                 else
                     throw new Exception("Meh");
             }
@@ -49,10 +58,11 @@ namespace symfile
         private readonly int m_maskOffs;
         public string name { get; }
 
-        private readonly IDictionary<Register, List<ArgumentInfo>> m_registerParameters =
-            new SortedDictionary<Register, List<ArgumentInfo>>();
+        private readonly IDictionary<Register, ArgumentInfo> m_registerParameters =
+            new SortedDictionary<Register, ArgumentInfo>();
 
-        public IEnumerable<KeyValuePair<int, IDeclaration>> registerParameters => m_registerParameters.Select(p => new KeyValuePair<int, IDeclaration>((int) p.Key, p.Value.First()));
+        public IEnumerable<KeyValuePair<int, IDeclaration>> registerParameters =>
+            m_registerParameters.Select(p => new KeyValuePair<int, IDeclaration>((int) p.Key, p.Value));
 
         private readonly IDictionary<int, ArgumentInfo> m_stackParameters = new SortedDictionary<int, ArgumentInfo>();
         private readonly Register m_returnAddressRegister;
@@ -73,7 +83,7 @@ namespace symfile
             m_line = reader.ReadUInt32();
             m_file = reader.readPascalString();
             name = reader.readPascalString();
-            
+
             m_body = new Block(address, m_line, this, symFile);
 
             symFile.funcTypes.TryGetValue(name, out m_returnType);
@@ -93,7 +103,8 @@ namespace symfile
                         m_lastLine = reader.ReadUInt32();
                         return;
                     case 16: // begin of block
-                        m_body.subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this, symFile));
+                        m_body.subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this,
+                            symFile));
                         continue;
                     case 20:
                         ti = reader.readTypeInfo(false, symFile);
@@ -110,24 +121,22 @@ namespace symfile
                 if (ti == null || memberName == null)
                     break;
 
-                var argInfo = new ArgumentInfo(memberName, typedValue, ti, m_stackBase);
                 switch (ti.classType)
                 {
                     case ClassType.Argument:
-                        m_stackParameters.Add(typedValue.value, argInfo);
+                        //Debug.Assert(m_registerParameters.Count >= 4);
+                        m_stackParameters[m_stackParameters.Count * 4] = new ArgumentInfo(memberName, ti, m_stackBase, (uint) (m_stackParameters.Count * 4), null);
                         break;
                     case ClassType.RegParam:
-                        List<ArgumentInfo> infoList;
-                        if (!m_registerParameters.TryGetValue((Register) typedValue.value, out infoList))
-                            m_registerParameters.Add((Register) typedValue.value, infoList = new List<ArgumentInfo>());
-                        infoList.Add(argInfo);
+                        Debug.Assert(m_registerParameters.Count < 4);
+                        m_registerParameters[Register.a0 + m_registerParameters.Count] = new ArgumentInfo(memberName, ti, m_stackBase, null, Register.a0 + m_registerParameters.Count);
                         break;
                     default:
                         m_body.vars.Add(memberName, new Block.VarInfo(memberName, ti, typedValue));
                         break;
                 }
             }
-            
+
             throw new Exception("Should never reach this");
         }
 
@@ -153,7 +162,7 @@ namespace symfile
 
         public string getSignature()
         {
-            var parameters = m_registerParameters.Values.SelectMany(p => p).Concat(m_stackParameters.Values);
+            var parameters = m_registerParameters.Values.Concat(m_stackParameters.Values);
             return m_returnType?.asDeclaration(name, string.Join(", ", parameters));
         }
     }

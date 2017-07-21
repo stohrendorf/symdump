@@ -90,7 +90,7 @@ namespace symfile
 
         public string asDeclaration(string name, string argList = null)
         {
-            return typeDef.asDeclaration(name, this, argList);
+            return typeDef.asDeclaration(name, argList);
         }
 
         public override bool Equals(object obj)

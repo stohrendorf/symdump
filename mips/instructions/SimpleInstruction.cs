@@ -9,17 +9,11 @@ namespace mips.instructions
         public readonly string format;
         public readonly string mnemonic;
 
-        public SimpleInstruction(string mnemonic, string format, bool isBranchDelaySlot, params IOperand[] operands)
-            : base(isBranchDelaySlot)
+        public SimpleInstruction(string mnemonic, string format, params IOperand[] operands)
         {
             this.mnemonic = mnemonic;
             this.operands = operands;
             this.format = format;
-        }
-
-        public SimpleInstruction(string mnemonic, string format, params IOperand[] operands)
-            : this(mnemonic, format, false, operands)
-        {
         }
 
         public override IOperand[] operands { get; }
