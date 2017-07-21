@@ -20,7 +20,7 @@ namespace mips.instructions
         {
             if (returnAddressTarget != null)
             {
-                return returnAddressTarget.register == Register.ra ? $"{target}()" : $"{returnAddressTarget} = __RET_ADDR; {target}()";
+                return returnAddressTarget.register == Register.ra ? $"{target}()" : $"${returnAddressTarget} = __RET_ADDR; {target}()";
             }
 
             return $"goto {target}";

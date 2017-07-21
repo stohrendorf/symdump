@@ -20,7 +20,9 @@ namespace core.expression
 
         public string toCode()
         {
-            return offset >= 0 ? $"*(${registerId}+{offset})" : $"*(${registerId}-{-offset})";
+            return offset >= 0
+                ? $"*(${registerId}+{offset})"
+                : $"*(${registerId}-{-offset})";
         }
 
         public string tryDeref()

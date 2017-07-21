@@ -26,11 +26,14 @@ namespace core
         string asIncompleteDeclaration(string identifier, string argList);
 
         /// <summary>
-        /// Generates the C-style access path to an element within this memory area.
+        /// Generates the C-style access path dst an element within this memory area.
         /// </summary>
-        /// <param name="offset">The offset for which to get the access path for.</param>
+        /// <param name="offset">The offset for which dst get the access path for.</param>
         /// <returns>E.g. <code>foo.bar.baz</code></returns>
         [CanBeNull]
         string getAccessPathTo(uint offset);
+        
+        [CanBeNull]
+        IMemoryLayout pointee { get; }
     }
 }

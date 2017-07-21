@@ -43,7 +43,7 @@ namespace exefile.dataflow
             if (nextInsn != null && nextInsn.isBranchDelaySlot)
                 process(nextInsn, null);
 
-            Console.WriteLine("[eval] " + insn.asReadable());
+            //Console.WriteLine("[eval] " + insn.asReadable());
 
             if (insn is CallPtrInstruction)
             {
@@ -75,10 +75,10 @@ namespace exefile.dataflow
 
         private void process(DataCopyInstruction insn)
         {
-            var copyTo = insn.to;
+            var copyTo = insn.dst;
             if (copyTo is RegisterOperand)
             {
-                m_registers[((RegisterOperand) copyTo).register] = insn.from.toExpressionNode(this);
+                m_registers[((RegisterOperand) copyTo).register] = insn.src.toExpressionNode(this);
             }
             else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).register == Register.sp)
             {
@@ -86,13 +86,12 @@ namespace exefile.dataflow
                 Debug.Assert(ofs % 4 == 0);
                 // FIXME: If ofs exceeds the stack frame size, assume it's a parameter...
                 Debug.Assert(ofs >= 0 && ofs / 4 < m_stack.Count);
-                m_stack[ofs / 4] = insn.from.toExpressionNode(this);
+                m_stack[ofs / 4] = insn.src.toExpressionNode(this);
             }
             else
             {
                 dumpState();
-                Console.WriteLine("[ram access] " + insn.toExpressionNode(this).toCode());
-                m_registers.Clear();
+                Console.WriteLine(insn.toExpressionNode(this).toCode());
             }
         }
 
@@ -132,7 +131,7 @@ namespace exefile.dataflow
             else
             {
                 dumpState();
-                Console.WriteLine("[ram access] " + arith.toExpressionNode(this).toCode());
+                Console.WriteLine(arith.toExpressionNode(this).toCode());
             }
             return true;
         }

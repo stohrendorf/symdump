@@ -19,6 +19,8 @@ namespace symfile.type
 
         public int precedence => int.MinValue;
 
+        public IMemoryLayout pointee => null;
+
         public string asIncompleteDeclaration(string identifier, string argList)
         {
             return identifier;

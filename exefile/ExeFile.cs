@@ -286,8 +286,8 @@ namespace exefile
                 case Opcode.addiu:
                     if (((data >> 21) & 0x1F) == 0)
                         return new DataCopyInstruction(
-                            new RegisterOperand(data, 16),
-                            new ImmediateOperand((short) data));
+                            new RegisterOperand(data, 16), 4,
+                            new ImmediateOperand((short) data), 4);
                     else
                         return new ArithmeticInstruction(Operator.Add,
                             new RegisterOperand(data, 16),
@@ -320,47 +320,59 @@ namespace exefile
                         new ImmediateOperand((short) data));
                 case Opcode.lui:
                     return new DataCopyInstruction(
-                        new RegisterOperand(data, 16),
-                        new ImmediateOperand((ushort) data << 16));
+                        new RegisterOperand(data, 16), 4,
+                        new ImmediateOperand((ushort) data << 16), 4);
                 case Opcode.CpuControl:
                     return decodeCpuControl(index, data);
                 case Opcode.FloatingPoint:
                     return new WordData(data);
                 case Opcode.lb:
-                    return new SimpleInstruction("lb", "{0} = (signed char){1}", new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                    return new DataCopyInstruction(
+                        new RegisterOperand(data, 16), 4,
+                        makeGpBasedOperand(data, 21, (short) data), 1
+                        );
                 case Opcode.lh:
-                    return new SimpleInstruction("lh", "{0} = (short){1}", new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                    return new DataCopyInstruction(
+                        new RegisterOperand(data, 16), 4,
+                        makeGpBasedOperand(data, 21, (short) data), 2
+                    );
                 case Opcode.lwl:
                     return new SimpleInstruction("lwl", null, new RegisterOperand(data, 16),
                         makeGpBasedOperand(data, 21, (short) data));
                 case Opcode.lw:
                     return new DataCopyInstruction(
-                        new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                        new RegisterOperand(data, 16), 4,
+                        makeGpBasedOperand(data, 21, (short) data), 4);
                 case Opcode.lbu:
-                    return new SimpleInstruction("lbu", "{0} = (unsigned char){1}", new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                    return new DataCopyInstruction(
+                        new RegisterOperand(data, 16), 4,
+                        makeGpBasedOperand(data, 21, (short) data), 1
+                    );
                 case Opcode.lhu:
-                    return new SimpleInstruction("lhu", "{0} = (unsigned short){1}", new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                    return new DataCopyInstruction(
+                        new RegisterOperand(data, 16), 4,
+                        makeGpBasedOperand(data, 21, (short) data), 2
+                    );
                 case Opcode.lwr:
                     return new SimpleInstruction("lwr", null, new RegisterOperand(data, 16),
                         makeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sb:
-                    return new SimpleInstruction("sb", "{1} = (char){0}", new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                    return new DataCopyInstruction(
+                        makeGpBasedOperand(data, 21, (short) data), 1,
+                        new RegisterOperand(data, 16), 4
+                    );
                 case Opcode.sh:
-                    return new SimpleInstruction("sh", "{1} = (short){0}", new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                    return new DataCopyInstruction(
+                        makeGpBasedOperand(data, 21, (short) data), 2,
+                        new RegisterOperand(data, 16), 4
+                    );
                 case Opcode.swl:
                     return new SimpleInstruction("swl", null, new RegisterOperand(data, 16),
                         makeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sw:
                     return new DataCopyInstruction(
-                        makeGpBasedOperand(data, 21, (short) data),
-                        new RegisterOperand(data, 16));
+                        makeGpBasedOperand(data, 21, (short) data), 4,
+                        new RegisterOperand(data, 16), 4);
                 case Opcode.swr:
                     return new SimpleInstruction("swr", null, new RegisterOperand(data, 16),
                         makeGpBasedOperand(data, 21, (short) data));
@@ -484,7 +496,7 @@ namespace exefile
                         rd, rs1, rs2);
                 case OpcodeFunction.addu:
                     if (((data >> 16) & 0x1F) == 0)
-                        return new DataCopyInstruction(rs1, rd);
+                        return new DataCopyInstruction(rs1, 4, rd, 4);
                     else
                         return new ArithmeticInstruction(Operator.Add, rd, rs1, rs2);
                 case OpcodeFunction.sub:

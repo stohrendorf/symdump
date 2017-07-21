@@ -14,6 +14,8 @@ namespace symfile.type
 
         public IMemoryLayout inner { get; }
 
+        public IMemoryLayout pointee => null;
+
         public Function(IMemoryLayout inner)
         {
             this.inner = inner;

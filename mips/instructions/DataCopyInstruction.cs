@@ -6,23 +6,27 @@ namespace mips.instructions
     public class DataCopyInstruction : Instruction
     {
         public override IOperand[] operands { get; }
+        public byte srcSize;
+        public byte dstSize;
 
-        public DataCopyInstruction(IOperand to, IOperand from)
+        public DataCopyInstruction(IOperand dst, byte dstSize, IOperand src, byte srcSize)
         {
-            operands = new[] {to, from};
+            operands = new[] {dst, src};
+            this.dstSize = dstSize;
+            this.srcSize = srcSize;
         }
 
-        public IOperand from => operands[1];
-        public IOperand to => operands[0];
+        public IOperand src => operands[1];
+        public IOperand dst => operands[0];
 
         public override string asReadable()
         {
-            return $"{to} = {from}";
+            return $"{dst} = {src}";
         }
 
         public override IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
         {
-            return new DataCopyNode(to.toExpressionNode(dataFlowState), from.toExpressionNode(dataFlowState));
+            return new DataCopyNode(dst.toExpressionNode(dataFlowState), dstSize, src.toExpressionNode(dataFlowState), srcSize);
         }
     }
 }

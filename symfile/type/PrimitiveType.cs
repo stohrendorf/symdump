@@ -11,6 +11,8 @@ namespace symfile.type
 
         public string fundamentalType { get; }
 
+        public IMemoryLayout pointee => null;
+
         public PrimitiveType(BaseType baseType)
         {
             switch (baseType)

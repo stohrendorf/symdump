@@ -15,6 +15,8 @@ namespace symfile.type
 
         public IMemoryLayout inner { get; }
 
+        public IMemoryLayout pointee => null;
+
         public readonly uint dimension;
 
         public Array(uint dimension, IMemoryLayout inner)

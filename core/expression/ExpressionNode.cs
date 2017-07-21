@@ -1,4 +1,5 @@
-﻿using core.util;
+﻿using System.Diagnostics;
+using core.util;
 using JetBrains.Annotations;
 
 namespace core.expression
@@ -38,7 +39,8 @@ namespace core.expression
                 return null;
 
             var memoryLayout = ((NamedMemoryLayout) lhs).memoryLayout;
-            var member = memoryLayout.getAccessPathTo(
+            Debug.Assert(memoryLayout.pointee != null);
+            var member = memoryLayout.pointee.getAccessPathTo(
                 (uint) ((ValueNode) rhs).value
             );
             return ((NamedMemoryLayout) lhs).label + "->" + member;
