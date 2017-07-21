@@ -21,7 +21,7 @@ namespace symfile
             public readonly TypeInfo typeInfo;
             public readonly Register stackBase;
 
-            public ArgumentInfo(IDebugSource debugSource, string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
+            public ArgumentInfo(string name, TypedValue typedValue, TypeInfo typeInfo, Register stackBase)
             {
                 this.name = name;
                 this.typedValue = typedValue;
@@ -110,7 +110,7 @@ namespace symfile
                 if (ti == null || memberName == null)
                     break;
 
-                var argInfo = new ArgumentInfo(symFile, memberName, typedValue, ti, m_stackBase);
+                var argInfo = new ArgumentInfo(memberName, typedValue, ti, m_stackBase);
                 switch (ti.classType)
                 {
                     case ClassType.Argument:

@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace core.util
 {
     public class IndentedTextWriter : TextWriter
     {
-        private readonly TextWriter m_inner;
+        [NotNull] private readonly TextWriter m_inner;
         private bool m_indent = true;
 
         public IndentedTextWriter(TextWriter inner)

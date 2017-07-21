@@ -31,14 +31,12 @@ namespace mips.operands
             var expression = dataFlowState.getRegisterExpression((int) register);
             if (expression == null)
                 return new RegisterOffsetNode((int) register, offset);
+
+            if (!(expression is ValueNode))
+                return new DerefNode(new ExpressionNode(Operator.Add, expression, new ValueNode(offset)));
             
-            if (expression is ValueNode)
-            {
-                var name = dataFlowState.debugSource.getSymbolName((uint) (((ValueNode) expression).value + offset));
-                return new NamedMemoryLayout(name, dataFlowState.debugSource.findTypeDefinitionForLabel(name));
-            }
-                
-            return new DerefNode(new ExpressionNode(Operator.Add, expression, new ValueNode(offset)));
+            var name = dataFlowState.debugSource.getSymbolName((uint) (((ValueNode) expression).value + offset));
+            return new NamedMemoryLayout(name, dataFlowState.debugSource.findTypeDefinitionForLabel(name));
         }
 
         public override string ToString()

@@ -1,9 +1,11 @@
-﻿namespace core
+﻿using JetBrains.Annotations;
+
+namespace core
 {
     public interface IDataFlowState
     {
-        IDebugSource debugSource { get; }
+        [NotNull] IDebugSource debugSource { get; }
         
-        IExpressionNode getRegisterExpression(int registerId);
+        [CanBeNull] IExpressionNode getRegisterExpression(int registerId);
     }
 }

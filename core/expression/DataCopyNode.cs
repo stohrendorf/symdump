@@ -1,11 +1,13 @@
-﻿namespace core.expression
+﻿using JetBrains.Annotations;
+
+namespace core.expression
 {
     public class DataCopyNode : IExpressionNode
     {
-        public readonly IExpressionNode to;
-        public readonly IExpressionNode from;
+        [NotNull] public readonly IExpressionNode to;
+        [NotNull] public readonly IExpressionNode from;
 
-        public DataCopyNode(IExpressionNode to, IExpressionNode @from)
+        public DataCopyNode([NotNull] IExpressionNode to, [NotNull] IExpressionNode from)
         {
             this.to = to;
             this.from = from;

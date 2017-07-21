@@ -24,7 +24,7 @@ namespace symfile.type
             return identifier;
         }
 
-        public StructDef(BinaryReader stream, string name, SymFile symFile)
+        public StructDef(BinaryReader stream, string name, IDebugSource debugSource)
         {
             this.name = name;
             while (true)
@@ -32,7 +32,7 @@ namespace symfile.type
                 var typedValue = new TypedValue(stream);
                 if (typedValue.type == (0x80 | 20))
                 {
-                    var m = new StructMember(typedValue, stream, false, symFile);
+                    var m = new StructMember(typedValue, stream, false, debugSource);
 
                     if (m.typeInfo.classType == ClassType.EndOfStruct)
                     {
@@ -44,7 +44,7 @@ namespace symfile.type
                 }
                 else if (typedValue.type == (0x80 | 22))
                 {
-                    var m = new StructMember(typedValue, stream, true, symFile);
+                    var m = new StructMember(typedValue, stream, true, debugSource);
 
                     if (m.typeInfo.classType == ClassType.EndOfStruct)
                     {

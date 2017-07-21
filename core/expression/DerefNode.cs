@@ -1,10 +1,13 @@
-﻿namespace core.expression
+﻿using JetBrains.Annotations;
+
+namespace core.expression
 {
     public class DerefNode : IExpressionNode
     {
+        [NotNull]
         public readonly IExpressionNode inner;
 
-        public DerefNode(IExpressionNode inner)
+        public DerefNode([NotNull] IExpressionNode inner)
         {
             this.inner = inner;
         }

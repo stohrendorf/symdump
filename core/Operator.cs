@@ -1,9 +1,11 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace core
 {
-    public static class OperationUtil
+    public static class OperatorUtil
     {
+        [NotNull]
         public static string asCode(this Operator @operator)
         {
             switch (@operator)

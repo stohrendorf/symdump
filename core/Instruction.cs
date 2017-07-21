@@ -1,4 +1,6 @@
-﻿namespace core
+﻿using JetBrains.Annotations;
+
+namespace core
 {
     public abstract class Instruction
     {
@@ -9,10 +11,14 @@
             this.isBranchDelaySlot = isBranchDelaySlot;
         }
 
+        [NotNull]
+        [ItemNotNull]
         public abstract IOperand[] operands { get; }
 
+        [NotNull]
         public abstract string asReadable();
 
-        public abstract IExpressionNode toExpressionNode(IDataFlowState dataFlowState);
+        [NotNull]
+        public abstract IExpressionNode toExpressionNode([NotNull] IDataFlowState dataFlowState);
     }
 }

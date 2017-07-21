@@ -1,14 +1,15 @@
 ﻿using core.util;
+using JetBrains.Annotations;
 
 namespace core.expression
 {
     public class ExpressionNode : IExpressionNode
     {
         public Operator @operator { get; }
-        public readonly IExpressionNode lhs;
-        public readonly IExpressionNode rhs;
+        [NotNull] public readonly IExpressionNode lhs;
+        [NotNull] public readonly IExpressionNode rhs;
 
-        public ExpressionNode(Operator @operator, IExpressionNode lhs, IExpressionNode rhs)
+        public ExpressionNode(Operator @operator, [NotNull] IExpressionNode lhs, [NotNull] IExpressionNode rhs)
         {
             this.@operator = @operator;
             this.lhs = lhs;
@@ -23,24 +24,22 @@ namespace core.expression
             var selfPrecedence = @operator.getPrecedence(false);
             if (selfPrecedence > (lhs as ExpressionNode)?.@operator.getPrecedence(false))
                 lhsCode = $"({lhsCode})";
-            
+
             if (selfPrecedence > (rhs as ExpressionNode)?.@operator.getPrecedence(false))
                 rhsCode = $"({rhsCode})";
 
             return $"{lhsCode} {@operator.asCode()} {rhsCode}";
         }
 
+        [CanBeNull]
         public string tryDeref()
         {
             if (@operator != Operator.Add || !(lhs is NamedMemoryLayout) || !(rhs is ValueNode))
                 return null;
 
             var memoryLayout = ((NamedMemoryLayout) lhs).memoryLayout;
-            if (memoryLayout == null)
-                return null;
-            
             var member = memoryLayout.getAccessPathTo(
-                (uint) ((ValueNode)rhs).value
+                (uint) ((ValueNode) rhs).value
             );
             return ((NamedMemoryLayout) lhs).label + "->" + member;
         }

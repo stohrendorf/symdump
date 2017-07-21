@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace core.util
 {
     public class EndianBinaryReader : IDisposable
     {
-        private BinaryReader m_stream;
+        [NotNull] private readonly BinaryReader m_stream;
 
         public EndianBinaryReader(Stream s)
             : this(new BinaryReader(s))
@@ -26,7 +27,6 @@ namespace core.util
         public void Dispose()
         {
             m_stream.Dispose();
-            m_stream = null;
         }
 
         public byte[] readBytes(int n)

@@ -96,7 +96,7 @@ namespace symfile.type
         {
             unchecked
             {
-                return ((fundamentalType != null ? fundamentalType.GetHashCode() : 0) * 397) ^ (int) dataSize;
+                return (fundamentalType.GetHashCode() * 397) ^ (int) dataSize;
             }
         }
     }

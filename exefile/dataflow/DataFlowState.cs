@@ -47,7 +47,7 @@ namespace exefile.dataflow
 
             if (insn is CallPtrInstruction)
             {
-                return pocess((CallPtrInstruction) insn, nextInsn);
+                return pocess((CallPtrInstruction) insn);
             }
             else if (insn is ArithmeticInstruction)
             {
@@ -137,7 +137,7 @@ namespace exefile.dataflow
             return true;
         }
 
-        private bool pocess(CallPtrInstruction insn, Instruction nextInsn)
+        private bool pocess(CallPtrInstruction insn)
         {
             if (insn.returnAddressTarget != null)
             {
