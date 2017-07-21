@@ -1,7 +1,8 @@
 ﻿using System;
 using core;
+using symfile.type;
 
-namespace symfile.type
+namespace symfile.memory
 {
     public class PrimitiveType : IMemoryLayout, IEquatable<PrimitiveType>
     {

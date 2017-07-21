@@ -38,12 +38,15 @@ namespace exefile.dataflow
         public bool process(Instruction insn, Instruction nextInsn)
         {
             if (insn is NopInstruction)
+            {
+                Console.WriteLine("[eval] " + insn.asReadable());
                 return true;
+            }
 
             if (nextInsn != null && nextInsn.isBranchDelaySlot)
                 process(nextInsn, null);
 
-            // Console.WriteLine("[eval] " + insn.asReadable());
+            Console.WriteLine("[eval] " + insn.asReadable());
 
             if (insn is CallPtrInstruction)
             {

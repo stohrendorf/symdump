@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using core;
+using symfile.type;
 
 namespace symfile.util
 {
@@ -19,14 +20,9 @@ namespace symfile.util
             return result;
         }
 
-        public static TypeDef readTypeDef(this BinaryReader reader)
+        public static TypeDecoration readTypeDecoration(this BinaryReader s, bool withDimensions, IDebugSource debugSource)
         {
-            return new TypeDef(reader);
-        }
-
-        public static TypeInfo readTypeInfo(this BinaryReader s, bool withDimensions, IDebugSource debugSource)
-        {
-            return new TypeInfo(s, withDimensions, debugSource);
+            return new TypeDecoration(s, withDimensions, debugSource);
         }
 
         public static ClassType readClassType(this BinaryReader s)
@@ -34,9 +30,9 @@ namespace symfile.util
             return (ClassType) s.ReadUInt16();
         }
 
-        public static bool skipSld(this BinaryReader reader, TypedValue typedValue)
+        public static bool skipSld(this BinaryReader reader, FileEntry fileEntry)
         {
-            switch (typedValue.type & 0x7f)
+            switch (fileEntry.type & 0x7f)
             {
                 case 0:
                     return true;

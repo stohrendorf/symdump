@@ -19,10 +19,10 @@ namespace symfile.type
             m_name = name;
             while (true)
             {
-                var typedValue = new TypedValue(stream);
+                var typedValue = new FileEntry(stream);
                 if (typedValue.type == (0x80 | 20))
                 {
-                    var ti = stream.readTypeInfo(false, debugSource);
+                    var ti = stream.readTypeDecoration(false, debugSource);
                     var memberName = stream.readPascalString();
 
                     if (ti.classType == ClassType.EndOfStruct)
@@ -35,12 +35,12 @@ namespace symfile.type
                 }
                 else if (typedValue.type == (0x80 | 22))
                 {
-                    var ti = stream.readTypeInfo(true, debugSource);
-                    if (ti.typeDef.baseType != BaseType.Null)
-                        throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.typeDef.baseType}");
+                    var ti = stream.readTypeDecoration(true, debugSource);
+                    if (ti.baseType != BaseType.Null)
+                        throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.baseType}");
 
-                    if (ti.dims.Length != 0)
-                        throw new Exception($"Expected dims=0, but it's {ti.dims.Length}");
+                    if (ti.dimensions.Length != 0)
+                        throw new Exception($"Expected dims=0, but it's {ti.dimensions.Length}");
 
                     if (ti.tag != name)
                         throw new Exception($"Expected name={name}, but it's {ti.tag}");

@@ -1,4 +1,4 @@
-﻿namespace symfile
+﻿namespace symfile.type
 {
     public enum DerivedType
     {

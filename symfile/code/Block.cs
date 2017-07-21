@@ -5,35 +5,36 @@ using System.IO;
 using core;
 using core.util;
 using mips.disasm;
+using symfile.type;
 using symfile.util;
 
-namespace symfile
+namespace symfile.code
 {
     public class Block
     {
         public class VarInfo
         {
             public readonly string name;
-            public readonly TypeInfo typeInfo;
-            public readonly TypedValue typedValue;
+            public readonly TypeDecoration typeDecoration;
+            public readonly FileEntry fileEntry;
 
-            public VarInfo(string name, TypeInfo typeInfo, TypedValue typedValue)
+            public VarInfo(string name, TypeDecoration typeDecoration, FileEntry fileEntry)
             {
                 this.name = name;
-                this.typeInfo = typeInfo;
-                this.typedValue = typedValue;
+                this.typeDecoration = typeDecoration;
+                this.fileEntry = fileEntry;
             }
 
             public override string ToString()
             {
-                switch (typeInfo.classType)
+                switch (typeDecoration.classType)
                 {
                     case ClassType.AutoVar:
-                        return $"{typeInfo.asDeclaration(name)}; /* sp {typedValue.value} */";
+                        return $"{typeDecoration.asDeclaration(name)}; /* sp {fileEntry.value} */";
                     case ClassType.Register:
-                        return $"{typeInfo.asDeclaration(name)}; /* ${(Register) typedValue.value} */";
+                        return $"{typeDecoration.asDeclaration(name)}; /* ${(Register) fileEntry.value} */";
                     case ClassType.Static:
-                        return $"static {typeInfo.asDeclaration(name)}; // offset 0x{typedValue.value:x}";
+                        return $"static {typeDecoration.asDeclaration(name)}; // offset 0x{fileEntry.value:x}";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -49,7 +50,7 @@ namespace symfile
 
         public readonly uint startOffset;
         public readonly List<Block> subBlocks = new List<Block>();
-        public readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
+        public readonly Dictionary<string, TypeDecoration> typedefs = new Dictionary<string, TypeDecoration>();
         public readonly Dictionary<string, VarInfo> vars = new Dictionary<string, VarInfo>();
 
         public Block(uint ofs, uint ln, Function f, IDebugSource debugSource)
@@ -68,7 +69,7 @@ namespace symfile
 
             while (true)
             {
-                var typedValue = new TypedValue(reader);
+                var typedValue = new FileEntry(reader);
 
                 if (reader.skipSld(typedValue))
                     continue;
@@ -84,7 +85,7 @@ namespace symfile
                         return;
                     case 20:
                     {
-                        var ti = reader.readTypeInfo(false, debugSource);
+                        var ti = reader.readTypeDecoration(false, debugSource);
                         var memberName = reader.readPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
                         switch (ti.classType)
@@ -107,7 +108,7 @@ namespace symfile
                     }
                     case 22:
                     {
-                        var ti = reader.readTypeInfo(true, debugSource);
+                        var ti = reader.readTypeDecoration(true, debugSource);
                         var memberName = reader.readPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
                         switch (ti.classType)

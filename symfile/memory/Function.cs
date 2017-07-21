@@ -2,7 +2,7 @@
 using core;
 using core.util;
 
-namespace symfile.type
+namespace symfile.memory
 {
     public class Function : IMemoryLayout, IEquatable<Function>
     {

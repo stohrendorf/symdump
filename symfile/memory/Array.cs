@@ -1,9 +1,10 @@
 ﻿using System;
 using core;
 using core.util;
+using symfile.type;
 using Xunit;
 
-namespace symfile.type
+namespace symfile.memory
 {
     public class Array : IMemoryLayout, IEquatable<Array>
     {

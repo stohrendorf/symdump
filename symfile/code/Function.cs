@@ -6,9 +6,10 @@ using System.Linq;
 using core;
 using core.util;
 using mips.disasm;
+using symfile.type;
 using symfile.util;
 
-namespace symfile
+namespace symfile.code
 {
     public class Function : IFunction
     {
@@ -16,17 +17,17 @@ namespace symfile
         {
             public string name { get; }
 
-            public IMemoryLayout memoryLayout => typeInfo.typeDef.memoryLayout;
+            public IMemoryLayout memoryLayout => typeDecoration.memoryLayout;
 
-            public readonly TypeInfo typeInfo;
+            public readonly TypeDecoration typeDecoration;
             public readonly Register stackBase;
             public readonly uint? stackOffset;
             public readonly Register? register;
 
-            public ArgumentInfo(string name, TypeInfo typeInfo, Register stackBase, uint? stackOffset, Register? register)
+            public ArgumentInfo(string name, TypeDecoration typeDecoration, Register stackBase, uint? stackOffset, Register? register)
             {
                 this.name = name;
-                this.typeInfo = typeInfo;
+                this.typeDecoration = typeDecoration;
                 this.stackBase = stackBase;
                 this.stackOffset = stackOffset;
                 this.register = register;
@@ -34,15 +35,15 @@ namespace symfile
 
             public override string ToString()
             {
-                if (typeInfo.classType == ClassType.Argument)
+                if (typeDecoration.classType == ClassType.Argument)
                 {
                     Debug.Assert(stackOffset != null);
-                    return $"{typeInfo.asDeclaration(name)} /*${stackBase} {stackOffset}*/";
+                    return $"{typeDecoration.asDeclaration(name)} /*${stackBase} {stackOffset}*/";
                 }
-                else if (typeInfo.classType == ClassType.RegParam)
+                else if (typeDecoration.classType == ClassType.RegParam)
                 {
                     Debug.Assert(register != null);
-                    return $"{typeInfo.asDeclaration(name)} /*${register}*/";
+                    return $"{typeDecoration.asDeclaration(name)} /*${register}*/";
                 }
                 else
                     throw new Exception("Meh");
@@ -66,7 +67,7 @@ namespace symfile
 
         private readonly IDictionary<int, ArgumentInfo> m_stackParameters = new SortedDictionary<int, ArgumentInfo>();
         private readonly Register m_returnAddressRegister;
-        private readonly TypeInfo m_returnType;
+        private readonly TypeDecoration m_returnType;
         private readonly Register m_stackBase;
         private readonly uint m_stackFrameSize;
 
@@ -90,12 +91,12 @@ namespace symfile
 
             while (true)
             {
-                var typedValue = new TypedValue(reader);
+                var typedValue = new FileEntry(reader);
 
                 if (reader.skipSld(typedValue))
                     continue;
 
-                TypeInfo ti;
+                TypeDecoration ti;
                 string memberName;
                 switch (typedValue.type & 0x7f)
                 {
@@ -107,11 +108,11 @@ namespace symfile
                             symFile));
                         continue;
                     case 20:
-                        ti = reader.readTypeInfo(false, symFile);
+                        ti = reader.readTypeDecoration(false, symFile);
                         memberName = reader.readPascalString();
                         break;
                     case 22:
-                        ti = reader.readTypeInfo(true, symFile);
+                        ti = reader.readTypeDecoration(true, symFile);
                         memberName = reader.readPascalString();
                         break;
                     default:

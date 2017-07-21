@@ -4,24 +4,27 @@ using System.IO;
 using System.Linq;
 using core;
 using core.util;
+using symfile.memory;
 using symfile.type;
 using symfile.util;
+using Function = symfile.code.Function;
 
 namespace symfile
 {
     public class SymFile : IDebugSource
     {
         private readonly Dictionary<string, EnumDef> m_enums = new Dictionary<string, EnumDef>();
-        private readonly Dictionary<string, TypeInfo> m_externs = new Dictionary<string, TypeInfo>();
+        private readonly Dictionary<string, TypeDecoration> m_externs = new Dictionary<string, TypeDecoration>();
         public IList<IFunction> functions { get; } = new List<IFunction>();
-        public readonly Dictionary<string, TypeInfo> funcTypes = new Dictionary<string, TypeInfo>();
+        public readonly Dictionary<string, TypeDecoration> funcTypes = new Dictionary<string, TypeDecoration>();
         public IDictionary<uint, IList<NamedLocation>> labels { get; } = new SortedDictionary<uint, IList<NamedLocation>>();
-        private readonly Dictionary<string, StructDef> m_structs = new Dictionary<string, StructDef>();
+        private readonly Dictionary<string, StructLayout> m_structs = new Dictionary<string, StructLayout>();
         private readonly byte m_targetUnit;
-        private readonly Dictionary<string, TypeInfo> m_typedefs = new Dictionary<string, TypeInfo>();
-        private readonly Dictionary<string, UnionDef> m_unions = new Dictionary<string, UnionDef>();
+        private readonly Dictionary<string, TypeDecoration> m_typedefs = new Dictionary<string, TypeDecoration>();
+        private readonly Dictionary<string, UnionLayout> m_unions = new Dictionary<string, UnionLayout>();
         private readonly byte m_version;
         private string m_mxInfo;
+        public readonly Dictionary<string, CompoundLayout> currentlyDefining = new Dictionary<string, CompoundLayout>();
 
         public SymFile(BinaryReader stream)
         {
@@ -36,24 +39,24 @@ namespace symfile
                 dumpEntry(stream);
         }
 
-        public StructDef findStructDef(string tag)
+        public StructLayout findStructDef(string tag)
         {
             if (tag == null)
                 return null;
             
-            StructDef result;
+            StructLayout result;
             if (!m_structs.TryGetValue(tag, out result))
                 return null;
 
             return result;
         }
 
-        public UnionDef findUnionDef(string tag)
+        public UnionLayout findUnionDef(string tag)
         {
             if (tag == null)
                 return null;
             
-            UnionDef result;
+            UnionLayout result;
             if (!m_unions.TryGetValue(tag, out result))
                 return null;
 
@@ -63,12 +66,14 @@ namespace symfile
         public IMemoryLayout findTypeDefinition(string tag)
         {
             IMemoryLayout def = findStructDef(tag);
-            return def ?? findUnionDef(tag);
+            def = def ?? findUnionDef(tag);
+            def = def ?? currentlyDefining.FirstOrDefault(kv => kv.Key == tag).Value;
+            return def;
         }
         
         public IMemoryLayout findTypeDefinitionForLabel(string label)
         {
-            TypeInfo ti;
+            TypeDecoration ti;
             if (!m_externs.TryGetValue(label, out ti))
                 return null;
             
@@ -119,7 +124,7 @@ namespace symfile
 
         private void dumpEntry(BinaryReader stream)
         {
-            var typedValue = new TypedValue(stream);
+            var typedValue = new FileEntry(stream);
             if (typedValue.type == 8)
             {
                 m_mxInfo = $"${typedValue.value:X} MX-info {stream.ReadByte():X}";
@@ -218,15 +223,15 @@ namespace symfile
 
         private void readUnion(BinaryReader reader, string name)
         {
-            var e = new UnionDef(reader, name, this);
+            var e = new UnionLayout(reader, name, this);
 
-            UnionDef already;
+            UnionLayout already;
             if (m_unions.TryGetValue(name, out already))
             {
                 if (e.Equals(already))
                     return;
 
-                if (!e.isFake)
+                if (!e.isAnonymous)
                     throw new Exception($"Non-uniform definitions of union {name}");
 
                 // generate new "fake fake" name
@@ -244,16 +249,27 @@ namespace symfile
 
         private void readStruct(BinaryReader reader, string name)
         {
-            var e = new StructDef(reader, name, this);
+            var e = new StructLayout(reader, name, this);
 
-            StructDef already;
+            StructLayout already;
             if (m_structs.TryGetValue(name, out already))
             {
                 if (e.Equals(already))
                     return;
 
-                if (!e.isFake)
+                if (!e.isAnonymous)
+                {
                     Console.WriteLine($"WARNING: Non-uniform definitions of struct {name}");
+                    var tw = new IndentedTextWriter(Console.Out);
+                    tw.WriteLine("=== Already defined ===");
+                    ++tw.indent;
+                    already.dump(tw);
+                    --tw.indent;
+                    tw.WriteLine("=== New definition ===");
+                    ++tw.indent;
+                    e.dump(tw);
+                    --tw.indent;
+                }
 
                 // generate new "fake fake" name
                 var n = 0;
@@ -268,45 +284,45 @@ namespace symfile
             m_structs.Add(name, e);
         }
 
-        private void addTypedef(string name, TypeInfo typeInfo)
+        private void addTypedef(string name, TypeDecoration typeDecoration)
         {
-            TypeInfo already;
+            TypeDecoration already;
             if (m_typedefs.TryGetValue(name, out already))
             {
-                if (!typeInfo.Equals(already))
+                if (!typeDecoration.Equals(already))
                     throw new Exception($"Non-uniform definitions of typedef for {name}");
 
                 return;
             }
 
-            m_typedefs.Add(name, typeInfo);
+            m_typedefs.Add(name, typeDecoration);
         }
 
         private void dumpType20(BinaryReader stream)
         {
-            var ti = stream.readTypeInfo(false, this);
+            var ti = stream.readTypeDecoration(false, this);
             var name = stream.readPascalString();
 
-            if (ti.classType == ClassType.Enum && ti.typeDef.baseType == BaseType.EnumDef)
+            if (ti.classType == ClassType.Enum && ti.baseType == BaseType.EnumDef)
             {
                 readEnum(stream, name);
                 return;
             }
             if (ti.classType == ClassType.FileName)
                 return;
-            if (ti.classType == ClassType.Struct && ti.typeDef.baseType == BaseType.StructDef)
+            if (ti.classType == ClassType.Struct && ti.baseType == BaseType.StructDef)
                 readStruct(stream, name);
-            else if (ti.classType == ClassType.Union && ti.typeDef.baseType == BaseType.UnionDef)
+            else if (ti.classType == ClassType.Union && ti.baseType == BaseType.UnionDef)
                 readUnion(stream, name);
             else if (ti.classType == ClassType.Typedef)
                 addTypedef(name, ti);
             else if (ti.classType == ClassType.External)
-                if (ti.typeDef.isFunctionReturnType)
+                if (ti.isFunctionReturnType)
                     funcTypes.Add(name, ti);
                 else
                     m_externs.Add(name, ti);
             else if (ti.classType == ClassType.Static)
-                if (ti.typeDef.isFunctionReturnType)
+                if (ti.isFunctionReturnType)
                     funcTypes.Add(name, ti);
                 else
                     m_externs.Add(name, ti);
@@ -316,20 +332,20 @@ namespace symfile
 
         private void dumpType22(BinaryReader stream)
         {
-            var ti = stream.readTypeInfo(true, this);
+            var ti = stream.readTypeDecoration(true, this);
             var name = stream.readPascalString();
 
-            if (ti.classType == ClassType.Enum && ti.typeDef.baseType == BaseType.EnumDef)
+            if (ti.classType == ClassType.Enum && ti.baseType == BaseType.EnumDef)
                 readEnum(stream, name);
             else if (ti.classType == ClassType.Typedef)
                 addTypedef(name, ti);
             else if (ti.classType == ClassType.External)
-                if (ti.typeDef.isFunctionReturnType)
+                if (ti.isFunctionReturnType)
                     funcTypes.Add(name, ti);
                 else
                     m_externs.Add(name, ti);
             else if (ti.classType == ClassType.Static)
-                if (ti.typeDef.isFunctionReturnType)
+                if (ti.isFunctionReturnType)
                     funcTypes.Add(name, ti);
                 else
                     m_externs.Add(name, ti);
