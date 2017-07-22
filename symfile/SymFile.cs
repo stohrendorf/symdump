@@ -17,7 +17,7 @@ namespace symfile
         private readonly Dictionary<string, TypeDecoration> m_externs = new Dictionary<string, TypeDecoration>();
         public IList<IFunction> functions { get; } = new List<IFunction>();
         public readonly Dictionary<string, TypeDecoration> funcTypes = new Dictionary<string, TypeDecoration>();
-        public IDictionary<uint, IList<NamedLocation>> labels { get; } = new SortedDictionary<uint, IList<NamedLocation>>();
+        public SortedDictionary<uint, IList<NamedLocation>> labels { get; } = new SortedDictionary<uint, IList<NamedLocation>>();
         private readonly Dictionary<string, StructLayout> m_structs = new Dictionary<string, StructLayout>();
         private readonly byte m_targetUnit;
         private readonly Dictionary<string, TypeDecoration> m_typedefs = new Dictionary<string, TypeDecoration>();
@@ -73,6 +73,9 @@ namespace symfile
         
         public IMemoryLayout findTypeDefinitionForLabel(string label)
         {
+            if (string.IsNullOrEmpty(label))
+                return null;
+            
             TypeDecoration ti;
             if (!m_externs.TryGetValue(label, out ti))
                 return null;
@@ -366,6 +369,23 @@ namespace symfile
         public string getSymbolName(uint addr, int rel = 0)
         {
             addr = (uint) (addr + rel);
+            
+            // first try to find a memory layout which contains this address
+            var typedLabel = labels.LastOrDefault(kv => kv.Key <= addr).Value.First();
+            var memoryLayout = findTypeDefinitionForLabel(typedLabel.name);
+            if (memoryLayout != null)
+            {
+                try
+                {
+                    var path = memoryLayout.getAccessPathTo(addr - typedLabel.address);
+                    if (path != null)
+                        return path;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
 
             IList<NamedLocation> lbls;
             if (!labels.TryGetValue(addr, out lbls))

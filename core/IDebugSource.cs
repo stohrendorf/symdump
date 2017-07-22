@@ -9,7 +9,7 @@ namespace core
         IList<IFunction> functions { get; }
 
         [NotNull]
-        IDictionary<uint, IList<NamedLocation>> labels { get; }
+        SortedDictionary<uint, IList<NamedLocation>> labels { get; }
 
         [CanBeNull]
         IFunction findFunction(uint addr);

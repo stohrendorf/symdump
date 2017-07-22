@@ -99,11 +99,14 @@ namespace symfile.memory
                 return member.name;
 
             ofs -= (uint) member.fileEntry.value;
-            var subMember = member.memoryLayout.getAccessPathTo(ofs);
-            if (subMember == null)
+            var memberAccessPath = member.memoryLayout.getAccessPathTo(ofs);
+            if (memberAccessPath == null)
                 return member.name;
+            
+            if(member.memoryLayout is Array)
+                return member.name + memberAccessPath;
 
-            return member.name + "." + subMember;
+            return member.name + "." + memberAccessPath;
         }
 
         public bool Equals(StructLayout other)
