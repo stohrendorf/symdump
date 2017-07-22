@@ -32,7 +32,9 @@ namespace exefile.dataflow
                 m_registers[(Register) param.Key] = new NamedMemoryLayout(p.name, p.memoryLayout);
             }
 
+#if TRACE_DATAFLOW_EVAL
             dumpState();
+#endif
         }
 
         public bool process(Instruction insn, Instruction nextInsn)
@@ -80,7 +82,9 @@ namespace exefile.dataflow
             }
             else
             {
+#if TRACE_DATAFLOW_EVAL
                 dumpState();
+#endif
                 Console.WriteLine("[raw] " + insn.asReadable());
                 m_registers.Clear();
             }
@@ -106,7 +110,9 @@ namespace exefile.dataflow
             }
             else
             {
+#if TRACE_DATAFLOW_EVAL
                 dumpState();
+#endif
                 Console.WriteLine(insn.toExpressionNode(this).toCode());
             }
         }
@@ -146,7 +152,9 @@ namespace exefile.dataflow
             }
             else
             {
+#if TRACE_DATAFLOW_EVAL
                 dumpState();
+#endif
                 Console.WriteLine(arith.toExpressionNode(this).toCode());
             }
             return true;
@@ -156,7 +164,9 @@ namespace exefile.dataflow
         {
             if (insn.returnAddressTarget != null)
             {
+#if TRACE_DATAFLOW_EVAL
                 dumpState();
+#endif
 
                 if (insn.target is LabelOperand)
                 {
@@ -164,7 +174,21 @@ namespace exefile.dataflow
                     if (fn != null)
                     {
                         Console.WriteLine("// " + fn.getSignature());
-                        Console.WriteLine(insn.asReadable());
+                        // piece together the parameters
+                        var parameters = new List<string>();
+                        foreach (var p in fn.registerParameters)
+                        {
+                            IExpressionNode tmp;
+                            if (m_registers.TryGetValue((Register) p.Key, out tmp))
+                                parameters.Add(tmp.toCode());
+                            else
+                                parameters.Add("__UNKNOWN__");
+                        }
+                        foreach (var p in fn.stackParameters)
+                        {
+                            parameters.Add(m_stack[p.Key / 4].toCode());
+                        }
+                        Console.WriteLine($"{fn.name}({string.Join(", ", parameters)})");
                         return true;
                     }
                 }
@@ -180,7 +204,9 @@ namespace exefile.dataflow
             }
             else
             {
+#if TRACE_DATAFLOW_EVAL
                 dumpState();
+#endif
                 Console.WriteLine("[jmp] " + insn.asReadable());
             }
             return false;

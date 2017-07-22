@@ -39,7 +39,10 @@ namespace symfile.memory
             var idx = offset / inner.dataSize;
             var subOfs = offset % inner.dataSize;
             var innerAccess = inner.getAccessPathTo(subOfs);
-            return $"[{idx}]{innerAccess}";
+            if(inner is Array)
+                return $"[{idx}]{innerAccess}";
+            else
+                return $"[{idx}].{innerAccess}";
         }
 
         public bool Equals(Array other)

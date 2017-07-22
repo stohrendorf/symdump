@@ -12,6 +12,9 @@ namespace core
         IEnumerable<KeyValuePair<int, IDeclaration>> registerParameters { get; }
 
         [NotNull]
+        IEnumerable<KeyValuePair<int, IDeclaration>> stackParameters { get; }
+
+        [NotNull]
         string getSignature();
         
         [NotNull]

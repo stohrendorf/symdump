@@ -105,7 +105,9 @@ namespace exefile
                 var xrefs = getXrefs(insnPair.Key);
                 if (xrefs != null)
                 {
+#if TRACE_DATAFLOW_EVAL
                     flowState.dumpState();
+#endif
                     Console.WriteLine(m_symFile.getSymbolName(insnPair.Key) + ":");
                 }
 

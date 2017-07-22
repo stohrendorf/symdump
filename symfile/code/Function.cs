@@ -66,6 +66,10 @@ namespace symfile.code
             m_registerParameters.Select(p => new KeyValuePair<int, IDeclaration>((int) p.Key, p.Value));
 
         private readonly IDictionary<int, ArgumentInfo> m_stackParameters = new SortedDictionary<int, ArgumentInfo>();
+        
+        public IEnumerable<KeyValuePair<int, IDeclaration>> stackParameters =>
+            m_stackParameters.Select(p => new KeyValuePair<int, IDeclaration>(p.Key, p.Value));
+        
         private readonly Register m_returnAddressRegister;
         private readonly TypeDecoration m_returnType;
         private readonly Register m_stackBase;
