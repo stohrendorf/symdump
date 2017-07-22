@@ -51,6 +51,7 @@ namespace symfile.code
         }
 
         public uint address { get; }
+        public IMemoryLayout returnType => m_returnType.memoryLayout;
         private readonly Block m_body;
         private readonly string m_file;
         private readonly uint m_lastLine;

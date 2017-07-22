@@ -21,5 +21,7 @@ namespace core
         string name { get; }
         
         uint address { get; }
+        
+        IMemoryLayout returnType { get; }
     }
 }

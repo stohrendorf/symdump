@@ -186,15 +186,25 @@ namespace exefile.dataflow
                         }
                         foreach (var p in fn.stackParameters)
                         {
+                            // TODO check
                             parameters.Add(m_stack[p.Key / 4].toCode());
                         }
-                        Console.WriteLine($"{fn.name}({string.Join(", ", parameters)})");
+
+                        if (!fn.getSignature().StartsWith("void ")) // TODO this is ugly
+                        {
+                            Console.WriteLine($"ret = {fn.name}({string.Join(", ", parameters)})");
+                            m_registers[Register.v0] = new NamedMemoryLayout("ret", fn.returnType);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{fn.name}({string.Join(", ", parameters)})");
+                        }
                         return true;
                     }
                 }
 
                 Console.WriteLine(insn.asReadable());
-                m_registers.Remove(Register.a0);
+                m_registers.Remove(Register.v0);
                 return true;
             }
 

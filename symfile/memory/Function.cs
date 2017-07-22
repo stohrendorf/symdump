@@ -8,24 +8,24 @@ namespace symfile.memory
     {
         public int precedence => Operator.FunctionCall.getPrecedence(false);
 
-        public string fundamentalType => inner.fundamentalType;
+        public string fundamentalType => m_inner.fundamentalType;
 
         public uint dataSize => 4; // TODO assumes 32 bit architecture
 
-        public IMemoryLayout inner { get; }
+        private readonly IMemoryLayout m_inner;
 
         public IMemoryLayout pointee => null;
 
         public Function(IMemoryLayout inner)
         {
-            this.inner = inner;
+            m_inner = inner;
         }
 
         public string asIncompleteDeclaration(string identifier, string argList)
         {
-            var innerCode = inner.asIncompleteDeclaration(identifier, argList);
+            var innerCode = m_inner.asIncompleteDeclaration(identifier, argList);
 
-            return inner.precedence >= precedence
+            return m_inner.precedence >= precedence
                 ? $"({innerCode})({argList})"
                 : $"{innerCode}({argList})";
         }
@@ -34,7 +34,7 @@ namespace symfile.memory
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(inner, other.inner);
+            return Equals(m_inner, other.m_inner);
         }
 
         public override bool Equals(object obj)
@@ -47,7 +47,7 @@ namespace symfile.memory
 
         public override int GetHashCode()
         {
-            return (inner != null ? inner.GetHashCode() : 0);
+            return (m_inner != null ? m_inner.GetHashCode() : 0);
         }
 
         public string getAccessPathTo(uint offset)
