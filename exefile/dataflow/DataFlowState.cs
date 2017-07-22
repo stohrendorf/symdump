@@ -25,13 +25,13 @@ namespace exefile.dataflow
 
             if (func == null)
                 return;
-            
+
             foreach (var param in func.registerParameters)
             {
                 var p = param.Value;
                 m_registers[(Register) param.Key] = new NamedMemoryLayout(p.name, p.memoryLayout);
             }
-            
+
             dumpState();
         }
 
@@ -39,14 +39,25 @@ namespace exefile.dataflow
         {
             if (insn is NopInstruction)
             {
+#if TRACE_DATAFLOW_EVAL
                 Console.WriteLine("[eval] " + insn.asReadable());
+#endif
                 return true;
+            }
+
+            IExpressionNode condition = null;
+            if (insn is ConditionalBranchInstruction)
+            {
+                var cbi = (ConditionalBranchInstruction) insn;
+                condition = (ConditionalBranchNode) cbi.toExpressionNode(this);
             }
 
             if (nextInsn != null && nextInsn.isBranchDelaySlot)
                 process(nextInsn, null);
 
+#if TRACE_DATAFLOW_EVAL
             Console.WriteLine("[eval] " + insn.asReadable());
+#endif
 
             if (insn is CallPtrInstruction)
             {
@@ -64,7 +75,8 @@ namespace exefile.dataflow
             }
             else if (insn is ConditionalBranchInstruction)
             {
-                Console.WriteLine(((ConditionalBranchInstruction) insn).toExpressionNode(this).toCode());
+                Debug.Assert(condition != null);
+                Console.WriteLine(condition.toCode());
             }
             else
             {
@@ -156,7 +168,7 @@ namespace exefile.dataflow
                         return true;
                     }
                 }
-                
+
                 Console.WriteLine(insn.asReadable());
                 m_registers.Remove(Register.a0);
                 return true;
@@ -189,7 +201,7 @@ namespace exefile.dataflow
         public IExpressionNode getRegisterExpression(int registerId)
         {
             IExpressionNode expression;
-            m_registers.TryGetValue((Register)registerId, out expression);
+            m_registers.TryGetValue((Register) registerId, out expression);
             return expression;
         }
     }
