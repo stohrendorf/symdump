@@ -51,7 +51,10 @@ namespace symfile.memory
 
         public string getAccessPathTo(uint offset)
         {
-            throw new NotImplementedException();
+            if(offset != 0)
+                throw new ArgumentOutOfRangeException(nameof(offset), offset, "Can only access pointers at offset 0");
+
+            return null;
         }
     }
 }

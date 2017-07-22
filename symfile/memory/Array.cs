@@ -73,6 +73,8 @@ namespace symfile.memory
         {
             var tmp = new Array(10, new PrimitiveType(BaseType.Char));
             Assert.Equal("foo[10]", tmp.asIncompleteDeclaration("foo", null));
+            Assert.Equal("char", tmp.fundamentalType);
+            Assert.Equal("[3]", tmp.getAccessPathTo(3));
         }
 
         [Fact]
@@ -80,6 +82,8 @@ namespace symfile.memory
         {
             var tmp = new Array(10, new Pointer(new PrimitiveType(BaseType.Char)));
             Assert.Equal("(*foo)[10]", tmp.asIncompleteDeclaration("foo", null));
+            Assert.Equal("char", tmp.fundamentalType);
+            Assert.Equal("[1]", tmp.getAccessPathTo(4));
         }
     }
 }
