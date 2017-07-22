@@ -379,7 +379,7 @@ namespace symfile
                 {
                     var path = memoryLayout.getAccessPathTo(addr - typedLabel.address);
                     if (path != null)
-                        return path;
+                        return typedLabel.name + "." + path;
                 }
                 catch
                 {
