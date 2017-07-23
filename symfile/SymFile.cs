@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using core;
 using core.util;
+using NLog;
 using symfile.memory;
 using symfile.type;
 using symfile.util;
@@ -13,6 +14,8 @@ namespace symfile
 {
     public class SymFile : IDebugSource
     {
+        private static ILogger logger = LogManager.GetCurrentClassLogger();
+        
         private readonly Dictionary<string, EnumDef> m_enums = new Dictionary<string, EnumDef>();
         private readonly Dictionary<string, TypeDecoration> m_externs = new Dictionary<string, TypeDecoration>();
         public IList<IFunction> functions { get; } = new List<IFunction>();
@@ -26,17 +29,25 @@ namespace symfile
         private string m_mxInfo;
         public readonly Dictionary<string, CompoundLayout> currentlyDefining = new Dictionary<string, CompoundLayout>();
 
-        public SymFile(BinaryReader stream)
+        public SymFile(BinaryReader reader)
         {
-            stream.BaseStream.Seek(0, SeekOrigin.Begin);
+            logger.Info("Loading SYM file");
+            
+            reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            stream.skip(3);
-            m_version = stream.ReadByte();
-            m_targetUnit = stream.ReadByte();
+            reader.skip(3);
+            m_version = reader.ReadByte();
+            m_targetUnit = reader.ReadByte();
 
-            stream.skip(3);
-            while (stream.BaseStream.Position < stream.BaseStream.Length)
-                dumpEntry(stream);
+            reader.skip(3);
+            uint n = 0;
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+            {
+                loadEntry(reader);
+                ++n;
+            }
+
+            logger.Info($"Loaded {n} top-level entries");
         }
 
         public StructLayout findStructDef(string tag)
@@ -125,18 +136,18 @@ namespace symfile
                 f.dump(writer);
         }
 
-        private void dumpEntry(BinaryReader stream)
+        private void loadEntry(BinaryReader reader)
         {
-            var typedValue = new FileEntry(stream);
-            if (typedValue.type == 8)
+            var fileEntry = new FileEntry(reader);
+            if (fileEntry.type == 8)
             {
-                m_mxInfo = $"${typedValue.value:X} MX-info {stream.ReadByte():X}";
+                m_mxInfo = $"${fileEntry.value:X} MX-info {reader.ReadByte():X}";
                 return;
             }
 
-            if (typedValue.isLabel)
+            if (fileEntry.isLabel)
             {
-                var lbl = new NamedLocation((uint)typedValue.value, stream.readPascalString());
+                var lbl = new NamedLocation((uint)fileEntry.value, reader.readPascalString());
 
                 if (!labels.ContainsKey(lbl.address))
                     labels.Add(lbl.address, new List<NamedLocation>());
@@ -145,7 +156,7 @@ namespace symfile
                 return;
             }
 
-            switch (typedValue.type & 0x7f)
+            switch (fileEntry.type & 0x7f)
             {
                 case 0:
 #if WITH_SLD
@@ -156,21 +167,21 @@ namespace symfile
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {stream.ReadU1()}");
                 #else
-                    stream.skip(1);
+                    reader.skip(1);
 #endif
                     break;
                 case 4:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by word {stream.ReadUInt16()}");
 #else
-                    stream.skip(2);
+                    reader.skip(2);
 #endif
                     break;
                 case 6:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Set SLD linenum to {stream.ReadUInt32()}");
 #else
-                    stream.skip(4);
+                    reader.skip(4);
 #endif
                     break;
                 case 8:
@@ -178,8 +189,8 @@ namespace symfile
                 writer.WriteLine($"${typedValue.value:X} Set SLD to line {stream.ReadUInt32()} of file " +
                     stream.readPascalString());
 #else
-                    stream.skip(4);
-                    stream.skip(stream.ReadByte());
+                    reader.skip(4);
+                    reader.skip(reader.ReadByte());
 #endif
                     break;
                 case 10:
@@ -188,22 +199,22 @@ namespace symfile
 #endif
                     break;
                 case 12:
-                    dumpType12(stream, typedValue.value);
+                    loadFunction(reader, fileEntry.value);
                     break;
                 case 20:
-                    dumpType20(stream);
+                    loadUserDefinedType(reader, false);
                     break;
                 case 22:
-                    dumpType22(stream);
+                    loadUserDefinedType(reader, true);
                     break;
                 default:
                     throw new Exception("Sodom");
             }
         }
 
-        private void dumpType12(BinaryReader stream, int offset)
+        private void loadFunction(BinaryReader reader, int offset)
         {
-            functions.Add(new Function(stream, (uint) offset, this));
+            functions.Add(new Function(reader, (uint) offset, this));
             //writer.WriteLine("{");
             //++writer.Indent;
         }
@@ -262,16 +273,7 @@ namespace symfile
 
                 if (!e.isAnonymous)
                 {
-                    Console.WriteLine($"WARNING: Non-uniform definitions of struct {name}");
-                    var tw = new IndentedTextWriter(Console.Out);
-                    tw.WriteLine("=== Already defined ===");
-                    ++tw.indent;
-                    already.dump(tw);
-                    --tw.indent;
-                    tw.WriteLine("=== New definition ===");
-                    ++tw.indent;
-                    e.dump(tw);
-                    --tw.indent;
+                    logger.Warn($"WARNING: Non-uniform definitions of struct {name}");
                 }
 
                 // generate new "fake fake" name
@@ -301,45 +303,20 @@ namespace symfile
             m_typedefs.Add(name, typeDecoration);
         }
 
-        private void dumpType20(BinaryReader stream)
+        private void loadUserDefinedType(BinaryReader stream, bool withDimensions)
         {
-            var ti = stream.readTypeDecoration(false, this);
+            var ti = stream.readTypeDecoration(withDimensions, this);
             var name = stream.readPascalString();
 
-            if (ti.classType == ClassType.Enum && ti.baseType == BaseType.EnumDef)
-            {
-                readEnum(stream, name);
-                return;
-            }
             if (ti.classType == ClassType.FileName)
                 return;
-            if (ti.classType == ClassType.Struct && ti.baseType == BaseType.StructDef)
+
+            if (ti.classType == ClassType.Enum && ti.baseType == BaseType.EnumDef)
+                readEnum(stream, name);
+            else if (ti.classType == ClassType.Struct && ti.baseType == BaseType.StructDef)
                 readStruct(stream, name);
             else if (ti.classType == ClassType.Union && ti.baseType == BaseType.UnionDef)
                 readUnion(stream, name);
-            else if (ti.classType == ClassType.Typedef)
-                addTypedef(name, ti);
-            else if (ti.classType == ClassType.External)
-                if (ti.isFunctionReturnType)
-                    funcTypes.Add(name, ti);
-                else
-                    m_externs.Add(name, ti);
-            else if (ti.classType == ClassType.Static)
-                if (ti.isFunctionReturnType)
-                    funcTypes.Add(name, ti);
-                else
-                    m_externs.Add(name, ti);
-            else
-                throw new Exception("Gomorrha");
-        }
-
-        private void dumpType22(BinaryReader stream)
-        {
-            var ti = stream.readTypeDecoration(true, this);
-            var name = stream.readPascalString();
-
-            if (ti.classType == ClassType.Enum && ti.baseType == BaseType.EnumDef)
-                readEnum(stream, name);
             else if (ti.classType == ClassType.Typedef)
                 addTypedef(name, ti);
             else if (ti.classType == ClassType.External)

@@ -11,11 +11,14 @@ using JetBrains.Annotations;
 using mips.disasm;
 using mips.instructions;
 using mips.operands;
+using NLog;
 
 namespace exefile.controlflow
 {
     public class ControlFlowProcessor
     {
+        private static ILogger logger = LogManager.GetCurrentClassLogger();
+        
         public SortedDictionary<uint, Block> blocks = new SortedDictionary<uint, Block>();
 
         [NotNull]
@@ -31,7 +34,7 @@ namespace exefile.controlflow
             {
                 if (block.instructions.Count > 0 && block.start != addr)
                 {
-                    Console.WriteLine($"Block 0x{block.start:X} needs split at 0x{addr:X}");
+                    logger.Debug($"Block 0x{block.start:X} needs split at 0x{addr:X}");
                 }
             }
 
@@ -53,11 +56,11 @@ namespace exefile.controlflow
                 var block = getBlockForAddress(addr);
                 if (block.containsAddress(addr))
                 {
-                    Console.WriteLine($"Already processed: 0x{addr:X}");
+                    logger.Debug($"Already processed: 0x{addr:X}");
                     continue;
                 }
 
-                Console.WriteLine($"=== Start analysis: 0x{addr:X} ===");
+                logger.Debug($"=== Start analysis of block: 0x{addr:X} ===");
 
                 for (;; addr += 4)
                 {
@@ -74,9 +77,7 @@ namespace exefile.controlflow
                     var insn = instructions[addr];
                     block.instructions.Add(addr, insn);
 
-#if TRACE_CONTROLFLOW_EVAL
-                    Console.WriteLine($"[eval 0x{addr:X}] {insn.asReadable()}");
-#endif
+                    logger.Debug($"[eval 0x{addr:X}] {insn.asReadable()}");
 
                     if (insn is NopInstruction)
                     {
@@ -107,22 +108,21 @@ namespace exefile.controlflow
                     var cpi = insn as CallPtrInstruction;
                     if (cpi?.target is RegisterOperand)
                     {
+                        block.instructions.Add(addr + 4, instructions[addr + 4]);
                         var target = (RegisterOperand) cpi.target;
                         if (target.register == Register.ra)
                         {
                             block.exitType = ExitType.Return;
-#if TRACE_CONTROLFLOW_EVAL
-                            Console.WriteLine("return");
-#endif
+                            logger.Debug("return");
                         }
                         break;
                     }
                     else if (cpi?.target is LabelOperand && cpi.returnAddressTarget == null)
                     {
+                        block.instructions.Add(addr + 4, instructions[addr + 4]);
                         block.exitType = ExitType.Unconditional;
-#if TRACE_CONTROLFLOW_EVAL
-                        Console.WriteLine("jmp " + cpi.target);
-#endif
+
+                        logger.Debug("jmp " + cpi.target);
 
                         var lbl = (LabelOperand) cpi.target;
                         block.trueExit = getBlockForAddress(lbl.address);

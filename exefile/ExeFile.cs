@@ -10,11 +10,14 @@ using exefile.dataflow;
 using mips.disasm;
 using mips.instructions;
 using mips.operands;
+using NLog;
 
 namespace exefile
 {
     public class ExeFile
     {
+        private static ILogger logger = LogManager.GetCurrentClassLogger();
+        
         private readonly Queue<uint> m_analysisQueue = new Queue<uint>();
         private readonly byte[] m_data;
         private readonly uint? m_gpBase;
@@ -96,7 +99,7 @@ namespace exefile
             var addr = m_debugSource.functions.Skip(200).First().address;
             var func = m_debugSource.findFunction(addr);
             if (func != null)
-                Console.WriteLine(func.getSignature());
+                logger.Debug(func.getSignature());
             addr -= m_header.tAddr;
 
             var flowState = new DataFlowState(m_debugSource, func);
@@ -122,10 +125,8 @@ namespace exefile
                 var xrefs = getXrefs(insnPair.Key);
                 if (xrefs != null)
                 {
-#if TRACE_DATAFLOW_EVAL
                     flowState.dumpState();
-#endif
-                    Console.WriteLine(m_debugSource.getSymbolName(insnPair.Key) + ":");
+                    logger.Debug(m_debugSource.getSymbolName(insnPair.Key) + ":");
                 }
 
                 var insn = insnPair.Value;
@@ -144,6 +145,8 @@ namespace exefile
 
         public void disassemble()
         {
+            logger.Info("Disassembly started");
+            
             m_analysisQueue.Clear();
             m_analysisQueue.Enqueue(m_header.pc0 - m_header.tAddr);
             foreach (var addr in m_debugSource.functions.Select(f => f.address))
@@ -188,6 +191,8 @@ namespace exefile
 
                 m_analysisQueue.Enqueue(index);
             }
+            
+            logger.Info($"Disassembled {m_instructions.Count} instructions, detected {m_callees.Count} callees");
         }
 
         public void dump()
@@ -195,32 +200,30 @@ namespace exefile
             foreach (var insn in m_instructions)
             {
                 if (m_callees.Contains(insn.Key))
-                    Console.WriteLine("### FUNCTION");
+                    logger.Debug("### FUNCTION");
                 if (insn.Value is NopInstruction)
                     continue;
 
                 var f = m_debugSource.findFunction(insn.Key + m_header.tAddr);
-                if (f != null)
-                    Console.WriteLine();
 
                 var xrefsHere = getXrefs(insn.Key);
                 if (xrefsHere != null)
                 {
-                    Console.WriteLine("# XRefs:");
+                    logger.Debug("# XRefs:");
                     foreach (var xref in xrefsHere)
-                        Console.WriteLine("# - " + m_debugSource.getSymbolName(xref));
+                        logger.Debug("# - " + m_debugSource.getSymbolName(xref));
                     var names = getSymbolNames(insn.Key);
                     if (names != null)
                         foreach (var name in names)
-                            Console.WriteLine(name + ":");
+                            logger.Debug(name + ":");
                     else
-                        Console.WriteLine(m_debugSource.getSymbolName(insn.Key) + ":");
+                        logger.Debug(m_debugSource.getSymbolName(insn.Key) + ":");
                 }
 
                 if (f != null)
-                    Console.WriteLine(f.getSignature());
+                    logger.Debug(f.getSignature());
 
-                Console.WriteLine($"  0x{insn.Key:X}  {insn.Value.asReadable()}");
+                logger.Debug($"  0x{insn.Key:X}  {insn.Value.asReadable()}");
             }
         }
 

@@ -2,6 +2,9 @@
 using System.IO;
 using core.util;
 using exefile;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 using symfile;
 
 namespace symdump
@@ -10,6 +13,15 @@ namespace symdump
     {
         private static void Main(string[] args)
         {
+            var nlogConfig = new LoggingConfiguration();
+            var consoleTarget = new ColoredConsoleTarget();
+            nlogConfig.AddTarget("console", consoleTarget);
+            consoleTarget.Layout = @"[${date:format=HH\:mm\:ss.fff} ${pad:padding=5:inner=${level:uppercase=true}}] ${logger} | ${message}";
+            var nlogDebugRule = new LoggingRule("*", LogLevel.Debug, consoleTarget);
+            nlogConfig.LoggingRules.Add(nlogDebugRule);
+            LogManager.Configuration = nlogConfig;
+            
+            
             SymFile symFile;
             using (var fs = new FileStream(args[0], FileMode.Open))
             {

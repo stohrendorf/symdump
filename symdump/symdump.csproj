@@ -29,4 +29,8 @@
     <ProjectReference Include="..\exefile\exefile.csproj"/>
     <ProjectReference Include="..\symfile\symfile.csproj"/>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="5.0.0-beta09"/>
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta5"/>
+  </ItemGroup>
 </Project>

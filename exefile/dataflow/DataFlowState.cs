@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using core;
@@ -7,11 +6,14 @@ using core.expression;
 using mips.disasm;
 using mips.instructions;
 using mips.operands;
+using NLog;
 
 namespace exefile.dataflow
 {
     public class DataFlowState : IDataFlowState
     {
+        private static ILogger logger = LogManager.GetCurrentClassLogger();
+
         private readonly SortedDictionary<Register, IExpressionNode> m_registers =
             new SortedDictionary<Register, IExpressionNode>();
 
@@ -32,18 +34,14 @@ namespace exefile.dataflow
                 m_registers[(Register) param.Key] = new NamedMemoryLayout(p.name, 0, p.memoryLayout);
             }
 
-#if TRACE_DATAFLOW_EVAL
             dumpState();
-#endif
         }
 
         public bool process(Instruction insn, Instruction nextInsn)
         {
             if (insn is NopInstruction)
             {
-#if TRACE_DATAFLOW_EVAL
-                Console.WriteLine("[eval] " + insn.asReadable());
-#endif
+                logger.Debug("[eval] " + insn.asReadable());
                 return true;
             }
 
@@ -57,9 +55,7 @@ namespace exefile.dataflow
             if (nextInsn != null && nextInsn.isBranchDelaySlot)
                 process(nextInsn, null);
 
-#if TRACE_DATAFLOW_EVAL
-            Console.WriteLine("[eval] " + insn.asReadable());
-#endif
+            logger.Debug("[eval] " + insn.asReadable());
 
             if (insn is CallPtrInstruction)
             {
@@ -78,14 +74,13 @@ namespace exefile.dataflow
             else if (insn is ConditionalBranchInstruction)
             {
                 Debug.Assert(condition != null);
-                Console.WriteLine(condition.toCode());
+                logger.Debug(condition.toCode());
             }
             else
             {
-#if TRACE_DATAFLOW_EVAL
                 dumpState();
-#endif
-                Console.WriteLine("[raw] " + insn.asReadable());
+
+                logger.Warn("[raw] " + insn.asReadable());
                 m_registers.Clear();
             }
 
@@ -110,10 +105,9 @@ namespace exefile.dataflow
             }
             else
             {
-#if TRACE_DATAFLOW_EVAL
                 dumpState();
-#endif
-                Console.WriteLine(insn.toExpressionNode(this).toCode());
+
+                logger.Debug(insn.toExpressionNode(this).toCode());
             }
         }
 
@@ -152,10 +146,9 @@ namespace exefile.dataflow
             }
             else
             {
-#if TRACE_DATAFLOW_EVAL
                 dumpState();
-#endif
-                Console.WriteLine(arith.toExpressionNode(this).toCode());
+
+                logger.Debug(arith.toExpressionNode(this).toCode());
             }
             return true;
         }
@@ -164,16 +157,14 @@ namespace exefile.dataflow
         {
             if (insn.returnAddressTarget != null)
             {
-#if TRACE_DATAFLOW_EVAL
                 dumpState();
-#endif
 
                 if (insn.target is LabelOperand)
                 {
                     var fn = debugSource.findFunction(((LabelOperand) insn.target).label);
                     if (fn != null)
                     {
-                        Console.WriteLine("// " + fn.getSignature());
+                        logger.Debug("// " + fn.getSignature());
                         // piece together the parameters
                         var parameters = new List<string>();
                         foreach (var p in fn.registerParameters)
@@ -192,32 +183,31 @@ namespace exefile.dataflow
 
                         if (!fn.getSignature().StartsWith("void ")) // TODO this is ugly
                         {
-                            Console.WriteLine($"ret = {fn.name}({string.Join(", ", parameters)})");
+                            logger.Debug($"ret = {fn.name}({string.Join(", ", parameters)})");
                             m_registers[Register.v0] = new NamedMemoryLayout("ret", 0, fn.returnType);
                         }
                         else
                         {
-                            Console.WriteLine($"{fn.name}({string.Join(", ", parameters)})");
+                            logger.Debug($"{fn.name}({string.Join(", ", parameters)})");
                         }
                         return true;
                     }
                 }
 
-                Console.WriteLine(insn.asReadable());
+                logger.Debug(insn.asReadable());
                 m_registers.Remove(Register.v0);
                 return true;
             }
 
             if (insn.target is RegisterOperand && ((RegisterOperand) insn.target).register == Register.ra)
             {
-                Console.WriteLine("return");
+                logger.Debug("return");
             }
             else
             {
-#if TRACE_DATAFLOW_EVAL
                 dumpState();
-#endif
-                Console.WriteLine("[jmp] " + insn.asReadable());
+
+                logger.Debug("[jmp] " + insn.asReadable());
             }
             return false;
         }
@@ -230,8 +220,8 @@ namespace exefile.dataflow
                 .Where(i => m_stack[i] != null)
                 .Select(i => "sp[" + (i * 4) + "] = " + m_stack[i].toCode());
             var stackDump = string.Join("; ", sel);
-            Console.WriteLine("    # Registers: " + regDump);
-            Console.WriteLine("    # Stack: " + stackDump);
+            logger.Debug("    # Registers: " + regDump);
+            logger.Debug("    # Stack: " + stackDump);
         }
 
         public IExpressionNode getRegisterExpression(int registerId)
