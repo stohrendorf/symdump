@@ -1,7 +1,4 @@
-﻿#define TRACE_CONTROLFLOW_EVAL
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -24,9 +21,8 @@ namespace exefile.controlflow
         [NotNull]
         private Block getBlockForAddress(uint addr)
         {
-            Block block = null;
-            blocks.TryGetValue(addr, out block);
-            if (block == null)
+            Block block;
+            if (!blocks.TryGetValue(addr, out block))
             {
                 blocks.Add(addr, block = new Block());
             }
@@ -42,7 +38,7 @@ namespace exefile.controlflow
             return block;
         }
 
-        public void process(uint start, IDictionary<uint, Instruction> instructions)
+        public void process(uint start, [NotNull] IDictionary<uint, Instruction> instructions)
         {
             var entryPoints = new Queue<uint>();
             entryPoints.Enqueue(start);
@@ -90,7 +86,6 @@ namespace exefile.controlflow
 
                         block.instructions.Add(addr + 4, instructions[addr + 4]);
 
-                        block.condition = (ConditionalBranchInstruction) insn;
                         block.falseExit = getBlockForAddress(addr + 8);
                         entryPoints.Enqueue(addr + 8);
 

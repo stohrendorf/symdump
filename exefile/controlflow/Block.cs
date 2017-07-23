@@ -3,40 +3,37 @@ using System.IO;
 using System.Linq;
 using core;
 using core.util;
-using mips.instructions;
 
 namespace exefile.controlflow
 {
-    public class Block
+    public class Block : IBlock
     {
-        public ConditionalBranchInstruction condition;
+        public Block trueExit { get; set; }
 
-        public Block trueExit;
-        
-        public Block falseExit;
+        public Block falseExit { get; set; }
 
         public uint start => instructions.Keys.First();
-        
+
         public SortedDictionary<uint, Instruction> instructions { get; } = new SortedDictionary<uint, Instruction>();
 
-        public ExitType? exitType; 
+        public ExitType? exitType { get; set; }
 
         public bool containsAddress(uint address)
         {
             if (instructions.Count == 0)
                 return false;
-            
+
             return address >= instructions.Keys.First() && address <= instructions.Keys.Last();
         }
 
         public void dump(IndentedTextWriter writer)
         {
             writer.WriteLine($"// exitType={exitType} start=0x{start:X}");
-            if(trueExit != null)
+            if (trueExit != null)
                 writer.WriteLine($"// trueExit=0x{trueExit.start:X}");
-            if(falseExit != null)
+            if (falseExit != null)
                 writer.WriteLine($"// falseExit=0x{falseExit.start:X}");
-            
+
             ++writer.indent;
             foreach (var insn in instructions)
             {
@@ -46,7 +43,7 @@ namespace exefile.controlflow
         }
 
         public string plantUmlName => $"state_{start:X}";
-        
+
         public void dumpPlantUml(TextWriter writer)
         {
             writer.WriteLine($"note left of {plantUmlName} : exitType={exitType}");
@@ -59,10 +56,10 @@ namespace exefile.controlflow
             {
                 writer.WriteLine($"{plantUmlName} : {insn.asReadable()}");
             }
-            
-            if(trueExit != null)
+
+            if (trueExit != null)
                 writer.WriteLine($"{plantUmlName} -->  {trueExit.plantUmlName} : true");
-            if(falseExit != null)
+            if (falseExit != null)
                 writer.WriteLine($"{plantUmlName} -->  {falseExit.plantUmlName} : false");
         }
     }
