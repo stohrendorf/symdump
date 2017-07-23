@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using core;
 using core.util;
@@ -136,6 +137,22 @@ namespace exefile.controlflow
             foreach (var block in blocks.Values)
             {
                 block.dump(writer);
+                writer.WriteLine();
+            }
+        }
+
+        public void dumpPlanUml(TextWriter writer)
+        {
+            writer.WriteLine("skinparam stateFontName Lucida Console");
+            writer.WriteLine("skinparam stateAttributeFontName Lucida Console");
+
+            writer.WriteLine();
+            writer.WriteLine($"[*] --> {blocks.Values.First().plantUmlName}");
+            
+            writer.WriteLine();
+            foreach (var block in blocks.Values)
+            {
+                block.dumpPlantUml(writer);
                 writer.WriteLine();
             }
         }

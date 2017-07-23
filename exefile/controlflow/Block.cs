@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using core;
 using core.util;
@@ -42,6 +43,27 @@ namespace exefile.controlflow
                 writer.WriteLine($"0x{insn.Key:X}  {insn.Value.asReadable()}");
             }
             --writer.indent;
+        }
+
+        public string plantUmlName => $"state_{start:X}";
+        
+        public void dumpPlantUml(TextWriter writer)
+        {
+            writer.WriteLine($"note left of {plantUmlName} : exitType={exitType}");
+            if (exitType == ExitType.Return)
+            {
+                writer.WriteLine($"{plantUmlName} --> [*]");
+            }
+
+            foreach (var insn in instructions.Values)
+            {
+                writer.WriteLine($"{plantUmlName} : {insn.asReadable()}");
+            }
+            
+            if(trueExit != null)
+                writer.WriteLine($"{plantUmlName} -->  {trueExit.plantUmlName} : true");
+            if(falseExit != null)
+                writer.WriteLine($"{plantUmlName} -->  {falseExit.plantUmlName} : false");
         }
     }
 }

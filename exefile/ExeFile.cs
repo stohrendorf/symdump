@@ -106,8 +106,15 @@ namespace exefile
 
             {
                 Console.WriteLine();
-                var itw = new IndentedTextWriter(Console.Out);
-                control.dump(itw);
+                if (false)
+                {
+                    var itw = new IndentedTextWriter(Console.Out);
+                    control.dump(itw);
+                }
+                else
+                {
+                    control.dumpPlanUml(Console.Out);
+                }
             }
 
             foreach (var insnPair in m_instructions.Where(i => i.Key >= addr))
