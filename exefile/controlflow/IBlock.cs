@@ -6,11 +6,11 @@ namespace exefile.controlflow
 {
     public interface IBlock
     {
-        [CanBeNull] Block trueExit { get; set; }
-        [CanBeNull] Block falseExit { get; set; }
+        [CanBeNull] IBlock trueExit { get; }
+        [CanBeNull] IBlock falseExit { get; }
         uint start { get; }
         [NotNull] SortedDictionary<uint, Instruction> instructions { get; }
-        [CanBeNull] ExitType? exitType { get; set; }
+        [CanBeNull] ExitType? exitType { get; }
         bool containsAddress(uint address);
     }
 }

@@ -14,14 +14,14 @@ namespace exefile.controlflow
 {
     public class ControlFlowProcessor
     {
-        private static ILogger logger = LogManager.GetCurrentClassLogger();
-        
-        public SortedDictionary<uint, Block> blocks = new SortedDictionary<uint, Block>();
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
+        public readonly SortedDictionary<uint, IBlock> blocks = new SortedDictionary<uint, IBlock>();
 
         [NotNull]
         private Block getBlockForAddress(uint addr)
         {
-            Block block;
+            IBlock block;
             if (!blocks.TryGetValue(addr, out block))
             {
                 blocks.Add(addr, block = new Block());
@@ -35,7 +35,7 @@ namespace exefile.controlflow
             }
 
             Debug.Assert(block != null);
-            return block;
+            return (Block) block;
         }
 
         public void process(uint start, [NotNull] IDictionary<uint, Instruction> instructions)
@@ -142,8 +142,8 @@ namespace exefile.controlflow
             writer.WriteLine("skinparam stateAttributeFontName Lucida Console");
 
             writer.WriteLine();
-            writer.WriteLine($"[*] --> {blocks.Values.First().plantUmlName}");
-            
+            writer.WriteLine($"[*] --> {blocks.Values.First().getPlantUmlName()}");
+
             writer.WriteLine();
             foreach (var block in blocks.Values)
             {
