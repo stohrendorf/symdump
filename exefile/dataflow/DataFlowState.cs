@@ -29,7 +29,7 @@ namespace exefile.dataflow
             foreach (var param in func.registerParameters)
             {
                 var p = param.Value;
-                m_registers[(Register) param.Key] = new NamedMemoryLayout(p.name, p.memoryLayout);
+                m_registers[(Register) param.Key] = new NamedMemoryLayout(p.name, 0, p.memoryLayout);
             }
 
 #if TRACE_DATAFLOW_EVAL
@@ -193,7 +193,7 @@ namespace exefile.dataflow
                         if (!fn.getSignature().StartsWith("void ")) // TODO this is ugly
                         {
                             Console.WriteLine($"ret = {fn.name}({string.Join(", ", parameters)})");
-                            m_registers[Register.v0] = new NamedMemoryLayout("ret", fn.returnType);
+                            m_registers[Register.v0] = new NamedMemoryLayout("ret", 0, fn.returnType);
                         }
                         else
                         {

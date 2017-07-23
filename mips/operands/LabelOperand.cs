@@ -5,12 +5,13 @@ namespace mips.operands
 {
     public class LabelOperand : IOperand
     {
-        // TODO address
         public readonly string label;
+        public readonly uint address;
 
-        public LabelOperand(string label)
+        public LabelOperand(string label, uint address)
         {
             this.label = label;
+            this.address = address;
         }
 
         public bool Equals(IOperand other)
@@ -21,7 +22,7 @@ namespace mips.operands
 
         public IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
         {
-            return new NamedMemoryLayout(label, dataFlowState.debugSource.findTypeDefinitionForLabel(label));
+            return new NamedMemoryLayout(label, address, dataFlowState.debugSource.findTypeDefinitionForLabel(label));
         }
 
         public override string ToString()

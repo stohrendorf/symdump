@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using core;
 using core.util;
+using exefile.controlflow;
 using exefile.dataflow;
 using mips.disasm;
 using mips.instructions;
@@ -21,20 +22,20 @@ namespace exefile
         private readonly Header m_header;
 
         private readonly SortedDictionary<uint, Instruction> m_instructions = new SortedDictionary<uint, Instruction>();
-        private readonly IDebugSource m_symFile;
+        private readonly IDebugSource m_debugSource;
         private readonly Dictionary<uint, HashSet<uint>> m_xrefs = new Dictionary<uint, HashSet<uint>>();
         private readonly SortedSet<uint> m_callees = new SortedSet<uint>();
 
-        public ExeFile(EndianBinaryReader reader, IDebugSource symFile)
+        public ExeFile(EndianBinaryReader reader, IDebugSource debugSource)
         {
-            m_symFile = symFile;
+            m_debugSource = debugSource;
             reader.baseStream.Seek(0, SeekOrigin.Begin);
 
             m_header = new Header(reader);
             reader.baseStream.Seek(0x800, SeekOrigin.Begin);
             m_data = reader.readBytes((int) m_header.tSize);
 
-            m_gpBase = m_symFile.labels
+            m_gpBase = m_debugSource.labels
                 .Where(byOffset => byOffset.Value.Any(lbl => lbl.name.Equals("__SN_GP_BASE")))
                 .Select(lbl => lbl.Key)
                 .FirstOrDefault();
@@ -43,7 +44,7 @@ namespace exefile
         private IEnumerable<string> getSymbolNames(uint addr)
         {
             IList<NamedLocation> lbls;
-            m_symFile.labels.TryGetValue(addr + m_header.tAddr, out lbls);
+            m_debugSource.labels.TryGetValue(addr + m_header.tAddr, out lbls);
             return lbls?.Select(l => l.name);
         }
 
@@ -92,13 +93,16 @@ namespace exefile
             if (m_callees.Count == 0)
                 return;
 
-            var addr = m_symFile.functions.Skip(200).First().address;
-            var func = m_symFile.findFunction(addr);
+            var addr = m_debugSource.functions.Skip(200).First().address;
+            var func = m_debugSource.findFunction(addr);
             if (func != null)
                 Console.WriteLine(func.getSignature());
             addr -= m_header.tAddr;
 
-            var flowState = new DataFlowState(m_symFile, func);
+            var flowState = new DataFlowState(m_debugSource, func);
+
+            var control = new ControlFlowProcessor();
+            control.process(addr, m_instructions);
 
             foreach (var insnPair in m_instructions.Where(i => i.Key >= addr))
             {
@@ -108,7 +112,7 @@ namespace exefile
 #if TRACE_DATAFLOW_EVAL
                     flowState.dumpState();
 #endif
-                    Console.WriteLine(m_symFile.getSymbolName(insnPair.Key) + ":");
+                    Console.WriteLine(m_debugSource.getSymbolName(insnPair.Key) + ":");
                 }
 
                 var insn = insnPair.Value;
@@ -129,7 +133,7 @@ namespace exefile
         {
             m_analysisQueue.Clear();
             m_analysisQueue.Enqueue(m_header.pc0 - m_header.tAddr);
-            foreach (var addr in m_symFile.functions.Select(f => f.address))
+            foreach (var addr in m_debugSource.functions.Select(f => f.address))
                 m_analysisQueue.Enqueue(addr - m_header.tAddr);
 
             while (m_analysisQueue.Count != 0)
@@ -163,7 +167,7 @@ namespace exefile
                     var insn2 = m_instructions[index - 4] = decodeInstruction(data, index);
                     insn2.isBranchDelaySlot = true;
 
-                    if(callInsn.returnAddressTarget?.register == Register.ra)
+                    if (callInsn.returnAddressTarget?.register == Register.ra)
                         m_analysisQueue.Enqueue(index);
 
                     continue;
@@ -182,7 +186,7 @@ namespace exefile
                 if (insn.Value is NopInstruction)
                     continue;
 
-                var f = m_symFile.findFunction(insn.Key + m_header.tAddr);
+                var f = m_debugSource.findFunction(insn.Key + m_header.tAddr);
                 if (f != null)
                     Console.WriteLine();
 
@@ -191,13 +195,13 @@ namespace exefile
                 {
                     Console.WriteLine("# XRefs:");
                     foreach (var xref in xrefsHere)
-                        Console.WriteLine("# - " + m_symFile.getSymbolName(xref));
+                        Console.WriteLine("# - " + m_debugSource.getSymbolName(xref));
                     var names = getSymbolNames(insn.Key);
                     if (names != null)
                         foreach (var name in names)
                             Console.WriteLine(name + ":");
                     else
-                        Console.WriteLine(m_symFile.getSymbolName(insn.Key) + ":");
+                        Console.WriteLine(m_debugSource.getSymbolName(insn.Key) + ":");
                 }
 
                 if (f != null)
@@ -214,7 +218,8 @@ namespace exefile
                 return regofs;
 
             if (regofs.register == Register.gp)
-                return new LabelOperand(m_symFile.getSymbolName(m_gpBase.Value, regofs.offset));
+                return new LabelOperand(m_debugSource.getSymbolName(m_gpBase.Value, regofs.offset),
+                    (uint) (m_gpBase.Value + regofs.offset));
 
             return regofs;
         }
@@ -230,11 +235,12 @@ namespace exefile
                 case Opcode.j:
                     addCall(index - 4, (data & 0x03FFFFFF) << 2);
                     m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(new LabelOperand(m_symFile.getSymbolName((data & 0x03FFFFFF) << 2)), null);
+                    return new CallPtrInstruction(new LabelOperand(m_debugSource.getSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
+                        null);
                 case Opcode.jal:
                     addCall(index - 4, (data & 0x03FFFFFF) << 2);
                     m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(new LabelOperand(m_symFile.getSymbolName((data & 0x03FFFFFF) << 2)),
+                    return new CallPtrInstruction(new LabelOperand(m_debugSource.getSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
                         new RegisterOperand(Register.ra));
                 case Opcode.beq:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
@@ -243,12 +249,14 @@ namespace exefile
                         return new ConditionalBranchInstruction(Operator.Equal,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                            new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                                (uint) (index + ((short) data << 2))));
                     else
                         return new ConditionalBranchInstruction(Operator.Equal,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                            new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                                (uint) (index + ((short) data << 2))));
                 case Opcode.bne:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
@@ -256,26 +264,30 @@ namespace exefile
                         return new ConditionalBranchInstruction(Operator.NotEqual,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                            new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                                (uint) (index + ((short) data << 2))));
                     else
                         return new ConditionalBranchInstruction(Operator.NotEqual,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                            new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                                (uint) (index + ((short) data << 2))));
                 case Opcode.blez:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.LessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            (uint) (index + ((short) data << 2))));
                 case Opcode.bgtz:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            (uint) (index + ((short) data << 2))));
                 case Opcode.addi:
                     return new ArithmeticInstruction(Operator.Add,
                         new RegisterOperand(data, 16),
@@ -328,7 +340,7 @@ namespace exefile
                     return new DataCopyInstruction(
                         new RegisterOperand(data, 16), 4,
                         makeGpBasedOperand(data, 21, (short) data), 1
-                        );
+                    );
                 case Opcode.lh:
                     return new DataCopyInstruction(
                         new RegisterOperand(data, 16), 4,
@@ -394,28 +406,32 @@ namespace exefile
                     return new ConditionalBranchInstruction(Operator.Equal,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            (uint) (index + ((short) data << 2))));
                 case Opcode.bnel:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.NotEqual,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            (uint) (index + ((short) data << 2))));
                 case Opcode.blezl:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedLessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            (uint) (index + ((short) data << 2))));
                 case Opcode.bgtzl:
                     addXref(index - 4, (uint) ((index + (short) data) << 2));
                     m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(m_symFile.getSymbolName(index, (short) data << 2)));
+                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            (uint) (index + ((short) data << 2))));
                 default:
                     return new WordData(data);
             }
@@ -541,11 +557,13 @@ namespace exefile
                         case 0:
                             addXref(index - 4, (uint) ((index + (short) data) << 2));
                             return new SimpleInstruction("bc0f", null,
-                                new LabelOperand(m_symFile.getSymbolName(index, (ushort) data << 2)));
+                                new LabelOperand(m_debugSource.getSymbolName(index, (ushort) data << 2),
+                                    (uint) (index + ((short) data << 2))));
                         case 1:
                             addXref(index - 4, (uint) ((index + (short) data) << 2));
                             return new SimpleInstruction("bc0t", null,
-                                new LabelOperand(m_symFile.getSymbolName(index, (ushort) data << 2)));
+                                new LabelOperand(m_debugSource.getSymbolName(index, (ushort) data << 2),
+                                    (uint) (index + ((short) data << 2))));
                         default:
                             return new WordData(data);
                     }
@@ -581,7 +599,8 @@ namespace exefile
         private Instruction decodePcRelative(uint index, uint data)
         {
             var rs = new RegisterOperand(data, 21);
-            var offset = new LabelOperand(m_symFile.getSymbolName(index, (ushort) data << 2));
+            var offset = new LabelOperand(m_debugSource.getSymbolName(index, (ushort) data << 2),
+                (uint) (index + ((short) data << 2)));
             switch ((data >> 16) & 0x1f)
             {
                 case 0:
