@@ -136,7 +136,7 @@ namespace exefile.controlflow
             }
         }
 
-        public void dumpPlanUml(TextWriter writer)
+        public void dumpPlantUml(TextWriter writer)
         {
             writer.WriteLine("skinparam stateFontName Lucida Console");
             writer.WriteLine("skinparam stateAttributeFontName Lucida Console");

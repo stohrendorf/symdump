@@ -106,6 +106,10 @@ namespace exefile
 
             var control = new ControlFlowProcessor();
             control.process(addr, m_instructions);
+            
+            var reducer = new Reducer(control);
+            reducer.reduce();
+            reducer.dump(new IndentedTextWriter(Console.Out));
 
             {
                 Console.WriteLine();
@@ -116,7 +120,7 @@ namespace exefile
                 }
                 else
                 {
-                    control.dumpPlanUml(Console.Out);
+                    //control.dumpPlantUml(Console.Out);
                 }
             }
 

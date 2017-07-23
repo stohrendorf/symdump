@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using core;
+using core.util;
 using JetBrains.Annotations;
 
 namespace exefile.controlflow
@@ -38,5 +39,18 @@ namespace exefile.controlflow
 
         public bool containsAddress(uint address) =>
             condition.containsAddress(address) || body.containsAddress(address);
+
+        public void dump(IndentedTextWriter writer)
+        {
+            writer.WriteLine(invertedCondition ? "if_not{" : "if{");
+            ++writer.indent;
+            condition.dump(writer);
+            --writer.indent;
+            writer.WriteLine("} {");
+            ++writer.indent;
+            body.dump(writer);
+            --writer.indent;
+            writer.WriteLine("}");
+        }
     }
 }
