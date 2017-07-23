@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using core;
+using core.util;
 using JetBrains.Annotations;
 using mips.disasm;
 using mips.instructions;
@@ -60,8 +61,15 @@ namespace exefile.controlflow
                 for (;; addr += 4)
                 {
                     if (block.instructions.Count > 0 && blocks.ContainsKey(addr))
+                    {
+                        if (block.exitType == null)
+                        {
+                            block.exitType = ExitType.Unconditional;
+                            block.trueExit = blocks[addr];
+                        }
                         break;
-                    
+                    }
+
                     var insn = instructions[addr];
                     block.instructions.Add(addr, insn);
 
@@ -76,6 +84,8 @@ namespace exefile.controlflow
 
                     if (insn is ConditionalBranchInstruction)
                     {
+                        block.exitType = ExitType.Conditional;
+
                         block.instructions.Add(addr + 4, instructions[addr + 4]);
 
                         block.condition = (ConditionalBranchInstruction) insn;
@@ -92,16 +102,41 @@ namespace exefile.controlflow
 
                         break;
                     }
-                    
+
                     var cpi = insn as CallPtrInstruction;
-                    if (cpi?.target is RegisterOperand && ((RegisterOperand) cpi.target).register == Register.ra)
+                    if (cpi?.target is RegisterOperand)
                     {
+                        var target = (RegisterOperand) cpi.target;
+                        if (target.register == Register.ra)
+                        {
+                            block.exitType = ExitType.Return;
 #if TRACE_CONTROLFLOW_EVAL
-                        Console.WriteLine("return");
+                            Console.WriteLine("return");
 #endif
+                        }
                         break;
                     }
+                    else if (cpi?.target is LabelOperand && cpi.returnAddressTarget == null)
+                    {
+                        block.exitType = ExitType.Unconditional;
+#if TRACE_CONTROLFLOW_EVAL
+                        Console.WriteLine("jmp " + cpi.target);
+#endif
+
+                        var lbl = (LabelOperand) cpi.target;
+                        block.trueExit = getBlockForAddress(lbl.address);
+                        entryPoints.Enqueue(lbl.address);
+                    }
                 }
+            }
+        }
+
+        public void dump(IndentedTextWriter writer)
+        {
+            foreach (var block in blocks.Values)
+            {
+                block.dump(writer);
+                writer.WriteLine();
             }
         }
     }

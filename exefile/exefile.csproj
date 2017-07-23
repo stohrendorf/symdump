@@ -45,10 +45,10 @@
         <PackageReference Include="JetBrains.Annotations" Version="11.0.0"/>
     </ItemGroup>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-           Other similar extension points exist, see Microsoft.Common.targets.
-      <Target Name="BeforeBuild">
-      </Target>
-      <Target Name="AfterBuild">
-      </Target>
-      -->
+             Other similar extension points exist, see Microsoft.Common.targets.
+        <Target Name="BeforeBuild">
+        </Target>
+        <Target Name="AfterBuild">
+        </Target>
+        -->
 </Project>

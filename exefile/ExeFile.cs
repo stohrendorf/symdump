@@ -104,6 +104,12 @@ namespace exefile
             var control = new ControlFlowProcessor();
             control.process(addr, m_instructions);
 
+            {
+                Console.WriteLine();
+                var itw = new IndentedTextWriter(Console.Out);
+                control.dump(itw);
+            }
+
             foreach (var insnPair in m_instructions.Where(i => i.Key >= addr))
             {
                 var xrefs = getXrefs(insnPair.Key);
