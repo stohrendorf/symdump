@@ -26,7 +26,8 @@ namespace exefile.controlflow
             do
             {
                 reduced = blocks.Values.Any(reduceSequence)
-                          || blocks.Values.Reverse().Any(reduceIf);
+                          || blocks.Values.Reverse().Any(reduceIf)
+                          || blocks.Values.Reverse().Any(reduceIfElse);
             } while (reduced);
         }
 
@@ -70,7 +71,9 @@ namespace exefile.controlflow
         private bool reduceIf(IBlock condition)
         {
             /*
-            if(condition<exit=conditional>) body<exit=unconditional|return>; commonCode;
+            if(condition<exit=conditional>)
+              body<exit=unconditional|return>;
+            commonCode;
             */
 
             if (condition.exitType != ExitType.Conditional)
@@ -85,6 +88,39 @@ namespace exefile.controlflow
                    || tryMakeIfBlock(condition, common, body, false);
 
             // swap and try again
+        }
+
+        private bool reduceIfElse(IBlock condition)
+        {
+            /*
+            if(condition<exit=conditional>) trueBody<exit=unconditional>;
+            else falseBody<exit=unconditional>;
+            commonCode;
+            */
+
+            if (condition.exitType != ExitType.Conditional)
+                return false;
+
+            var trueBody = condition.trueExit;
+            Debug.Assert(trueBody != null);
+            var falseBody = condition.falseExit;
+            Debug.Assert(falseBody != null);
+
+            if (trueBody.exitType != ExitType.Unconditional || trueBody.exitType != ExitType.Unconditional)
+                return false;
+
+            var common = trueBody.trueExit;
+            Debug.Assert(common != null);
+            if (common.start != falseBody.start)
+                return false;
+            
+            var compound = new IfElseBlock(condition, trueBody, falseBody, common);
+            blocks.Remove(condition.start);
+            blocks.Remove(trueBody.start);
+            blocks.Remove(falseBody.start);
+            blocks.Add(compound.start, compound);
+
+            return true;
         }
 
         private bool tryMakeIfBlock(IBlock condition, IBlock body, IBlock common, bool inverted)
