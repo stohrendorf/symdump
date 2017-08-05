@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using core.util;
 using JetBrains.Annotations;
 
@@ -9,6 +11,10 @@ namespace core.expression
         public Operator @operator { get; }
         [NotNull] public readonly IExpressionNode lhs;
         [NotNull] public readonly IExpressionNode rhs;
+
+        public IEnumerable<int> usedRegisters => lhs.usedRegisters.Concat(rhs.usedRegisters);
+        public IEnumerable<int> usedStack => lhs.usedStack.Concat(rhs.usedStack);
+        public IEnumerable<uint> usedMemory => lhs.usedMemory.Concat(rhs.usedMemory);
 
         public ExpressionNode(Operator @operator, [NotNull] IExpressionNode lhs, [NotNull] IExpressionNode rhs)
         {

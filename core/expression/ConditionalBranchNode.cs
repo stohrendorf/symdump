@@ -1,11 +1,17 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 
 namespace core.expression
 {
     public class ConditionalBranchNode : IExpressionNode
     {
-        public readonly IExpressionNode condition; 
+        [NotNull] public readonly IExpressionNode condition;
         [NotNull] public readonly NamedMemoryLayout target;
+
+        public IEnumerable<int> usedRegisters => condition.usedRegisters;
+        public IEnumerable<int> usedStack => condition.usedStack;
+        public IEnumerable<uint> usedMemory => Enumerable.Repeat(target.address, 1);
 
         public ConditionalBranchNode(Operator @operator, [NotNull] IExpressionNode lhs, [NotNull] IExpressionNode rhs,
             NamedMemoryLayout target)

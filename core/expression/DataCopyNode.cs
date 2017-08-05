@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace core.expression
@@ -11,6 +13,9 @@ namespace core.expression
         public readonly byte dstSize;
         public readonly byte srcSize;
 
+        public IEnumerable<int> usedRegisters => dst.usedRegisters.Concat(src.usedRegisters);
+        public IEnumerable<int> usedStack => dst.usedStack.Concat(src.usedStack);
+        public IEnumerable<uint> usedMemory => dst.usedMemory.Concat(src.usedMemory);
 
         public DataCopyNode([NotNull] IExpressionNode dst, byte dstSize, [NotNull] IExpressionNode src, byte srcSize)
         {

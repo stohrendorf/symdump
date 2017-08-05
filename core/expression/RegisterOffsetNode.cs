@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace core.expression
@@ -11,6 +13,10 @@ namespace core.expression
 
         [CanBeNull]
         public IMemoryLayout memoryLayout { get; set; }
+
+        public IEnumerable<int> usedRegisters => Enumerable.Repeat(registerId, 1);
+        public IEnumerable<int> usedStack => Enumerable.Empty<int>();
+        public IEnumerable<uint> usedMemory => Enumerable.Empty<uint>();
 
         public RegisterOffsetNode(int registerId, int offset)
         {

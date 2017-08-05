@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace core.expression
@@ -24,6 +26,10 @@ namespace core.expression
         {
             return label;
         }
+
+        public IEnumerable<int> usedRegisters => Enumerable.Empty<int>();
+        public IEnumerable<int> usedStack => Enumerable.Empty<int>();
+        public IEnumerable<uint> usedMemory => Enumerable.Repeat(address, 1);
 
         public override string ToString()
         {

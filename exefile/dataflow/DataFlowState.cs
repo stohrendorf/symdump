@@ -12,7 +12,7 @@ namespace exefile.dataflow
 {
     public class DataFlowState : IDataFlowState
     {
-        private static ILogger logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly SortedDictionary<Register, IExpressionNode> m_registers =
             new SortedDictionary<Register, IExpressionNode>();

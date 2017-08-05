@@ -1,10 +1,16 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 
 namespace core.expression
 {
     public class DerefNode : IExpressionNode
     {
         [NotNull] public readonly IExpressionNode inner;
+
+        public IEnumerable<int> usedRegisters => inner.usedRegisters;
+        public IEnumerable<int> usedStack => inner.usedStack;
+        public IEnumerable<uint> usedMemory => inner.usedMemory;
 
         public DerefNode([NotNull] IExpressionNode inner)
         {
