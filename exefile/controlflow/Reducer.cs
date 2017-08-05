@@ -33,11 +33,13 @@ namespace exefile.controlflow
         private bool reduceSequence(IBlock block)
         {
             var next = block.trueExit;
-            logger.Debug($"SEQ check {block.start:X} {block.start:X}={block.exitType} {next?.start:X}={next?.exitType}");
-            if (block.exitType != ExitType.Unconditional || (next?.exitType != ExitType.Unconditional && next?.exitType != ExitType.Return))
+            logger.Debug(
+                $"SEQ check {block.start:X} {block.start:X}={block.exitType} {next?.start:X}={next?.exitType}");
+            if (block.exitType != ExitType.Unconditional ||
+                (next?.exitType != ExitType.Unconditional && next?.exitType != ExitType.Return))
                 return false;
 
-            
+
             // count refs to the next block
             if (blocks.Values.Count(b => b.trueExit?.start == next.start || b.falseExit?.start == next.start) > 1)
                 return false;
@@ -53,7 +55,7 @@ namespace exefile.controlflow
                 blocks.Remove(existing.trueExit.start);
                 return true;
             }
-            
+
             logger.Debug($"New sequence {block.start:X} with block {next.start:X}");
 
             var seq = new SequenceBlock();
@@ -79,38 +81,31 @@ namespace exefile.controlflow
             var body = condition.falseExit;
             Debug.Assert(body != null);
 
-            if (body.exitType == ExitType.Return || (body.exitType == ExitType.Unconditional && body.trueExit == common))
-            {
-                logger.Debug($"Reduce: condition={condition.start:X} body={body.start:X} common={common.start:X}");
-
-                var compound = new IfBlock(condition, body, common, true);
-                blocks.Remove(condition.start);
-                if(body.exitType != ExitType.Return)
-                    blocks.Remove(body.start);
-                blocks.Add(compound.start, compound);
-                return true;
-            }
+            return tryMakeIfBlock(condition, body, common, true)
+                   || tryMakeIfBlock(condition, common, body, false);
 
             // swap and try again
-            {
-                var tmp = common;
-                common = body;
-                body = tmp;
-            }
+        }
 
-            if (body.exitType == ExitType.Return || (body.exitType == ExitType.Unconditional && body.trueExit == common))
-            {
-                logger.Debug($"Reduce: condition={condition.start:X} body={body.start:X} common={common.start:X}");
+        private bool tryMakeIfBlock(IBlock condition, IBlock body, IBlock common, bool inverted)
+        {
+            Debug.Assert(condition != null);
+            Debug.Assert(body != null);
+            Debug.Assert(common != null);
 
-                var compound = new IfBlock(condition, body, common, false);
-                blocks.Remove(condition.start);
-                if(body.exitType != ExitType.Return)
-                    blocks.Remove(body.start);
-                blocks.Add(compound.start, compound);
-                return true;
-            }
+            if (body.exitType != ExitType.Return &&
+                (body.exitType != ExitType.Unconditional || body.trueExit != common))
+                return false;
 
-            return false;
+            logger.Debug($"Reduce: condition={condition.start:X} body={body.start:X} common={common.start:X}");
+
+            var compound = new IfBlock(condition, body, common, inverted);
+            blocks.Remove(condition.start);
+            if (body.exitType != ExitType.Return)
+                blocks.Remove(body.start);
+            blocks.Add(compound.start, compound);
+
+            return true;
         }
 
         public void dump(IndentedTextWriter writer)
