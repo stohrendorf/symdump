@@ -68,7 +68,7 @@ namespace exefile.controlflow
         private bool reduceIf(IBlock condition)
         {
             /*
-            if(condition<exit=conditional>) body<exit=unconditional>; commonCode;
+            if(condition<exit=conditional>) body<exit=unconditional|return>; commonCode;
             */
 
             if (condition.exitType != ExitType.Conditional)
@@ -79,13 +79,14 @@ namespace exefile.controlflow
             var body = condition.falseExit;
             Debug.Assert(body != null);
 
-            if (body.exitType == ExitType.Unconditional && body.trueExit == common)
+            if (body.exitType == ExitType.Return || (body.exitType == ExitType.Unconditional && body.trueExit == common))
             {
                 logger.Debug($"Reduce: condition={condition.start:X} body={body.start:X} common={common.start:X}");
 
                 var compound = new IfBlock(condition, body, common, true);
                 blocks.Remove(condition.start);
-                blocks.Remove(body.start);
+                if(body.exitType != ExitType.Return)
+                    blocks.Remove(body.start);
                 blocks.Add(compound.start, compound);
                 return true;
             }
@@ -97,13 +98,14 @@ namespace exefile.controlflow
                 body = tmp;
             }
 
-            if (body.exitType == ExitType.Unconditional && body.trueExit == common)
+            if (body.exitType == ExitType.Return || (body.exitType == ExitType.Unconditional && body.trueExit == common))
             {
                 logger.Debug($"Reduce: condition={condition.start:X} body={body.start:X} common={common.start:X}");
 
                 var compound = new IfBlock(condition, body, common, false);
                 blocks.Remove(condition.start);
-                blocks.Remove(body.start);
+                if(body.exitType != ExitType.Return)
+                    blocks.Remove(body.start);
                 blocks.Add(compound.start, compound);
                 return true;
             }
