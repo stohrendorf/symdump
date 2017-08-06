@@ -178,6 +178,7 @@ namespace exefile.dataflow
                         foreach (var p in fn.StackParameters)
                         {
                             // TODO check
+                            Debug.Assert(p.Key % 4 == 0);
                             parameters.Add(_stack[p.Key / 4].ToCode());
                         }
 
