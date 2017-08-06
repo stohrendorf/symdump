@@ -8,53 +8,53 @@ namespace core.expression
 {
     public class ExpressionNode : IExpressionNode
     {
-        public Operator @operator { get; }
-        [NotNull] public readonly IExpressionNode lhs;
-        [NotNull] public readonly IExpressionNode rhs;
+        public Operator Operator { get; }
+        [NotNull] public readonly IExpressionNode Lhs;
+        [NotNull] public readonly IExpressionNode Rhs;
 
-        public IEnumerable<int> usedRegisters => lhs.usedRegisters.Concat(rhs.usedRegisters);
-        public IEnumerable<int> usedStack => lhs.usedStack.Concat(rhs.usedStack);
-        public IEnumerable<uint> usedMemory => lhs.usedMemory.Concat(rhs.usedMemory);
+        public IEnumerable<int> UsedRegisters => Lhs.UsedRegisters.Concat(Rhs.UsedRegisters);
+        public IEnumerable<int> UsedStack => Lhs.UsedStack.Concat(Rhs.UsedStack);
+        public IEnumerable<uint> UsedMemory => Lhs.UsedMemory.Concat(Rhs.UsedMemory);
 
         public ExpressionNode(Operator @operator, [NotNull] IExpressionNode lhs, [NotNull] IExpressionNode rhs)
         {
-            this.@operator = @operator;
-            this.lhs = lhs;
-            this.rhs = rhs;
+            Operator = @operator;
+            Lhs = lhs;
+            Rhs = rhs;
         }
 
-        public string toCode()
+        public string ToCode()
         {
-            var lhsCode = lhs.toCode();
-            var rhsCode = rhs.toCode();
+            var lhsCode = Lhs.ToCode();
+            var rhsCode = Rhs.ToCode();
 
-            var selfPrecedence = @operator.getPrecedence(false);
-            if (selfPrecedence > (lhs as ExpressionNode)?.@operator.getPrecedence(false))
+            var selfPrecedence = Operator.GetPrecedence(false);
+            if (selfPrecedence > (Lhs as ExpressionNode)?.Operator.GetPrecedence(false))
                 lhsCode = $"({lhsCode})";
 
-            if (selfPrecedence > (rhs as ExpressionNode)?.@operator.getPrecedence(false))
+            if (selfPrecedence > (Rhs as ExpressionNode)?.Operator.GetPrecedence(false))
                 rhsCode = $"({rhsCode})";
 
-            return $"{lhsCode} {@operator.asCode()} {rhsCode}";
+            return $"{lhsCode} {Operator.AsCode()} {rhsCode}";
         }
 
         [CanBeNull]
-        public string tryDeref()
+        public string TryDeref()
         {
-            if (@operator != Operator.Add || !(lhs is NamedMemoryLayout) || !(rhs is ValueNode))
+            if (Operator != Operator.Add || !(Lhs is NamedMemoryLayout) || !(Rhs is ValueNode))
                 return null;
 
-            var memoryLayout = ((NamedMemoryLayout) lhs).memoryLayout;
-            Debug.Assert(memoryLayout.pointee != null);
-            var member = memoryLayout.pointee.getAccessPathTo(
-                (uint) ((ValueNode) rhs).value
+            var memoryLayout = ((NamedMemoryLayout) Lhs).MemoryLayout;
+            Debug.Assert(memoryLayout.Pointee != null);
+            var member = memoryLayout.Pointee.GetAccessPathTo(
+                (uint) ((ValueNode) Rhs).Value
             );
-            return ((NamedMemoryLayout) lhs).label + "->" + member;
+            return ((NamedMemoryLayout) Lhs).Label + "->" + member;
         }
 
         public override string ToString()
         {
-            return $"{lhs} {@operator} {rhs}";
+            return $"{Lhs} {Operator} {Rhs}";
         }
     }
 }

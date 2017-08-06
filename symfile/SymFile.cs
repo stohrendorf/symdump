@@ -14,20 +14,20 @@ namespace symfile
 {
     public class SymFile : IDebugSource
     {
-        private static ILogger logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         
-        private readonly Dictionary<string, EnumDef> m_enums = new Dictionary<string, EnumDef>();
-        private readonly Dictionary<string, TypeDecoration> m_externs = new Dictionary<string, TypeDecoration>();
-        public IList<IFunction> functions { get; } = new List<IFunction>();
-        public readonly Dictionary<string, TypeDecoration> funcTypes = new Dictionary<string, TypeDecoration>();
-        public SortedDictionary<uint, IList<NamedLocation>> labels { get; } = new SortedDictionary<uint, IList<NamedLocation>>();
-        private readonly Dictionary<string, StructLayout> m_structs = new Dictionary<string, StructLayout>();
-        private readonly byte m_targetUnit;
-        private readonly Dictionary<string, TypeDecoration> m_typedefs = new Dictionary<string, TypeDecoration>();
-        private readonly Dictionary<string, UnionLayout> m_unions = new Dictionary<string, UnionLayout>();
-        private readonly byte m_version;
-        private string m_mxInfo;
-        public readonly Dictionary<string, CompoundLayout> currentlyDefining = new Dictionary<string, CompoundLayout>();
+        private readonly Dictionary<string, EnumDef> _enums = new Dictionary<string, EnumDef>();
+        private readonly Dictionary<string, TypeDecoration> _externs = new Dictionary<string, TypeDecoration>();
+        public IList<IFunction> Functions { get; } = new List<IFunction>();
+        public readonly Dictionary<string, TypeDecoration> FuncTypes = new Dictionary<string, TypeDecoration>();
+        public SortedDictionary<uint, IList<NamedLocation>> Labels { get; } = new SortedDictionary<uint, IList<NamedLocation>>();
+        private readonly Dictionary<string, StructLayout> _structs = new Dictionary<string, StructLayout>();
+        private readonly byte _targetUnit;
+        private readonly Dictionary<string, TypeDecoration> _typedefs = new Dictionary<string, TypeDecoration>();
+        private readonly Dictionary<string, UnionLayout> _unions = new Dictionary<string, UnionLayout>();
+        private readonly byte _version;
+        private string _mxInfo;
+        public readonly Dictionary<string, CompoundLayout> CurrentlyDefining = new Dictionary<string, CompoundLayout>();
 
         public SymFile(BinaryReader reader)
         {
@@ -35,124 +35,124 @@ namespace symfile
             
             reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            reader.skip(3);
-            m_version = reader.ReadByte();
-            m_targetUnit = reader.ReadByte();
+            reader.Skip(3);
+            _version = reader.ReadByte();
+            _targetUnit = reader.ReadByte();
 
-            reader.skip(3);
+            reader.Skip(3);
             uint n = 0;
             while (reader.BaseStream.Position < reader.BaseStream.Length)
             {
-                loadEntry(reader);
+                LoadEntry(reader);
                 ++n;
             }
 
             logger.Info($"Loaded {n} top-level entries");
         }
 
-        public StructLayout findStructDef(string tag)
+        public StructLayout FindStructDef(string tag)
         {
             if (tag == null)
                 return null;
             
             StructLayout result;
-            if (!m_structs.TryGetValue(tag, out result))
+            if (!_structs.TryGetValue(tag, out result))
                 return null;
 
             return result;
         }
 
-        public UnionLayout findUnionDef(string tag)
+        public UnionLayout FindUnionDef(string tag)
         {
             if (tag == null)
                 return null;
             
             UnionLayout result;
-            if (!m_unions.TryGetValue(tag, out result))
+            if (!_unions.TryGetValue(tag, out result))
                 return null;
 
             return result;
         }
 
-        public IMemoryLayout findTypeDefinition(string tag)
+        public IMemoryLayout FindTypeDefinition(string tag)
         {
-            IMemoryLayout def = findStructDef(tag);
-            def = def ?? findUnionDef(tag);
-            def = def ?? currentlyDefining.FirstOrDefault(kv => kv.Key == tag).Value;
+            IMemoryLayout def = FindStructDef(tag);
+            def = def ?? FindUnionDef(tag);
+            def = def ?? CurrentlyDefining.FirstOrDefault(kv => kv.Key == tag).Value;
             return def;
         }
         
-        public IMemoryLayout findTypeDefinitionForLabel(string label)
+        public IMemoryLayout FindTypeDefinitionForLabel(string label)
         {
             if (string.IsNullOrEmpty(label))
                 return null;
             
             TypeDecoration ti;
-            if (!m_externs.TryGetValue(label, out ti))
+            if (!_externs.TryGetValue(label, out ti))
                 return null;
             
-            return findTypeDefinition(ti.tag);
+            return FindTypeDefinition(ti.Tag);
         }
         
-        public void dump(TextWriter output)
+        public void Dump(TextWriter output)
         {
             var writer = new IndentedTextWriter(output);
-            writer.WriteLine($"Version = {m_version}, targetUnit = {m_targetUnit}");
+            writer.WriteLine($"Version = {_version}, targetUnit = {_targetUnit}");
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_enums.Count} enums");
-            foreach (var e in m_enums.Values)
+            writer.WriteLine($"// {_enums.Count} enums");
+            foreach (var e in _enums.Values)
+                e.Dump(writer);
+
+            writer.WriteLine();
+            writer.WriteLine($"// {_unions.Count} unions");
+            foreach (var e in _unions.Values)
                 e.dump(writer);
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_unions.Count} unions");
-            foreach (var e in m_unions.Values)
-                e.dump(writer);
+            writer.WriteLine($"// {_structs.Count} structs");
+            foreach (var e in _structs.Values)
+                e.Dump(writer);
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_structs.Count} structs");
-            foreach (var e in m_structs.Values)
-                e.dump(writer);
+            writer.WriteLine($"// {_typedefs.Count} typedefs");
+            foreach (var t in _typedefs)
+                writer.WriteLine($"typedef {t.Value.AsDeclaration(t.Key)};");
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_typedefs.Count} typedefs");
-            foreach (var t in m_typedefs)
-                writer.WriteLine($"typedef {t.Value.asDeclaration(t.Key)};");
-
-            writer.WriteLine();
-            writer.WriteLine($"// {labels.Count} labels");
-            foreach (var l in labels)
+            writer.WriteLine($"// {Labels.Count} labels");
+            foreach (var l in Labels)
             foreach (var l2 in l.Value)
                 writer.WriteLine(l2);
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_externs.Count} external declarations");
-            foreach (var e in m_externs)
-                writer.WriteLine(e.Value.asDeclaration(e.Key));
+            writer.WriteLine($"// {_externs.Count} external declarations");
+            foreach (var e in _externs)
+                writer.WriteLine(e.Value.AsDeclaration(e.Key));
 
             writer.WriteLine();
-            writer.WriteLine($"// {functions.Count} functions");
-            foreach (var f in functions)
-                f.dump(writer);
+            writer.WriteLine($"// {Functions.Count} functions");
+            foreach (var f in Functions)
+                f.Dump(writer);
         }
 
-        private void loadEntry(BinaryReader reader)
+        private void LoadEntry(BinaryReader reader)
         {
             var fileEntry = new FileEntry(reader);
             if (fileEntry.type == 8)
             {
-                m_mxInfo = $"${fileEntry.value:X} MX-info {reader.ReadByte():X}";
+                _mxInfo = $"${fileEntry.value:X} MX-info {reader.ReadByte():X}";
                 return;
             }
 
             if (fileEntry.isLabel)
             {
-                var lbl = new NamedLocation((uint)fileEntry.value, reader.readPascalString());
+                var lbl = new NamedLocation((uint)fileEntry.value, reader.ReadPascalString());
 
-                if (!labels.ContainsKey(lbl.address))
-                    labels.Add(lbl.address, new List<NamedLocation>());
+                if (!Labels.ContainsKey(lbl.Address))
+                    Labels.Add(lbl.Address, new List<NamedLocation>());
 
-                labels[lbl.address].Add(lbl);
+                Labels[lbl.Address].Add(lbl);
                 return;
             }
 
@@ -167,21 +167,21 @@ namespace symfile
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {stream.ReadU1()}");
                 #else
-                    reader.skip(1);
+                    reader.Skip(1);
 #endif
                     break;
                 case 4:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by word {stream.ReadUInt16()}");
 #else
-                    reader.skip(2);
+                    reader.Skip(2);
 #endif
                     break;
                 case 6:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Set SLD linenum to {stream.ReadUInt32()}");
 #else
-                    reader.skip(4);
+                    reader.Skip(4);
 #endif
                     break;
                 case 8:
@@ -189,8 +189,8 @@ namespace symfile
                 writer.WriteLine($"${typedValue.value:X} Set SLD to line {stream.ReadUInt32()} of file " +
                     stream.readPascalString());
 #else
-                    reader.skip(4);
-                    reader.skip(reader.ReadByte());
+                    reader.Skip(4);
+                    reader.Skip(reader.ReadByte());
 #endif
                     break;
                 case 10:
@@ -199,32 +199,32 @@ namespace symfile
 #endif
                     break;
                 case 12:
-                    loadFunction(reader, fileEntry.value);
+                    LoadFunction(reader, fileEntry.value);
                     break;
                 case 20:
-                    loadUserDefinedType(reader, false);
+                    LoadUserDefinedType(reader, false);
                     break;
                 case 22:
-                    loadUserDefinedType(reader, true);
+                    LoadUserDefinedType(reader, true);
                     break;
                 default:
                     throw new Exception("Sodom");
             }
         }
 
-        private void loadFunction(BinaryReader reader, int offset)
+        private void LoadFunction(BinaryReader reader, int offset)
         {
-            functions.Add(new Function(reader, (uint) offset, this));
+            Functions.Add(new Function(reader, (uint) offset, this));
             //writer.WriteLine("{");
             //++writer.Indent;
         }
 
-        private void readEnum(BinaryReader reader, string name)
+        private void ReadEnum(BinaryReader reader, string name)
         {
             var e = new EnumDef(reader, name, this);
 
             EnumDef already;
-            if (m_enums.TryGetValue(name, out already))
+            if (_enums.TryGetValue(name, out already))
             {
                 if (!e.Equals(already))
                     throw new Exception($"Non-uniform definitions of enum {name}");
@@ -232,67 +232,67 @@ namespace symfile
                 return;
             }
 
-            m_enums.Add(name, e);
+            _enums.Add(name, e);
         }
 
-        private void readUnion(BinaryReader reader, string name)
+        private void ReadUnion(BinaryReader reader, string name)
         {
             var e = new UnionLayout(reader, name, this);
 
             UnionLayout already;
-            if (m_unions.TryGetValue(name, out already))
+            if (_unions.TryGetValue(name, out already))
             {
                 if (e.Equals(already))
                     return;
 
-                if (!e.isAnonymous)
+                if (!e.IsAnonymous)
                     throw new Exception($"Non-uniform definitions of union {name}");
 
                 // generate new "fake fake" name
                 var n = 0;
-                while (m_unions.ContainsKey($"{name}.{n}"))
+                while (_unions.ContainsKey($"{name}.{n}"))
                     ++n;
 
-                m_unions.Add($"{name}.{n}", e);
+                _unions.Add($"{name}.{n}", e);
 
                 return;
             }
 
-            m_unions.Add(name, e);
+            _unions.Add(name, e);
         }
 
-        private void readStruct(BinaryReader reader, string name)
+        private void ReadStruct(BinaryReader reader, string name)
         {
             var e = new StructLayout(reader, name, this);
 
             StructLayout already;
-            if (m_structs.TryGetValue(name, out already))
+            if (_structs.TryGetValue(name, out already))
             {
                 if (e.Equals(already))
                     return;
 
-                if (!e.isAnonymous)
+                if (!e.IsAnonymous)
                 {
                     logger.Warn($"WARNING: Non-uniform definitions of struct {name}");
                 }
 
                 // generate new "fake fake" name
                 var n = 0;
-                while (m_structs.ContainsKey($"{name}.{n}"))
+                while (_structs.ContainsKey($"{name}.{n}"))
                     ++n;
 
-                m_structs.Add($"{name}.{n}", e);
+                _structs.Add($"{name}.{n}", e);
 
                 return;
             }
 
-            m_structs.Add(name, e);
+            _structs.Add(name, e);
         }
 
-        private void addTypedef(string name, TypeDecoration typeDecoration)
+        private void AddTypedef(string name, TypeDecoration typeDecoration)
         {
             TypeDecoration already;
-            if (m_typedefs.TryGetValue(name, out already))
+            if (_typedefs.TryGetValue(name, out already))
             {
                 if (!typeDecoration.Equals(already))
                     throw new Exception($"Non-uniform definitions of typedef for {name}");
@@ -300,63 +300,63 @@ namespace symfile
                 return;
             }
 
-            m_typedefs.Add(name, typeDecoration);
+            _typedefs.Add(name, typeDecoration);
         }
 
-        private void loadUserDefinedType(BinaryReader stream, bool withDimensions)
+        private void LoadUserDefinedType(BinaryReader stream, bool withDimensions)
         {
-            var ti = stream.readTypeDecoration(withDimensions, this);
-            var name = stream.readPascalString();
+            var ti = stream.ReadTypeDecoration(withDimensions, this);
+            var name = stream.ReadPascalString();
 
-            if (ti.classType == ClassType.FileName)
+            if (ti.ClassType == ClassType.FileName)
                 return;
 
-            if (ti.classType == ClassType.Enum && ti.baseType == BaseType.EnumDef)
-                readEnum(stream, name);
-            else if (ti.classType == ClassType.Struct && ti.baseType == BaseType.StructDef)
-                readStruct(stream, name);
-            else if (ti.classType == ClassType.Union && ti.baseType == BaseType.UnionDef)
-                readUnion(stream, name);
-            else if (ti.classType == ClassType.Typedef)
-                addTypedef(name, ti);
-            else if (ti.classType == ClassType.External)
-                if (ti.isFunctionReturnType)
-                    funcTypes.Add(name, ti);
+            if (ti.ClassType == ClassType.Enum && ti.BaseType == BaseType.EnumDef)
+                ReadEnum(stream, name);
+            else if (ti.ClassType == ClassType.Struct && ti.BaseType == BaseType.StructDef)
+                ReadStruct(stream, name);
+            else if (ti.ClassType == ClassType.Union && ti.BaseType == BaseType.UnionDef)
+                ReadUnion(stream, name);
+            else if (ti.ClassType == ClassType.Typedef)
+                AddTypedef(name, ti);
+            else if (ti.ClassType == ClassType.External)
+                if (ti.IsFunctionReturnType)
+                    FuncTypes.Add(name, ti);
                 else
-                    m_externs.Add(name, ti);
-            else if (ti.classType == ClassType.Static)
-                if (ti.isFunctionReturnType)
-                    funcTypes.Add(name, ti);
+                    _externs.Add(name, ti);
+            else if (ti.ClassType == ClassType.Static)
+                if (ti.IsFunctionReturnType)
+                    FuncTypes.Add(name, ti);
                 else
-                    m_externs.Add(name, ti);
+                    _externs.Add(name, ti);
             else
                 throw new Exception("Gomorrha");
         }
 
-        public IFunction findFunction(uint addr)
+        public IFunction FindFunction(uint addr)
         {
-            return functions.FirstOrDefault(f => f.address == addr);
+            return Functions.FirstOrDefault(f => f.Address == addr);
         }
 
-        public IFunction findFunction(string name)
+        public IFunction FindFunction(string name)
         {
-            return functions.FirstOrDefault(f => f.name.Equals(name));
+            return Functions.FirstOrDefault(f => f.Name.Equals(name));
         }
         
-        public string getSymbolName(uint addr, int rel = 0)
+        public string GetSymbolName(uint addr, int rel = 0)
         {
             addr = (uint) (addr + rel);
             
             // first try to find a memory layout which contains this address
-            var typedLabel = labels.LastOrDefault(kv => kv.Key <= addr).Value.First();
-            var memoryLayout = findTypeDefinitionForLabel(typedLabel.name);
+            var typedLabel = Labels.LastOrDefault(kv => kv.Key <= addr).Value.First();
+            var memoryLayout = FindTypeDefinitionForLabel(typedLabel.Name);
             if (memoryLayout != null)
             {
                 try
                 {
-                    var path = memoryLayout.getAccessPathTo(addr - typedLabel.address);
+                    var path = memoryLayout.GetAccessPathTo(addr - typedLabel.Address);
                     if (path != null)
-                        return typedLabel.name + "." + path;
+                        return typedLabel.Name + "." + path;
                 }
                 catch
                 {
@@ -365,10 +365,10 @@ namespace symfile
             }
 
             IList<NamedLocation> lbls;
-            if (!labels.TryGetValue(addr, out lbls))
+            if (!Labels.TryGetValue(addr, out lbls))
                 return $"lbl_{addr:X}";
 
-            return lbls.First().name;
+            return lbls.First().Name;
         }
     }
 }

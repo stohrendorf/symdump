@@ -16,107 +16,107 @@ namespace exefile
 {
     public class ExeFile
     {
-        private static ILogger logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         
-        private readonly Queue<uint> m_analysisQueue = new Queue<uint>();
-        private readonly byte[] m_data;
-        private readonly uint? m_gpBase;
+        private readonly Queue<uint> _analysisQueue = new Queue<uint>();
+        private readonly byte[] _data;
+        private readonly uint? _gpBase;
 
-        private readonly Header m_header;
+        private readonly Header _header;
 
-        private readonly SortedDictionary<uint, Instruction> m_instructions = new SortedDictionary<uint, Instruction>();
-        private readonly IDebugSource m_debugSource;
-        private readonly Dictionary<uint, HashSet<uint>> m_xrefs = new Dictionary<uint, HashSet<uint>>();
-        private readonly SortedSet<uint> m_callees = new SortedSet<uint>();
+        private readonly SortedDictionary<uint, Instruction> _instructions = new SortedDictionary<uint, Instruction>();
+        private readonly IDebugSource _debugSource;
+        private readonly Dictionary<uint, HashSet<uint>> _xrefs = new Dictionary<uint, HashSet<uint>>();
+        private readonly SortedSet<uint> _callees = new SortedSet<uint>();
 
         public ExeFile(EndianBinaryReader reader, IDebugSource debugSource)
         {
-            m_debugSource = debugSource;
-            reader.baseStream.Seek(0, SeekOrigin.Begin);
+            _debugSource = debugSource;
+            reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            m_header = new Header(reader);
-            reader.baseStream.Seek(0x800, SeekOrigin.Begin);
-            m_data = reader.readBytes((int) m_header.tSize);
+            _header = new Header(reader);
+            reader.BaseStream.Seek(0x800, SeekOrigin.Begin);
+            _data = reader.ReadBytes((int) _header.tSize);
 
-            m_gpBase = m_debugSource.labels
-                .Where(byOffset => byOffset.Value.Any(lbl => lbl.name.Equals("__SN_GP_BASE")))
+            _gpBase = _debugSource.Labels
+                .Where(byOffset => byOffset.Value.Any(lbl => lbl.Name.Equals("__SN_GP_BASE")))
                 .Select(lbl => lbl.Key)
                 .FirstOrDefault();
         }
 
-        private IEnumerable<string> getSymbolNames(uint addr)
+        private IEnumerable<string> GetSymbolNames(uint addr)
         {
             IList<NamedLocation> lbls;
-            m_debugSource.labels.TryGetValue(addr + m_header.tAddr, out lbls);
-            return lbls?.Select(l => l.name);
+            _debugSource.Labels.TryGetValue(addr + _header.tAddr, out lbls);
+            return lbls?.Select(l => l.Name);
         }
 
-        private void addCall(uint from, uint to)
+        private void AddCall(uint from, uint to)
         {
-            addXref(from, to);
-            m_callees.Add(to);
+            AddXref(from, to);
+            _callees.Add(to);
         }
 
-        private void addXref(uint from, uint to)
+        private void AddXref(uint from, uint to)
         {
             HashSet<uint> froms;
-            if (!m_xrefs.TryGetValue(to, out froms))
-                m_xrefs.Add(to, froms = new HashSet<uint>());
+            if (!_xrefs.TryGetValue(to, out froms))
+                _xrefs.Add(to, froms = new HashSet<uint>());
 
             froms.Add(from);
 
-            if (!m_instructions.ContainsKey(to))
-                m_analysisQueue.Enqueue(to);
+            if (!_instructions.ContainsKey(to))
+                _analysisQueue.Enqueue(to);
         }
 
-        private HashSet<uint> getXrefs(uint to)
+        private HashSet<uint> GetXrefs(uint to)
         {
             HashSet<uint> froms;
-            m_xrefs.TryGetValue(to, out froms);
+            _xrefs.TryGetValue(to, out froms);
             return froms;
         }
 
-        private uint dataAt(uint ofs)
+        private uint DataAt(uint ofs)
         {
             uint data;
-            data = m_data[ofs++];
-            data |= (uint) m_data[ofs++] << 8;
-            data |= (uint) m_data[ofs++] << 16;
-            data |= (uint) m_data[ofs++] << 24;
+            data = _data[ofs++];
+            data |= (uint) _data[ofs++] << 8;
+            data |= (uint) _data[ofs++] << 16;
+            data |= (uint) _data[ofs++] << 24;
             return data;
         }
 
-        private static Opcode extractOpcode(uint data)
+        private static Opcode ExtractOpcode(uint data)
         {
             return (Opcode) (data >> 26);
         }
 
-        public void decompile()
+        public void Decompile()
         {
-            if (m_callees.Count == 0)
+            if (_callees.Count == 0)
                 return;
 
-            var addr = m_debugSource.functions.Skip(200).First().address;
-            var func = m_debugSource.findFunction(addr);
+            var addr = _debugSource.Functions.Skip(200).First().Address;
+            var func = _debugSource.FindFunction(addr);
             if (func != null)
-                logger.Debug(func.getSignature());
-            addr -= m_header.tAddr;
+                logger.Debug(func.GetSignature());
+            addr -= _header.tAddr;
 
-            var flowState = new DataFlowState(m_debugSource, func);
+            var flowState = new DataFlowState(_debugSource, func);
 
             var control = new ControlFlowProcessor();
-            control.process(addr, m_instructions);
+            control.Process(addr, _instructions);
             
             var reducer = new Reducer(control);
-            reducer.reduce();
-            reducer.dump(new IndentedTextWriter(Console.Out));
+            reducer.Reduce();
+            reducer.Dump(new IndentedTextWriter(Console.Out));
 
             {
                 Console.WriteLine();
                 if (false)
                 {
                     var itw = new IndentedTextWriter(Console.Out);
-                    control.dump(itw);
+                    control.Dump(itw);
                 }
                 else
                 {
@@ -124,57 +124,57 @@ namespace exefile
                 }
             }
 
-            foreach (var insnPair in m_instructions.Where(i => i.Key >= addr))
+            foreach (var insnPair in _instructions.Where(i => i.Key >= addr))
             {
-                var xrefs = getXrefs(insnPair.Key);
+                var xrefs = GetXrefs(insnPair.Key);
                 if (xrefs != null)
                 {
-                    flowState.dumpState();
-                    logger.Debug(m_debugSource.getSymbolName(insnPair.Key) + ":");
+                    flowState.DumpState();
+                    logger.Debug(_debugSource.GetSymbolName(insnPair.Key) + ":");
                 }
 
                 var insn = insnPair.Value;
-                if (insn is NopInstruction || insn.isBranchDelaySlot)
+                if (insn is NopInstruction || insn.IsBranchDelaySlot)
                 {
                     continue;
                 }
 
                 //Console.WriteLine($"??? 0x{insnPair.Key:X}  " + insn.asReadable());
 
-                var nextInsn = m_instructions[insnPair.Key + 4];
-                if (!flowState.process(insn, nextInsn))
+                var nextInsn = _instructions[insnPair.Key + 4];
+                if (!flowState.Process(insn, nextInsn))
                     break;
             }
         }
 
-        public void disassemble()
+        public void Disassemble()
         {
             logger.Info("Disassembly started");
             
-            m_analysisQueue.Clear();
-            m_analysisQueue.Enqueue(m_header.pc0 - m_header.tAddr);
-            foreach (var addr in m_debugSource.functions.Select(f => f.address))
-                m_analysisQueue.Enqueue(addr - m_header.tAddr);
+            _analysisQueue.Clear();
+            _analysisQueue.Enqueue(_header.pc0 - _header.tAddr);
+            foreach (var addr in _debugSource.Functions.Select(f => f.Address))
+                _analysisQueue.Enqueue(addr - _header.tAddr);
 
-            while (m_analysisQueue.Count != 0)
+            while (_analysisQueue.Count != 0)
             {
-                var index = m_analysisQueue.Dequeue();
-                if (m_instructions.ContainsKey(index) || index >= m_data.Length)
+                var index = _analysisQueue.Dequeue();
+                if (_instructions.ContainsKey(index) || index >= _data.Length)
                     continue;
 
-                var data = dataAt(index);
+                var data = DataAt(index);
                 index += 4;
-                var insn = m_instructions[index - 4] = decodeInstruction(data, index);
+                var insn = _instructions[index - 4] = DecodeInstruction(data, index);
 
                 var cbranchInsn = insn as ConditionalBranchInstruction;
                 if (cbranchInsn != null)
                 {
-                    data = dataAt(index);
+                    data = DataAt(index);
                     index += 4;
-                    var insn2 = m_instructions[index - 4] = decodeInstruction(data, index);
-                    insn2.isBranchDelaySlot = true;
+                    var insn2 = _instructions[index - 4] = DecodeInstruction(data, index);
+                    insn2.IsBranchDelaySlot = true;
 
-                    m_analysisQueue.Enqueue(index);
+                    _analysisQueue.Enqueue(index);
 
                     continue;
                 }
@@ -182,131 +182,131 @@ namespace exefile
                 var callInsn = insn as CallPtrInstruction;
                 if (callInsn != null)
                 {
-                    data = dataAt(index);
+                    data = DataAt(index);
                     index += 4;
-                    var insn2 = m_instructions[index - 4] = decodeInstruction(data, index);
-                    insn2.isBranchDelaySlot = true;
+                    var insn2 = _instructions[index - 4] = DecodeInstruction(data, index);
+                    insn2.IsBranchDelaySlot = true;
 
-                    if (callInsn.returnAddressTarget?.register == Register.ra)
-                        m_analysisQueue.Enqueue(index);
+                    if (callInsn.ReturnAddressTarget?.Register == Register.ra)
+                        _analysisQueue.Enqueue(index);
 
                     continue;
                 }
 
-                m_analysisQueue.Enqueue(index);
+                _analysisQueue.Enqueue(index);
             }
             
-            logger.Info($"Disassembled {m_instructions.Count} instructions, detected {m_callees.Count} callees");
+            logger.Info($"Disassembled {_instructions.Count} instructions, detected {_callees.Count} callees");
         }
 
-        public void dump()
+        public void Dump()
         {
-            foreach (var insn in m_instructions)
+            foreach (var insn in _instructions)
             {
-                if (m_callees.Contains(insn.Key))
+                if (_callees.Contains(insn.Key))
                     logger.Debug("### FUNCTION");
                 if (insn.Value is NopInstruction)
                     continue;
 
-                var f = m_debugSource.findFunction(insn.Key + m_header.tAddr);
+                var f = _debugSource.FindFunction(insn.Key + _header.tAddr);
 
-                var xrefsHere = getXrefs(insn.Key);
+                var xrefsHere = GetXrefs(insn.Key);
                 if (xrefsHere != null)
                 {
                     logger.Debug("# XRefs:");
                     foreach (var xref in xrefsHere)
-                        logger.Debug("# - " + m_debugSource.getSymbolName(xref));
-                    var names = getSymbolNames(insn.Key);
+                        logger.Debug("# - " + _debugSource.GetSymbolName(xref));
+                    var names = GetSymbolNames(insn.Key);
                     if (names != null)
                         foreach (var name in names)
                             logger.Debug(name + ":");
                     else
-                        logger.Debug(m_debugSource.getSymbolName(insn.Key) + ":");
+                        logger.Debug(_debugSource.GetSymbolName(insn.Key) + ":");
                 }
 
                 if (f != null)
-                    logger.Debug(f.getSignature());
+                    logger.Debug(f.GetSignature());
 
-                logger.Debug($"  0x{insn.Key:X}  {insn.Value.asReadable()}");
+                logger.Debug($"  0x{insn.Key:X}  {insn.Value.AsReadable()}");
             }
         }
 
-        private IOperand makeGpBasedOperand(uint data, int shift, int offset)
+        private IOperand MakeGpBasedOperand(uint data, int shift, int offset)
         {
             var regofs = new RegisterOffsetOperand(data, shift, offset);
-            if (m_gpBase == null)
+            if (_gpBase == null)
                 return regofs;
 
-            if (regofs.register == Register.gp)
-                return new LabelOperand(m_debugSource.getSymbolName(m_gpBase.Value, regofs.offset),
-                    (uint) (m_gpBase.Value + regofs.offset));
+            if (regofs.Register == Register.gp)
+                return new LabelOperand(_debugSource.GetSymbolName(_gpBase.Value, regofs.Offset),
+                    (uint) (_gpBase.Value + regofs.Offset));
 
             return regofs;
         }
 
-        private Instruction decodeInstruction(uint data, uint index)
+        private Instruction DecodeInstruction(uint data, uint index)
         {
-            switch (extractOpcode(data))
+            switch (ExtractOpcode(data))
             {
                 case Opcode.RegisterFormat:
-                    return decodeRegisterFormat(data);
+                    return DecodeRegisterFormat(data);
                 case Opcode.PCRelative:
-                    return decodePcRelative(index, data);
+                    return DecodePcRelative(index, data);
                 case Opcode.j:
-                    addCall(index - 4, (data & 0x03FFFFFF) << 2);
-                    m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(new LabelOperand(m_debugSource.getSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
+                    AddCall(index - 4, (data & 0x03FFFFFF) << 2);
+                    _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
+                    return new CallPtrInstruction(new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
                         null);
                 case Opcode.jal:
-                    addCall(index - 4, (data & 0x03FFFFFF) << 2);
-                    m_analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(new LabelOperand(m_debugSource.getSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
+                    AddCall(index - 4, (data & 0x03FFFFFF) << 2);
+                    _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
+                    return new CallPtrInstruction(new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
                         new RegisterOperand(Register.ra));
                 case Opcode.beq:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(Operator.Equal,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                                 (uint) (index + ((short) data << 2))));
                     else
                         return new ConditionalBranchInstruction(Operator.Equal,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                                 (uint) (index + ((short) data << 2))));
                 case Opcode.bne:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(Operator.NotEqual,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                                 (uint) (index + ((short) data << 2))));
                     else
                         return new ConditionalBranchInstruction(Operator.NotEqual,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                            new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                                 (uint) (index + ((short) data << 2))));
                 case Opcode.blez:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.LessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                             (uint) (index + ((short) data << 2))));
                 case Opcode.bgtz:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                             (uint) (index + ((short) data << 2))));
                 case Opcode.addi:
                     return new ArithmeticInstruction(Operator.Add,
@@ -353,59 +353,59 @@ namespace exefile
                         new RegisterOperand(data, 16), 4,
                         new ImmediateOperand((ushort) data << 16), 4);
                 case Opcode.CpuControl:
-                    return decodeCpuControl(index, data);
+                    return DecodeCpuControl(index, data);
                 case Opcode.FloatingPoint:
                     return new WordData(data);
                 case Opcode.lb:
                     return new DataCopyInstruction(
                         new RegisterOperand(data, 16), 4,
-                        makeGpBasedOperand(data, 21, (short) data), 1
+                        MakeGpBasedOperand(data, 21, (short) data), 1
                     );
                 case Opcode.lh:
                     return new DataCopyInstruction(
                         new RegisterOperand(data, 16), 4,
-                        makeGpBasedOperand(data, 21, (short) data), 2
+                        MakeGpBasedOperand(data, 21, (short) data), 2
                     );
                 case Opcode.lwl:
                     return new SimpleInstruction("lwl", null, new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                        MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.lw:
                     return new DataCopyInstruction(
                         new RegisterOperand(data, 16), 4,
-                        makeGpBasedOperand(data, 21, (short) data), 4);
+                        MakeGpBasedOperand(data, 21, (short) data), 4);
                 case Opcode.lbu:
                     return new DataCopyInstruction(
                         new RegisterOperand(data, 16), 4,
-                        makeGpBasedOperand(data, 21, (short) data), 1
+                        MakeGpBasedOperand(data, 21, (short) data), 1
                     );
                 case Opcode.lhu:
                     return new DataCopyInstruction(
                         new RegisterOperand(data, 16), 4,
-                        makeGpBasedOperand(data, 21, (short) data), 2
+                        MakeGpBasedOperand(data, 21, (short) data), 2
                     );
                 case Opcode.lwr:
                     return new SimpleInstruction("lwr", null, new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                        MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sb:
                     return new DataCopyInstruction(
-                        makeGpBasedOperand(data, 21, (short) data), 1,
+                        MakeGpBasedOperand(data, 21, (short) data), 1,
                         new RegisterOperand(data, 16), 4
                     );
                 case Opcode.sh:
                     return new DataCopyInstruction(
-                        makeGpBasedOperand(data, 21, (short) data), 2,
+                        MakeGpBasedOperand(data, 21, (short) data), 2,
                         new RegisterOperand(data, 16), 4
                     );
                 case Opcode.swl:
                     return new SimpleInstruction("swl", null, new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                        MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sw:
                     return new DataCopyInstruction(
-                        makeGpBasedOperand(data, 21, (short) data), 4,
+                        MakeGpBasedOperand(data, 21, (short) data), 4,
                         new RegisterOperand(data, 16), 4);
                 case Opcode.swr:
                     return new SimpleInstruction("swr", null, new RegisterOperand(data, 16),
-                        makeGpBasedOperand(data, 21, (short) data));
+                        MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.swc1:
                     return new SimpleInstruction("swc1", null, new RegisterOperand(data, 16),
                         new ImmediateOperand((short) data), new RegisterOperand(data, 21));
@@ -417,47 +417,47 @@ namespace exefile
                 case Opcode.cop1:
                     return new SimpleInstruction("cop1", null, new ImmediateOperand(data & ((1 << 26) - 1)));
                 case Opcode.cop2:
-                    return decodeCop2(data);
+                    return DecodeCop2(data);
                 case Opcode.cop3:
                     return new SimpleInstruction("cop3", null, new ImmediateOperand(data & ((1 << 26) - 1)));
                 case Opcode.beql:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Equal,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                             (uint) (index + ((short) data << 2))));
                 case Opcode.bnel:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.NotEqual,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                             (uint) (index + ((short) data << 2))));
                 case Opcode.blezl:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedLessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                             (uint) (index + ((short) data << 2))));
                 case Opcode.bgtzl:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(m_debugSource.getSymbolName(index, (short) data << 2),
+                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
                             (uint) (index + ((short) data << 2))));
                 default:
                     return new WordData(data);
             }
         }
 
-        private static Instruction decodeRegisterFormat(uint data)
+        private static Instruction DecodeRegisterFormat(uint data)
         {
             var rd = new RegisterOperand(data, 11);
             var rs2 = new RegisterOperand(data, 16);
@@ -529,7 +529,7 @@ namespace exefile
                     return new ArithmeticInstruction(Operator.Add,
                         rd, rs1, rs2);
                 case OpcodeFunction.addu:
-                    if (rs2.register == Register.zero)
+                    if (rs2.Register == Register.zero)
                         return new DataCopyInstruction(rd, 4, rs1, 4);
                     else
                         return new ArithmeticInstruction(Operator.Add, rd, rs1, rs2);
@@ -564,7 +564,7 @@ namespace exefile
             }
         }
 
-        private Instruction decodeCpuControl(uint index, uint data)
+        private Instruction DecodeCpuControl(uint index, uint data)
         {
             switch ((CpuControlOpcode) ((data >> 21) & 0x1f))
             {
@@ -575,20 +575,20 @@ namespace exefile
                     switch ((data >> 16) & 0x1f)
                     {
                         case 0:
-                            addXref(index - 4, (uint) ((index + (short) data) << 2));
+                            AddXref(index - 4, (uint) ((index + (short) data) << 2));
                             return new SimpleInstruction("bc0f", null,
-                                new LabelOperand(m_debugSource.getSymbolName(index, (ushort) data << 2),
+                                new LabelOperand(_debugSource.GetSymbolName(index, (ushort) data << 2),
                                     (uint) (index + ((short) data << 2))));
                         case 1:
-                            addXref(index - 4, (uint) ((index + (short) data) << 2));
+                            AddXref(index - 4, (uint) ((index + (short) data) << 2));
                             return new SimpleInstruction("bc0t", null,
-                                new LabelOperand(m_debugSource.getSymbolName(index, (ushort) data << 2),
+                                new LabelOperand(_debugSource.GetSymbolName(index, (ushort) data << 2),
                                     (uint) (index + ((short) data << 2))));
                         default:
                             return new WordData(data);
                     }
                 case CpuControlOpcode.tlb:
-                    return decodeTlb(data);
+                    return DecodeTlb(data);
                 case CpuControlOpcode.mfc0:
                     return new SimpleInstruction("mfc0", null, new RegisterOperand(data, 16),
                         new C0RegisterOperand(data, 11));
@@ -597,7 +597,7 @@ namespace exefile
             }
         }
 
-        private static Instruction decodeTlb(uint data)
+        private static Instruction DecodeTlb(uint data)
         {
             switch ((TlbOpcode) (data & 0x1f))
             {
@@ -616,37 +616,37 @@ namespace exefile
             }
         }
 
-        private Instruction decodePcRelative(uint index, uint data)
+        private Instruction DecodePcRelative(uint index, uint data)
         {
             var rs = new RegisterOperand(data, 21);
-            var offset = new LabelOperand(m_debugSource.getSymbolName(index, (ushort) data << 2),
+            var offset = new LabelOperand(_debugSource.GetSymbolName(index, (ushort) data << 2),
                 (uint) (index + ((short) data << 2)));
             switch ((data >> 16) & 0x1f)
             {
                 case 0:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 1:
-                    addXref(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 16:
-                    addCall(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddCall(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalCallInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 17:
-                    addCall(index - 4, (uint) ((index + (short) data) << 2));
-                    m_analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddCall(index - 4, (uint) ((index + (short) data) << 2));
+                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalCallInstruction(Operator.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
@@ -656,11 +656,11 @@ namespace exefile
             }
         }
 
-        private static Instruction decodeCop2(uint data)
+        private static Instruction DecodeCop2(uint data)
         {
             var opc = data & ((1 << 26) - 1);
             if (((data >> 25) & 1) != 0)
-                return decodeCop2Gte(opc);
+                return DecodeCop2Gte(opc);
 
             var cf = (opc >> 21) & 0x1F;
             switch (cf)
@@ -682,7 +682,7 @@ namespace exefile
             }
         }
 
-        private static Instruction decodeCop2Gte(uint data)
+        private static Instruction DecodeCop2Gte(uint data)
         {
             switch (data & 0x1F003FF)
             {
@@ -753,6 +753,7 @@ namespace exefile
 
         [SuppressMessage("ReSharper", "NotAccessedField.Local")]
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         private class Header
         {
             public readonly uint bAddr;
@@ -776,28 +777,28 @@ namespace exefile
 
             public Header(EndianBinaryReader reader)
             {
-                id = reader.readBytes(8).Select(b => (char) b).ToArray();
+                id = reader.ReadBytes(8).Select(b => (char) b).ToArray();
 
                 if (!"PS-X EXE".Equals(new string(id)))
                     throw new Exception("Header ID mismatch");
 
-                text = reader.readUInt32();
-                data = reader.readUInt32();
-                pc0 = reader.readUInt32();
-                gp0 = reader.readUInt32();
-                tAddr = reader.readUInt32();
-                tSize = reader.readUInt32();
-                dAddr = reader.readUInt32();
-                dSize = reader.readUInt32();
-                bAddr = reader.readUInt32();
-                bSize = reader.readUInt32();
-                sAddr = reader.readUInt32();
-                sSize = reader.readUInt32();
-                savedSp = reader.readUInt32();
-                savedFp = reader.readUInt32();
-                savedGp = reader.readUInt32();
-                savedRa = reader.readUInt32();
-                savedS0 = reader.readUInt32();
+                text = reader.ReadUInt32();
+                data = reader.ReadUInt32();
+                pc0 = reader.ReadUInt32();
+                gp0 = reader.ReadUInt32();
+                tAddr = reader.ReadUInt32();
+                tSize = reader.ReadUInt32();
+                dAddr = reader.ReadUInt32();
+                dSize = reader.ReadUInt32();
+                bAddr = reader.ReadUInt32();
+                bSize = reader.ReadUInt32();
+                sAddr = reader.ReadUInt32();
+                sSize = reader.ReadUInt32();
+                savedSp = reader.ReadUInt32();
+                savedFp = reader.ReadUInt32();
+                savedGp = reader.ReadUInt32();
+                savedRa = reader.ReadUInt32();
+                savedS0 = reader.ReadUInt32();
             }
         }
     }

@@ -5,11 +5,11 @@ namespace mips.operands
 {
     public class C2RegisterOperand : IOperand
     {
-        public readonly C2Register register;
+        public readonly C2Register Register;
 
         public C2RegisterOperand(C2Register register)
         {
-            this.register = register;
+            Register = register;
         }
 
         public C2RegisterOperand(uint data, int offset)
@@ -20,17 +20,17 @@ namespace mips.operands
         public bool Equals(IOperand other)
         {
             var o = other as C2RegisterOperand;
-            return register == o?.register;
+            return Register == o?.Register;
         }
 
-        public IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
             throw new System.NotImplementedException();
         }
 
         public override string ToString()
         {
-            return $"${register}";
+            return $"${Register}";
         }
     }
 }

@@ -6,22 +6,22 @@ namespace core
 {
     public interface IFunction
     {
-        void dump([NotNull] IndentedTextWriter writer);
+        void Dump([NotNull] IndentedTextWriter writer);
         
         [NotNull]
-        IEnumerable<KeyValuePair<int, IDeclaration>> registerParameters { get; }
+        IEnumerable<KeyValuePair<int, IDeclaration>> RegisterParameters { get; }
 
         [NotNull]
-        IEnumerable<KeyValuePair<int, IDeclaration>> stackParameters { get; }
+        IEnumerable<KeyValuePair<int, IDeclaration>> StackParameters { get; }
 
         [NotNull]
-        string getSignature();
+        string GetSignature();
         
         [NotNull]
-        string name { get; }
+        string Name { get; }
         
-        uint address { get; }
+        uint Address { get; }
         
-        IMemoryLayout returnType { get; }
+        IMemoryLayout ReturnType { get; }
     }
 }

@@ -14,27 +14,27 @@ namespace symfile.code
     {
         public class VarInfo
         {
-            public readonly string name;
-            public readonly TypeDecoration typeDecoration;
-            public readonly FileEntry fileEntry;
+            public readonly string Name;
+            public readonly TypeDecoration TypeDecoration;
+            public readonly FileEntry FileEntry;
 
             public VarInfo(string name, TypeDecoration typeDecoration, FileEntry fileEntry)
             {
-                this.name = name;
-                this.typeDecoration = typeDecoration;
-                this.fileEntry = fileEntry;
+                Name = name;
+                TypeDecoration = typeDecoration;
+                FileEntry = fileEntry;
             }
 
             public override string ToString()
             {
-                switch (typeDecoration.classType)
+                switch (TypeDecoration.ClassType)
                 {
                     case ClassType.AutoVar:
-                        return $"{typeDecoration.asDeclaration(name)}; /* sp {fileEntry.value} */";
+                        return $"{TypeDecoration.AsDeclaration(Name)}; /* sp {FileEntry.value} */";
                     case ClassType.Register:
-                        return $"{typeDecoration.asDeclaration(name)}; /* ${(Register) fileEntry.value} */";
+                        return $"{TypeDecoration.AsDeclaration(Name)}; /* ${(Register) FileEntry.value} */";
                     case ClassType.Static:
-                        return $"static {typeDecoration.asDeclaration(name)}; // offset 0x{fileEntry.value:x}";
+                        return $"static {TypeDecoration.AsDeclaration(Name)}; // offset 0x{FileEntry.value:x}";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -71,7 +71,7 @@ namespace symfile.code
             {
                 var typedValue = new FileEntry(reader);
 
-                if (reader.skipSld(typedValue))
+                if (reader.SkipSld(typedValue))
                     continue;
 
                 switch (typedValue.type & 0x7f)
@@ -85,10 +85,10 @@ namespace symfile.code
                         return;
                     case 20:
                     {
-                        var ti = reader.readTypeDecoration(false, debugSource);
-                        var memberName = reader.readPascalString();
+                        var ti = reader.ReadTypeDecoration(false, debugSource);
+                        var memberName = reader.ReadPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
-                        switch (ti.classType)
+                        switch (ti.ClassType)
                         {
                             case ClassType.AutoVar:
                             case ClassType.Register:
@@ -102,16 +102,16 @@ namespace symfile.code
                                 labels.Add(new NamedLocation((uint) typedValue.value, memberName));
                                 break;
                             default:
-                                throw new Exception($"Unexpected class type {ti.classType}");
+                                throw new Exception($"Unexpected class type {ti.ClassType}");
                         }
                         break;
                     }
                     case 22:
                     {
-                        var ti = reader.readTypeDecoration(true, debugSource);
-                        var memberName = reader.readPascalString();
+                        var ti = reader.ReadTypeDecoration(true, debugSource);
+                        var memberName = reader.ReadPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
-                        switch (ti.classType)
+                        switch (ti.ClassType)
                         {
                             case ClassType.AutoVar:
                             case ClassType.Register:
@@ -125,7 +125,7 @@ namespace symfile.code
                                 labels.Add(new NamedLocation((uint) typedValue.value, memberName));
                                 break;
                             default:
-                                throw new Exception($"Unexpected class type {ti.classType}");
+                                throw new Exception($"Unexpected class type {ti.ClassType}");
                         }
                         break;
                     }
@@ -136,15 +136,15 @@ namespace symfile.code
         public void dump(IndentedTextWriter writer)
         {
             writer.WriteLine($"{{ // line {startLine}, offset 0x{startOffset:x}");
-            ++writer.indent;
+            ++writer.Indent;
             foreach (var t in typedefs)
-                writer.WriteLine($"typedef {t.Value.asDeclaration(t.Key)};");
+                writer.WriteLine($"typedef {t.Value.AsDeclaration(t.Key)};");
             foreach (var varInfo in vars)
                 writer.WriteLine(varInfo.Value);
             foreach (var l in labels)
                 writer.WriteLine(l);
             subBlocks.ForEach(b => b.dump(writer));
-            --writer.indent;
+            --writer.Indent;
             writer.WriteLine($"}} // line {endLine}, offset 0x{endOffset:x}");
         }
     }

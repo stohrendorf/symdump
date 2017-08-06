@@ -4,16 +4,16 @@ namespace core
 {
     public abstract class Instruction
     {
-        public bool isBranchDelaySlot;
+        public bool IsBranchDelaySlot;
 
         [NotNull]
         [ItemNotNull]
-        public abstract IOperand[] operands { get; }
+        public abstract IOperand[] Operands { get; }
 
         [NotNull]
-        public abstract string asReadable();
+        public abstract string AsReadable();
 
         [NotNull]
-        public abstract IExpressionNode toExpressionNode([NotNull] IDataFlowState dataFlowState);
+        public abstract IExpressionNode ToExpressionNode([NotNull] IDataFlowState dataFlowState);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using core;
 using core.util;
@@ -8,38 +7,38 @@ namespace exefile.controlflow
 {
     public class Block : IBlock
     {
-        public IBlock trueExit { get; set; }
+        public IBlock TrueExit { get; set; }
 
-        public IBlock falseExit { get; set; }
+        public IBlock FalseExit { get; set; }
 
-        public uint start => instructions.Keys.First();
+        public uint Start => Instructions.Keys.First();
 
-        public SortedDictionary<uint, Instruction> instructions { get; } = new SortedDictionary<uint, Instruction>();
+        public SortedDictionary<uint, Instruction> Instructions { get; } = new SortedDictionary<uint, Instruction>();
 
-        public ExitType? exitType { get; set; }
+        public ExitType? ExitType { get; set; }
 
-        public bool containsAddress(uint address)
+        public bool ContainsAddress(uint address)
         {
-            if (instructions.Count == 0)
+            if (Instructions.Count == 0)
                 return false;
 
-            return address >= instructions.Keys.First() && address <= instructions.Keys.Last();
+            return address >= Instructions.Keys.First() && address <= Instructions.Keys.Last();
         }
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
-            writer.WriteLine($"// exitType={exitType} start=0x{start:X}");
-            if (trueExit != null)
-                writer.WriteLine($"// trueExit=0x{trueExit.start:X}");
-            if (falseExit != null)
-                writer.WriteLine($"// falseExit=0x{falseExit.start:X}");
+            writer.WriteLine($"// exitType={ExitType} start=0x{Start:X}");
+            if (TrueExit != null)
+                writer.WriteLine($"// trueExit=0x{TrueExit.Start:X}");
+            if (FalseExit != null)
+                writer.WriteLine($"// falseExit=0x{FalseExit.Start:X}");
 
-            ++writer.indent;
-            foreach (var insn in instructions)
+            ++writer.Indent;
+            foreach (var insn in Instructions)
             {
-                writer.WriteLine($"0x{insn.Key:X}  {insn.Value.asReadable()}");
+                writer.WriteLine($"0x{insn.Key:X}  {insn.Value.AsReadable()}");
             }
-            --writer.indent;
+            --writer.Indent;
         }
     }
 }

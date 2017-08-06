@@ -8,41 +8,41 @@ namespace symfile.memory
 {
     public class Array : IMemoryLayout, IEquatable<Array>
     {
-        public int precedence => Operator.Array.getPrecedence(false);
+        public int Precedence => Operator.Array.GetPrecedence(false);
 
-        public string fundamentalType => inner.fundamentalType;
+        public string FundamentalType => Inner.FundamentalType;
 
-        public uint dataSize => dimension * inner.dataSize;
+        public uint DataSize => Dimension * Inner.DataSize;
 
-        public IMemoryLayout inner { get; }
+        public IMemoryLayout Inner { get; }
 
-        public IMemoryLayout pointee => null;
+        public IMemoryLayout Pointee => null;
 
-        public readonly uint dimension;
+        public readonly uint Dimension;
 
         public Array(uint dimension, IMemoryLayout inner)
         {
-            this.dimension = dimension;
-            this.inner = inner;
+            Dimension = dimension;
+            Inner = inner;
         }
 
-        public string asIncompleteDeclaration(string identifier, string argList)
+        public string AsIncompleteDeclaration(string identifier, string argList)
         {
-            var innerCode = inner.asIncompleteDeclaration(identifier, argList);
-            return inner.precedence >= precedence
-                ? $"({innerCode})[{dimension}]"
-                : $"{innerCode}[{dimension}]";
+            var innerCode = Inner.AsIncompleteDeclaration(identifier, argList);
+            return Inner.Precedence >= Precedence
+                ? $"({innerCode})[{Dimension}]"
+                : $"{innerCode}[{Dimension}]";
         }
 
-        public string getAccessPathTo(uint offset)
+        public string GetAccessPathTo(uint offset)
         {
-            var idx = offset / inner.dataSize;
-            var subOfs = offset % inner.dataSize;
-            var innerAccess = inner.getAccessPathTo(subOfs);
+            var idx = offset / Inner.DataSize;
+            var subOfs = offset % Inner.DataSize;
+            var innerAccess = Inner.GetAccessPathTo(subOfs);
             if (innerAccess == null)
                 return $"[{idx}]";
             
-            if(inner is Array)
+            if(Inner is Array)
                 return $"[{idx}]{innerAccess}";
             else
                 return $"[{idx}].{innerAccess}";
@@ -52,14 +52,14 @@ namespace symfile.memory
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return dimension == other.dimension && Equals(inner, other.inner);
+            return Dimension == other.Dimension && Equals(Inner, other.Inner);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Array) obj);
         }
 
@@ -67,7 +67,7 @@ namespace symfile.memory
         {
             unchecked
             {
-                return ((int) dimension * 397) ^ (inner != null ? inner.GetHashCode() : 0);
+                return ((int) Dimension * 397) ^ (Inner != null ? Inner.GetHashCode() : 0);
             }
         }
     }
@@ -78,18 +78,18 @@ namespace symfile.memory
         public static void testDeclarationSimple()
         {
             var tmp = new Array(10, new PrimitiveType(BaseType.Char));
-            Assert.Equal("foo[10]", tmp.asIncompleteDeclaration("foo", null));
-            Assert.Equal("char", tmp.fundamentalType);
-            Assert.Equal("[3]", tmp.getAccessPathTo(3));
+            Assert.Equal("foo[10]", tmp.AsIncompleteDeclaration("foo", null));
+            Assert.Equal("char", tmp.FundamentalType);
+            Assert.Equal("[3]", tmp.GetAccessPathTo(3));
         }
 
         [Fact]
         public static void testDeclarationPrecedence()
         {
             var tmp = new Array(10, new Pointer(new PrimitiveType(BaseType.Char)));
-            Assert.Equal("(*foo)[10]", tmp.asIncompleteDeclaration("foo", null));
-            Assert.Equal("char", tmp.fundamentalType);
-            Assert.Equal("[1]", tmp.getAccessPathTo(4));
+            Assert.Equal("(*foo)[10]", tmp.AsIncompleteDeclaration("foo", null));
+            Assert.Equal("char", tmp.FundamentalType);
+            Assert.Equal("[1]", tmp.GetAccessPathTo(4));
         }
     }
 }

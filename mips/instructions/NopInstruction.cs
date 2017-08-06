@@ -4,14 +4,14 @@ namespace mips.instructions
 {
     public class NopInstruction : Instruction
     {
-        public override IOperand[] operands { get; } = new IOperand[0];
+        public override IOperand[] Operands { get; } = new IOperand[0];
 
-        public override string asReadable()
+        public override string AsReadable()
         {
             return "nop";
         }
 
-        public override IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public override IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
             throw new System.NotImplementedException();
         }

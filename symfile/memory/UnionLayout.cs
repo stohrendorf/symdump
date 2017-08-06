@@ -10,17 +10,17 @@ namespace symfile.memory
 {
     public class UnionLayout : CompoundLayout, IEquatable<UnionLayout>
     {
-        public readonly List<CompoundMember> members = new List<CompoundMember>();
+        public readonly List<CompoundMember> Members = new List<CompoundMember>();
 
-        public override string fundamentalType => $"union {name}";
+        public override string FundamentalType => $"union {Name}";
 
-        public override uint dataSize { get; }
+        public override uint DataSize { get; }
 
-        public override int precedence => int.MinValue;
+        public override int Precedence => int.MinValue;
 
-        public override IMemoryLayout pointee => null;
+        public override IMemoryLayout Pointee => null;
 
-        public override string asIncompleteDeclaration(string identifier, string argList)
+        public override string AsIncompleteDeclaration(string identifier, string argList)
         {
             return identifier;
         }
@@ -28,7 +28,7 @@ namespace symfile.memory
         public UnionLayout(BinaryReader stream, string name, SymFile debugSource)
             : base(name)
         {
-            debugSource.currentlyDefining.Add(name, this);
+            debugSource.CurrentlyDefining.Add(name, this);
 
             try
             {
@@ -39,25 +39,25 @@ namespace symfile.memory
                     {
                         var m = new CompoundMember(typedValue, stream, false, debugSource);
 
-                        if (m.typeDecoration.classType == ClassType.EndOfStruct)
+                        if (m.TypeDecoration.ClassType == ClassType.EndOfStruct)
                         {
-                            dataSize = (uint) m.fileEntry.value;
+                            DataSize = (uint) m.FileEntry.value;
                             break;
                         }
 
-                        members.Add(m);
+                        Members.Add(m);
                     }
                     else if (typedValue.type == (0x80 | 22))
                     {
                         var m = new CompoundMember(typedValue, stream, true, debugSource);
 
-                        if (m.typeDecoration.classType == ClassType.EndOfStruct)
+                        if (m.TypeDecoration.ClassType == ClassType.EndOfStruct)
                         {
-                            dataSize = (uint) m.fileEntry.value;
+                            DataSize = (uint) m.FileEntry.value;
                             break;
                         }
 
-                        members.Add(m);
+                        Members.Add(m);
                     }
                     else
                     {
@@ -67,21 +67,21 @@ namespace symfile.memory
             }
             finally
             {
-                debugSource.currentlyDefining.Remove(name);
+                debugSource.CurrentlyDefining.Remove(name);
             }
         }
 
         public void dump(IndentedTextWriter writer)
         {
-            writer.WriteLine($"union {name} {{");
-            ++writer.indent;
-            foreach (var m in members)
+            writer.WriteLine($"union {Name} {{");
+            ++writer.Indent;
+            foreach (var m in Members)
                 writer.WriteLine(m);
-            --writer.indent;
+            --writer.Indent;
             writer.WriteLine("};");
         }
 
-        public override string getAccessPathTo(uint offset)
+        public override string GetAccessPathTo(uint offset)
         {
             throw new NotImplementedException();
         }
@@ -90,14 +90,14 @@ namespace symfile.memory
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return base.Equals(other) && members.SequenceEqual(other.members) && dataSize == other.dataSize;
+            return base.Equals(other) && Members.SequenceEqual(other.Members) && DataSize == other.DataSize;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((UnionLayout) obj);
         }
 
@@ -106,8 +106,8 @@ namespace symfile.memory
             unchecked
             {
                 int hashCode = base.GetHashCode();
-                hashCode = (hashCode * 397) ^ (members != null ? members.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (int) dataSize;
+                hashCode = (hashCode * 397) ^ (Members != null ? Members.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int) DataSize;
                 return hashCode;
             }
         }

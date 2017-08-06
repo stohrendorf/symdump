@@ -6,11 +6,11 @@ namespace mips.operands
 {
     public class RegisterOperand : IOperand
     {
-        public readonly Register register;
+        public readonly Register Register;
 
         public RegisterOperand(Register register)
         {
-            this.register = register;
+            Register = register;
         }
 
         public RegisterOperand(uint data, int offset)
@@ -21,18 +21,18 @@ namespace mips.operands
         public bool Equals(IOperand other)
         {
             var o = other as RegisterOperand;
-            return register == o?.register;
+            return Register == o?.Register;
         }
 
-        public IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            var expression = dataFlowState.getRegisterExpression((int) register);
-            return expression ?? new RegisterNode((int) register);
+            var expression = dataFlowState.GetRegisterExpression((int) Register);
+            return expression ?? new RegisterNode((int) Register);
         }
 
         public override string ToString()
         {
-            return $"${register}";
+            return $"${Register}";
         }
     }
 }

@@ -8,50 +8,50 @@ namespace mips.instructions
 {
     public class ArithmeticInstruction : Instruction
     {
-        public readonly Operator @operator;
+        public readonly Operator Operator;
 
         public ArithmeticInstruction(Operator @operator, IOperand dest, IOperand lhs, IOperand rhs)
         {
-            this.@operator = @operator;
+            Operator = @operator;
             if ((@operator == Operator.Add || @operator == Operator.Sub) && dest.Equals(lhs) && (dest is RegisterOperand) &&
-                ((RegisterOperand) dest).register == Register.sp && (rhs is ImmediateOperand))
+                ((RegisterOperand) dest).Register == Register.sp && (rhs is ImmediateOperand))
             {
-                rhs = new ImmediateOperand((short)((ImmediateOperand) rhs).value);
+                rhs = new ImmediateOperand((short)((ImmediateOperand) rhs).Value);
             }
-            operands = new[] {dest, lhs, rhs};
+            Operands = new[] {dest, lhs, rhs};
         }
 
-        public override IOperand[] operands { get; }
+        public override IOperand[] Operands { get; }
 
-        public IOperand destination => operands[0];
-        public IOperand lhs => operands[1];
-        public IOperand rhs => operands[2];
+        public IOperand Destination => Operands[0];
+        public IOperand Lhs => Operands[1];
+        public IOperand Rhs => Operands[2];
 
-        public bool isInplace => destination.Equals(lhs);
+        public bool IsInplace => Destination.Equals(Lhs);
 
-        public override string asReadable()
+        public override string AsReadable()
         {
-            var op = @operator.asCode();
+            var op = Operator.AsCode();
 
-            return isInplace
-                ? $"{destination} {op}= {rhs}"
-                : $"{destination} = {lhs} {op} {rhs}";
+            return IsInplace
+                ? $"{Destination} {op}= {Rhs}"
+                : $"{Destination} = {Lhs} {op} {Rhs}";
         }
 
-        public override IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public override IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            var lhsExpr = lhs.toExpressionNode(dataFlowState);
-            var rhsExpr = rhs.toExpressionNode(dataFlowState);
+            var lhsExpr = Lhs.ToExpressionNode(dataFlowState);
+            var rhsExpr = Rhs.ToExpressionNode(dataFlowState);
             
             if (!(lhsExpr is ValueNode) || !(rhsExpr is ValueNode))
             {
-                return new ExpressionNode(@operator, lhsExpr, rhsExpr);
+                return new ExpressionNode(Operator, lhsExpr, rhsExpr);
             }
 
-            var lhsVal = ((ValueNode) lhsExpr).value;
-            var rhsVal = ((ValueNode) rhsExpr).value;
+            var lhsVal = ((ValueNode) lhsExpr).Value;
+            var rhsVal = ((ValueNode) rhsExpr).Value;
 
-            switch (@operator)
+            switch (Operator)
             {
                 case Operator.Add:
                     return new ValueNode(lhsVal + rhsVal);
@@ -83,7 +83,7 @@ namespace mips.instructions
                 case Operator.SignedLessEqual:
                 case Operator.GreaterEqual:
                 case Operator.SignedGreaterEqual:
-                    return new ExpressionNode(@operator, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState));
+                    return new ExpressionNode(Operator, Lhs.ToExpressionNode(dataFlowState), Rhs.ToExpressionNode(dataFlowState));
                 default:
                     throw new ArgumentOutOfRangeException();
             }

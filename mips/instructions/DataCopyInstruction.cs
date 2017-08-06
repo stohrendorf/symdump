@@ -5,28 +5,28 @@ namespace mips.instructions
 {
     public class DataCopyInstruction : Instruction
     {
-        public override IOperand[] operands { get; }
-        public byte srcSize;
-        public byte dstSize;
+        public override IOperand[] Operands { get; }
+        public readonly byte SrcSize;
+        public readonly byte DstSize;
 
         public DataCopyInstruction(IOperand dst, byte dstSize, IOperand src, byte srcSize)
         {
-            operands = new[] {dst, src};
-            this.dstSize = dstSize;
-            this.srcSize = srcSize;
+            Operands = new[] {dst, src};
+            DstSize = dstSize;
+            SrcSize = srcSize;
         }
 
-        public IOperand src => operands[1];
-        public IOperand dst => operands[0];
+        public IOperand Src => Operands[1];
+        public IOperand Dst => Operands[0];
 
-        public override string asReadable()
+        public override string AsReadable()
         {
-            return $"{dst} = {src}";
+            return $"{Dst} = {Src}";
         }
 
-        public override IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public override IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            return new DataCopyNode(dst.toExpressionNode(dataFlowState), dstSize, src.toExpressionNode(dataFlowState), srcSize);
+            return new DataCopyNode(Dst.ToExpressionNode(dataFlowState), DstSize, Src.ToExpressionNode(dataFlowState), SrcSize);
         }
     }
 }

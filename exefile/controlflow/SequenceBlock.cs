@@ -7,20 +7,20 @@ namespace exefile.controlflow
 {
     public class SequenceBlock : IBlock
     {
-        public readonly SortedDictionary<uint, IBlock> sequence = new SortedDictionary<uint, IBlock>();
+        public readonly SortedDictionary<uint, IBlock> Sequence = new SortedDictionary<uint, IBlock>();
 
-        public IBlock trueExit => sequence.Values.Last().trueExit;
-        public IBlock falseExit => null;
-        public uint start => sequence.Keys.First();
+        public IBlock TrueExit => Sequence.Values.Last().TrueExit;
+        public IBlock FalseExit => null;
+        public uint Start => Sequence.Keys.First();
 
-        public SortedDictionary<uint, Instruction> instructions
+        public SortedDictionary<uint, Instruction> Instructions
         {
             get
             {
                 var tmp = new SortedDictionary<uint, Instruction>();
-                foreach (var block in sequence.Values)
+                foreach (var block in Sequence.Values)
                 {
-                    foreach (var insn in block.instructions)
+                    foreach (var insn in block.Instructions)
                     {
                         tmp.Add(insn.Key, insn.Value);
                     }
@@ -29,15 +29,15 @@ namespace exefile.controlflow
             }
         }
 
-        public ExitType? exitType => sequence.Values.Last().exitType;
+        public ExitType? ExitType => Sequence.Values.Last().ExitType;
 
-        public bool containsAddress(uint address) => sequence.Values.Any(b => b.containsAddress(address));
+        public bool ContainsAddress(uint address) => Sequence.Values.Any(b => b.ContainsAddress(address));
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
-            foreach (var block in sequence.Values)
+            foreach (var block in Sequence.Values)
             {
-                block.dump(writer);
+                block.Dump(writer);
             }
         }
     }

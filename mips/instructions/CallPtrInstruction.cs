@@ -6,27 +6,28 @@ namespace mips.instructions
 {
     public class CallPtrInstruction : Instruction
     {
-        public override IOperand[] operands { get; }
+        public override IOperand[] Operands { get; }
 
-        public IOperand target => operands[0];
-        public RegisterOperand returnAddressTarget => (RegisterOperand) (operands.Length > 1 ? operands[1] : null);
+        public IOperand Target => Operands[0];
+        public RegisterOperand ReturnAddressTarget => (RegisterOperand) (Operands.Length > 1 ? Operands[1] : null);
 
+        // ReSharper disable once SuggestBaseTypeForParameter
         public CallPtrInstruction(IOperand target, RegisterOperand returnAddressTarget)
         {
-            operands = returnAddressTarget == null ? new[] {target} : new[] {target, returnAddressTarget};
+            Operands = returnAddressTarget == null ? new[] {target} : new[] {target, returnAddressTarget};
         }
 
-        public override string asReadable()
+        public override string AsReadable()
         {
-            if (returnAddressTarget != null)
+            if (ReturnAddressTarget != null)
             {
-                return returnAddressTarget.register == Register.ra ? $"{target}()" : $"${returnAddressTarget} = __RET_ADDR; {target}()";
+                return ReturnAddressTarget.Register == Register.ra ? $"{Target}()" : $"${ReturnAddressTarget} = __RET_ADDR; {Target}()";
             }
 
-            return $"goto {target}";
+            return $"goto {Target}";
         }
 
-        public override IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public override IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
             throw new System.NotImplementedException();
         }

@@ -6,25 +6,25 @@ namespace symfile.memory
 {
     public class Pointer : IMemoryLayout, IEquatable<Pointer>
     {
-        public int precedence => Operator.Dereference.getPrecedence(false);
+        public int Precedence => Operator.Dereference.GetPrecedence(false);
 
-        public string fundamentalType => inner.fundamentalType;
+        public string FundamentalType => Inner.FundamentalType;
 
-        public uint dataSize => 4; // TODO assumes 32 bit architecture
+        public uint DataSize => 4; // TODO assumes 32 bit architecture
 
-        public IMemoryLayout inner { get; }
+        public IMemoryLayout Inner { get; }
 
-        public IMemoryLayout pointee => inner;
+        public IMemoryLayout Pointee => Inner;
 
         public Pointer(IMemoryLayout inner)
         {
-            this.inner = inner;
+            Inner = inner;
         }
         
-        public string asIncompleteDeclaration(string identifier, string argList)
+        public string AsIncompleteDeclaration(string identifier, string argList)
         {
-            var innerCode = inner.asIncompleteDeclaration(identifier, argList);
-            return inner.precedence >= precedence
+            var innerCode = Inner.AsIncompleteDeclaration(identifier, argList);
+            return Inner.Precedence >= Precedence
                 ? $"*({innerCode})"
                 : $"*{innerCode}";
         }
@@ -33,23 +33,23 @@ namespace symfile.memory
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(inner, other.inner);
+            return Equals(Inner, other.Inner);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Pointer) obj);
         }
 
         public override int GetHashCode()
         {
-            return (inner != null ? inner.GetHashCode() : 0);
+            return (Inner != null ? Inner.GetHashCode() : 0);
         }
 
-        public string getAccessPathTo(uint offset)
+        public string GetAccessPathTo(uint offset)
         {
             if(offset != 0)
                 throw new ArgumentOutOfRangeException(nameof(offset), offset, "Can only access pointers at offset 0");

@@ -5,25 +5,25 @@ namespace core.expression
 {
     public class ValueNode : IExpressionNode
     {
-        public readonly long value;
+        public readonly long Value;
 
-        public IEnumerable<int> usedRegisters => Enumerable.Empty<int>();
-        public IEnumerable<int> usedStack => Enumerable.Empty<int>();
-        public IEnumerable<uint> usedMemory => Enumerable.Empty<uint>();
+        public IEnumerable<int> UsedRegisters => Enumerable.Empty<int>();
+        public IEnumerable<int> UsedStack => Enumerable.Empty<int>();
+        public IEnumerable<uint> UsedMemory => Enumerable.Empty<uint>();
 
         public ValueNode(long value)
         {
-            this.value = value;
+            Value = value;
         }
 
-        public string toCode()
+        public string ToCode()
         {
-            return value.ToString();
+            return Value.ToString();
         }
 
         public override string ToString()
         {
-            return value.ToString();
+            return Value.ToString();
         }
     }
 }

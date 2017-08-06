@@ -10,65 +10,65 @@ namespace exefile.controlflow
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public readonly SortedDictionary<uint, IBlock> blocks = new SortedDictionary<uint, IBlock>();
+        public readonly SortedDictionary<uint, IBlock> Blocks = new SortedDictionary<uint, IBlock>();
 
         public Reducer(ControlFlowProcessor processor)
         {
-            foreach (var block in processor.blocks)
+            foreach (var block in processor.Blocks)
             {
-                blocks.Add(block.Key, block.Value);
+                Blocks.Add(block.Key, block.Value);
             }
         }
 
-        public void reduce()
+        public void Reduce()
         {
-            var reduced = false;
+            bool reduced;
             do
             {
-                reduced = blocks.Values.Any(reduceSequence)
-                          || blocks.Values.Reverse().Any(reduceIf)
-                          || blocks.Values.Reverse().Any(reduceIfElse);
+                reduced = Blocks.Values.Any(ReduceSequence)
+                          || Blocks.Values.Reverse().Any(ReduceIf)
+                          || Blocks.Values.Reverse().Any(ReduceIfElse);
             } while (reduced);
         }
 
-        private bool reduceSequence(IBlock block)
+        private bool ReduceSequence(IBlock block)
         {
-            var next = block.trueExit;
+            var next = block.TrueExit;
             logger.Debug(
-                $"SEQ check {block.start:X} {block.start:X}={block.exitType} {next?.start:X}={next?.exitType}");
-            if (block.exitType != ExitType.Unconditional ||
-                (next?.exitType != ExitType.Unconditional && next?.exitType != ExitType.Return))
+                $"SEQ check {block.Start:X} {block.Start:X}={block.ExitType} {next?.Start:X}={next?.ExitType}");
+            if (block.ExitType != ExitType.Unconditional ||
+                (next?.ExitType != ExitType.Unconditional && next?.ExitType != ExitType.Return))
                 return false;
 
 
             // count refs to the next block
-            if (blocks.Values.Count(b => b.trueExit?.start == next.start || b.falseExit?.start == next.start) > 1)
+            if (Blocks.Values.Count(b => b.TrueExit?.Start == next.Start || b.FalseExit?.Start == next.Start) > 1)
                 return false;
 
             if (block is SequenceBlock)
             {
                 var existing = (SequenceBlock) block;
-                Debug.Assert(existing.trueExit != null);
+                Debug.Assert(existing.TrueExit != null);
 
-                logger.Debug($"Sequence {block.start:X}: attach block {next.start:X}");
+                logger.Debug($"Sequence {block.Start:X}: attach block {next.Start:X}");
 
-                existing.sequence.Add(existing.trueExit.start, existing.trueExit);
-                blocks.Remove(existing.trueExit.start);
+                existing.Sequence.Add(existing.TrueExit.Start, existing.TrueExit);
+                Blocks.Remove(existing.TrueExit.Start);
                 return true;
             }
 
-            logger.Debug($"New sequence {block.start:X} with block {next.start:X}");
+            logger.Debug($"New sequence {block.Start:X} with block {next.Start:X}");
 
             var seq = new SequenceBlock();
-            seq.sequence.Add(block.start, block);
-            seq.sequence.Add(next.start, next);
-            blocks.Remove(block.start);
-            blocks.Remove(next.start);
-            blocks.Add(seq.start, seq);
+            seq.Sequence.Add(block.Start, block);
+            seq.Sequence.Add(next.Start, next);
+            Blocks.Remove(block.Start);
+            Blocks.Remove(next.Start);
+            Blocks.Add(seq.Start, seq);
             return true;
         }
 
-        private bool reduceIf(IBlock condition)
+        private bool ReduceIf(IBlock condition)
         {
             /*
             if(condition<exit=conditional>)
@@ -76,21 +76,21 @@ namespace exefile.controlflow
             commonCode;
             */
 
-            if (condition.exitType != ExitType.Conditional)
+            if (condition.ExitType != ExitType.Conditional)
                 return false;
 
-            var common = condition.trueExit;
+            var common = condition.TrueExit;
             Debug.Assert(common != null);
-            var body = condition.falseExit;
+            var body = condition.FalseExit;
             Debug.Assert(body != null);
 
-            return tryMakeIfBlock(condition, body, common, true)
-                   || tryMakeIfBlock(condition, common, body, false);
+            return TryMakeIfBlock(condition, body, common, true)
+                   || TryMakeIfBlock(condition, common, body, false);
 
             // swap and try again
         }
 
-        private bool reduceIfElse(IBlock condition)
+        private bool ReduceIfElse(IBlock condition)
         {
             /*
             if(condition<exit=conditional>) trueBody<exit=unconditional>;
@@ -98,57 +98,57 @@ namespace exefile.controlflow
             commonCode;
             */
 
-            if (condition.exitType != ExitType.Conditional)
+            if (condition.ExitType != ExitType.Conditional)
                 return false;
 
-            var trueBody = condition.trueExit;
+            var trueBody = condition.TrueExit;
             Debug.Assert(trueBody != null);
-            var falseBody = condition.falseExit;
+            var falseBody = condition.FalseExit;
             Debug.Assert(falseBody != null);
 
-            if (trueBody.exitType != ExitType.Unconditional || trueBody.exitType != ExitType.Unconditional)
+            if (trueBody.ExitType != ExitType.Unconditional || trueBody.ExitType != ExitType.Unconditional)
                 return false;
 
-            var common = trueBody.trueExit;
+            var common = trueBody.TrueExit;
             Debug.Assert(common != null);
-            if (common.start != falseBody.start)
+            if (common.Start != falseBody.Start)
                 return false;
             
             var compound = new IfElseBlock(condition, trueBody, falseBody, common);
-            blocks.Remove(condition.start);
-            blocks.Remove(trueBody.start);
-            blocks.Remove(falseBody.start);
-            blocks.Add(compound.start, compound);
+            Blocks.Remove(condition.Start);
+            Blocks.Remove(trueBody.Start);
+            Blocks.Remove(falseBody.Start);
+            Blocks.Add(compound.Start, compound);
 
             return true;
         }
 
-        private bool tryMakeIfBlock(IBlock condition, IBlock body, IBlock common, bool inverted)
+        private bool TryMakeIfBlock(IBlock condition, IBlock body, IBlock common, bool inverted)
         {
             Debug.Assert(condition != null);
             Debug.Assert(body != null);
             Debug.Assert(common != null);
 
-            if (body.exitType != ExitType.Return &&
-                (body.exitType != ExitType.Unconditional || body.trueExit != common))
+            if (body.ExitType != ExitType.Return &&
+                (body.ExitType != ExitType.Unconditional || body.TrueExit != common))
                 return false;
 
-            logger.Debug($"Reduce: condition={condition.start:X} body={body.start:X} common={common.start:X}");
+            logger.Debug($"Reduce: condition={condition.Start:X} body={body.Start:X} common={common.Start:X}");
 
             var compound = new IfBlock(condition, body, common, inverted);
-            blocks.Remove(condition.start);
-            if (body.exitType != ExitType.Return)
-                blocks.Remove(body.start);
-            blocks.Add(compound.start, compound);
+            Blocks.Remove(condition.Start);
+            if (body.ExitType != ExitType.Return)
+                Blocks.Remove(body.Start);
+            Blocks.Add(compound.Start, compound);
 
             return true;
         }
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
-            foreach (var block in blocks.Values)
+            foreach (var block in Blocks.Values)
             {
-                block.dump(writer);
+                block.Dump(writer);
                 writer.WriteLine();
             }
         }

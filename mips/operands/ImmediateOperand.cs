@@ -5,27 +5,27 @@ namespace mips.operands
 {
     public class ImmediateOperand : IOperand
     {
-        public readonly long value;
+        public readonly long Value;
 
         public ImmediateOperand(long value)
         {
-            this.value = value;
+            Value = value;
         }
 
         public bool Equals(IOperand other)
         {
             var o = other as ImmediateOperand;
-            return value == o?.value;
+            return Value == o?.Value;
         }
 
-        public IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            return new ValueNode(value);
+            return new ValueNode(Value);
         }
 
         public override string ToString()
         {
-            return value >= 0 ? $"0x{value:X}" : $"-0x{-value:X}";
+            return Value >= 0 ? $"0x{Value:X}" : $"-0x{-Value:X}";
         }
     }
 }

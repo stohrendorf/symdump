@@ -6,24 +6,24 @@ namespace core
     public interface IDebugSource
     {
         [ItemNotNull]
-        IList<IFunction> functions { get; }
+        IList<IFunction> Functions { get; }
 
         [NotNull]
-        SortedDictionary<uint, IList<NamedLocation>> labels { get; }
+        SortedDictionary<uint, IList<NamedLocation>> Labels { get; }
 
         [CanBeNull]
-        IFunction findFunction(uint addr);
+        IFunction FindFunction(uint addr);
 
         [CanBeNull]
-        IFunction findFunction(string name);
+        IFunction FindFunction(string name);
 
         [CanBeNull]
-        IMemoryLayout findTypeDefinitionForLabel(string label);
+        IMemoryLayout FindTypeDefinitionForLabel(string label);
 
         [NotNull]
-        string getSymbolName(uint addr, int rel = 0);
+        string GetSymbolName(uint addr, int rel = 0);
 
         [CanBeNull]
-        IMemoryLayout findTypeDefinition(string tag);
+        IMemoryLayout FindTypeDefinition(string tag);
     }
 }

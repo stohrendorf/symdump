@@ -6,73 +6,73 @@ namespace symfile.memory
 {
     public class PrimitiveType : IMemoryLayout, IEquatable<PrimitiveType>
     {
-        public uint dataSize { get; }
+        public uint DataSize { get; }
 
-        public int precedence => int.MinValue;
+        public int Precedence => int.MinValue;
 
-        public string fundamentalType { get; }
+        public string FundamentalType { get; }
 
-        public IMemoryLayout pointee => null;
+        public IMemoryLayout Pointee => null;
 
         public PrimitiveType(BaseType baseType)
         {
             switch (baseType)
             {
                 case BaseType.Void:
-                    fundamentalType = "void";
-                    dataSize = 0;
+                    FundamentalType = "void";
+                    DataSize = 0;
                     break;
                 case BaseType.Char:
-                    fundamentalType = "char";
-                    dataSize = 1;
+                    FundamentalType = "char";
+                    DataSize = 1;
                     break;
                 case BaseType.Short:
-                    fundamentalType = "short";
-                    dataSize = 2;
+                    FundamentalType = "short";
+                    DataSize = 2;
                     break;
                 case BaseType.Int:
-                    fundamentalType = "int";
-                    dataSize = 4;
+                    FundamentalType = "int";
+                    DataSize = 4;
                     break;
                 case BaseType.Long:
-                    fundamentalType = "long";
-                    dataSize = 4;
+                    FundamentalType = "long";
+                    DataSize = 4;
                     break;
                 case BaseType.Float:
-                    fundamentalType = "float";
-                    dataSize = 4;
+                    FundamentalType = "float";
+                    DataSize = 4;
                     break;
                 case BaseType.Double:
-                    fundamentalType = "double";
-                    dataSize = 8;
+                    FundamentalType = "double";
+                    DataSize = 8;
                     break;
                 case BaseType.UChar:
-                    fundamentalType = "unsigned char";
-                    dataSize = 1;
+                    FundamentalType = "unsigned char";
+                    DataSize = 1;
                     break;
                 case BaseType.UShort:
-                    fundamentalType = "unsigned short";
-                    dataSize = 2;
+                    FundamentalType = "unsigned short";
+                    DataSize = 2;
                     break;
                 case BaseType.UInt:
-                    fundamentalType = "unsigned int";
-                    dataSize = 4;
+                    FundamentalType = "unsigned int";
+                    DataSize = 4;
                     break;
                 case BaseType.ULong:
-                    fundamentalType = "unsigned long";
-                    dataSize = 4;
+                    FundamentalType = "unsigned long";
+                    DataSize = 4;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(baseType), baseType, null);
             }
         }
         
-        public string asIncompleteDeclaration(string identifier, string argList)
+        public string AsIncompleteDeclaration(string identifier, string argList)
         {
             return identifier;
         }
 
-        public string getAccessPathTo(uint offset)
+        public string GetAccessPathTo(uint offset)
         {
             if(offset != 0)
                 throw new ArgumentOutOfRangeException(nameof(offset), offset, null);
@@ -84,14 +84,14 @@ namespace symfile.memory
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(fundamentalType, other.fundamentalType) && dataSize == other.dataSize;
+            return string.Equals(FundamentalType, other.FundamentalType) && DataSize == other.DataSize;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((PrimitiveType) obj);
         }
 
@@ -99,7 +99,7 @@ namespace symfile.memory
         {
             unchecked
             {
-                return (fundamentalType.GetHashCode() * 397) ^ (int) dataSize;
+                return (FundamentalType.GetHashCode() * 397) ^ (int) DataSize;
             }
         }
     }

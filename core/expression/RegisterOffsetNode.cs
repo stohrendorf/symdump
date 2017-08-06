@@ -7,40 +7,40 @@ namespace core.expression
 {
     public class RegisterOffsetNode : IExpressionNode
     {
-        public readonly int registerId;
+        public readonly int RegisterId;
 
-        public readonly int offset;
+        public readonly int Offset;
 
         [CanBeNull]
-        public IMemoryLayout memoryLayout { get; set; }
+        public IMemoryLayout MemoryLayout { get; set; }
 
-        public IEnumerable<int> usedRegisters => Enumerable.Repeat(registerId, 1);
-        public IEnumerable<int> usedStack => Enumerable.Empty<int>();
-        public IEnumerable<uint> usedMemory => Enumerable.Empty<uint>();
+        public IEnumerable<int> UsedRegisters => Enumerable.Repeat(RegisterId, 1);
+        public IEnumerable<int> UsedStack => Enumerable.Empty<int>();
+        public IEnumerable<uint> UsedMemory => Enumerable.Empty<uint>();
 
         public RegisterOffsetNode(int registerId, int offset)
         {
-            this.registerId = registerId;
-            this.offset = offset;
+            RegisterId = registerId;
+            Offset = offset;
         }
 
-        public string toCode()
+        public string ToCode()
         {
-            return offset >= 0
-                ? $"*(${registerId}+{offset})"
-                : $"*(${registerId}-{-offset})";
+            return Offset >= 0
+                ? $"*(${RegisterId}+{Offset})"
+                : $"*(${RegisterId}-{-Offset})";
         }
 
-        public string tryDeref()
+        public string TryDeref()
         {
-            Debug.Assert(memoryLayout != null);
+            Debug.Assert(MemoryLayout != null);
 
-            return memoryLayout.getAccessPathTo((uint) offset);
+            return MemoryLayout.GetAccessPathTo((uint) Offset);
         }
 
         public override string ToString()
         {
-            return $"offset=${registerId}+{offset} memoryLayout={memoryLayout}";
+            return $"offset=${RegisterId}+{Offset} memoryLayout={MemoryLayout}";
         }
     }
 }

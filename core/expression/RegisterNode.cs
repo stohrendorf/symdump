@@ -5,25 +5,25 @@ namespace core.expression
 {
     public class RegisterNode : IExpressionNode
     {
-        public readonly int registerId;
+        public readonly int RegisterId;
 
-        public IEnumerable<int> usedRegisters => Enumerable.Repeat(registerId, 1);
-        public IEnumerable<int> usedStack => Enumerable.Empty<int>();
-        public IEnumerable<uint> usedMemory => Enumerable.Empty<uint>();
+        public IEnumerable<int> UsedRegisters => Enumerable.Repeat(RegisterId, 1);
+        public IEnumerable<int> UsedStack => Enumerable.Empty<int>();
+        public IEnumerable<uint> UsedMemory => Enumerable.Empty<uint>();
 
         public RegisterNode(int registerId)
         {
-            this.registerId = registerId;
+            RegisterId = registerId;
         }
 
-        public string toCode()
+        public string ToCode()
         {
-            return $"${registerId}";
+            return $"${RegisterId}";
         }
 
         public override string ToString()
         {
-            return $"${registerId}";
+            return $"${RegisterId}";
         }
     }
 }

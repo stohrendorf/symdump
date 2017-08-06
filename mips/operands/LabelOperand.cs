@@ -5,29 +5,29 @@ namespace mips.operands
 {
     public class LabelOperand : IOperand
     {
-        public readonly string label;
-        public readonly uint address;
+        public readonly string Label;
+        public readonly uint Address;
 
         public LabelOperand(string label, uint address)
         {
-            this.label = label;
-            this.address = address;
+            Label = label;
+            Address = address;
         }
 
         public bool Equals(IOperand other)
         {
             var o = other as LabelOperand;
-            return label == o?.label;
+            return Label == o?.Label;
         }
 
-        public IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            return new NamedMemoryLayout(label, address, dataFlowState.debugSource.findTypeDefinitionForLabel(label));
+            return new NamedMemoryLayout(Label, Address, dataFlowState.DebugSource.FindTypeDefinitionForLabel(Label));
         }
 
         public override string ToString()
         {
-            return label;
+            return Label;
         }
     }
 }

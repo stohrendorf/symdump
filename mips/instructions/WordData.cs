@@ -5,26 +5,26 @@ namespace mips.instructions
 {
     public class WordData : Instruction
     {
-        public readonly uint data;
+        public readonly uint Data;
 
         public WordData(uint data)
         {
-            this.data = data;
+            Data = data;
         }
 
-        public override IOperand[] operands { get; } = new IOperand[0];
+        public override IOperand[] Operands { get; } = new IOperand[0];
 
         public override string ToString()
         {
-            return $".word 0x{data:x}";
+            return $".word 0x{Data:x}";
         }
 
-        public override string asReadable()
+        public override string AsReadable()
         {
             return ToString();
         }
 
-        public override IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public override IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
             throw new Exception("Cannot convert word data to expression node");
         }

@@ -15,90 +15,90 @@ namespace symfile.code
     {
         public class ArgumentInfo : IDeclaration
         {
-            public string name { get; }
+            public string Name { get; }
 
-            public IMemoryLayout memoryLayout => typeDecoration.memoryLayout;
+            public IMemoryLayout MemoryLayout => TypeDecoration.MemoryLayout;
 
-            public readonly TypeDecoration typeDecoration;
-            public readonly Register stackBase;
-            public readonly uint? stackOffset;
-            public readonly Register? register;
+            public readonly TypeDecoration TypeDecoration;
+            public readonly Register StackBase;
+            public readonly uint? StackOffset;
+            public readonly Register? Register;
 
             public ArgumentInfo(string name, TypeDecoration typeDecoration, Register stackBase, uint? stackOffset, Register? register)
             {
-                this.name = name;
-                this.typeDecoration = typeDecoration;
-                this.stackBase = stackBase;
-                this.stackOffset = stackOffset;
-                this.register = register;
+                Name = name;
+                TypeDecoration = typeDecoration;
+                StackBase = stackBase;
+                StackOffset = stackOffset;
+                Register = register;
             }
 
             public override string ToString()
             {
-                if (typeDecoration.classType == ClassType.Argument)
+                if (TypeDecoration.ClassType == ClassType.Argument)
                 {
-                    Debug.Assert(stackOffset != null);
-                    return $"{typeDecoration.asDeclaration(name)} /*${stackBase} {stackOffset}*/";
+                    Debug.Assert(StackOffset != null);
+                    return $"{TypeDecoration.AsDeclaration(Name)} /*${StackBase} {StackOffset}*/";
                 }
-                else if (typeDecoration.classType == ClassType.RegParam)
+                else if (TypeDecoration.ClassType == ClassType.RegParam)
                 {
-                    Debug.Assert(register != null);
-                    return $"{typeDecoration.asDeclaration(name)} /*${register}*/";
+                    Debug.Assert(Register != null);
+                    return $"{TypeDecoration.AsDeclaration(Name)} /*${Register}*/";
                 }
                 else
                     throw new Exception("Meh");
             }
         }
 
-        public uint address { get; }
-        public IMemoryLayout returnType => m_returnType.memoryLayout;
-        private readonly Block m_body;
-        private readonly string m_file;
-        private readonly uint m_lastLine;
-        private readonly uint m_line;
-        private readonly uint m_mask;
-        private readonly int m_maskOffs;
-        public string name { get; }
+        public uint Address { get; }
+        public IMemoryLayout ReturnType => _returnType.MemoryLayout;
+        private readonly Block _body;
+        private readonly string _file;
+        private readonly uint _lastLine;
+        private readonly uint _line;
+        private readonly uint _mask;
+        private readonly int _maskOffs;
+        public string Name { get; }
 
-        private readonly IDictionary<Register, ArgumentInfo> m_registerParameters =
+        private readonly IDictionary<Register, ArgumentInfo> _registerParameters =
             new SortedDictionary<Register, ArgumentInfo>();
 
-        public IEnumerable<KeyValuePair<int, IDeclaration>> registerParameters =>
-            m_registerParameters.Select(p => new KeyValuePair<int, IDeclaration>((int) p.Key, p.Value));
+        public IEnumerable<KeyValuePair<int, IDeclaration>> RegisterParameters =>
+            _registerParameters.Select(p => new KeyValuePair<int, IDeclaration>((int) p.Key, p.Value));
 
-        private readonly IDictionary<int, ArgumentInfo> m_stackParameters = new SortedDictionary<int, ArgumentInfo>();
+        private readonly IDictionary<int, ArgumentInfo> _stackParameters = new SortedDictionary<int, ArgumentInfo>();
         
-        public IEnumerable<KeyValuePair<int, IDeclaration>> stackParameters =>
-            m_stackParameters.Select(p => new KeyValuePair<int, IDeclaration>(p.Key, p.Value));
+        public IEnumerable<KeyValuePair<int, IDeclaration>> StackParameters =>
+            _stackParameters.Select(p => new KeyValuePair<int, IDeclaration>(p.Key, p.Value));
         
-        private readonly Register m_returnAddressRegister;
-        private readonly TypeDecoration m_returnType;
-        private readonly Register m_stackBase;
-        private readonly uint m_stackFrameSize;
+        private readonly Register _returnAddressRegister;
+        private readonly TypeDecoration _returnType;
+        private readonly Register _stackBase;
+        private readonly uint _stackFrameSize;
 
         public Function(BinaryReader reader, uint ofs, SymFile symFile)
         {
-            address = ofs;
+            Address = ofs;
 
-            m_stackBase = (Register) reader.ReadUInt16();
-            m_stackFrameSize = reader.ReadUInt32();
-            m_returnAddressRegister = (Register) reader.ReadUInt16();
-            m_mask = reader.ReadUInt32();
-            m_maskOffs = reader.ReadInt32();
+            _stackBase = (Register) reader.ReadUInt16();
+            _stackFrameSize = reader.ReadUInt32();
+            _returnAddressRegister = (Register) reader.ReadUInt16();
+            _mask = reader.ReadUInt32();
+            _maskOffs = reader.ReadInt32();
 
-            m_line = reader.ReadUInt32();
-            m_file = reader.readPascalString();
-            name = reader.readPascalString();
+            _line = reader.ReadUInt32();
+            _file = reader.ReadPascalString();
+            Name = reader.ReadPascalString();
 
-            m_body = new Block(address, m_line, this, symFile);
+            _body = new Block(Address, _line, this, symFile);
 
-            symFile.funcTypes.TryGetValue(name, out m_returnType);
+            symFile.FuncTypes.TryGetValue(Name, out _returnType);
 
             while (true)
             {
                 var typedValue = new FileEntry(reader);
 
-                if (reader.skipSld(typedValue))
+                if (reader.SkipSld(typedValue))
                     continue;
 
                 TypeDecoration ti;
@@ -106,19 +106,19 @@ namespace symfile.code
                 switch (typedValue.type & 0x7f)
                 {
                     case 14: // end of function
-                        m_lastLine = reader.ReadUInt32();
+                        _lastLine = reader.ReadUInt32();
                         return;
                     case 16: // begin of block
-                        m_body.subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this,
+                        _body.subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this,
                             symFile));
                         continue;
                     case 20:
-                        ti = reader.readTypeDecoration(false, symFile);
-                        memberName = reader.readPascalString();
+                        ti = reader.ReadTypeDecoration(false, symFile);
+                        memberName = reader.ReadPascalString();
                         break;
                     case 22:
-                        ti = reader.readTypeDecoration(true, symFile);
-                        memberName = reader.readPascalString();
+                        ti = reader.ReadTypeDecoration(true, symFile);
+                        memberName = reader.ReadPascalString();
                         break;
                     default:
                         throw new Exception("Nope");
@@ -127,18 +127,18 @@ namespace symfile.code
                 if (ti == null || memberName == null)
                     break;
 
-                switch (ti.classType)
+                switch (ti.ClassType)
                 {
                     case ClassType.Argument:
                         //Debug.Assert(m_registerParameters.Count >= 4);
-                        m_stackParameters[m_stackParameters.Count * 4] = new ArgumentInfo(memberName, ti, m_stackBase, (uint) (m_stackParameters.Count * 4), null);
+                        _stackParameters[_stackParameters.Count * 4] = new ArgumentInfo(memberName, ti, _stackBase, (uint) (_stackParameters.Count * 4), null);
                         break;
                     case ClassType.RegParam:
-                        Debug.Assert(m_registerParameters.Count < 4);
-                        m_registerParameters[Register.a0 + m_registerParameters.Count] = new ArgumentInfo(memberName, ti, m_stackBase, null, Register.a0 + m_registerParameters.Count);
+                        Debug.Assert(_registerParameters.Count < 4);
+                        _registerParameters[Register.a0 + _registerParameters.Count] = new ArgumentInfo(memberName, ti, _stackBase, null, Register.a0 + _registerParameters.Count);
                         break;
                     default:
-                        m_body.vars.Add(memberName, new Block.VarInfo(memberName, ti, typedValue));
+                        _body.vars.Add(memberName, new Block.VarInfo(memberName, ti, typedValue));
                         break;
                 }
             }
@@ -146,30 +146,31 @@ namespace symfile.code
             throw new Exception("Should never reach this");
         }
 
-        private IEnumerable<Register> savedRegisters => Enumerable.Range(0, 32)
-            .Where(i => ((1 << i) & m_mask) != 0)
+        private IEnumerable<Register> SavedRegisters => Enumerable.Range(0, 32)
+            .Where(i => ((1 << i) & _mask) != 0)
             .Select(i => (Register) i);
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine("/*");
-            writer.WriteLine($" * Offset 0x{address:X}");
-            writer.WriteLine($" * {m_file} (line {m_line})");
-            writer.WriteLine($" * Stack frame base ${m_stackBase}, size {m_stackFrameSize}");
-            writer.WriteLine($" * Caller return address in ${m_returnAddressRegister}");
-            if (m_mask != 0)
-                writer.WriteLine($" * Saved registers at offset {m_maskOffs}: {string.Join(" ", savedRegisters)}");
+            writer.WriteLine($" * Offset 0x{Address:X}");
+            writer.WriteLine($" * {_file} (line {_line})");
+            writer.WriteLine($" * Stack frame base ${_stackBase}, size {_stackFrameSize}");
+            writer.WriteLine($" * Caller return address in ${_returnAddressRegister}");
+            if (_mask != 0)
+                writer.WriteLine($" * Saved registers at offset {_maskOffs}: {string.Join(" ", SavedRegisters)}");
             writer.WriteLine(" */");
 
-            writer.WriteLine(getSignature());
+            writer.WriteLine(GetSignature());
 
-            m_body.dump(writer);
+            _body.dump(writer);
         }
 
-        public string getSignature()
+        public string GetSignature()
         {
-            var parameters = m_registerParameters.Values.Concat(m_stackParameters.Values);
-            return m_returnType?.asDeclaration(name, string.Join(", ", parameters));
+            var parameters = _registerParameters.Values.Concat(_stackParameters.Values);
+            Debug.Assert(_returnType != null);
+            return _returnType?.AsDeclaration(Name, string.Join(", ", parameters));
         }
     }
 }

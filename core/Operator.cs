@@ -6,7 +6,7 @@ namespace core
     public static class OperatorUtil
     {
         [NotNull]
-        public static string asCode(this Operator @operator)
+        public static string AsCode(this Operator @operator)
         {
             switch (@operator)
             {

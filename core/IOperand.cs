@@ -6,6 +6,6 @@ namespace core
     public interface IOperand : IEquatable<IOperand>
     {
         [NotNull]
-        IExpressionNode toExpressionNode([NotNull] IDataFlowState dataFlowState);
+        IExpressionNode ToExpressionNode([NotNull] IDataFlowState dataFlowState);
     }
 }

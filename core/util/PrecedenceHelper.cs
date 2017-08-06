@@ -4,7 +4,7 @@ namespace core.util
 {
     public static class PrecedenceHelper
     {
-        public static int getPrecedence(this Operator @operator, bool inplace)
+        public static int GetPrecedence(this Operator @operator, bool inplace)
         {
             // from http://en.cppreference.com/w/c/language/operator_precedence
             switch (@operator)

@@ -7,54 +7,54 @@ namespace exefile.controlflow
 {
     public class IfElseBlock : IBlock
     {
-        [NotNull] public readonly IBlock condition;
-        [NotNull] public readonly IBlock trueBody;
-        [NotNull] public readonly IBlock falseBody;
-        [NotNull] public readonly IBlock exit;
+        [NotNull] public readonly IBlock Condition;
+        [NotNull] public readonly IBlock TrueBody;
+        [NotNull] public readonly IBlock FalseBody;
+        [NotNull] public readonly IBlock Exit;
 
         public IfElseBlock([NotNull] IBlock condition, [NotNull] IBlock trueBody, [NotNull] IBlock falseBody, [NotNull] IBlock exit)
         {
-            this.condition = condition;
-            this.trueBody = trueBody;
-            this.falseBody = falseBody;
-            this.exit = exit;
+            Condition = condition;
+            TrueBody = trueBody;
+            FalseBody = falseBody;
+            Exit = exit;
         }
 
-        public IBlock trueExit => exit;
-        public IBlock falseExit => null;
-        public uint start => condition.start;
+        public IBlock TrueExit => Exit;
+        public IBlock FalseExit => null;
+        public uint Start => Condition.Start;
 
-        public SortedDictionary<uint, Instruction> instructions
+        public SortedDictionary<uint, Instruction> Instructions
         {
             get
             {
                 var tmp = new SortedDictionary<uint, Instruction>();
-                foreach (var insn in condition.instructions) tmp.Add(insn.Key, insn.Value);
-                foreach (var insn in trueBody.instructions) tmp.Add(insn.Key, insn.Value);
-                foreach (var insn in falseBody.instructions) tmp.Add(insn.Key, insn.Value);
+                foreach (var insn in Condition.Instructions) tmp.Add(insn.Key, insn.Value);
+                foreach (var insn in TrueBody.Instructions) tmp.Add(insn.Key, insn.Value);
+                foreach (var insn in FalseBody.Instructions) tmp.Add(insn.Key, insn.Value);
                 return tmp;
             }
         }
 
-        public ExitType? exitType => ExitType.Unconditional;
+        public ExitType? ExitType => controlflow.ExitType.Unconditional;
 
-        public bool containsAddress(uint address) =>
-            condition.containsAddress(address) || trueBody.containsAddress(address) || falseBody.containsAddress(address);
+        public bool ContainsAddress(uint address) =>
+            Condition.ContainsAddress(address) || TrueBody.ContainsAddress(address) || FalseBody.ContainsAddress(address);
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine("if{");
-            ++writer.indent;
-            condition.dump(writer);
-            --writer.indent;
+            ++writer.Indent;
+            Condition.Dump(writer);
+            --writer.Indent;
             writer.WriteLine("} {");
-            ++writer.indent;
-            trueBody.dump(writer);
-            --writer.indent;
+            ++writer.Indent;
+            TrueBody.Dump(writer);
+            --writer.Indent;
             writer.WriteLine("} else {");
-            ++writer.indent;
-            falseBody.dump(writer);
-            --writer.indent;
+            ++writer.Indent;
+            FalseBody.Dump(writer);
+            --writer.Indent;
             writer.WriteLine("}");
         }
     }

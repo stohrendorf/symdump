@@ -9,18 +9,18 @@ namespace core
         {
             Debug.Assert(!string.IsNullOrEmpty(name));
 
-            this.address = address;
-            this.name = name;
+            Address = address;
+            Name = name;
         }
 
-        public readonly uint address;
+        public readonly uint Address;
 
         [NotNull]
-        public string name { get; }
+        public string Name { get; }
 
         public override string ToString()
         {
-            return $"0x{address:X} {name}";
+            return $"0x{Address:X} {Name}";
         }
     }
 }

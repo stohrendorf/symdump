@@ -10,49 +10,49 @@ namespace symfile.type
 {
     public class EnumDef : IEquatable<EnumDef>
     {
-        private readonly Dictionary<string, int> m_members = new Dictionary<string, int>();
-        private readonly string m_name;
-        private readonly uint m_size;
+        private readonly Dictionary<string, int> _members = new Dictionary<string, int>();
+        private readonly string _name;
+        private readonly uint _size;
 
         public EnumDef(BinaryReader stream, string name, IDebugSource debugSource)
         {
-            m_name = name;
+            _name = name;
             while (true)
             {
                 var typedValue = new FileEntry(stream);
                 if (typedValue.type == (0x80 | 20))
                 {
-                    var ti = stream.readTypeDecoration(false, debugSource);
-                    var memberName = stream.readPascalString();
+                    var ti = stream.ReadTypeDecoration(false, debugSource);
+                    var memberName = stream.ReadPascalString();
 
-                    if (ti.classType == ClassType.EndOfStruct)
+                    if (ti.ClassType == ClassType.EndOfStruct)
                         break;
 
-                    if (ti.classType != ClassType.EnumMember)
+                    if (ti.ClassType != ClassType.EnumMember)
                         throw new Exception("Unexpected class");
 
-                    m_members.Add(memberName, typedValue.value);
+                    _members.Add(memberName, typedValue.value);
                 }
                 else if (typedValue.type == (0x80 | 22))
                 {
-                    var ti = stream.readTypeDecoration(true, debugSource);
-                    if (ti.baseType != BaseType.Null)
-                        throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.baseType}");
+                    var ti = stream.ReadTypeDecoration(true, debugSource);
+                    if (ti.BaseType != BaseType.Null)
+                        throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.BaseType}");
 
-                    if (ti.dimensions.Length != 0)
-                        throw new Exception($"Expected dims=0, but it's {ti.dimensions.Length}");
+                    if (ti.Dimensions.Length != 0)
+                        throw new Exception($"Expected dims=0, but it's {ti.Dimensions.Length}");
 
-                    if (ti.tag != name)
-                        throw new Exception($"Expected name={name}, but it's {ti.tag}");
+                    if (ti.Tag != name)
+                        throw new Exception($"Expected name={name}, but it's {ti.Tag}");
 
-                    var tag = stream.readPascalString();
+                    var tag = stream.ReadPascalString();
                     if (tag != ".eos")
                         throw new Exception($"Expected tag=.eos, but it's {tag}");
 
-                    if (ti.classType != ClassType.EndOfStruct)
-                        throw new Exception($"Expected classType={ClassType.EndOfStruct}, but it's {ti.classType}");
+                    if (ti.ClassType != ClassType.EndOfStruct)
+                        throw new Exception($"Expected classType={ClassType.EndOfStruct}, but it's {ti.ClassType}");
 
-                    m_size = ti.size;
+                    _size = ti.Size;
                     break;
                 }
                 else
@@ -66,7 +66,7 @@ namespace symfile.type
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return m_members.SequenceEqual(other.m_members) && string.Equals(m_name, other.m_name);
+            return _members.SequenceEqual(other._members) && string.Equals(_name, other._name);
         }
 
         public override bool Equals(object obj)
@@ -81,14 +81,14 @@ namespace symfile.type
         {
             unchecked
             {
-                return (m_members.GetHashCode() * 397) ^ m_name.GetHashCode();
+                return (_members.GetHashCode() * 397) ^ _name.GetHashCode();
             }
         }
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
             string ctype;
-            switch (m_size)
+            switch (_size)
             {
                 case 1:
                     ctype = "char";
@@ -100,14 +100,14 @@ namespace symfile.type
                     ctype = "int";
                     break;
                 default:
-                    throw new Exception($"Cannot determine primitive type for size {m_size}");
+                    throw new Exception($"Cannot determine primitive type for size {_size}");
             }
 
-            writer.WriteLine($"enum {m_name} : {ctype} {{");
-            ++writer.indent;
-            foreach (var kvp in m_members)
+            writer.WriteLine($"enum {_name} : {ctype} {{");
+            ++writer.Indent;
+            foreach (var kvp in _members)
                 writer.WriteLine($"{kvp.Key} = {kvp.Value},");
-            --writer.indent;
+            --writer.Indent;
             writer.WriteLine("};");
         }
     }

@@ -7,33 +7,33 @@ namespace core.expression
 {
     public class NamedMemoryLayout : IExpressionNode
     {
-        [NotNull] public readonly string label;
-        public readonly uint address;
+        [NotNull] public readonly string Label;
+        public readonly uint Address;
 
         [NotNull]
-        public IMemoryLayout memoryLayout { get; }
+        public IMemoryLayout MemoryLayout { get; }
 
         public NamedMemoryLayout(string label, uint address, [NotNull] IMemoryLayout memoryLayout)
         {
             Debug.Assert(!string.IsNullOrEmpty(label));
 
-            this.label = label;
-            this.address = address;
-            this.memoryLayout = memoryLayout;
+            Label = label;
+            Address = address;
+            MemoryLayout = memoryLayout;
         }
 
-        public string toCode()
+        public string ToCode()
         {
-            return label;
+            return Label;
         }
 
-        public IEnumerable<int> usedRegisters => Enumerable.Empty<int>();
-        public IEnumerable<int> usedStack => Enumerable.Empty<int>();
-        public IEnumerable<uint> usedMemory => Enumerable.Repeat(address, 1);
+        public IEnumerable<int> UsedRegisters => Enumerable.Empty<int>();
+        public IEnumerable<int> UsedStack => Enumerable.Empty<int>();
+        public IEnumerable<uint> UsedMemory => Enumerable.Repeat(Address, 1);
 
         public override string ToString()
         {
-            return $"label={label} memoryLayout={memoryLayout}";
+            return $"label={Label} memoryLayout={MemoryLayout}";
         }
     }
 }

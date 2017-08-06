@@ -6,13 +6,13 @@ namespace mips.operands
 {
     public class RegisterOffsetOperand : IOperand
     {
-        public readonly int offset;
-        public readonly Register register;
+        public readonly int Offset;
+        public readonly Register Register;
 
         public RegisterOffsetOperand(Register register, int offset)
         {
-            this.register = register;
-            this.offset = offset;
+            Register = register;
+            Offset = offset;
         }
 
         public RegisterOffsetOperand(uint data, int shift, int offset)
@@ -23,26 +23,26 @@ namespace mips.operands
         public bool Equals(IOperand other)
         {
             var o = other as RegisterOffsetOperand;
-            return register == o?.register && offset == o.offset;
+            return Register == o?.Register && Offset == o.Offset;
         }
 
-        public IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            var expression = dataFlowState.getRegisterExpression((int) register);
+            var expression = dataFlowState.GetRegisterExpression((int) Register);
             if (expression == null)
-                return new RegisterOffsetNode((int) register, offset);
+                return new RegisterOffsetNode((int) Register, Offset);
 
             if (!(expression is ValueNode))
-                return new DerefNode(new ExpressionNode(Operator.Add, expression, new ValueNode(offset)));
+                return new DerefNode(new ExpressionNode(Operator.Add, expression, new ValueNode(Offset)));
 
-            var address = (uint) (((ValueNode) expression).value + offset);
-            var name = dataFlowState.debugSource.getSymbolName(address);
-            return new NamedMemoryLayout(name, address, dataFlowState.debugSource.findTypeDefinitionForLabel(name));
+            var address = (uint) (((ValueNode) expression).Value + Offset);
+            var name = dataFlowState.DebugSource.GetSymbolName(address);
+            return new NamedMemoryLayout(name, address, dataFlowState.DebugSource.FindTypeDefinitionForLabel(name));
         }
 
         public override string ToString()
         {
-            return $"{offset}(${register})";
+            return $"{Offset}(${Register})";
         }
     }
 }

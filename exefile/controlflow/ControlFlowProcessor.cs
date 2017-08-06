@@ -16,21 +16,21 @@ namespace exefile.controlflow
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public readonly SortedDictionary<uint, IBlock> blocks = new SortedDictionary<uint, IBlock>();
+        public readonly SortedDictionary<uint, IBlock> Blocks = new SortedDictionary<uint, IBlock>();
 
         [NotNull]
-        private Block getBlockForAddress(uint addr)
+        private Block GetBlockForAddress(uint addr)
         {
             IBlock block;
-            if (!blocks.TryGetValue(addr, out block))
+            if (!Blocks.TryGetValue(addr, out block))
             {
-                blocks.Add(addr, block = new Block());
+                Blocks.Add(addr, block = new Block());
             }
             else
             {
-                if (block.instructions.Count > 0 && block.start != addr)
+                if (block.Instructions.Count > 0 && block.Start != addr)
                 {
-                    logger.Debug($"Block 0x{block.start:X} needs split at 0x{addr:X}");
+                    logger.Debug($"Block 0x{block.Start:X} needs split at 0x{addr:X}");
                 }
             }
 
@@ -38,7 +38,7 @@ namespace exefile.controlflow
             return (Block) block;
         }
 
-        public void process(uint start, [NotNull] IDictionary<uint, Instruction> instructions)
+        public void Process(uint start, [NotNull] IDictionary<uint, Instruction> instructions)
         {
             var entryPoints = new Queue<uint>();
             entryPoints.Enqueue(start);
@@ -49,8 +49,8 @@ namespace exefile.controlflow
                 if (addr < start)
                     continue;
 
-                var block = getBlockForAddress(addr);
-                if (block.containsAddress(addr))
+                var block = GetBlockForAddress(addr);
+                if (block.ContainsAddress(addr))
                 {
                     logger.Debug($"Already processed: 0x{addr:X}");
                     continue;
@@ -60,20 +60,20 @@ namespace exefile.controlflow
 
                 for (;; addr += 4)
                 {
-                    if (block.instructions.Count > 0 && blocks.ContainsKey(addr))
+                    if (block.Instructions.Count > 0 && Blocks.ContainsKey(addr))
                     {
-                        if (block.exitType == null)
+                        if (block.ExitType == null)
                         {
-                            block.exitType = ExitType.Unconditional;
-                            block.trueExit = blocks[addr];
+                            block.ExitType = ExitType.Unconditional;
+                            block.TrueExit = Blocks[addr];
                         }
                         break;
                     }
 
                     var insn = instructions[addr];
-                    block.instructions.Add(addr, insn);
+                    block.Instructions.Add(addr, insn);
 
-                    logger.Debug($"[eval 0x{addr:X}] {insn.asReadable()}");
+                    logger.Debug($"[eval 0x{addr:X}] {insn.AsReadable()}");
 
                     if (insn is NopInstruction)
                     {
@@ -82,72 +82,72 @@ namespace exefile.controlflow
 
                     if (insn is ConditionalBranchInstruction)
                     {
-                        block.exitType = ExitType.Conditional;
+                        block.ExitType = ExitType.Conditional;
 
-                        block.instructions.Add(addr + 4, instructions[addr + 4]);
+                        block.Instructions.Add(addr + 4, instructions[addr + 4]);
 
-                        block.falseExit = getBlockForAddress(addr + 8);
+                        block.FalseExit = GetBlockForAddress(addr + 8);
                         entryPoints.Enqueue(addr + 8);
 
-                        var target = ((ConditionalBranchInstruction) insn).target;
+                        var target = ((ConditionalBranchInstruction) insn).Target;
                         var targetLabel = target as LabelOperand;
                         if (targetLabel != null)
                         {
-                            block.trueExit = getBlockForAddress(targetLabel.address);
-                            entryPoints.Enqueue(targetLabel.address);
+                            block.TrueExit = GetBlockForAddress(targetLabel.Address);
+                            entryPoints.Enqueue(targetLabel.Address);
                         }
 
                         break;
                     }
 
                     var cpi = insn as CallPtrInstruction;
-                    if (cpi?.target is RegisterOperand)
+                    if (cpi?.Target is RegisterOperand)
                     {
-                        block.instructions.Add(addr + 4, instructions[addr + 4]);
-                        var target = (RegisterOperand) cpi.target;
-                        if (target.register == Register.ra)
+                        block.Instructions.Add(addr + 4, instructions[addr + 4]);
+                        var target = (RegisterOperand) cpi.Target;
+                        if (target.Register == Register.ra)
                         {
-                            block.exitType = ExitType.Return;
+                            block.ExitType = ExitType.Return;
                             logger.Debug("return");
                         }
                         break;
                     }
-                    else if (cpi?.target is LabelOperand && cpi.returnAddressTarget == null)
+                    else if (cpi?.Target is LabelOperand && cpi.ReturnAddressTarget == null)
                     {
-                        block.instructions.Add(addr + 4, instructions[addr + 4]);
-                        block.exitType = ExitType.Unconditional;
+                        block.Instructions.Add(addr + 4, instructions[addr + 4]);
+                        block.ExitType = ExitType.Unconditional;
 
-                        logger.Debug("jmp " + cpi.target);
+                        logger.Debug("jmp " + cpi.Target);
 
-                        var lbl = (LabelOperand) cpi.target;
-                        block.trueExit = getBlockForAddress(lbl.address);
-                        entryPoints.Enqueue(lbl.address);
+                        var lbl = (LabelOperand) cpi.Target;
+                        block.TrueExit = GetBlockForAddress(lbl.Address);
+                        entryPoints.Enqueue(lbl.Address);
                     }
                 }
             }
         }
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
-            foreach (var block in blocks.Values)
+            foreach (var block in Blocks.Values)
             {
-                block.dump(writer);
+                block.Dump(writer);
                 writer.WriteLine();
             }
         }
 
-        public void dumpPlantUml(TextWriter writer)
+        public void DumpPlantUml(TextWriter writer)
         {
             writer.WriteLine("skinparam stateFontName Lucida Console");
             writer.WriteLine("skinparam stateAttributeFontName Lucida Console");
 
             writer.WriteLine();
-            writer.WriteLine($"[*] --> {blocks.Values.First().getPlantUmlName()}");
+            writer.WriteLine($"[*] --> {Blocks.Values.First().GetPlantUmlName()}");
 
             writer.WriteLine();
-            foreach (var block in blocks.Values)
+            foreach (var block in Blocks.Values)
             {
-                block.dumpPlantUml(writer);
+                block.DumpPlantUml(writer);
                 writer.WriteLine();
             }
         }

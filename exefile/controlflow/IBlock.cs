@@ -8,20 +8,20 @@ namespace exefile.controlflow
     public interface IBlock
     {
         [CanBeNull]
-        IBlock trueExit { get; }
+        IBlock TrueExit { get; }
 
         [CanBeNull]
-        IBlock falseExit { get; }
+        IBlock FalseExit { get; }
 
-        uint start { get; }
+        uint Start { get; }
 
         [NotNull]
-        SortedDictionary<uint, Instruction> instructions { get; }
+        SortedDictionary<uint, Instruction> Instructions { get; }
 
         [CanBeNull]
-        ExitType? exitType { get; }
+        ExitType? ExitType { get; }
 
-        bool containsAddress(uint address);
-        void dump([NotNull] IndentedTextWriter writer);
+        bool ContainsAddress(uint address);
+        void Dump([NotNull] IndentedTextWriter writer);
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using core.util;
 using exefile;
 using NLog;
@@ -9,7 +8,7 @@ using symfile;
 
 namespace symdump
 {
-    internal class Program
+    internal static class Program
     {
         private static void Main(string[] args)
         {
@@ -37,8 +36,8 @@ namespace symdump
             using (var fs = new EndianBinaryReader(new FileStream(exeFilename, FileMode.Open)))
             {
                 var exeFile = new ExeFile(fs, symFile);
-                exeFile.disassemble();
-                exeFile.decompile();
+                exeFile.Disassemble();
+                exeFile.Decompile();
             }
         }
     }

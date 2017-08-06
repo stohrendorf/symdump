@@ -4,8 +4,8 @@ namespace core
 {
     public interface IDataFlowState
     {
-        [NotNull] IDebugSource debugSource { get; }
+        [NotNull] IDebugSource DebugSource { get; }
         
-        [CanBeNull] IExpressionNode getRegisterExpression(int registerId);
+        [CanBeNull] IExpressionNode GetRegisterExpression(int registerId);
     }
 }

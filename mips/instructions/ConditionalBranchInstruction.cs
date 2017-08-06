@@ -5,30 +5,30 @@ namespace mips.instructions
 {
     public class ConditionalBranchInstruction : Instruction
     {
-        public readonly Operator @operator;
+        public readonly Operator Operator;
 
         public ConditionalBranchInstruction(Operator @operator, IOperand lhs, IOperand rhs, IOperand target)
         {
-            this.@operator = @operator;
-            operands = new[] {lhs, rhs, target};
+            Operator = @operator;
+            Operands = new[] {lhs, rhs, target};
         }
 
-        public IOperand lhs => operands[0];
-        public IOperand rhs => operands[1];
-        public IOperand target => operands[2];
+        public IOperand Lhs => Operands[0];
+        public IOperand Rhs => Operands[1];
+        public IOperand Target => Operands[2];
 
-        public override IOperand[] operands { get; }
+        public override IOperand[] Operands { get; }
 
-        public override string asReadable()
+        public override string AsReadable()
         {
-            var op = @operator.asCode();
+            var op = Operator.AsCode();
 
-            return $"if({lhs} {op} {rhs}) goto {target}";
+            return $"if({Lhs} {op} {Rhs}) goto {Target}";
         }
 
-        public override IExpressionNode toExpressionNode(IDataFlowState dataFlowState)
+        public override IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            return new ConditionalBranchNode(@operator, lhs.toExpressionNode(dataFlowState), rhs.toExpressionNode(dataFlowState), target.toExpressionNode(dataFlowState) as NamedMemoryLayout);
+            return new ConditionalBranchNode(Operator, Lhs.ToExpressionNode(dataFlowState), Rhs.ToExpressionNode(dataFlowState), Target.ToExpressionNode(dataFlowState) as NamedMemoryLayout);
         }
     }
 }

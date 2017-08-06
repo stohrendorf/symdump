@@ -5,9 +5,9 @@ namespace core
     public interface IDeclaration
     {
         [NotNull]
-        string name { get; }
+        string Name { get; }
 
         [NotNull]
-        IMemoryLayout memoryLayout { get; }
+        IMemoryLayout MemoryLayout { get; }
     }
 }

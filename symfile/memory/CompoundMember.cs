@@ -8,36 +8,36 @@ namespace symfile.memory
 {
     public class CompoundMember : IEquatable<CompoundMember>
     {
-        public readonly string name;
-        public readonly FileEntry fileEntry;
-        public readonly TypeDecoration typeDecoration;
-        public IMemoryLayout memoryLayout => typeDecoration.memoryLayout;
+        public readonly string Name;
+        public readonly FileEntry FileEntry;
+        public readonly TypeDecoration TypeDecoration;
+        public IMemoryLayout MemoryLayout => TypeDecoration.MemoryLayout;
 
         public CompoundMember(FileEntry fileEntry, BinaryReader reader, bool extended, IDebugSource debugSource)
         {
-            this.fileEntry = fileEntry;
-            typeDecoration = reader.readTypeDecoration(extended, debugSource);
-            name = reader.readPascalString();
+            FileEntry = fileEntry;
+            TypeDecoration = reader.ReadTypeDecoration(extended, debugSource);
+            Name = reader.ReadPascalString();
 
-            if (typeDecoration.classType != ClassType.Bitfield && typeDecoration.classType != ClassType.StructMember &&
-                typeDecoration.classType != ClassType.UnionMember && typeDecoration.classType != ClassType.EndOfStruct)
-                throw new ArgumentOutOfRangeException(nameof(typeDecoration.classType),
-                    $"Unexpected class {typeDecoration.classType}");
+            if (TypeDecoration.ClassType != ClassType.Bitfield && TypeDecoration.ClassType != ClassType.StructMember &&
+                TypeDecoration.ClassType != ClassType.UnionMember && TypeDecoration.ClassType != ClassType.EndOfStruct)
+                throw new ArgumentOutOfRangeException(nameof(TypeDecoration.ClassType),
+                    $"Unexpected class {TypeDecoration.ClassType}");
         }
 
         public override string ToString()
         {
-            switch (typeDecoration.classType)
+            switch (TypeDecoration.ClassType)
             {
                 case ClassType.Bitfield:
-                    return typeDecoration.asDeclaration(name) +
-                           $" : {typeDecoration.size}; // offset={fileEntry.value / 8}.{fileEntry.value % 8}";
+                    return TypeDecoration.AsDeclaration(Name) +
+                           $" : {TypeDecoration.Size}; // offset={FileEntry.value / 8}.{FileEntry.value % 8}";
                 case ClassType.StructMember:
                 case ClassType.UnionMember:
-                    return typeDecoration.asDeclaration(name) +
-                           $"; // size={typeDecoration.size}, offset={fileEntry.value}";
+                    return TypeDecoration.AsDeclaration(Name) +
+                           $"; // size={TypeDecoration.Size}, offset={FileEntry.value}";
                 default:
-                    throw new Exception($"Unexpected class {typeDecoration.classType}");
+                    throw new Exception($"Unexpected class {TypeDecoration.ClassType}");
             }
         }
 
@@ -45,15 +45,15 @@ namespace symfile.memory
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(name, other.name) && Equals(fileEntry, other.fileEntry) &&
-                   Equals(typeDecoration, other.typeDecoration);
+            return string.Equals(Name, other.Name) && Equals(FileEntry, other.FileEntry) &&
+                   Equals(TypeDecoration, other.TypeDecoration);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((CompoundMember) obj);
         }
 
@@ -61,9 +61,9 @@ namespace symfile.memory
         {
             unchecked
             {
-                var hashCode = (name != null ? name.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (fileEntry != null ? fileEntry.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (typeDecoration != null ? typeDecoration.GetHashCode() : 0);
+                var hashCode = (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (FileEntry != null ? FileEntry.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (TypeDecoration != null ? TypeDecoration.GetHashCode() : 0);
                 return hashCode;
             }
         }

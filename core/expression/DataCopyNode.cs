@@ -7,41 +7,41 @@ namespace core.expression
 {
     public class DataCopyNode : IExpressionNode
     {
-        [NotNull] public readonly IExpressionNode dst;
-        [NotNull] public readonly IExpressionNode src;
+        [NotNull] public readonly IExpressionNode Dst;
+        [NotNull] public readonly IExpressionNode Src;
 
-        public readonly byte dstSize;
-        public readonly byte srcSize;
+        public readonly byte DstSize;
+        public readonly byte SrcSize;
 
-        public IEnumerable<int> usedRegisters => dst.usedRegisters.Concat(src.usedRegisters);
-        public IEnumerable<int> usedStack => dst.usedStack.Concat(src.usedStack);
-        public IEnumerable<uint> usedMemory => dst.usedMemory.Concat(src.usedMemory);
+        public IEnumerable<int> UsedRegisters => Dst.UsedRegisters.Concat(Src.UsedRegisters);
+        public IEnumerable<int> UsedStack => Dst.UsedStack.Concat(Src.UsedStack);
+        public IEnumerable<uint> UsedMemory => Dst.UsedMemory.Concat(Src.UsedMemory);
 
         public DataCopyNode([NotNull] IExpressionNode dst, byte dstSize, [NotNull] IExpressionNode src, byte srcSize)
         {
             Debug.Assert(dstSize == 1 || dstSize == 2 || dstSize == 4);
             Debug.Assert(srcSize == 1 || srcSize == 2 || srcSize == 4);
 
-            this.dst = dst;
-            this.src = src;
-            this.dstSize = dstSize;
-            this.srcSize = srcSize;
+            Dst = dst;
+            Src = src;
+            DstSize = dstSize;
+            SrcSize = srcSize;
         }
 
-        public string toCode()
+        public string ToCode()
         {
-            if (srcSize == dstSize)
-                return $"{dst.toCode()} = {src.toCode()}";
-            if (srcSize < dstSize)
-                return $"{dst.toCode()} = (int{srcSize * 8}_t)({src.toCode()})";
+            if (SrcSize == DstSize)
+                return $"{Dst.ToCode()} = {Src.ToCode()}";
+            if (SrcSize < DstSize)
+                return $"{Dst.ToCode()} = (int{SrcSize * 8}_t)({Src.ToCode()})";
 
-            Debug.Assert(srcSize > dstSize);
-            return $"{dst.toCode()} = (int{dstSize * 8}_t)({src.toCode()})";
+            Debug.Assert(SrcSize > DstSize);
+            return $"{Dst.ToCode()} = (int{DstSize * 8}_t)({Src.ToCode()})";
         }
 
         public override string ToString()
         {
-            return $"{dst} <{dstSize}> := {src} <{srcSize}>";
+            return $"{Dst} <{DstSize}> := {Src} <{SrcSize}>";
         }
     }
 }

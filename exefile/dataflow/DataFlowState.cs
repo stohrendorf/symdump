@@ -14,34 +14,34 @@ namespace exefile.dataflow
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly SortedDictionary<Register, IExpressionNode> m_registers =
+        private readonly SortedDictionary<Register, IExpressionNode> _registers =
             new SortedDictionary<Register, IExpressionNode>();
 
-        private readonly List<IExpressionNode> m_stack = new List<IExpressionNode>();
+        private readonly List<IExpressionNode> _stack = new List<IExpressionNode>();
 
-        public IDebugSource debugSource { get; }
+        public IDebugSource DebugSource { get; }
 
         public DataFlowState(IDebugSource debugSource, IFunction func)
         {
-            this.debugSource = debugSource;
+            DebugSource = debugSource;
 
             if (func == null)
                 return;
 
-            foreach (var param in func.registerParameters)
+            foreach (var param in func.RegisterParameters)
             {
                 var p = param.Value;
-                m_registers[(Register) param.Key] = new NamedMemoryLayout(p.name, 0, p.memoryLayout);
+                _registers[(Register) param.Key] = new NamedMemoryLayout(p.Name, 0, p.MemoryLayout);
             }
 
-            dumpState();
+            DumpState();
         }
 
-        public bool process(Instruction insn, Instruction nextInsn)
+        public bool Process(Instruction insn, Instruction nextInsn)
         {
             if (insn is NopInstruction)
             {
-                logger.Debug("[eval] " + insn.asReadable());
+                logger.Debug("[eval] " + insn.AsReadable());
                 return true;
             }
 
@@ -49,185 +49,185 @@ namespace exefile.dataflow
             if (insn is ConditionalBranchInstruction)
             {
                 var cbi = (ConditionalBranchInstruction) insn;
-                condition = (ConditionalBranchNode) cbi.toExpressionNode(this);
+                condition = (ConditionalBranchNode) cbi.ToExpressionNode(this);
             }
 
-            if (nextInsn != null && nextInsn.isBranchDelaySlot)
-                process(nextInsn, null);
+            if (nextInsn != null && nextInsn.IsBranchDelaySlot)
+                Process(nextInsn, null);
 
-            logger.Debug("[eval] " + insn.asReadable());
+            logger.Debug("[eval] " + insn.AsReadable());
 
             if (insn is CallPtrInstruction)
             {
-                return pocess((CallPtrInstruction) insn);
+                return Pocess((CallPtrInstruction) insn);
             }
             else if (insn is ArithmeticInstruction)
             {
-                return process((ArithmeticInstruction) insn);
+                return Process((ArithmeticInstruction) insn);
             }
             else if (insn is DataCopyInstruction)
             {
                 var copy = (DataCopyInstruction) insn;
-                process(copy);
+                Process(copy);
                 return true;
             }
             else if (insn is ConditionalBranchInstruction)
             {
                 Debug.Assert(condition != null);
-                logger.Debug(condition.toCode());
+                logger.Debug(condition.ToCode());
             }
             else
             {
-                dumpState();
+                DumpState();
 
-                logger.Warn("[raw] " + insn.asReadable());
-                m_registers.Clear();
+                logger.Warn("[raw] " + insn.AsReadable());
+                _registers.Clear();
             }
 
             return true;
         }
 
-        private void process(DataCopyInstruction insn)
+        private void Process(DataCopyInstruction insn)
         {
-            var copyTo = insn.dst;
+            var copyTo = insn.Dst;
             if (copyTo is RegisterOperand)
             {
-                m_registers[((RegisterOperand) copyTo).register] = insn.src.toExpressionNode(this);
+                _registers[((RegisterOperand) copyTo).Register] = insn.Src.ToExpressionNode(this);
             }
-            else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).register == Register.sp)
+            else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).Register == Register.sp)
             {
-                var ofs = ((RegisterOffsetOperand) copyTo).offset;
+                var ofs = ((RegisterOffsetOperand) copyTo).Offset;
                 // FIXME: handle non-dword data
                 Debug.Assert(ofs % 4 == 0);
                 // FIXME: If ofs is <0, assume it's a parameter...
-                Debug.Assert(ofs >= 0 && ofs / 4 < m_stack.Count);
-                m_stack[ofs / 4] = insn.src.toExpressionNode(this);
+                Debug.Assert(ofs >= 0 && ofs / 4 < _stack.Count);
+                _stack[ofs / 4] = insn.Src.ToExpressionNode(this);
             }
             else
             {
-                dumpState();
+                DumpState();
 
-                logger.Debug(insn.toExpressionNode(this).toCode());
+                logger.Debug(insn.ToExpressionNode(this).ToCode());
             }
         }
 
-        private bool process(ArithmeticInstruction arith)
+        private bool Process(ArithmeticInstruction arith)
         {
-            var dst = arith.destination;
+            var dst = arith.Destination;
             if (dst is RegisterOperand)
             {
                 var reg = (RegisterOperand) dst;
-                m_registers[reg.register] = arith.toExpressionNode(this);
-                if (reg.register != Register.sp || !arith.isInplace || !(arith.rhs is ImmediateOperand))
+                _registers[reg.Register] = arith.ToExpressionNode(this);
+                if (reg.Register != Register.sp || !arith.IsInplace || !(arith.Rhs is ImmediateOperand))
                     return true;
 
                 // stack frame size change
-                var delta = (int) ((ImmediateOperand) arith.rhs).value;
+                var delta = (int) ((ImmediateOperand) arith.Rhs).Value;
                 Debug.Assert(delta % 4 == 0);
                 delta /= 4;
-                if (arith.@operator == Operator.Sub)
+                if (arith.Operator == Operator.Sub)
                     delta = -delta;
 
                 if (delta > 0)
                 {
-                    m_stack.RemoveRange(0, delta);
+                    _stack.RemoveRange(0, delta);
                 }
                 else if (delta < 0)
                 {
                     for (; delta < 0; ++delta)
-                        m_stack.Insert(0, null);
+                        _stack.Insert(0, null);
                 }
             }
-            else if (dst is RegisterOffsetOperand && ((RegisterOffsetOperand) dst).register == Register.sp)
+            else if (dst is RegisterOffsetOperand && ((RegisterOffsetOperand) dst).Register == Register.sp)
             {
-                var ofs = ((RegisterOffsetOperand) dst).offset;
+                var ofs = ((RegisterOffsetOperand) dst).Offset;
                 Debug.Assert(ofs % 4 == 0);
-                m_stack[ofs / 4] = arith.toExpressionNode(this);
+                _stack[ofs / 4] = arith.ToExpressionNode(this);
             }
             else
             {
-                dumpState();
+                DumpState();
 
-                logger.Debug(arith.toExpressionNode(this).toCode());
+                logger.Debug(arith.ToExpressionNode(this).ToCode());
             }
             return true;
         }
 
-        private bool pocess(CallPtrInstruction insn)
+        private bool Pocess(CallPtrInstruction insn)
         {
-            if (insn.returnAddressTarget != null)
+            if (insn.ReturnAddressTarget != null)
             {
-                dumpState();
+                DumpState();
 
-                if (insn.target is LabelOperand)
+                if (insn.Target is LabelOperand)
                 {
-                    var fn = debugSource.findFunction(((LabelOperand) insn.target).label);
+                    var fn = DebugSource.FindFunction(((LabelOperand) insn.Target).Label);
                     if (fn != null)
                     {
-                        logger.Debug("// " + fn.getSignature());
+                        logger.Debug("// " + fn.GetSignature());
                         // piece together the parameters
                         var parameters = new List<string>();
-                        foreach (var p in fn.registerParameters)
+                        foreach (var p in fn.RegisterParameters)
                         {
                             IExpressionNode tmp;
-                            if (m_registers.TryGetValue((Register) p.Key, out tmp))
-                                parameters.Add(tmp.toCode());
+                            if (_registers.TryGetValue((Register) p.Key, out tmp))
+                                parameters.Add(tmp.ToCode());
                             else
                                 parameters.Add("__UNKNOWN__");
                         }
-                        foreach (var p in fn.stackParameters)
+                        foreach (var p in fn.StackParameters)
                         {
                             // TODO check
-                            parameters.Add(m_stack[p.Key / 4].toCode());
+                            parameters.Add(_stack[p.Key / 4].ToCode());
                         }
 
-                        if (!fn.getSignature().StartsWith("void ")) // TODO this is ugly
+                        if (!fn.GetSignature().StartsWith("void ")) // TODO this is ugly
                         {
-                            logger.Debug($"ret = {fn.name}({string.Join(", ", parameters)})");
-                            m_registers[Register.v0] = new NamedMemoryLayout("ret", 0, fn.returnType);
+                            logger.Debug($"ret = {fn.Name}({string.Join(", ", parameters)})");
+                            _registers[Register.v0] = new NamedMemoryLayout("ret", 0, fn.ReturnType);
                         }
                         else
                         {
-                            logger.Debug($"{fn.name}({string.Join(", ", parameters)})");
+                            logger.Debug($"{fn.Name}({string.Join(", ", parameters)})");
                         }
                         return true;
                     }
                 }
 
-                logger.Debug(insn.asReadable());
-                m_registers.Remove(Register.v0);
+                logger.Debug(insn.AsReadable());
+                _registers.Remove(Register.v0);
                 return true;
             }
 
-            if (insn.target is RegisterOperand && ((RegisterOperand) insn.target).register == Register.ra)
+            if (insn.Target is RegisterOperand && ((RegisterOperand) insn.Target).Register == Register.ra)
             {
                 logger.Debug("return");
             }
             else
             {
-                dumpState();
+                DumpState();
 
-                logger.Debug("[jmp] " + insn.asReadable());
+                logger.Debug("[jmp] " + insn.AsReadable());
             }
             return false;
         }
 
-        public void dumpState()
+        public void DumpState()
         {
-            var regDump = string.Join("; ", m_registers.Select(reg => reg.Key + " = " + reg.Value.toCode()));
+            var regDump = string.Join("; ", _registers.Select(reg => reg.Key + " = " + reg.Value.ToCode()));
             var sel = Enumerable
-                .Range(0, m_stack.Count)
-                .Where(i => m_stack[i] != null)
-                .Select(i => "sp[" + (i * 4) + "] = " + m_stack[i].toCode());
+                .Range(0, _stack.Count)
+                .Where(i => _stack[i] != null)
+                .Select(i => "sp[" + (i * 4) + "] = " + _stack[i].ToCode());
             var stackDump = string.Join("; ", sel);
             logger.Debug("    # Registers: " + regDump);
             logger.Debug("    # Stack: " + stackDump);
         }
 
-        public IExpressionNode getRegisterExpression(int registerId)
+        public IExpressionNode GetRegisterExpression(int registerId)
         {
             IExpressionNode expression;
-            m_registers.TryGetValue((Register) registerId, out expression);
+            _registers.TryGetValue((Register) registerId, out expression);
             return expression;
         }
     }

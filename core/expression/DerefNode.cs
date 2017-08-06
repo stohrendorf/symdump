@@ -1,42 +1,41 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 
 namespace core.expression
 {
     public class DerefNode : IExpressionNode
     {
-        [NotNull] public readonly IExpressionNode inner;
+        [NotNull] public readonly IExpressionNode Inner;
 
-        public IEnumerable<int> usedRegisters => inner.usedRegisters;
-        public IEnumerable<int> usedStack => inner.usedStack;
-        public IEnumerable<uint> usedMemory => inner.usedMemory;
+        public IEnumerable<int> UsedRegisters => Inner.UsedRegisters;
+        public IEnumerable<int> UsedStack => Inner.UsedStack;
+        public IEnumerable<uint> UsedMemory => Inner.UsedMemory;
 
         public DerefNode([NotNull] IExpressionNode inner)
         {
-            this.inner = inner;
+            Inner = inner;
         }
 
-        public string toCode()
+        public string ToCode()
         {
-            if (inner is RegisterOffsetNode)
+            if (Inner is RegisterOffsetNode)
             {
-                var c = ((RegisterOffsetNode) inner).tryDeref();
+                var c = ((RegisterOffsetNode) Inner).TryDeref();
                 if (c != null)
                     return c;
             }
             else
             {
-                var c = (inner as ExpressionNode)?.tryDeref();
+                var c = (Inner as ExpressionNode)?.TryDeref();
                 if (c != null)
                     return c;
             }
-            return $"*({inner.toCode()})";
+            return $"*({Inner.ToCode()})";
         }
 
         public override string ToString()
         {
-            return $"pointer to {inner}";
+            return $"pointer to {Inner}";
         }
     }
 }

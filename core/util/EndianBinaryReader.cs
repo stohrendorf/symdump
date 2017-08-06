@@ -6,7 +6,7 @@ namespace core.util
 {
     public class EndianBinaryReader : IDisposable
     {
-        [NotNull] private readonly BinaryReader m_stream;
+        [NotNull] private readonly BinaryReader _stream;
 
         public EndianBinaryReader(Stream s)
             : this(new BinaryReader(s))
@@ -19,51 +19,51 @@ namespace core.util
                 throw new ArgumentNullException(nameof(stream));
             if (!stream.BaseStream.CanRead)
                 throw new ArgumentException("Stream isn't readable", nameof(stream));
-            m_stream = stream;
+            _stream = stream;
         }
 
-        public Stream baseStream => m_stream.BaseStream;
+        public Stream BaseStream => _stream.BaseStream;
 
         public void Dispose()
         {
-            m_stream.Dispose();
+            _stream.Dispose();
         }
 
-        public byte[] readBytes(int n)
+        public byte[] ReadBytes(int n)
         {
-            return m_stream.ReadBytes(n);
+            return _stream.ReadBytes(n);
         }
 
-        public byte readByte()
+        public byte ReadByte()
         {
-            return m_stream.ReadByte();
+            return _stream.ReadByte();
         }
 
-        public sbyte readSByte()
+        public sbyte ReadSByte()
         {
-            return m_stream.ReadSByte();
+            return _stream.ReadSByte();
         }
 
-        public short readInt16()
+        public short ReadInt16()
         {
-            var tmp = m_stream.ReadBytes(2);
+            var tmp = _stream.ReadBytes(2);
             return (short) ((tmp[1] << 8) | tmp[0]);
         }
 
-        public int readInt32()
+        public int ReadInt32()
         {
-            var tmp = m_stream.ReadBytes(4);
+            var tmp = _stream.ReadBytes(4);
             return (tmp[3] << 24) | (tmp[2] << 16) | (tmp[1] << 8) | tmp[0];
         }
 
-        public ushort readUInt16()
+        public ushort ReadUInt16()
         {
-            return (ushort) readInt16();
+            return (ushort) ReadInt16();
         }
 
-        public uint readUInt32()
+        public uint ReadUInt32()
         {
-            return (uint) readInt32();
+            return (uint) ReadInt32();
         }
     }
 }

@@ -6,26 +6,26 @@ namespace symfile.memory
 {
     public class Function : IMemoryLayout, IEquatable<Function>
     {
-        public int precedence => Operator.FunctionCall.getPrecedence(false);
+        public int Precedence => Operator.FunctionCall.GetPrecedence(false);
 
-        public string fundamentalType => m_inner.fundamentalType;
+        public string FundamentalType => _inner.FundamentalType;
 
-        public uint dataSize => 4; // TODO assumes 32 bit architecture
+        public uint DataSize => 4; // TODO assumes 32 bit architecture
 
-        private readonly IMemoryLayout m_inner;
+        private readonly IMemoryLayout _inner;
 
-        public IMemoryLayout pointee => null;
+        public IMemoryLayout Pointee => null;
 
         public Function(IMemoryLayout inner)
         {
-            m_inner = inner;
+            _inner = inner;
         }
 
-        public string asIncompleteDeclaration(string identifier, string argList)
+        public string AsIncompleteDeclaration(string identifier, string argList)
         {
-            var innerCode = m_inner.asIncompleteDeclaration(identifier, argList);
+            var innerCode = _inner.AsIncompleteDeclaration(identifier, argList);
 
-            return m_inner.precedence >= precedence
+            return _inner.Precedence >= Precedence
                 ? $"({innerCode})({argList})"
                 : $"{innerCode}({argList})";
         }
@@ -34,23 +34,23 @@ namespace symfile.memory
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(m_inner, other.m_inner);
+            return Equals(_inner, other._inner);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Function) obj);
         }
 
         public override int GetHashCode()
         {
-            return (m_inner != null ? m_inner.GetHashCode() : 0);
+            return (_inner != null ? _inner.GetHashCode() : 0);
         }
 
-        public string getAccessPathTo(uint offset)
+        public string GetAccessPathTo(uint offset)
         {
             throw new NotImplementedException();
         }
