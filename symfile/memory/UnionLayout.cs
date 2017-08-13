@@ -35,25 +35,25 @@ namespace symfile.memory
                 while (true)
                 {
                     var typedValue = new FileEntry(stream);
-                    if (typedValue.type == (0x80 | 20))
+                    if (typedValue.Type == (0x80 | 20))
                     {
                         var m = new CompoundMember(typedValue, stream, false, debugSource);
 
                         if (m.TypeDecoration.ClassType == ClassType.EndOfStruct)
                         {
-                            DataSize = (uint) m.FileEntry.value;
+                            DataSize = (uint) m.FileEntry.Value;
                             break;
                         }
 
                         Members.Add(m);
                     }
-                    else if (typedValue.type == (0x80 | 22))
+                    else if (typedValue.Type == (0x80 | 22))
                     {
                         var m = new CompoundMember(typedValue, stream, true, debugSource);
 
                         if (m.TypeDecoration.ClassType == ClassType.EndOfStruct)
                         {
-                            DataSize = (uint) m.FileEntry.value;
+                            DataSize = (uint) m.FileEntry.Value;
                             break;
                         }
 
@@ -71,7 +71,7 @@ namespace symfile.memory
             }
         }
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine($"union {Name} {{");
             ++writer.Indent;

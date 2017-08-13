@@ -103,13 +103,13 @@ namespace symfile.code
 
                 TypeDecoration ti;
                 string memberName;
-                switch (typedValue.type & 0x7f)
+                switch (typedValue.Type & 0x7f)
                 {
                     case 14: // end of function
                         _lastLine = reader.ReadUInt32();
                         return;
                     case 16: // begin of block
-                        _body.subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), this,
+                        _body.SubBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), this,
                             symFile));
                         continue;
                     case 20:
@@ -138,7 +138,7 @@ namespace symfile.code
                         _registerParameters[Register.a0 + _registerParameters.Count] = new ArgumentInfo(memberName, ti, _stackBase, null, Register.a0 + _registerParameters.Count);
                         break;
                     default:
-                        _body.vars.Add(memberName, new Block.VarInfo(memberName, ti, typedValue));
+                        _body.Vars.Add(memberName, new Block.VarInfo(memberName, ti, typedValue));
                         break;
                 }
             }
@@ -163,7 +163,7 @@ namespace symfile.code
 
             writer.WriteLine(GetSignature());
 
-            _body.dump(writer);
+            _body.Dump(writer);
         }
 
         public string GetSignature()

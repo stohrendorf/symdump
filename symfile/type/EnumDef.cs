@@ -20,7 +20,7 @@ namespace symfile.type
             while (true)
             {
                 var typedValue = new FileEntry(stream);
-                if (typedValue.type == (0x80 | 20))
+                if (typedValue.Type == (0x80 | 20))
                 {
                     var ti = stream.ReadTypeDecoration(false, debugSource);
                     var memberName = stream.ReadPascalString();
@@ -31,9 +31,9 @@ namespace symfile.type
                     if (ti.ClassType != ClassType.EnumMember)
                         throw new Exception("Unexpected class");
 
-                    _members.Add(memberName, typedValue.value);
+                    _members.Add(memberName, typedValue.Value);
                 }
-                else if (typedValue.type == (0x80 | 22))
+                else if (typedValue.Type == (0x80 | 22))
                 {
                     var ti = stream.ReadTypeDecoration(true, debugSource);
                     if (ti.BaseType != BaseType.Null)

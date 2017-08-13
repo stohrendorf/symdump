@@ -30,25 +30,25 @@ namespace symfile.memory
                 while (true)
                 {
                     var typedValue = new FileEntry(stream);
-                    if (typedValue.type == (0x80 | 20))
+                    if (typedValue.Type == (0x80 | 20))
                     {
                         var m = new CompoundMember(typedValue, stream, false, debugSource);
 
                         if (m.TypeDecoration.ClassType == ClassType.EndOfStruct)
                         {
-                            DataSize = (uint) m.FileEntry.value;
+                            DataSize = (uint) m.FileEntry.Value;
                             break;
                         }
 
                         Members.Add(m);
                     }
-                    else if (typedValue.type == (0x80 | 22))
+                    else if (typedValue.Type == (0x80 | 22))
                     {
                         var m = new CompoundMember(typedValue, stream, true, debugSource);
 
                         if (m.TypeDecoration.ClassType == ClassType.EndOfStruct)
                         {
-                            DataSize = (uint) m.FileEntry.value;
+                            DataSize = (uint) m.FileEntry.Value;
                             break;
                         }
 
@@ -89,7 +89,7 @@ namespace symfile.memory
         public override string GetAccessPathTo(uint ofs)
         {
             var member = Members
-                .LastOrDefault(m => m.TypeDecoration.ClassType != ClassType.Bitfield && m.FileEntry.value <= ofs);
+                .LastOrDefault(m => m.TypeDecoration.ClassType != ClassType.Bitfield && m.FileEntry.Value <= ofs);
 
             if (member == null)
                 return null;
@@ -97,7 +97,7 @@ namespace symfile.memory
             if (member.MemoryLayout == null)
                 return member.Name;
 
-            ofs -= (uint) member.FileEntry.value;
+            ofs -= (uint) member.FileEntry.Value;
             var memberAccessPath = member.MemoryLayout.GetAccessPathTo(ofs);
             if (memberAccessPath == null)
                 return member.Name;

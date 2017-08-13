@@ -75,7 +75,7 @@ namespace symfile.memory
         public string GetAccessPathTo(uint offset)
         {
             if(offset != 0)
-                throw new ArgumentOutOfRangeException(nameof(offset), offset, null);
+                throw new UnalignedAccessException(offset, DataSize);
 
             return null;
         }

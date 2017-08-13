@@ -31,11 +31,11 @@ namespace symfile.memory
             {
                 case ClassType.Bitfield:
                     return TypeDecoration.AsDeclaration(Name) +
-                           $" : {TypeDecoration.Size}; // offset={FileEntry.value / 8}.{FileEntry.value % 8}";
+                           $" : {TypeDecoration.Size}; // offset={FileEntry.Value / 8}.{FileEntry.Value % 8}";
                 case ClassType.StructMember:
                 case ClassType.UnionMember:
                     return TypeDecoration.AsDeclaration(Name) +
-                           $"; // size={TypeDecoration.Size}, offset={FileEntry.value}";
+                           $"; // size={TypeDecoration.Size}, offset={FileEntry.Value}";
                 default:
                     throw new Exception($"Unexpected class {TypeDecoration.ClassType}");
             }

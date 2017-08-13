@@ -107,7 +107,7 @@ namespace symfile
             writer.WriteLine();
             writer.WriteLine($"// {_unions.Count} unions");
             foreach (var e in _unions.Values)
-                e.dump(writer);
+                e.Dump(writer);
 
             writer.WriteLine();
             writer.WriteLine($"// {_structs.Count} structs");
@@ -139,15 +139,15 @@ namespace symfile
         private void LoadEntry(BinaryReader reader)
         {
             var fileEntry = new FileEntry(reader);
-            if (fileEntry.type == 8)
+            if (fileEntry.Type == 8)
             {
-                _mxInfo = $"${fileEntry.value:X} MX-info {reader.ReadByte():X}";
+                _mxInfo = $"${fileEntry.Value:X} MX-info {reader.ReadByte():X}";
                 return;
             }
 
-            if (fileEntry.isLabel)
+            if (fileEntry.IsLabel)
             {
-                var lbl = new NamedLocation((uint)fileEntry.value, reader.ReadPascalString());
+                var lbl = new NamedLocation((uint)fileEntry.Value, reader.ReadPascalString());
 
                 if (!Labels.ContainsKey(lbl.Address))
                     Labels.Add(lbl.Address, new List<NamedLocation>());
@@ -156,7 +156,7 @@ namespace symfile
                 return;
             }
 
-            switch (fileEntry.type & 0x7f)
+            switch (fileEntry.Type & 0x7f)
             {
                 case 0:
 #if WITH_SLD
@@ -199,7 +199,7 @@ namespace symfile
 #endif
                     break;
                 case 12:
-                    LoadFunction(reader, fileEntry.value);
+                    LoadFunction(reader, fileEntry.Value);
                     break;
                 case 20:
                     LoadUserDefinedType(reader, false);

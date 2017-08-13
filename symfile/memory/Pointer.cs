@@ -52,7 +52,7 @@ namespace symfile.memory
         public string GetAccessPathTo(uint offset)
         {
             if(offset != 0)
-                throw new ArgumentOutOfRangeException(nameof(offset), offset, "Can only access pointers at offset 0");
+                throw new UnalignedAccessException(offset, "Can only access pointers at offset 0");
 
             return null;
         }

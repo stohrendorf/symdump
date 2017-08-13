@@ -32,7 +32,7 @@ namespace symfile.util
 
         public static bool SkipSld(this BinaryReader reader, FileEntry fileEntry)
         {
-            switch (fileEntry.type & 0x7f)
+            switch (fileEntry.Type & 0x7f)
             {
                 case 0:
                     return true;

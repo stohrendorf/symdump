@@ -75,21 +75,40 @@ namespace symfile.memory
     public static class ArrayTest
     {
         [Fact]
-        public static void testDeclarationSimple()
+        public static void TestDeclarationSimple()
         {
             var tmp = new Array(10, new PrimitiveType(BaseType.Char));
             Assert.Equal("foo[10]", tmp.AsIncompleteDeclaration("foo", null));
             Assert.Equal("char", tmp.FundamentalType);
+        }
+
+        [Fact]
+        public static void TestAccessSimple()
+        {
+            var tmp = new Array(10, new PrimitiveType(BaseType.Char));
             Assert.Equal("[3]", tmp.GetAccessPathTo(3));
         }
 
         [Fact]
-        public static void testDeclarationPrecedence()
+        public static void TestAccessSized()
+        {
+            var tmp = new Array(10, new PrimitiveType(BaseType.Int));
+            Assert.Equal("[1]", tmp.GetAccessPathTo(4));
+        }
+
+        [Fact]
+        public static void TestAccessSizedUnaligned()
+        {
+            var tmp = new Array(10, new PrimitiveType(BaseType.Int));
+            Assert.Throws<UnalignedAccessException>(() => tmp.GetAccessPathTo(1));
+        }
+
+        [Fact]
+        public static void TestDeclarationPrecedence()
         {
             var tmp = new Array(10, new Pointer(new PrimitiveType(BaseType.Char)));
             Assert.Equal("(*foo)[10]", tmp.AsIncompleteDeclaration("foo", null));
             Assert.Equal("char", tmp.FundamentalType);
-            Assert.Equal("[1]", tmp.GetAccessPathTo(4));
         }
     }
 }
