@@ -15,6 +15,11 @@
             height: 100%;
             overflow: hidden;
             margin: 0;
+            font-family: Roboto, Arial, Helvetica, sans-serif;
+        }
+
+        pre.code {
+            font-family: "Lucida Console", "Courier New", monospace;
         }
     </style>
 </head>
@@ -23,5 +28,6 @@
     dhtmlxEvent(window, "load", appInit);
 </script>
 <input id="fileInput" type="file" style="display: none">
+<pre id="disassemblyText" class="code"></pre>
 </body>
 </html>

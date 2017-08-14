@@ -24,10 +24,12 @@ namespace exefile
 
         private readonly Header _header;
 
-        private readonly SortedDictionary<uint, Instruction> _instructions = new SortedDictionary<uint, Instruction>();
+        public IReadOnlyDictionary<uint, Instruction> Instructions => _instructions;
+
         private readonly IDebugSource _debugSource;
         private readonly Dictionary<uint, HashSet<uint>> _xrefs = new Dictionary<uint, HashSet<uint>>();
         private readonly SortedSet<uint> _callees = new SortedSet<uint>();
+        private readonly SortedDictionary<uint, Instruction> _instructions = new SortedDictionary<uint, Instruction>();
 
         public ExeFile(EndianBinaryReader reader, IDebugSource debugSource)
         {

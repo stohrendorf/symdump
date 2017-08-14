@@ -2,6 +2,7 @@
 <menu>
     <item id="fTop" text="File">//1st item
         <item id="ftLoadSym" text="Load .SYM"/>
+        <item id="ftLoadExe" text="Load .EXE"/>
     </item>
     <item id="hTop" text="Help" enabled="false"/>
 </menu>

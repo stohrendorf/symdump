@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using core.util;
+using exefile;
 using frontend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +22,13 @@ namespace frontend.Controllers
         public void Sym(IFormFile file)
         {
             _appState.SymFile = new SymFile(new BinaryReader(file.OpenReadStream()));
+        }
+
+        [HttpPost("exe")]
+        public void Exe(IFormFile file)
+        {
+            _appState.ExeFile = new ExeFile(new EndianBinaryReader(file.OpenReadStream()), _appState.SymFile);
+            _appState.ExeFile.Disassemble();
         }
     }
 }

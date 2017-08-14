@@ -19,18 +19,14 @@ namespace frontend.Controllers
         [HttpGet]
         public IEnumerable<TreeViewItem> Get()
         {
-            if (_appState.SymFile == null)
-                return null;
-
-            int subId = 0;
-            return _appState.SymFile.Labels
+            return _appState.SymFile?.Labels
                 .Select(byAddress => new TreeViewItem
                 {
                     Id = (int) byAddress.Key,
                     Text = $"0x{byAddress.Key:x8}",
                     Items = byAddress.Value.Select(lbl => new TreeViewItem
                     {
-                        Id = subId++,
+                        Id = (int) byAddress.Key,
                         Text = lbl.Name
                     }).ToList()
                 });
