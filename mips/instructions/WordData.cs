@@ -7,6 +7,8 @@ namespace mips.instructions
     {
         public readonly uint Data;
 
+        public override uint? JumpTarget => null;
+
         public WordData(uint data)
         {
             Data = data;

@@ -14,9 +14,8 @@ namespace frontend.Controllers
         // ReSharper disable once UnusedMember.Global
         public bool ShouldSerializeItems() => Items != null && Items.Count > 0;
 
-        [JsonProperty("userdata", NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, string> Userdata;
-        
+        [JsonProperty("userdata")] public Dictionary<string, string> Userdata;
+
         // ReSharper disable once UnusedMember.Global
         public bool ShouldSerializeUserdata() => Userdata != null && Userdata.Count > 0;
     }

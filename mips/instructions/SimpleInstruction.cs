@@ -9,6 +9,8 @@ namespace mips.instructions
         public readonly string Format;
         public readonly string Mnemonic;
 
+        public override uint? JumpTarget => null;
+
         public SimpleInstruction(string mnemonic, string format, params IOperand[] operands)
         {
             Mnemonic = mnemonic;

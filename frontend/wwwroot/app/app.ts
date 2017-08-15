@@ -1,21 +1,51 @@
 ///<reference path="../dhtmlx/dhtmlx.d.ts"/>
 
 function appInit(): void {
-    let layout = new dhtmlXLayoutObject(document.body, "2U");
+    let layout = new dhtmlXLayoutObject({parent: "layoutMaster", pattern: "2U"});
 
     let disassembly = layout.cells("b");
     disassembly.setText("Disassembly");
-    let disassemblyText: HTMLPreElement = document.getElementById("disassemblyText") as HTMLPreElement;
-    disassembly.attachObject(disassemblyText);
+    disassembly.appendObject("disassemblyText");
 
+    let hexFormatter = function (row, cell, value, columnDef, dataContext) {
+        return !value ? '' : "0x" + parseInt(value).toString(16);
+    };
+
+    let dataView = new Slick.Data.DataView();
+    let grid = new Slick.Grid('#disassemblyText', dataView, [
+        {id: "address", name: "Address", field: "address", formatter: hexFormatter},
+        {id: "code", name: "Code", field: "text", width: 300},
+        {id: "jumptarget", name: "Jump Target", field: "jumpTarget", width: 200, formatter: hexFormatter}
+    ], {
+        enableCellNavigation: false,
+        enableColumnReorder: false,
+        autoHeight: true,
+        autoEdit: false,
+        rowHeight: 20
+    });
+
+    dataView.onRowCountChanged.subscribe(function (e, args) {
+        grid.updateRowCount();
+        grid.render();
+    });
+    dataView.onRowsChanged.subscribe(function (e, args) {
+        grid.invalidateRows(args.rows);
+        grid.render();
+    });
+    
     let symbols = layout.cells("a");
     symbols.setText("Symbols");
     symbols.setWidth(300);
     let symbolsTree = symbols.attachTreeView();
     symbolsTree.attachEvent("onSelect", function (id: string, mode: boolean): void {
         let address = symbolsTree.getUserData(id)["address"];
-        let r = dhx.ajax.getSync("api/assembly/instructions/" + address + "/200");
-        disassemblyText.innerText = r.xmlDoc.responseText;
+        let instructions = dhx.s2j(dhx.ajax.getSync("api/assembly/instructions/" + address + "/200").xmlDoc.responseText);
+
+        dataView.beginUpdate();
+        dataView.setItems(instructions, 'address');
+        dataView.endUpdate();
+
+        grid.resizeCanvas();
     });
     symbolsTree.loadStruct("api/symbols"); // populate initial data if there's already a project loaded
 
@@ -76,7 +106,9 @@ function appInit(): void {
         else if (id === 'ftLoadExe') {
             uploadUrl = 'api/upload/exe';
             postUploadAction = function () {
-                disassemblyText.innerHTML = "";
+                dataView.beginUpdate();
+                dataView.setItems([]);
+                dataView.endUpdate();
             };
             fileInput.click();
         }

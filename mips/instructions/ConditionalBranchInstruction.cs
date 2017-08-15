@@ -1,11 +1,14 @@
 ﻿using core;
 using core.expression;
+using mips.operands;
 
 namespace mips.instructions
 {
     public class ConditionalBranchInstruction : Instruction
     {
         public readonly Operator Operator;
+
+        public override uint? JumpTarget => (Target as LabelOperand)?.Address;
 
         public ConditionalBranchInstruction(Operator @operator, IOperand lhs, IOperand rhs, IOperand target)
         {

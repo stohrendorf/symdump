@@ -17,13 +17,18 @@ namespace frontend.Controllers
         }
 
         [HttpGet("instructions/{offset}/{length}")]
-        public string Instructions([FromRoute] int offset, [FromRoute] int length)
+        public IEnumerable<LineInfo> Instructions([FromRoute] int offset, [FromRoute] int length)
         {
-            return string.Join("\n", _appState.ExeFile.Instructions
+            return _appState.ExeFile.Instructions
                 .Where(kv => kv.Key >= offset)
                 .OrderBy(kv => kv.Key)
                 .Take(length)
-                .Select(kv => $"0x{kv.Key:x8}    {kv.Value.AsReadable()}"));
+                .Select(kv => new LineInfo
+                {
+                    Text = kv.Value.AsReadable(),
+                    Address = kv.Key,
+                    JumpTarget = kv.Value.JumpTarget
+                });
         }
     }
 }
