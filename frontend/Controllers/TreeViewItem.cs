@@ -5,16 +5,17 @@ namespace frontend.Controllers
 {
     public class TreeViewItem
     {
-        [JsonProperty("id")]
-        public int Id;
+        [JsonProperty("id", Required = Required.Always)] public int Id;
+
+        [JsonProperty("text", Required = Required.Always)] public string Text;
+
+        [JsonProperty("items")] public List<TreeViewItem> Items;
+
+        public bool ShouldSerializeItems() => Items != null && Items.Count > 0;
+
+        [JsonProperty("userdata", NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string, string> Userdata;
         
-        [JsonProperty("text")]
-        public string Text;
-        
-        [JsonProperty("items")]
-        public List<TreeViewItem> Items;
-        
-        [JsonProperty("userdata")]
-        public Dictionary<string, string> Userdata = new Dictionary<string, string>();
+        public bool ShouldSerializeUserdata() => Userdata != null && Userdata.Count > 0;
     }
 }
