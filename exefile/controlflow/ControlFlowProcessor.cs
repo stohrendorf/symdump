@@ -38,7 +38,7 @@ namespace exefile.controlflow
             return (Block) block;
         }
 
-        public void Process(uint start, [NotNull] IDictionary<uint, Instruction> instructions)
+        public void Process(uint start, [NotNull] IReadOnlyDictionary<uint, Instruction> instructions)
         {
             var entryPoints = new Queue<uint>();
             entryPoints.Enqueue(start);

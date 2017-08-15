@@ -24,10 +24,13 @@ namespace exefile
 
         private readonly Header _header;
 
-        private readonly SortedDictionary<uint, Instruction> _instructions = new SortedDictionary<uint, Instruction>();
+        public IEnumerable<KeyValuePair<uint, Instruction>> Instructions => _instructions
+            .Select(kv => new KeyValuePair<uint, Instruction>(kv.Key + _header.tAddr, kv.Value));
+
         private readonly IDebugSource _debugSource;
         private readonly Dictionary<uint, HashSet<uint>> _xrefs = new Dictionary<uint, HashSet<uint>>();
         private readonly SortedSet<uint> _callees = new SortedSet<uint>();
+        private readonly SortedDictionary<uint, Instruction> _instructions = new SortedDictionary<uint, Instruction>();
 
         public ExeFile(EndianBinaryReader reader, IDebugSource debugSource)
         {

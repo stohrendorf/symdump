@@ -9,6 +9,8 @@ namespace mips.instructions
         public readonly byte SrcSize;
         public readonly byte DstSize;
 
+        public override uint? JumpTarget => null;
+
         public DataCopyInstruction(IOperand dst, byte dstSize, IOperand src, byte srcSize)
         {
             Operands = new[] {dst, src};

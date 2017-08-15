@@ -11,6 +11,8 @@ namespace mips.instructions
         public IOperand Target => Operands[0];
         public RegisterOperand ReturnAddressTarget => (RegisterOperand) (Operands.Length > 1 ? Operands[1] : null);
 
+        public override uint? JumpTarget => (Target as LabelOperand)?.Address;
+
         // ReSharper disable once SuggestBaseTypeForParameter
         public CallPtrInstruction(IOperand target, RegisterOperand returnAddressTarget)
         {

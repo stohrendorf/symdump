@@ -15,5 +15,7 @@ namespace core
 
         [NotNull]
         public abstract IExpressionNode ToExpressionNode([NotNull] IDataFlowState dataFlowState);
+        
+        [CanBeNull] public abstract uint? JumpTarget { get; }
     }
 }

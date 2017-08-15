@@ -10,13 +10,16 @@ namespace mips.instructions
     {
         public readonly Operator Operator;
 
+        public override uint? JumpTarget => null;
+
         public ArithmeticInstruction(Operator @operator, IOperand dest, IOperand lhs, IOperand rhs)
         {
             Operator = @operator;
-            if ((@operator == Operator.Add || @operator == Operator.Sub) && dest.Equals(lhs) && (dest is RegisterOperand) &&
+            if ((@operator == Operator.Add || @operator == Operator.Sub) && dest.Equals(lhs) &&
+                (dest is RegisterOperand) &&
                 ((RegisterOperand) dest).Register == Register.sp && (rhs is ImmediateOperand))
             {
-                rhs = new ImmediateOperand((short)((ImmediateOperand) rhs).Value);
+                rhs = new ImmediateOperand((short) ((ImmediateOperand) rhs).Value);
             }
             Operands = new[] {dest, lhs, rhs};
         }
@@ -42,7 +45,7 @@ namespace mips.instructions
         {
             var lhsExpr = Lhs.ToExpressionNode(dataFlowState);
             var rhsExpr = Rhs.ToExpressionNode(dataFlowState);
-            
+
             if (!(lhsExpr is ValueNode) || !(rhsExpr is ValueNode))
             {
                 return new ExpressionNode(Operator, lhsExpr, rhsExpr);
@@ -62,11 +65,11 @@ namespace mips.instructions
                 case Operator.Div:
                     return new ValueNode(lhsVal / rhsVal);
                 case Operator.Shl:
-                    return new ValueNode(lhsVal << (int)rhsVal);
+                    return new ValueNode(lhsVal << (int) rhsVal);
                 case Operator.Shr:
-                    return new ValueNode(lhsVal >> (int)rhsVal);
+                    return new ValueNode(lhsVal >> (int) rhsVal);
                 case Operator.Sar:
-                    return new ValueNode(lhsVal >> (int)rhsVal);
+                    return new ValueNode(lhsVal >> (int) rhsVal);
                 case Operator.BitAnd:
                     return new ValueNode(lhsVal & rhsVal);
                 case Operator.BitOr:
@@ -83,7 +86,8 @@ namespace mips.instructions
                 case Operator.SignedLessEqual:
                 case Operator.GreaterEqual:
                 case Operator.SignedGreaterEqual:
-                    return new ExpressionNode(Operator, Lhs.ToExpressionNode(dataFlowState), Rhs.ToExpressionNode(dataFlowState));
+                    return new ExpressionNode(Operator, Lhs.ToExpressionNode(dataFlowState),
+                        Rhs.ToExpressionNode(dataFlowState));
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -6,6 +6,8 @@ namespace mips.instructions
     {
         public override IOperand[] Operands { get; } = new IOperand[0];
 
+        public override uint? JumpTarget => null;
+
         public override string AsReadable()
         {
             return "nop";

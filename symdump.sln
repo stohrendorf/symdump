@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "exefile", "exefile\exefile.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mips", "mips\mips.csproj", "{96725236-7AB3-492D-B4CB-8DB4F6852562}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frontend", "frontend\frontend.csproj", "{87670D85-1BCE-4574-AEDF-13D3A7BAD297}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{96725236-7AB3-492D-B4CB-8DB4F6852562}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96725236-7AB3-492D-B4CB-8DB4F6852562}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96725236-7AB3-492D-B4CB-8DB4F6852562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87670D85-1BCE-4574-AEDF-13D3A7BAD297}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87670D85-1BCE-4574-AEDF-13D3A7BAD297}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87670D85-1BCE-4574-AEDF-13D3A7BAD297}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87670D85-1BCE-4574-AEDF-13D3A7BAD297}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
