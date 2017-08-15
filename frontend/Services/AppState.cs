@@ -33,6 +33,7 @@ namespace frontend.Services
                 if (project.Exe != null)
                 {
                     ExeFile = new ExeFile(new EndianBinaryReader(new MemoryStream(project.Exe.Data)), SymFile);
+                    ExeFile.Disassemble();
                 }
             }
         }

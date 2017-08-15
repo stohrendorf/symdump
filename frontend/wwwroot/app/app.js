@@ -1,19 +1,20 @@
 ///<reference path="../dhtmlx/dhtmlx.d.ts"/>
 function appInit() {
     var layout = new dhtmlXLayoutObject(document.body, "2U");
-    var disassembly = layout.cells("a");
+    var disassembly = layout.cells("b");
     disassembly.setText("Disassembly");
     var disassemblyText = document.getElementById("disassemblyText");
     disassembly.attachObject(disassemblyText);
-    var symbols = layout.cells("b");
+    var symbols = layout.cells("a");
     symbols.setText("Symbols");
-    symbols.setWidth(500);
+    symbols.setWidth(300);
     var symbolsTree = symbols.attachTreeView();
-    symbolsTree.attachEvent("onclick", function (id) {
-        var r = dhx.ajax.getSync("api/assembly/instructions/" + id + "/200");
+    symbolsTree.attachEvent("onSelect", function (id, mode) {
+        var address = symbolsTree.getUserData(id)["address"];
+        var r = dhx.ajax.getSync("api/assembly/instructions/" + address + "/200");
         disassemblyText.innerText = r.xmlDoc.responseText;
-        return true;
     });
+    symbolsTree.loadStruct("api/symbols"); // populate initial data if there's already a project loaded
     var menu = layout.attachMenu();
     menu.setIconsPath("icons/");
     menu.loadStruct("layouts/menu.xml");

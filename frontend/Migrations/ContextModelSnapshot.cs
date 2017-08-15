@@ -1,0 +1,64 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
+using frontend.Models;
+
+namespace frontend.Migrations
+{
+    [DbContext(typeof(Context))]
+    partial class ContextModelSnapshot : ModelSnapshot
+    {
+        protected override void BuildModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+                .HasAnnotation("ProductVersion", "1.1.2");
+
+            modelBuilder.Entity("frontend.Models.BinaryFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BinaryFile");
+                });
+
+            modelBuilder.Entity("frontend.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ExeId");
+
+                    b.Property<int?>("SymId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExeId");
+
+                    b.HasIndex("SymId");
+
+                    b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("frontend.Models.Project", b =>
+                {
+                    b.HasOne("frontend.Models.BinaryFile", "Exe")
+                        .WithMany()
+                        .HasForeignKey("ExeId");
+
+                    b.HasOne("frontend.Models.BinaryFile", "Sym")
+                        .WithMany()
+                        .HasForeignKey("SymId");
+                });
+        }
+    }
+}

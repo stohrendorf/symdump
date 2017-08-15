@@ -11,11 +11,13 @@ namespace frontend.Controllers
 
         [JsonProperty("items")] public List<TreeViewItem> Items;
 
+        // ReSharper disable once UnusedMember.Global
         public bool ShouldSerializeItems() => Items != null && Items.Count > 0;
 
         [JsonProperty("userdata", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, string> Userdata;
         
+        // ReSharper disable once UnusedMember.Global
         public bool ShouldSerializeUserdata() => Userdata != null && Userdata.Count > 0;
     }
 }

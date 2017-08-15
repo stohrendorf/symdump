@@ -3,20 +3,21 @@
 function appInit(): void {
     let layout = new dhtmlXLayoutObject(document.body, "2U");
 
-    let disassembly = layout.cells("a");
+    let disassembly = layout.cells("b");
     disassembly.setText("Disassembly");
     let disassemblyText: HTMLPreElement = document.getElementById("disassemblyText") as HTMLPreElement;
     disassembly.attachObject(disassemblyText);
 
-    let symbols = layout.cells("b");
+    let symbols = layout.cells("a");
     symbols.setText("Symbols");
-    symbols.setWidth(500);
+    symbols.setWidth(300);
     let symbolsTree = symbols.attachTreeView();
-    symbolsTree.attachEvent("onclick", function (id: string): boolean {
-        let r = dhx.ajax.getSync("api/assembly/instructions/" + id + "/200");
+    symbolsTree.attachEvent("onSelect", function (id: string, mode: boolean): void {
+        let address = symbolsTree.getUserData(id)["address"];
+        let r = dhx.ajax.getSync("api/assembly/instructions/" + address + "/200");
         disassemblyText.innerText = r.xmlDoc.responseText;
-        return true;
     });
+    symbolsTree.loadStruct("api/symbols"); // populate initial data if there's already a project loaded
 
     let menu = layout.attachMenu();
     menu.setIconsPath("icons/");

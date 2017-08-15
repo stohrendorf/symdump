@@ -24,7 +24,8 @@ namespace exefile
 
         private readonly Header _header;
 
-        public IReadOnlyDictionary<uint, Instruction> Instructions => _instructions;
+        public IEnumerable<KeyValuePair<uint, Instruction>> Instructions => _instructions
+            .Select(kv => new KeyValuePair<uint, Instruction>(kv.Key + _header.tAddr, kv.Value));
 
         private readonly IDebugSource _debugSource;
         private readonly Dictionary<uint, HashSet<uint>> _xrefs = new Dictionary<uint, HashSet<uint>>();

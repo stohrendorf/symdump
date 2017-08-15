@@ -19,15 +19,18 @@ namespace frontend.Controllers
         [HttpGet]
         public IEnumerable<TreeViewItem> Get()
         {
+            int id = 0;
             return _appState.SymFile?.Labels
                 .Select(byAddress => new TreeViewItem
                 {
-                    Id = (int) byAddress.Key,
+                    Id = id++,
                     Text = $"0x{byAddress.Key:x8}",
+                    Userdata = new Dictionary<string, string> {{"address", byAddress.Key.ToString()}},
                     Items = byAddress.Value.Select(lbl => new TreeViewItem
                     {
-                        Id = (int) byAddress.Key,
-                        Text = lbl.Name
+                        Id = id++,
+                        Text = lbl.Name,
+                        Userdata = new Dictionary<string, string> {{"address", byAddress.Key.ToString()}}
                     }).ToList()
                 });
         }
