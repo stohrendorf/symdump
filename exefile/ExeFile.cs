@@ -110,7 +110,7 @@ namespace exefile
             var control = new ControlFlowProcessor();
             control.Process(addr, _instructions);
             
-            var reducer = new Reducer(control);
+            var reducer = new Reducer(control.Blocks);
             reducer.Reduce();
             //reducer.Dump(new IndentedTextWriter(Console.Out));
 
@@ -119,15 +119,8 @@ namespace exefile
 #if false
             {
                 Console.WriteLine();
-                if (false)
-                {
-                    var itw = new IndentedTextWriter(Console.Out);
-                    control.Dump(itw);
-                }
-                else
-                {
-                    //control.dumpPlantUml(Console.Out);
-                }
+                var itw = new IndentedTextWriter(Console.Out);
+                control.Dump(itw);
             }
 
             foreach (var insnPair in _instructions.Where(i => i.Key >= addr))

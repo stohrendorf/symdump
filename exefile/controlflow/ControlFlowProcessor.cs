@@ -136,21 +136,5 @@ namespace exefile.controlflow
                 writer.WriteLine();
             }
         }
-
-        public void DumpPlantUml(TextWriter writer)
-        {
-            writer.WriteLine("skinparam stateFontName Lucida Console");
-            writer.WriteLine("skinparam stateAttributeFontName Lucida Console");
-
-            writer.WriteLine();
-            writer.WriteLine($"[*] --> {Blocks.Values.First().GetPlantUmlName()}");
-
-            writer.WriteLine();
-            foreach (var block in Blocks.Values)
-            {
-                block.DumpPlantUml(writer);
-                writer.WriteLine();
-            }
-        }
     }
 }

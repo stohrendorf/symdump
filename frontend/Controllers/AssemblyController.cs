@@ -13,7 +13,7 @@ namespace frontend.Controllers
     public class AssemblyController : Controller
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        
+
         private readonly AppState _appState;
 
         public AssemblyController(AppState appState)
@@ -36,20 +36,20 @@ namespace frontend.Controllers
                 });
         }
 
-        private static IEnumerable<VisEdge> getEdges(IBlock block, IDictionary<string, VisNode> nodes)
+        private static IEnumerable<VisEdge> GetEdges(IBlock block, IDictionary<string, VisNode> nodes)
         {
             if (block.TrueExit != null)
                 yield return new VisEdge
                 {
-                    From = nodes[block.GetPlantUmlName()],
-                    To = nodes[block.TrueExit.GetPlantUmlName()]
+                    From = nodes[block.GetNodeName()],
+                    To = nodes[block.TrueExit.GetNodeName()]
                 };
-            
+
             if (block.FalseExit != null)
                 yield return new VisEdge
                 {
-                    From = nodes[block.GetPlantUmlName()],
-                    To = nodes[block.FalseExit.GetPlantUmlName()]
+                    From = nodes[block.GetNodeName()],
+                    To = nodes[block.FalseExit.GetNodeName()]
                 };
         }
 
@@ -58,28 +58,28 @@ namespace frontend.Controllers
         {
             var graph = new VisGraph();
 
-            SortedDictionary<uint, IBlock> decompiled;
             try
             {
-                decompiled = _appState.ExeFile?.Decompile(offset);
+                var decompiled = _appState.ExeFile?.Decompile(offset);
+
+                var nodes = decompiled?.Values
+                    .Select(v => new VisNode {Id = v.GetNodeName(), Label = v.ToString()})
+                    .ToDictionary(v => v.Id, v => v);
+
+                graph.Nodes = nodes?.Values.ToList();
+
+                graph.Edges = decompiled?.Values
+                    .SelectMany(v => GetEdges(v, nodes))
+                    .ToList();
+
+                return graph;
             }
             catch (Exception ex)
             {
                 logger.Error(ex, "Decompilation failed");
+                logger.Error(ex.StackTrace);
                 return graph;
             }
-
-            var nodes = decompiled?.Values
-                .Select(v => new VisNode {Id = v.GetPlantUmlName(), Label = v.ToString()})
-                .ToDictionary(v => v.Id, v => v);
-
-            graph.Nodes = nodes?.Values.ToList();
-
-            graph.Edges = decompiled?.Values
-                .SelectMany(v => getEdges(v, nodes))
-                .ToList();
-
-            return graph;
         }
     }
 }
