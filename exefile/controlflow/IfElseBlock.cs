@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using core;
 using core.util;
 using JetBrains.Annotations;
@@ -12,7 +14,8 @@ namespace exefile.controlflow
         [NotNull] public readonly IBlock FalseBody;
         [NotNull] public readonly IBlock Exit;
 
-        public IfElseBlock([NotNull] IBlock condition, [NotNull] IBlock trueBody, [NotNull] IBlock falseBody, [NotNull] IBlock exit)
+        public IfElseBlock([NotNull] IBlock condition, [NotNull] IBlock trueBody, [NotNull] IBlock falseBody,
+            [NotNull] IBlock exit)
         {
             Condition = condition;
             TrueBody = trueBody;
@@ -39,7 +42,16 @@ namespace exefile.controlflow
         public ExitType? ExitType => controlflow.ExitType.Unconditional;
 
         public bool ContainsAddress(uint address) =>
-            Condition.ContainsAddress(address) || TrueBody.ContainsAddress(address) || FalseBody.ContainsAddress(address);
+            Condition.ContainsAddress(address) || TrueBody.ContainsAddress(address) ||
+            FalseBody.ContainsAddress(address);
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            var writer = new IndentedTextWriter(new StringWriter(sb));
+            Dump(writer);
+            return sb.ToString();
+        }
 
         public void Dump(IndentedTextWriter writer)
         {

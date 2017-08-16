@@ -122,6 +122,7 @@ namespace exefile.controlflow
                         var lbl = (LabelOperand) cpi.Target;
                         block.TrueExit = GetBlockForAddress(lbl.Address);
                         entryPoints.Enqueue(lbl.Address);
+                        break;
                     }
                 }
             }

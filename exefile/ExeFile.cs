@@ -27,6 +27,8 @@ namespace exefile
         public IEnumerable<KeyValuePair<uint, Instruction>> Instructions => _instructions
             .Select(kv => new KeyValuePair<uint, Instruction>(kv.Key + _header.tAddr, kv.Value));
 
+        public IReadOnlyCollection<uint> Callees => _callees;
+        
         private readonly IDebugSource _debugSource;
         private readonly Dictionary<uint, HashSet<uint>> _xrefs = new Dictionary<uint, HashSet<uint>>();
         private readonly SortedSet<uint> _callees = new SortedSet<uint>();
@@ -94,12 +96,10 @@ namespace exefile
             return (Opcode) (data >> 26);
         }
 
-        public void Decompile()
+        public SortedDictionary<uint, IBlock> Decompile(uint addr)
         {
-            if (_callees.Count == 0)
-                return;
-
-            var addr = _debugSource.Functions.Skip(200).First().Address;
+            logger.Info($"Started decompilation of address 0x{addr:x8}");
+            
             var func = _debugSource.FindFunction(addr);
             if (func != null)
                 logger.Debug(func.GetSignature());
@@ -112,8 +112,11 @@ namespace exefile
             
             var reducer = new Reducer(control);
             reducer.Reduce();
-            reducer.Dump(new IndentedTextWriter(Console.Out));
+            //reducer.Dump(new IndentedTextWriter(Console.Out));
 
+            return reducer.Blocks;
+
+#if false
             {
                 Console.WriteLine();
                 if (false)
@@ -148,6 +151,7 @@ namespace exefile
                 if (!flowState.Process(insn, nextInsn))
                     break;
             }
+#endif
         }
 
         public void Disassemble()

@@ -34,5 +34,16 @@ namespace frontend.Controllers
                     }).ToList()
                 });
         }
+
+        [HttpGet("callees")]
+        public IEnumerable<TreeViewItem> Callees()
+        {
+            return _appState.ExeFile?.Callees.Select(address => new TreeViewItem
+            {
+                Id = (int) address,
+                Text = $"0x{address:x8} " + _appState.SymFile.GetSymbolName(address, 0),
+                Userdata = new Dictionary<string, string> {{"address", address.ToString()}}
+            });
+        }
     }
 }

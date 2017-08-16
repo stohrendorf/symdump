@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using core;
 using core.util;
 
@@ -32,6 +34,14 @@ namespace exefile.controlflow
         public ExitType? ExitType => Sequence.Values.Last().ExitType;
 
         public bool ContainsAddress(uint address) => Sequence.Values.Any(b => b.ContainsAddress(address));
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            var writer = new IndentedTextWriter(new StringWriter(sb));
+            Dump(writer);
+            return sb.ToString();
+        }
 
         public void Dump(IndentedTextWriter writer)
         {

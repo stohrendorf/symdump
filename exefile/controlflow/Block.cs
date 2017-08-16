@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using core;
 using core.util;
 
@@ -25,6 +27,14 @@ namespace exefile.controlflow
             return address >= Instructions.Keys.First() && address <= Instructions.Keys.Last();
         }
 
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            var writer = new IndentedTextWriter(new StringWriter(sb));
+            Dump(writer);
+            return sb.ToString();
+        }
+        
         public void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine($"// exitType={ExitType} start=0x{Start:X}");

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using core;
 using core.util;
 using JetBrains.Annotations;
@@ -39,6 +41,14 @@ namespace exefile.controlflow
 
         public bool ContainsAddress(uint address) =>
             Condition.ContainsAddress(address) || Body.ContainsAddress(address);
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            var writer = new IndentedTextWriter(new StringWriter(sb));
+            Dump(writer);
+            return sb.ToString();
+        }
 
         public void Dump(IndentedTextWriter writer)
         {

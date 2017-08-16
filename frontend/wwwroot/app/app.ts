@@ -1,12 +1,31 @@
 ///<reference path="../dhtmlx/dhtmlx.d.ts"/>
 
 function appInit(): void {
-    let layout = new dhtmlXLayoutObject({parent: "layoutMaster", pattern: "2U"});
+    let layout = new dhtmlXLayoutObject({parent: "layoutMaster", pattern: "3W"});
 
     let disassembly = layout.cells("b");
     disassembly.setText("Disassembly");
     disassembly.appendObject("disassemblyText");
 
+    let controlFlow = layout.cells("c");
+    controlFlow.setText("Control flow graph");
+    controlFlow.appendObject("decompileContainer");
+
+    let decompileGraph = new vis.Network(document.getElementById('decompileContainer'), {'nodes': [], 'edges': []}, {
+        manipulation: false,
+        layout: {
+            hierarchical: {
+                enabled: true,
+                levelSeparation: 300
+            }
+        },
+        physics: {
+            hierarchicalRepulsion: {
+                nodeDistance: 300
+            }
+        }
+    });
+    
     let hexFormatter = function (row, cell, value, columnDef, dataContext) {
         return !value ? '' : "0x" + parseInt(value).toString(16);
     };
@@ -46,8 +65,14 @@ function appInit(): void {
         dataView.endUpdate();
 
         grid.resizeCanvas();
+
+        let graph = dhx.s2j(dhx.ajax.getSync("api/assembly/decompile/" + address).xmlDoc.responseText);
+        console.debug(graph);
+
+        decompileGraph.setData(graph);
+        decompileGraph.redraw();
     });
-    symbolsTree.loadStruct("api/symbols"); // populate initial data if there's already a project loaded
+    symbolsTree.loadStruct("api/symbols/callees"); // populate initial data if there's already a project loaded
 
     let menu = layout.attachMenu();
     menu.setIconsPath("icons/");
@@ -99,7 +124,7 @@ function appInit(): void {
         if (id === 'ftLoadSym') {
             uploadUrl = 'api/upload/sym';
             postUploadAction = function () {
-                symbolsTree.loadStruct("api/symbols");
+                symbolsTree.loadStruct("api/symbols/callees");
             };
             fileInput.click();
         }
