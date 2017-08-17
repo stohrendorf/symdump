@@ -34,7 +34,7 @@ namespace exefile.controlflow
             Dump(writer);
             return sb.ToString();
         }
-        
+
         public void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine($"// exitType={ExitType} start=0x{Start:X}");
@@ -49,6 +49,19 @@ namespace exefile.controlflow
                 writer.WriteLine($"0x{insn.Key:X}  {insn.Value.AsReadable()}");
             }
             --writer.Indent;
+        }
+
+        public void UpdateReferences(IReadOnlyDictionary<uint, IBlock> blocks, ISet<uint> processed)
+        {
+            if (!processed.Add(Start))
+                return;
+            
+            if (TrueExit != null && blocks.ContainsKey(TrueExit.Start))
+                TrueExit = blocks[TrueExit.Start];
+            TrueExit?.UpdateReferences(blocks, processed);
+            if (FalseExit != null && blocks.ContainsKey(FalseExit.Start))
+                FalseExit = blocks[FalseExit.Start];
+            FalseExit?.UpdateReferences(blocks, processed);
         }
     }
 }

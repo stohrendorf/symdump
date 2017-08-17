@@ -14,7 +14,7 @@ namespace exefile.controlflow
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public readonly SortedDictionary<uint, IBlock> Blocks = new SortedDictionary<uint, IBlock>();
+        public SortedDictionary<uint, IBlock> Blocks { get; private set; } = new SortedDictionary<uint, IBlock>();
 
         public Reducer([NotNull] IReadOnlyDictionary<uint, IBlock> blocks)
         {
@@ -28,7 +28,7 @@ namespace exefile.controlflow
         {
             return Blocks.Values.Count(b => ReferenceEquals(block, b.TrueExit) || ReferenceEquals(block, b.FalseExit));
         }
-        
+
         public void Reduce()
         {
             bool reduced;
@@ -37,13 +37,26 @@ namespace exefile.controlflow
                 reduced = Blocks.Values.Reverse().Any(ReduceIf)
                           || Blocks.Values.Reverse().Any(ReduceIfElse)
                           || Blocks.Values.Reverse().Any(ReduceSequence);
+
+                var recursionProtection = new HashSet<uint>();
+                foreach (var b in Blocks.Values)
+                {
+                    b.UpdateReferences(Blocks, recursionProtection);
+                }
             } while (reduced);
+
+            // clean up unreferenced blocks, except the start block
+            var cleaned = new SortedDictionary<uint, IBlock>();
+            var first = Blocks.Keys.First();
+            foreach (var b in Blocks.Where(kv => kv.Key == first || CountReferencesTo(kv.Value) > 0))
+            {
+                cleaned.Add(b.Key, b.Value);
+            }
+            Blocks = cleaned;
         }
 
         private bool ReduceSequence([NotNull] IBlock block)
         {
-            return false; // TODO
-            
             var next = block.TrueExit;
             logger.Debug(
                 $"SEQ check {block.Start:X} {block.Start:X}={block.ExitType} {next?.Start:X}={next?.ExitType}");
@@ -59,10 +72,16 @@ namespace exefile.controlflow
                 var existing = (SequenceBlock) block;
                 Debug.Assert(existing.TrueExit != null);
 
+                if (existing.Sequence.ContainsKey(next.Start))
+                {
+                    logger.Debug($"Sequence {block.Start:X}: block {next.Start:X} already in sequence");
+                    return false;
+                }
+
                 logger.Debug($"Sequence {block.Start:X}: attach block {next.Start:X}");
 
-                existing.Sequence.Add(existing.TrueExit.Start, existing.TrueExit);
-                Blocks.Remove(existing.TrueExit.Start);
+                existing.Sequence.Add(next.Start, next);
+                Blocks.Remove(next.Start);
                 return true;
             }
 
@@ -87,14 +106,14 @@ namespace exefile.controlflow
 
             if (condition.ExitType != ExitType.Conditional)
                 return false;
-            
+
             var common = condition.TrueExit;
             Debug.Assert(common != null);
             var body = condition.FalseExit;
             Debug.Assert(body != null);
 
-            return TryMakeIfBlock(condition, body, common, true)
-                   || TryMakeIfBlock(condition, common, body, false);
+            return TryMakeIfWhileBlock(condition, body, common, true)
+                   || TryMakeIfWhileBlock(condition, common, body, false);
 
             // swap and try again
         }
@@ -138,7 +157,7 @@ namespace exefile.controlflow
             return true;
         }
 
-        private bool TryMakeIfBlock([NotNull] IBlock condition, [NotNull] IBlock body, [NotNull] IBlock common,
+        private bool TryMakeIfWhileBlock([NotNull] IBlock condition, [NotNull] IBlock body, [NotNull] IBlock common,
             bool inverted)
         {
             Debug.Assert(condition != null);
@@ -154,7 +173,12 @@ namespace exefile.controlflow
 
             logger.Debug($"Reduce: condition={condition.Start:X} body={body.Start:X} common={common.Start:X}");
 
-            var compound = new IfBlock(condition, body, common, inverted);
+            IBlock compound;
+            if (common.Start != condition.Start)
+                compound = new IfBlock(condition, body, common, inverted);
+            else
+                compound = new WhileBlock(condition, body, common, inverted);
+
             Blocks.Remove(condition.Start);
             if (body.ExitType != ExitType.Return)
                 Blocks.Remove(body.Start);
@@ -188,7 +212,7 @@ namespace exefile.controlflow
         public static void TestIf()
         {
             var blocks = new Dictionary<uint, IBlock>();
-            
+
             var common = CreateNopBlock(blocks, 8);
             common.ExitType = ExitType.Unconditional;
 
@@ -200,7 +224,7 @@ namespace exefile.controlflow
             condition.ExitType = ExitType.Conditional;
             condition.TrueExit = body;
             condition.FalseExit = common;
-            
+
             var reducer = new Reducer(blocks);
             reducer.Reduce();
 
@@ -214,14 +238,14 @@ namespace exefile.controlflow
             Assert.Null(b1.FalseExit);
             Assert.Equal(0u, b1.Start);
             Assert.Equal(ExitType.Unconditional, b1.ExitType);
-            
+
             var b2 = reducer.Blocks[8];
             Assert.IsType<Block>(b2);
             Assert.Null(b2.TrueExit);
             Assert.Null(b2.FalseExit);
             Assert.Equal(8u, b2.Start);
             Assert.Equal(ExitType.Unconditional, b2.ExitType);
-            
+
             Assert.Same(b2, b1.TrueExit);
         }
 
@@ -229,7 +253,7 @@ namespace exefile.controlflow
         public static void TestIfElse()
         {
             var blocks = new Dictionary<uint, IBlock>();
-         
+
             var common = CreateNopBlock(blocks, 12);
             common.ExitType = ExitType.Unconditional;
 
@@ -245,7 +269,7 @@ namespace exefile.controlflow
             condition.ExitType = ExitType.Conditional;
             condition.TrueExit = trueBody;
             condition.FalseExit = falseBody;
-            
+
             var reducer = new Reducer(blocks);
             reducer.Reduce();
 
@@ -259,14 +283,14 @@ namespace exefile.controlflow
             Assert.Null(b1.FalseExit);
             Assert.Equal(0u, b1.Start);
             Assert.Equal(ExitType.Unconditional, b1.ExitType);
-            
+
             var b2 = reducer.Blocks[12];
             Assert.IsType<Block>(b2);
             Assert.Null(b2.TrueExit);
             Assert.Null(b2.FalseExit);
             Assert.Equal(12u, b2.Start);
             Assert.Equal(ExitType.Unconditional, b2.ExitType);
-            
+
             Assert.Same(b2, b1.TrueExit);
 
             var compound = (IfElseBlock) b1;

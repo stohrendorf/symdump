@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using core;
@@ -7,7 +8,7 @@ using JetBrains.Annotations;
 
 namespace exefile.controlflow
 {
-    public class IfBlock : IBlock
+    public class WhileBlock : IBlock
     {
         [NotNull]
         public IBlock Condition { get; private set; }
@@ -20,7 +21,8 @@ namespace exefile.controlflow
 
         public readonly bool InvertedCondition;
 
-        public IfBlock([NotNull] IBlock condition, [NotNull] IBlock body, [NotNull] IBlock exit, bool invertedCondition)
+        public WhileBlock([NotNull] IBlock condition, [NotNull] IBlock body, [NotNull] IBlock exit,
+            bool invertedCondition)
         {
             Condition = condition;
             Body = body;
@@ -58,7 +60,7 @@ namespace exefile.controlflow
 
         public void Dump(IndentedTextWriter writer)
         {
-            writer.WriteLine(InvertedCondition ? "if_not{" : "if{");
+            writer.WriteLine(InvertedCondition ? "while_not{" : "while{");
             ++writer.Indent;
             Condition.Dump(writer);
             --writer.Indent;

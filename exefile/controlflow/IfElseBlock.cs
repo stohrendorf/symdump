@@ -9,10 +9,17 @@ namespace exefile.controlflow
 {
     public class IfElseBlock : IBlock
     {
-        [NotNull] public readonly IBlock Condition;
-        [NotNull] public readonly IBlock TrueBody;
-        [NotNull] public readonly IBlock FalseBody;
-        [NotNull] public readonly IBlock Exit;
+        [NotNull]
+        public IBlock Condition { get; private set; }
+
+        [NotNull]
+        public IBlock TrueBody { get; private set; }
+
+        [NotNull]
+        public IBlock FalseBody { get; private set; }
+
+        [NotNull]
+        public IBlock Exit { get; private set; }
 
         public IfElseBlock([NotNull] IBlock condition, [NotNull] IBlock trueBody, [NotNull] IBlock falseBody,
             [NotNull] IBlock exit)
@@ -68,6 +75,16 @@ namespace exefile.controlflow
             FalseBody.Dump(writer);
             --writer.Indent;
             writer.WriteLine("}");
+        }
+
+        public void UpdateReferences(IReadOnlyDictionary<uint, IBlock> blocks, ISet<uint> processed)
+        {
+            if (!processed.Add(Start))
+                return;
+            
+            if (blocks.ContainsKey(Exit.Start))
+                Exit = blocks[Exit.Start];
+            Exit.UpdateReferences(blocks, processed);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace exefile.controlflow
 {
     public class SequenceBlock : IBlock
     {
-        public readonly SortedDictionary<uint, IBlock> Sequence = new SortedDictionary<uint, IBlock>();
+        public SortedDictionary<uint, IBlock> Sequence { get; private set; } = new SortedDictionary<uint, IBlock>();
 
         public IBlock TrueExit => Sequence.Values.Last().TrueExit;
         public IBlock FalseExit => null;
@@ -49,6 +49,17 @@ namespace exefile.controlflow
             {
                 block.Dump(writer);
             }
+        }
+
+        public void UpdateReferences(IReadOnlyDictionary<uint, IBlock> blocks, ISet<uint> processed)
+        {
+            if (!processed.Add(Start))
+                return;
+
+            var lastAddress = Sequence.Keys.Last();
+            if (blocks.ContainsKey(lastAddress))
+                Sequence[lastAddress] = blocks[lastAddress];
+            Sequence[lastAddress].UpdateReferences(blocks, processed);
         }
     }
 }

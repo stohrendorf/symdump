@@ -23,5 +23,6 @@ namespace exefile.controlflow
 
         bool ContainsAddress(uint address);
         void Dump([NotNull] IndentedTextWriter writer);
+        void UpdateReferences(IReadOnlyDictionary<uint, IBlock> blocks, ISet<uint> processed);
     }
 }
