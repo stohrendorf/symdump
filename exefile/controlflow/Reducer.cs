@@ -51,7 +51,6 @@ namespace exefile.controlflow
                 (next?.ExitType != ExitType.Unconditional && next?.ExitType != ExitType.Return))
                 return false;
 
-            // count refs to the next block
             if (CountReferencesTo(next) > 1)
                 return false;
 
