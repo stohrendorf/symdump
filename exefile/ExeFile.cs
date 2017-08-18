@@ -623,28 +623,28 @@ namespace exefile
                 (uint) (index + ((short) data << 2)));
             switch ((data >> 16) & 0x1f)
             {
-                case 0:
+                case 0: // bltz
                     AddXref(index - 4, (uint) ((index + (short) data) << 2));
                     _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
-                case 1:
+                case 1: // bgez
                     AddXref(index - 4, (uint) ((index + (short) data) << 2));
                     _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
                         offset);
-                case 16:
+                case 16: // bltzal
                     AddCall(index - 4, (uint) ((index + (short) data) << 2));
                     _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalCallInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
-                case 17:
+                case 17: // bgezal
                     AddCall(index - 4, (uint) ((index + (short) data) << 2));
                     _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
                     return new ConditionalCallInstruction(Operator.SignedGreaterEqual,

@@ -34,7 +34,7 @@ namespace exefile.controlflow
             bool reduced;
             do
             {
-                reduced = Blocks.Values.Reverse().Any(ReduceIf)
+                reduced = Blocks.Values.Reverse().Any(ReduceIfWhile)
                           || Blocks.Values.Reverse().Any(ReduceIfElse)
                           || Blocks.Values.Reverse().Any(ReduceSequence);
 
@@ -96,7 +96,7 @@ namespace exefile.controlflow
             return true;
         }
 
-        private bool ReduceIf([NotNull] IBlock condition)
+        internal bool ReduceIfWhile([NotNull] IBlock condition)
         {
             /*
             if(condition<exit=conditional>)
@@ -118,7 +118,7 @@ namespace exefile.controlflow
             // swap and try again
         }
 
-        private bool ReduceIfElse([NotNull] IBlock condition)
+        internal bool ReduceIfElse([NotNull] IBlock condition)
         {
             /*
             if(condition<exit=conditional>) trueBody<exit=unconditional>;
@@ -174,7 +174,7 @@ namespace exefile.controlflow
             logger.Debug($"Reduce: condition={condition.Start:X} body={body.Start:X} common={common.Start:X}");
 
             IBlock compound;
-            if (common.Start != condition.Start)
+            if (body.Start != condition.Start)
                 compound = new IfBlock(condition, body, common, inverted);
             else
                 compound = new WhileBlock(condition, body, common, inverted);
@@ -226,7 +226,7 @@ namespace exefile.controlflow
             condition.FalseExit = common;
 
             var reducer = new Reducer(blocks);
-            reducer.Reduce();
+            reducer.ReduceIfWhile(condition);
 
             Assert.Equal(2, reducer.Blocks.Count);
             Assert.True(reducer.Blocks.ContainsKey(0));
@@ -271,7 +271,7 @@ namespace exefile.controlflow
             condition.FalseExit = falseBody;
 
             var reducer = new Reducer(blocks);
-            reducer.Reduce();
+            reducer.ReduceIfElse(condition);
 
             Assert.Equal(2, reducer.Blocks.Count);
             Assert.True(reducer.Blocks.ContainsKey(0));
