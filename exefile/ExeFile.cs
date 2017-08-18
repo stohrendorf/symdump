@@ -253,7 +253,7 @@ namespace exefile
                 case Opcode.PCRelative:
                     return DecodePcRelative(index, data);
                 case Opcode.j:
-                    AddCall(index - 4, (data & 0x03FFFFFF) << 2);
+                    AddXref(index - 4, (data & 0x03FFFFFF) << 2);
                     _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
                     return new CallPtrInstruction(new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
                         null);
