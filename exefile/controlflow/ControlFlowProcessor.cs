@@ -21,21 +21,56 @@ namespace exefile.controlflow
         [NotNull]
         private Block GetBlockForAddress(uint addr)
         {
-            IBlock block;
+            IBlock block = null;
             if (!Blocks.TryGetValue(addr, out block))
             {
-                Blocks.Add(addr, block = new Block());
-            }
-            else
-            {
-                if (block.Instructions.Count > 0 && block.Start != addr)
+                // we don't have a block starting at addr, so find the best matching candidate,
+                // which then either needs splitting, or we can safely add a new block
+                var candidate = Blocks.Keys.LastOrDefault(a => a <= addr);
+                if (Blocks.TryGetValue(candidate, out block))
                 {
-                    logger.Debug($"Block 0x{block.Start:X} needs split at 0x{addr:X}");
+                    if (!block.ContainsAddress(addr))
+                        block = null;
                 }
             }
 
-            Debug.Assert(block != null);
-            return (Block) block;
+            if (block != null && block.Instructions.Count > 0 && block.Start == addr)
+                return (Block) block;
+            
+            if (block == null)
+            {
+                Blocks.Add(addr, block = new Block());
+                return (Block) block;
+            }
+
+            if (block.Instructions.Count <= 0 || block.Start == addr)
+                return (Block) block;
+            
+            var typed = (Block) block;
+            var split = new Block
+            {
+                ExitType = typed.ExitType,
+                TrueExit = typed.TrueExit,
+                FalseExit = typed.FalseExit
+            };
+            
+            typed.TrueExit = split;
+            typed.FalseExit = null;
+            typed.ExitType = ExitType.Unconditional;
+
+            var toRemove = new HashSet<uint>();
+            foreach (var insn in typed.Instructions.Where(kv => kv.Key >= addr))
+            {
+                split.Instructions.Add(insn.Key, insn.Value);
+                toRemove.Add(insn.Key);
+            }
+            foreach (var rm in toRemove)
+            {
+                typed.Instructions.Remove(rm);
+            }
+                
+            Blocks.Add(split.Start, split);
+            return split;
         }
 
         public void Process(uint start, [NotNull] IReadOnlyDictionary<uint, Instruction> instructions)
@@ -52,6 +87,7 @@ namespace exefile.controlflow
                 var block = GetBlockForAddress(addr);
                 if (block.ContainsAddress(addr))
                 {
+                    Debug.Assert(addr == block.Start);
                     logger.Debug($"Already processed: 0x{addr:X}");
                     continue;
                 }

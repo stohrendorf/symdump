@@ -37,7 +37,8 @@ namespace exefile.controlflow
 
         public void Dump(IndentedTextWriter writer)
         {
-            writer.WriteLine($"// exitType={ExitType} start=0x{Start:X}");
+            if(Instructions.Count > 0)
+                writer.WriteLine($"// exitType={ExitType} start=0x{Start:X}");
             if (TrueExit != null)
                 writer.WriteLine($"// trueExit=0x{TrueExit.Start:X}");
             if (FalseExit != null)
