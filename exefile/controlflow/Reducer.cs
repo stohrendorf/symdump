@@ -35,8 +35,9 @@ namespace exefile.controlflow
             bool reduced;
             do
             {
-                reduced = Blocks.Values.Reverse().Any(ReduceIfWhile)
-                          || Blocks.Values.Reverse().Any(ReduceIfElse)
+                reduced = Blocks.Values.Reverse().Any(ReduceIfElse)
+                          || Blocks.Values.Reverse().Any(ReduceIfWhile)
+                          || Blocks.Values.Reverse().Any(ReduceDoWhile)
                           || Blocks.Values.Reverse().Any(ReduceSequence);
 
                 var recursionProtection = new HashSet<uint>();
@@ -117,6 +118,42 @@ namespace exefile.controlflow
                    TryMakeIfWhileBlock(condition, body, common, true);
         }
 
+        internal bool ReduceDoWhile([NotNull] IBlock body)
+        {
+            /*
+            do {
+              body<exit=unconditional>;
+            } while(condition<exit=conditional>);
+            commonCode;
+            */
+
+            if (body.ExitType != ExitType.Unconditional)
+                return false;
+
+            var condition = body.TrueExit;
+            Debug.Assert(condition != null);
+            if (condition.ExitType != ExitType.Conditional || CountReferencesTo(condition) > 1)
+                return false;
+
+            Debug.Assert(condition.TrueExit != null);
+            Debug.Assert(condition.FalseExit != null);
+
+            if (condition.TrueExit.Start != body.Start && condition.FalseExit.Start != body.Start)
+                return false;
+            
+            var common = condition.TrueExit.Start == body.Start ? condition.FalseExit : condition.TrueExit;
+
+            logger.Debug($"Reduce do-while: body={body.Start:X} condition={condition.Start:X} common={common.Start:X}");
+
+            IBlock compound = new DoWhileBlock(body, condition);
+
+            Blocks.Remove(condition.Start);
+            Blocks.Remove(body.Start);
+            Blocks.Add(compound.Start, compound);
+
+            return true;
+        }
+
         internal bool ReduceIfElse([NotNull] IBlock condition)
         {
             /*
@@ -130,22 +167,23 @@ namespace exefile.controlflow
 
             var trueBody = condition.TrueExit;
             Debug.Assert(trueBody != null);
+            if (trueBody.ExitType != ExitType.Unconditional || trueBody.TrueExit == null)
+                return false;
+            if (CountReferencesTo(trueBody) > 1)
+                return false;
+            
             var falseBody = condition.FalseExit;
             Debug.Assert(falseBody != null);
-            if (falseBody.TrueExit == null)
+            if (falseBody.ExitType != ExitType.Unconditional || falseBody.TrueExit == null)
                 return false;
             if (CountReferencesTo(falseBody) > 1)
                 return false;
 
-            if (trueBody.ExitType != ExitType.Unconditional || trueBody.ExitType != ExitType.Unconditional)
+            if (falseBody.TrueExit.Start != trueBody.TrueExit.Start)
                 return false;
-            if (CountReferencesTo(trueBody) > 1)
-                return false;
-
+            
             var common = trueBody.TrueExit;
             Debug.Assert(common != null);
-            if (common.Start != falseBody.TrueExit.Start)
-                return false;
 
             var compound = new IfElseBlock(condition, trueBody, falseBody, common);
             Blocks.Remove(condition.Start);
@@ -159,10 +197,6 @@ namespace exefile.controlflow
         private bool TryMakeIfWhileBlock([NotNull] IBlock condition, [NotNull] IBlock body, [NotNull] IBlock common,
             bool inverted)
         {
-            Debug.Assert(condition != null);
-            Debug.Assert(body != null);
-            Debug.Assert(common != null);
-
             switch (body.ExitType)
             {
                 case ExitType.Return:
