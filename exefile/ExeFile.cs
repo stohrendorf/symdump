@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace exefile
     public class ExeFile
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        
+
         private readonly Queue<uint> _analysisQueue = new Queue<uint>();
         private readonly byte[] _data;
         private readonly uint? _gpBase;
@@ -28,7 +29,7 @@ namespace exefile
             .Select(kv => new KeyValuePair<uint, Instruction>(kv.Key + _header.tAddr, kv.Value));
 
         public IReadOnlyCollection<uint> Callees => _callees;
-        
+
         private readonly IDebugSource _debugSource;
         private readonly Dictionary<uint, HashSet<uint>> _xrefs = new Dictionary<uint, HashSet<uint>>();
         private readonly SortedSet<uint> _callees = new SortedSet<uint>();
@@ -99,7 +100,7 @@ namespace exefile
         public SortedDictionary<uint, IBlock> Decompile(uint addr)
         {
             logger.Info($"Started decompilation of address 0x{addr:x8}");
-            
+
             var func = _debugSource.FindFunction(addr);
             if (func != null)
                 logger.Debug(func.GetSignature());
@@ -109,7 +110,7 @@ namespace exefile
 
             var control = new ControlFlowProcessor();
             control.Process(addr, _instructions);
-            
+
             var reducer = new Reducer(control.Blocks);
             reducer.Reduce();
             //reducer.Dump(new IndentedTextWriter(Console.Out));
@@ -150,7 +151,7 @@ namespace exefile
         public void Disassemble()
         {
             logger.Info("Disassembly started");
-            
+
             _analysisQueue.Clear();
             _analysisQueue.Enqueue(_header.pc0 - _header.tAddr);
             foreach (var addr in _debugSource.Functions.Select(f => f.Address))
@@ -195,8 +196,138 @@ namespace exefile
 
                 _analysisQueue.Enqueue(index);
             }
-            
+
             logger.Info($"Disassembled {_instructions.Count} instructions, detected {_callees.Count} callees");
+
+            JoinLoadStoreInstructions();
+        }
+
+        private void JoinLoadStoreInstructions()
+        {
+            uint addr = _instructions.Keys.First();
+            Debug.Assert(addr % 4 == 0);
+            uint last = _instructions.Keys.Last();
+            Debug.Assert(last % 4 == 0);
+            Debug.Assert(last + 4 != 0);
+
+            logger.Info("Joining split load/store instructions");
+
+            uint joinCount = 0;
+            
+            for (; addr <= last; addr += 4)
+            {
+                if(!_instructions.ContainsKey(addr) || !_instructions.ContainsKey(addr+4))
+                    continue;
+                
+                // only join if the second instruction is not referenced
+                if(_callees.Contains(addr+4) || _xrefs.ContainsKey(addr+4))
+                    continue;
+
+                var a = _instructions[addr];
+                var b = _instructions[addr+4];
+                
+                // la $x, addr  <==>  lui $at, addr>>16; addiu $x, $at, addr&0xffff
+                if (a is DataCopyInstruction && (a.Operands[0] as RegisterOperand)?.Register == Register.at && a.Operands[1] is ImmediateOperand)
+                {
+                    var b2 = b as ArithmeticInstruction;
+                    if (b2?.Operands[0] is RegisterOperand && (b2.Operands[1] as RegisterOperand)?.Register == Register.at && b2.Operands[2] is ImmediateOperand)
+                    {
+                        uint offs = (uint) ((ImmediateOperand) a.Operands[1]).Value |
+                                    (uint) ((ImmediateOperand) b2.Operands[2]).Value;
+                        _instructions[addr] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
+                        _instructions[addr + 4] = new NopInstruction();
+                        addr += 4;
+                        ++joinCount;
+                        continue;
+                    }
+                }
+                
+                // a variation: use in-place register instead of $at
+                // la $x, addr  <==>  lui $x, addr>>16; addiu $x, $x, addr&0xffff
+                if (a is DataCopyInstruction && b is ArithmeticInstruction
+                    && (a.Operands[0] as RegisterOperand)?.Register == (b.Operands[1] as RegisterOperand)?.Register
+                    && a.Operands[1] is ImmediateOperand)
+                {
+                    var b2 = b as ArithmeticInstruction;
+                    if (b2?.Operands[2] is ImmediateOperand && (b2.Operands[0] as RegisterOperand)?.Register == (b2.Operands[1] as RegisterOperand)?.Register)
+                    {
+                        uint offs = (uint) ((ImmediateOperand) a.Operands[1]).Value |
+                                    (uint) ((ImmediateOperand) b2.Operands[2]).Value;
+                        _instructions[addr] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
+                        _instructions[addr + 4] = new NopInstruction();
+                        addr += 4;
+                        ++joinCount;
+                        continue;
+                    }
+                }
+                
+                // a variation: use temp register instead of $at
+                // la $x, addr  <==>  lui $x2, addr>>16; addiu $x, $x2, addr&0xffff
+                if (a is DataCopyInstruction && b is ArithmeticInstruction
+                    && (a.Operands[0] as RegisterOperand)?.Register == (b.Operands[1] as RegisterOperand)?.Register
+                    && a.Operands[1] is ImmediateOperand)
+                {
+                    var b2 = b as ArithmeticInstruction;
+                    if (b2?.Operands[2] is ImmediateOperand)
+                    {
+                        uint offs = (uint) ((ImmediateOperand) a.Operands[1]).Value |
+                                    (uint) ((ImmediateOperand) b2.Operands[2]).Value;
+                        _instructions[addr + 4] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
+                        addr += 4;
+                        ++joinCount;
+                        continue;
+                    }
+                }
+                
+                // lw $x, addr  <==>  lui $at, addr>>16; lw $x, (addr&0xffff)($at)
+                if (a is DataCopyInstruction && b is DataCopyInstruction
+                    && (a.Operands[0] as RegisterOperand)?.Register == Register.at
+                    && a.Operands[1] is ImmediateOperand)
+                {
+                    var b2 = b as DataCopyInstruction;
+                    if (b2?.Operands[0] is RegisterOperand && (b2.Operands[1] as RegisterOffsetOperand)?.Register == Register.at)
+                    {
+                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value |
+                                            ((RegisterOffsetOperand) b.Operands[1]).Offset);
+
+                        var src = new LabelOperand(_debugSource.GetSymbolName(offs), offs);
+                        var srcSize = b2.SrcSize;
+                        var dstSize = b2.DstSize;
+                        
+                        _instructions[addr] = new DataCopyInstruction(b2.Operands[0], dstSize, src, srcSize);
+                        _instructions[addr + 4] = new NopInstruction();
+                        addr += 4;
+                        ++joinCount;
+                        continue;
+                    }
+                }
+                
+                // a variation: use in-place register instead of $at
+                // lw $x, addr  <==>  lui $x, addr>>16; lw $x, (addr&0xffff)($x)
+                if (a is DataCopyInstruction && b is DataCopyInstruction
+                    && (a.Operands[0] as RegisterOperand)?.Register == (b.Operands[1] as RegisterOffsetOperand)?.Register
+                    && a.Operands[1] is ImmediateOperand)
+                {
+                    var b2 = b as DataCopyInstruction;
+                    if (b2?.Operands[0] is RegisterOperand)
+                    {
+                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value |
+                                            ((RegisterOffsetOperand) b.Operands[1]).Offset);
+
+                        var src = new LabelOperand(_debugSource.GetSymbolName(offs), offs);
+                        var srcSize = b2.SrcSize;
+                        var dstSize = b2.DstSize;
+                        
+                        _instructions[addr] = new DataCopyInstruction(b2.Operands[0], dstSize, src, srcSize);
+                        _instructions[addr + 4] = new NopInstruction();
+                        addr += 4;
+                        ++joinCount;
+                        continue;
+                    }
+                }
+            }
+            
+            logger.Info($"Joined {joinCount} load/store instructions");
         }
 
         public void Dump()
@@ -255,12 +386,16 @@ namespace exefile
                 case Opcode.j:
                     AddXref(index - 4, (data & 0x03FFFFFF) << 2);
                     _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
+                    return new CallPtrInstruction(
+                        new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2),
+                            (data & 0x03FFFFFF) << 2),
                         null);
                 case Opcode.jal:
                     AddCall(index - 4, (data & 0x03FFFFFF) << 2);
                     _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2), (data & 0x03FFFFFF) << 2),
+                    return new CallPtrInstruction(
+                        new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2),
+                            (data & 0x03FFFFFF) << 2),
                         new RegisterOperand(Register.ra));
                 case Opcode.beq:
                     AddXref(index - 4, (uint) ((index + (short) data) << 2));
