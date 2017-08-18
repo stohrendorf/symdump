@@ -9,18 +9,18 @@ namespace exefile.controlflow
 {
     public class SequenceBlock : IBlock
     {
-        public SortedDictionary<uint, IBlock> Sequence { get; private set; } = new SortedDictionary<uint, IBlock>();
+        public List<IBlock> Sequence { get; private set; } = new List<IBlock>();
 
-        public IBlock TrueExit => Sequence.Values.Last().TrueExit;
+        public IBlock TrueExit => Sequence.Last().TrueExit;
         public IBlock FalseExit => null;
-        public uint Start => Sequence.Keys.First();
+        public uint Start => Sequence.First().Start;
 
         public SortedDictionary<uint, Instruction> Instructions
         {
             get
             {
                 var tmp = new SortedDictionary<uint, Instruction>();
-                foreach (var block in Sequence.Values)
+                foreach (var block in Sequence)
                 {
                     foreach (var insn in block.Instructions)
                     {
@@ -31,9 +31,9 @@ namespace exefile.controlflow
             }
         }
 
-        public ExitType? ExitType => Sequence.Values.Last().ExitType;
+        public ExitType? ExitType => Sequence.Last().ExitType;
 
-        public bool ContainsAddress(uint address) => Sequence.Values.Any(b => b.ContainsAddress(address));
+        public bool ContainsAddress(uint address) => Sequence.Any(b => b.ContainsAddress(address));
 
         public override string ToString()
         {
@@ -45,7 +45,7 @@ namespace exefile.controlflow
 
         public void Dump(IndentedTextWriter writer)
         {
-            foreach (var block in Sequence.Values)
+            foreach (var block in Sequence)
             {
                 block.Dump(writer);
             }
@@ -56,10 +56,10 @@ namespace exefile.controlflow
             if (!processed.Add(Start))
                 return;
 
-            var lastAddress = Sequence.Keys.Last();
+            var lastAddress = Sequence.Last().Start;
             if (blocks.ContainsKey(lastAddress))
-                Sequence[lastAddress] = blocks[lastAddress];
-            Sequence[lastAddress].UpdateReferences(blocks, processed);
+                Sequence.Add(blocks[lastAddress]);
+            Sequence.Last().UpdateReferences(blocks, processed);
         }
     }
 }

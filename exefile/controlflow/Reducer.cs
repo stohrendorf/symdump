@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using core.util;
 using JetBrains.Annotations;
 using mips.instructions;
 using NLog;
+using NLog.Config;
+using NLog.Targets;
 using Xunit;
 
 namespace exefile.controlflow
@@ -64,7 +65,7 @@ namespace exefile.controlflow
                 (next?.ExitType != ExitType.Unconditional && next?.ExitType != ExitType.Return))
                 return false;
 
-            if (CountReferencesTo(next) > 1)
+            if (CountReferencesTo(next) != 1)
                 return false;
 
             if (block is SequenceBlock)
@@ -72,7 +73,7 @@ namespace exefile.controlflow
                 var existing = (SequenceBlock) block;
                 Debug.Assert(existing.TrueExit != null);
 
-                if (existing.Sequence.ContainsKey(next.Start))
+                if (existing.Sequence.Count(b => b.Start == next.Start) > 0)
                 {
                     logger.Debug($"Sequence {block.Start:X}: block {next.Start:X} already in sequence");
                     return false;
@@ -80,7 +81,7 @@ namespace exefile.controlflow
 
                 logger.Debug($"Sequence {block.Start:X}: attach block {next.Start:X}");
 
-                existing.Sequence.Add(next.Start, next);
+                existing.Sequence.Add(next);
                 Blocks.Remove(next.Start);
                 return true;
             }
@@ -88,8 +89,8 @@ namespace exefile.controlflow
             logger.Debug($"New sequence {block.Start:X} with block {next.Start:X}");
 
             var seq = new SequenceBlock();
-            seq.Sequence.Add(block.Start, block);
-            seq.Sequence.Add(next.Start, next);
+            seq.Sequence.Add(block);
+            seq.Sequence.Add(next);
             Blocks.Remove(block.Start);
             Blocks.Remove(next.Start);
             Blocks.Add(seq.Start, seq);
@@ -112,10 +113,8 @@ namespace exefile.controlflow
             var body = condition.FalseExit;
             Debug.Assert(body != null);
 
-            return TryMakeIfWhileBlock(condition, body, common, true)
-                   || TryMakeIfWhileBlock(condition, common, body, false);
-
-            // swap and try again
+            return TryMakeIfWhileBlock(condition, common, body, false) ||
+                   TryMakeIfWhileBlock(condition, body, common, true);
         }
 
         internal bool ReduceIfElse([NotNull] IBlock condition)
@@ -164,23 +163,31 @@ namespace exefile.controlflow
             Debug.Assert(body != null);
             Debug.Assert(common != null);
 
-            if (body.ExitType != ExitType.Return &&
-                (body.ExitType != ExitType.Unconditional || body.TrueExit != common))
-                return false;
-
-            if (body.ExitType != ExitType.Return && CountReferencesTo(body) > 1)
-                return false;
+            switch (body.ExitType)
+            {
+                case ExitType.Return:
+                    break;
+                case ExitType.Unconditional:
+                    Debug.Assert(body.TrueExit != null);
+                    if (body.TrueExit.Start != common.Start && body.TrueExit.Start != condition.Start)
+                        return false;
+                    if (body.TrueExit.Start == common.Start && CountReferencesTo(body) > 1)
+                        return false;
+                    break;
+                default:
+                    return false;
+            }
 
             logger.Debug($"Reduce: condition={condition.Start:X} body={body.Start:X} common={common.Start:X}");
 
             IBlock compound;
-            if (body.Start != condition.Start)
+            if (body.TrueExit?.Start != condition.Start)
                 compound = new IfBlock(condition, body, common, inverted);
             else
                 compound = new WhileBlock(condition, body, common, inverted);
 
             Blocks.Remove(condition.Start);
-            if (body.ExitType != ExitType.Return)
+            if (CountReferencesTo(body) == 0)
                 Blocks.Remove(body.Start);
             Blocks.Add(compound.Start, compound);
 
@@ -214,7 +221,7 @@ namespace exefile.controlflow
             var blocks = new Dictionary<uint, IBlock>();
 
             var common = CreateNopBlock(blocks, 8);
-            common.ExitType = ExitType.Unconditional;
+            common.ExitType = ExitType.Return;
 
             var body = CreateNopBlock(blocks, 4);
             body.ExitType = ExitType.Unconditional;
@@ -244,7 +251,49 @@ namespace exefile.controlflow
             Assert.Null(b2.TrueExit);
             Assert.Null(b2.FalseExit);
             Assert.Equal(8u, b2.Start);
-            Assert.Equal(ExitType.Unconditional, b2.ExitType);
+            Assert.Equal(ExitType.Return, b2.ExitType);
+
+            Assert.Same(b2, b1.TrueExit);
+        }
+
+        [Fact]
+        public static void TestWhile()
+        {
+            var blocks = new Dictionary<uint, IBlock>();
+
+            var common = CreateNopBlock(blocks, 8);
+            common.ExitType = ExitType.Return;
+
+            var body = CreateNopBlock(blocks, 4);
+            body.ExitType = ExitType.Unconditional;
+
+            var condition = CreateNopBlock(blocks, 0);
+            condition.ExitType = ExitType.Conditional;
+            condition.TrueExit = body;
+            condition.FalseExit = common;
+
+            body.TrueExit = condition;
+
+            var reducer = new Reducer(blocks);
+            reducer.ReduceIfWhile(condition);
+
+            Assert.Equal(2, reducer.Blocks.Count);
+            Assert.True(reducer.Blocks.ContainsKey(0));
+            Assert.True(reducer.Blocks.ContainsKey(8));
+
+            var b1 = reducer.Blocks[0];
+            Assert.IsType<WhileBlock>(b1);
+            Assert.NotNull(b1.TrueExit);
+            Assert.Null(b1.FalseExit);
+            Assert.Equal(0u, b1.Start);
+            Assert.Equal(ExitType.Unconditional, b1.ExitType);
+
+            var b2 = reducer.Blocks[8];
+            Assert.IsType<Block>(b2);
+            Assert.Null(b2.TrueExit);
+            Assert.Null(b2.FalseExit);
+            Assert.Equal(8u, b2.Start);
+            Assert.Equal(ExitType.Return, b2.ExitType);
 
             Assert.Same(b2, b1.TrueExit);
         }
@@ -255,7 +304,7 @@ namespace exefile.controlflow
             var blocks = new Dictionary<uint, IBlock>();
 
             var common = CreateNopBlock(blocks, 12);
-            common.ExitType = ExitType.Unconditional;
+            common.ExitType = ExitType.Return;
 
             var falseBody = CreateNopBlock(blocks, 8);
             falseBody.ExitType = ExitType.Unconditional;
@@ -289,7 +338,7 @@ namespace exefile.controlflow
             Assert.Null(b2.TrueExit);
             Assert.Null(b2.FalseExit);
             Assert.Equal(12u, b2.Start);
-            Assert.Equal(ExitType.Unconditional, b2.ExitType);
+            Assert.Equal(ExitType.Return, b2.ExitType);
 
             Assert.Same(b2, b1.TrueExit);
 
