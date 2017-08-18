@@ -30,6 +30,7 @@ namespace exefile.controlflow
             Condition = condition;
             InvertedCondition = condition.FalseExit.Start == body.Start;
             Exit = InvertedCondition ? condition.TrueExit : condition.FalseExit;
+            Debug.Assert(Exit.Start != Body.Start);
         }
 
         public IBlock TrueExit => Exit;

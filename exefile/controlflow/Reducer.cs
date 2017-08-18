@@ -35,10 +35,11 @@ namespace exefile.controlflow
             bool reduced;
             do
             {
-                reduced = Blocks.Values.Reverse().Any(ReduceIfElse)
-                          || Blocks.Values.Reverse().Any(ReduceIfWhile)
-                          || Blocks.Values.Reverse().Any(ReduceDoWhile)
-                          || Blocks.Values.Reverse().Any(ReduceSequence);
+                reduced = Blocks.Values.Any(ReduceIfElse)
+                          || Blocks.Values.Any(ReduceIfWhile)
+                          || Blocks.Values.Any(ReduceDoWhile)
+                          || Blocks.Values.Any(ReduceWhileTrue)
+                          || Blocks.Values.Any(ReduceSequence);
 
                 var recursionProtection = new HashSet<uint>();
                 foreach (var b in Blocks.Values)
@@ -61,7 +62,7 @@ namespace exefile.controlflow
         {
             var next = block.TrueExit;
             logger.Debug(
-                $"SEQ check {block.Start:X} {block.Start:X}={block.ExitType} {next?.Start:X}={next?.ExitType}");
+                $"Reduce sequence: block={block.Start:X} {block.ExitType} next={next?.Start:X} {next?.ExitType}");
             if (block.ExitType != ExitType.Unconditional ||
                 (next?.ExitType != ExitType.Unconditional && next?.ExitType != ExitType.Return))
                 return false;
@@ -116,6 +117,18 @@ namespace exefile.controlflow
 
             return TryMakeIfWhileBlock(condition, common, body, false) ||
                    TryMakeIfWhileBlock(condition, body, common, true);
+        }
+
+        internal bool ReduceWhileTrue([NotNull] IBlock body)
+        {
+            if (body.ExitType != ExitType.Unconditional)
+                return false;
+            Debug.Assert(body.TrueExit != null);
+            if (body.TrueExit.Start != body.Start)
+                return false;
+
+            Blocks[body.Start] = new WhileTrueBlock(body);
+            return true;
         }
 
         internal bool ReduceDoWhile([NotNull] IBlock body)
@@ -212,7 +225,7 @@ namespace exefile.controlflow
                     return false;
             }
 
-            logger.Debug($"Reduce: condition={condition.Start:X} body={body.Start:X} common={common.Start:X}");
+            logger.Debug($"Reduce if-while: condition={condition.Start:X} body={body.Start:X} common={common.Start:X}");
 
             IBlock compound;
             if (body.TrueExit?.Start != condition.Start)
