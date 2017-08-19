@@ -18,7 +18,7 @@ namespace exefile.controlflow
         }
 
         [NotNull]
-        public IBlock Body { get; private set; }
+        public IBlock Body { get; }
 
         public IBlock TrueExit => null;
         public IBlock FalseExit => null;

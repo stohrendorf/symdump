@@ -5,8 +5,6 @@ using core.util;
 using JetBrains.Annotations;
 using mips.instructions;
 using NLog;
-using NLog.Config;
-using NLog.Targets;
 using Xunit;
 
 namespace exefile.controlflow

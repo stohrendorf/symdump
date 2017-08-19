@@ -10,13 +10,13 @@ namespace exefile.controlflow
     public class IfElseBlock : IBlock
     {
         [NotNull]
-        public IBlock Condition { get; private set; }
+        public IBlock Condition { get; }
 
         [NotNull]
-        public IBlock TrueBody { get; private set; }
+        public IBlock TrueBody { get; }
 
         [NotNull]
-        public IBlock FalseBody { get; private set; }
+        public IBlock FalseBody { get; }
 
         [NotNull]
         public IBlock Exit { get; private set; }

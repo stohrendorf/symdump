@@ -9,7 +9,7 @@ namespace exefile.controlflow
 {
     public class SequenceBlock : IBlock
     {
-        public List<IBlock> Sequence { get; private set; } = new List<IBlock>();
+        public List<IBlock> Sequence { get; } = new List<IBlock>();
 
         public IBlock TrueExit => Sequence.Last().TrueExit;
         public IBlock FalseExit => null;

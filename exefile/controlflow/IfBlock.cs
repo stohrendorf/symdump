@@ -10,10 +10,10 @@ namespace exefile.controlflow
     public class IfBlock : IBlock
     {
         [NotNull]
-        public IBlock Condition { get; private set; }
+        public IBlock Condition { get; }
 
         [NotNull]
-        public IBlock Body { get; private set; }
+        public IBlock Body { get; }
 
         [NotNull]
         public IBlock Exit { get; private set; }
