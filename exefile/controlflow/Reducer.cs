@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using core.util;
-using JetBrains.Annotations;
-using mips.instructions;
+using exefile.controlflow.cfg;
 using NLog;
-using Xunit;
 
 namespace exefile.controlflow
 {
@@ -13,243 +11,223 @@ namespace exefile.controlflow
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public SortedDictionary<uint, IBlock> Blocks { get; private set; } = new SortedDictionary<uint, IBlock>();
+        public readonly Graph Graph;
 
-        public Reducer([NotNull] IReadOnlyDictionary<uint, IBlock> blocks)
+        public Reducer(Graph graph)
         {
-            foreach (var block in blocks)
-            {
-                Blocks.Add(block.Key, block.Value);
-            }
-        }
-
-        private int CountReferencesTo(IBlock block)
-        {
-            return Blocks.Values.Count(b => ReferenceEquals(block, b.TrueExit) || ReferenceEquals(block, b.FalseExit));
+            Graph = graph;
         }
 
         public void Reduce()
         {
-            bool reduced;
-            do
+            while(true)
             {
-                reduced = Blocks.Values.Any(ReduceIfElse)
-                          || Blocks.Values.Any(ReduceIfWhile)
-                          || Blocks.Values.Any(ReduceDoWhile)
-                          || Blocks.Values.Any(ReduceWhileTrue)
-                          || Blocks.Values.Any(ReduceSequence);
+                Debug.Assert(Graph.Validate());
+                
+                logger.Debug("Analysis cycle results:");
+                
+                var ifCandidates = FindCandidatesForIf().ToImmutableHashSet();
+                logger.Debug($" - {ifCandidates.Count} if-candidates");
 
-                var recursionProtection = new HashSet<uint>();
-                foreach (var b in Blocks.Values)
+                var ifElseCandidates = FindCandidatesForIfElse().ToImmutableHashSet();
+                logger.Debug($" - {ifElseCandidates.Count} if-else-candidates");
+
+                var whileCandidates = FindCandidatesForWhile().ToImmutableHashSet();
+                logger.Debug($" - {whileCandidates.Count} while-candidates");
+
+                var sequenceCandidates = FindCandidatesForSequence().ToImmutableHashSet();
+                logger.Debug($" - {sequenceCandidates.Count} sequence-candidates");
+
+                var whileTrueCandidates = FindCandidatesForWhileTrue().ToImmutableHashSet();
+                logger.Debug($" - {whileTrueCandidates.Count} while-true-candidates");
+
+                var doWhileCandidates = FindCandidatesForDoWhile().ToImmutableHashSet();
+                logger.Debug($" - {doWhileCandidates.Count} do-while-candidates");
+
+                if (whileTrueCandidates.Count > 0)
                 {
-                    b.UpdateReferences(Blocks, recursionProtection);
-                }
-            } while (reduced);
-
-            // clean up unreferenced blocks, except the start block
-            var cleaned = new SortedDictionary<uint, IBlock>();
-            var first = Blocks.Keys.First();
-            foreach (var b in Blocks.Where(kv => kv.Key == first || CountReferencesTo(kv.Value) > 0))
-            {
-                cleaned.Add(b.Key, b.Value);
-            }
-            Blocks = cleaned;
-        }
-
-        private bool ReduceSequence([NotNull] IBlock block)
-        {
-            var next = block.TrueExit;
-            logger.Debug(
-                $"Reduce sequence: block={block.Start:X} {block.ExitType} next={next?.Start:X} {next?.ExitType}");
-            if (block.ExitType != ExitType.Unconditional ||
-                (next?.ExitType != ExitType.Unconditional && next?.ExitType != ExitType.Return))
-                return false;
-
-            if (CountReferencesTo(next) != 1)
-                return false;
-
-            if (block is SequenceBlock)
-            {
-                var existing = (SequenceBlock) block;
-                Debug.Assert(existing.TrueExit != null);
-
-                if (existing.Sequence.Count(b => b.Start == next.Start) > 0)
-                {
-                    logger.Debug($"Sequence {block.Start:X}: block {next.Start:X} already in sequence");
-                    return false;
+                    var candidate = whileTrueCandidates.First();
+                    logger.Debug("Doing while-true with:");
+                    logger.Debug(candidate);
+                    
+                    // ReSharper disable once ObjectCreationAsStatement
+                    new WhileTrueNode(candidate);
+                    continue;
                 }
 
-                logger.Debug($"Sequence {block.Start:X}: attach block {next.Start:X}");
+                if (ifCandidates.Count > 0)
+                {
+                    var candidate = ifCandidates.First();
+                    logger.Debug("Doing if with:");
+                    logger.Debug(candidate);
 
-                existing.Sequence.Add(next);
-                Blocks.Remove(next.Start);
-                return true;
+                    // ReSharper disable once ObjectCreationAsStatement
+                    new IfNode(candidate);
+                    continue;
+                }
+
+                break;
             }
-
-            logger.Debug($"New sequence {block.Start:X} with block {next.Start:X}");
-
-            var seq = new SequenceBlock();
-            seq.Sequence.Add(block);
-            seq.Sequence.Add(next);
-            Blocks.Remove(block.Start);
-            Blocks.Remove(next.Start);
-            Blocks.Add(seq.Start, seq);
-            return true;
         }
 
-        internal bool ReduceIfWhile([NotNull] IBlock condition)
+        private IEnumerable<INode> FindCandidatesForIf()
         {
-            /*
-            if(condition<exit=conditional>)
-              body<exit=unconditional|return>;
-            commonCode;
-            */
-
-            if (condition.ExitType != ExitType.Conditional)
-                return false;
-
-            var common = condition.TrueExit;
-            Debug.Assert(common != null);
-            var body = condition.FalseExit;
-            Debug.Assert(body != null);
-
-            return TryMakeIfWhileBlock(condition, common, body, false) ||
-                   TryMakeIfWhileBlock(condition, body, common, true);
-        }
-
-        internal bool ReduceWhileTrue([NotNull] IBlock body)
-        {
-            if (body.ExitType != ExitType.Unconditional)
-                return false;
-            Debug.Assert(body.TrueExit != null);
-            if (body.TrueExit.Start != body.Start)
-                return false;
-
-            Blocks[body.Start] = new WhileTrueBlock(body);
-            return true;
-        }
-
-        internal bool ReduceDoWhile([NotNull] IBlock body)
-        {
-            /*
-            do {
-              body<exit=unconditional>;
-            } while(condition<exit=conditional>);
-            commonCode;
-            */
-
-            if (body.ExitType != ExitType.Unconditional)
-                return false;
-
-            var condition = body.TrueExit;
-            Debug.Assert(condition != null);
-            if (condition.ExitType != ExitType.Conditional || CountReferencesTo(condition) > 1)
-                return false;
-
-            Debug.Assert(condition.TrueExit != null);
-            Debug.Assert(condition.FalseExit != null);
-
-            if (condition.TrueExit.Start != body.Start && condition.FalseExit.Start != body.Start)
-                return false;
-            
-            var common = condition.TrueExit.Start == body.Start ? condition.FalseExit : condition.TrueExit;
-
-            logger.Debug($"Reduce do-while: body={body.Start:X} condition={condition.Start:X} common={common.Start:X}");
-
-            IBlock compound = new DoWhileBlock(body, condition);
-
-            Blocks.Remove(condition.Start);
-            Blocks.Remove(body.Start);
-            Blocks.Add(compound.Start, compound);
-
-            return true;
-        }
-
-        internal bool ReduceIfElse([NotNull] IBlock condition)
-        {
-            /*
-            if(condition<exit=conditional>) trueBody<exit=unconditional>;
-            else falseBody<exit=unconditional>;
-            commonCode;
-            */
-
-            if (condition.ExitType != ExitType.Conditional)
-                return false;
-
-            var trueBody = condition.TrueExit;
-            Debug.Assert(trueBody != null);
-            if (trueBody.ExitType != ExitType.Unconditional || trueBody.TrueExit == null)
-                return false;
-            if (CountReferencesTo(trueBody) > 1)
-                return false;
-            
-            var falseBody = condition.FalseExit;
-            Debug.Assert(falseBody != null);
-            if (falseBody.ExitType != ExitType.Unconditional || falseBody.TrueExit == null)
-                return false;
-            if (CountReferencesTo(falseBody) > 1)
-                return false;
-
-            if (falseBody.TrueExit.Start != trueBody.TrueExit.Start)
-                return false;
-            
-            var common = trueBody.TrueExit;
-            Debug.Assert(common != null);
-
-            var compound = new IfElseBlock(condition, trueBody, falseBody, common);
-            Blocks.Remove(condition.Start);
-            Blocks.Remove(trueBody.Start);
-            Blocks.Remove(falseBody.Start);
-            Blocks.Add(compound.Start, compound);
-
-            return true;
-        }
-
-        private bool TryMakeIfWhileBlock([NotNull] IBlock condition, [NotNull] IBlock body, [NotNull] IBlock common,
-            bool inverted)
-        {
-            switch (body.ExitType)
+            foreach (var condition in Graph.Nodes)
             {
-                case ExitType.Return:
-                    break;
-                case ExitType.Unconditional:
-                    Debug.Assert(body.TrueExit != null);
-                    if (body.TrueExit.Start != common.Start && body.TrueExit.Start != condition.Start)
-                        return false;
-                    if (body.TrueExit.Start == common.Start && CountReferencesTo(body) > 1)
-                        return false;
-                    break;
-                default:
-                    return false;
+                if (condition.Outs.Count() != 2)
+                    continue;
+
+                var trueNode = condition.Outs.FirstOrDefault(e => e is TrueEdge)?.To;
+                if (trueNode == null)
+                    continue;
+
+                var falseNode = condition.Outs.FirstOrDefault(e => e is FalseEdge)?.To;
+                if (falseNode == null)
+                    continue;
+
+                // if(condition) trueNode;
+                if (Graph.CountIns(trueNode) == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
+                {
+                    if (trueNode.Outs.First().To.Equals(falseNode))
+                        yield return condition;
+                }
+
+                // if(!condition) falseNode;
+                if (Graph.CountIns(falseNode) == 1 && falseNode.Outs.Count() == 1 && falseNode.Outs.First() is AlwaysEdge)
+                {
+                    if (falseNode.Outs.First().To.Equals(trueNode))
+                        yield return condition;
+                }
             }
-
-            logger.Debug($"Reduce if-while: condition={condition.Start:X} body={body.Start:X} common={common.Start:X}");
-
-            IBlock compound;
-            if (body.TrueExit?.Start != condition.Start)
-                compound = new IfBlock(condition, body, common, inverted);
-            else
-                compound = new WhileBlock(condition, body, common, inverted);
-
-            Blocks.Remove(condition.Start);
-            if (CountReferencesTo(body) == 0)
-                Blocks.Remove(body.Start);
-            Blocks.Add(compound.Start, compound);
-
-            return true;
         }
 
-        public void Dump(IndentedTextWriter writer)
+        private IEnumerable<INode> FindCandidatesForIfElse()
         {
-            foreach (var block in Blocks.Values)
+            foreach (var condition in Graph.Nodes)
             {
-                writer.WriteLine($"-- Block 0x{block.Start:x8} {block.GetType()}");
-                block.Dump(writer);
-                writer.WriteLine();
+                if (condition.Outs.Count() != 2)
+                    continue;
+
+                var trueNode = condition.Outs.FirstOrDefault(e => e is TrueEdge)?.To;
+                if (trueNode == null)
+                    continue;
+
+                var falseNode = condition.Outs.FirstOrDefault(e => e is FalseEdge)?.To;
+                if (falseNode == null)
+                    continue;
+
+                if(trueNode.Outs.Count() != 1 || falseNode.Outs.Count() != 1)
+                    continue;
+
+                var common = trueNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+                if(common == null)
+                    continue;
+                
+                if(!common.Equals(falseNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To))
+                    continue;
+
+                yield return condition;
+            }
+        }
+
+        private IEnumerable<INode> FindCandidatesForWhile()
+        {
+            foreach (var condition in Graph.Nodes)
+            {
+                if (condition.Outs.Count() != 2)
+                    continue;
+
+                var trueNode = condition.Outs.FirstOrDefault(e => e is TrueEdge)?.To;
+                if (trueNode == null)
+                    continue;
+
+                var falseNode = condition.Outs.FirstOrDefault(e => e is FalseEdge)?.To;
+                if (falseNode == null)
+                    continue;
+
+                if (Graph.CountIns(trueNode) == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
+                {
+                    if (trueNode.Outs.First().To.Equals(condition))
+                        yield return condition;
+                }
+
+                if (Graph.CountIns(falseNode) == 1 && falseNode.Outs.Count() == 1 &&
+                    falseNode.Outs.First() is AlwaysEdge)
+                {
+                    if (falseNode.Outs.First().To.Equals(condition))
+                        yield return condition;
+                }
+            }
+        }
+
+        private IEnumerable<INode> FindCandidatesForSequence()
+        {
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var seq in Graph.Nodes)
+            {
+                if (seq.Outs.Count() != 1)
+                    continue;
+
+                var next = seq.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+                if (next == null)
+                    continue;
+
+                if(Graph.CountIns(next) != 1)
+                    continue;
+
+                yield return seq;
+            }
+        }
+        
+        private IEnumerable<INode> FindCandidatesForWhileTrue()
+        {
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var seq in Graph.Nodes)
+            {
+                if (seq.Outs.Count() != 1)
+                    continue;
+
+                var next = seq.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+                if (next == null)
+                    continue;
+
+                if (next.Equals(seq))
+                    yield return seq;
+            }
+        }
+        
+        private IEnumerable<INode> FindCandidatesForDoWhile()
+        {
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var body in Graph.Nodes)
+            {
+                if (body.Outs.Count() != 1)
+                    continue;
+
+                var condition = body.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+                if (condition == null)
+                    continue;
+                
+                if(Graph.CountIns(condition) != 1)
+                    continue;
+
+                if(condition.Outs.Count() != 2)
+                    continue;
+
+                var trueEdge = condition.Outs.FirstOrDefault(e => e is TrueEdge);
+                if(trueEdge == null)
+                    continue;
+                
+                var falseEdge = condition.Outs.FirstOrDefault(e => e is FalseEdge);
+                if(falseEdge == null)
+                    continue;
+
+                if (trueEdge.To.Equals(body) || falseEdge.To.Equals(body))
+                    yield return body;
             }
         }
     }
-
+#if false
     public static class ReducerTest
     {
         private static Block CreateNopBlock(IDictionary<uint, IBlock> blocks, uint addr)
@@ -393,4 +371,5 @@ namespace exefile.controlflow
             Assert.Same(common, compound.Exit);
         }
     }
+#endif
 }

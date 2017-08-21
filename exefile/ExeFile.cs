@@ -7,6 +7,7 @@ using System.Linq;
 using core;
 using core.util;
 using exefile.controlflow;
+using exefile.controlflow.cfg;
 using exefile.dataflow;
 using mips.disasm;
 using mips.instructions;
@@ -97,25 +98,25 @@ namespace exefile
             return (Opcode) (data >> 26);
         }
 
-        public SortedDictionary<uint, IBlock> Decompile(uint addr)
+        public Graph AnalyzeControlFlow(uint addr)
         {
-            logger.Info($"Started decompilation of address 0x{addr:x8}");
+            logger.Info($"Started control flow analysis of address 0x{addr:x8}");
 
             var func = _debugSource.FindFunction(addr);
             if (func != null)
                 logger.Debug(func.GetSignature());
             addr -= _header.tAddr;
 
-            var flowState = new DataFlowState(_debugSource, func);
+            //var flowState = new DataFlowState(_debugSource, func);
 
             var control = new ControlFlowProcessor();
             control.Process(addr, _instructions);
 
-            var reducer = new Reducer(control.Blocks);
+            var reducer = new Reducer(control.Graph);
             reducer.Reduce();
             //reducer.Dump(new IndentedTextWriter(Console.Out));
 
-            return reducer.Blocks;
+            return reducer.Graph;
 
 #if false
             {

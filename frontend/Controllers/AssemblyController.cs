@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using exefile.controlflow;
 using frontend.Services;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -36,49 +34,37 @@ namespace frontend.Controllers
                 });
         }
 
-        private static IEnumerable<VisEdge> GetEdges(IBlock block, IDictionary<string, VisNode> nodes)
-        {
-            if (block.TrueExit != null)
-                yield return new VisEdge
-                {
-                    From = nodes[block.GetNodeName()],
-                    To = nodes[block.TrueExit.GetNodeName()]
-                };
-
-            if (block.FalseExit != null)
-                yield return new VisEdge
-                {
-                    From = nodes[block.GetNodeName()],
-                    To = nodes[block.FalseExit.GetNodeName()]
-                };
-        }
-
         [HttpGet("decompile/{offset}")]
         public VisGraph Decompile([FromRoute] uint offset)
         {
-            var graph = new VisGraph();
+            var visGraph = new VisGraph();
 
             try
             {
-                var decompiled = _appState.ExeFile?.Decompile(offset);
+                var graph = _appState.ExeFile?.AnalyzeControlFlow(offset);
 
-                var nodes = decompiled?.Values
-                    .Select(v => new VisNode {Id = v.GetNodeName(), Label = v.ToString()})
+                var nodes = graph?.Nodes
+                    .Select(v => new VisNode {Id = v.Id, Label = v.ToString()})
                     .ToDictionary(v => v.Id, v => v);
 
-                graph.Nodes = nodes?.Values.ToList();
+                visGraph.Nodes = nodes?.Values.ToList();
 
-                graph.Edges = decompiled?.Values
-                    .SelectMany(v => GetEdges(v, nodes))
+                visGraph.Edges = graph?.Edges
+                    .Select(e => new VisEdge
+                    {
+                        From = nodes?[e.From.Id],
+                        To = nodes?[e.To.Id]
+                    })
                     .ToList();
 
-                return graph;
+                return visGraph;
             }
+            
             catch (Exception ex)
             {
                 logger.Error(ex, "Decompilation failed");
                 logger.Error(ex.StackTrace);
-                return graph;
+                return visGraph;
             }
         }
     }
