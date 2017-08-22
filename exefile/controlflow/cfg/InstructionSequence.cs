@@ -33,12 +33,10 @@ namespace exefile.controlflow.cfg
                 writer.WriteLine($"// {edge}");
             }
 
-            ++writer.Indent;
             foreach (var insn in Instructions)
             {
                 writer.WriteLine($"0x{insn.Key:X}  {insn.Value.AsReadable()}");
             }
-            --writer.Indent;
         }
 
         public InstructionSequence Chop(uint from)

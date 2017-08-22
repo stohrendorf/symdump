@@ -56,6 +56,17 @@ namespace exefile.controlflow
                     continue;
                 }
 
+                if (doWhileCandidates.Count > 0)
+                {
+                    var candidate = doWhileCandidates.First();
+                    logger.Debug("Doing do-while with:");
+                    logger.Debug(candidate);
+                    
+                    // ReSharper disable once ObjectCreationAsStatement
+                    new DoWhileNode(candidate);
+                    continue;
+                }
+
                 if (ifCandidates.Count > 0)
                 {
                     var candidate = ifCandidates.First();

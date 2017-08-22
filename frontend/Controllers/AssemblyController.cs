@@ -44,21 +44,6 @@ namespace frontend.Controllers
             try
             {
                 var graph = _appState.ExeFile?.AnalyzeControlFlow(offset);
-#if DEBUG
-                if (graph != null)
-                {
-                    Console.WriteLine("Graph nodes:");
-                    foreach (var n in graph.Nodes)
-                    {
-                        n.Dump(new IndentedTextWriter(Console.Out));
-                    }
-                    Console.WriteLine("Graph edges:");
-                    foreach (var e in graph.Edges)
-                    {
-                        Console.WriteLine(e);
-                    }
-                }
-#endif
 
                 var nodes = graph?.Nodes
                     .ToDictionary(v => v.Id, v => new VisNode {Id = v.Id, Label = v.ToString()});

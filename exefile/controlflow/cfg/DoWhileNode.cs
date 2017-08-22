@@ -17,8 +17,8 @@ namespace exefile.controlflow.cfg
 
         private readonly bool _invertedCondition;
 
-        public DoWhileNode([NotNull] INode body, IGraph graph)
-            : base(graph)
+        public DoWhileNode([NotNull] INode body)
+            : base(body.Graph)
         {
             Debug.Assert(body.Outs.Count() == 1);
             Debug.Assert(body.Outs.All(e => e is AlwaysEdge));
@@ -33,11 +33,22 @@ namespace exefile.controlflow.cfg
 
             var trueNode = trueEdge.To;
             var falseNode = falseEdge.To;
+            Debug.Assert(body.Equals(falseNode) || body.Equals(trueNode));
             _invertedCondition = !body.Equals(trueNode);
-            Debug.Assert(_invertedCondition || body.Equals(falseNode));
 
             _condition = condition;
             _body = body;
+            
+            var loop = _condition.Outs.First(e => e.To.Equals(_body));
+            Graph.RemoveEdge(loop);
+
+            Graph.RemoveEdge(_body.Outs.First());
+            Graph.ReplaceNode(_body, this);
+            Debug.Assert(_condition.Outs.Count() == 1);
+            var outgoing = _condition.Outs.First();
+            Graph.RemoveEdge(outgoing);
+            Graph.AddEdge(new AlwaysEdge(this, outgoing.To));
+            Graph.RemoveNode(_condition);
         }
 
         public override SortedDictionary<uint, Instruction> Instructions
