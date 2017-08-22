@@ -18,7 +18,7 @@ namespace exefile.controlflow
         public readonly Graph Graph = new Graph();
 
         [NotNull]
-        private InstructionSequence GetOrCreateSequence(IDictionary<uint, InstructionSequence> sequences,  uint addr)
+        private InstructionSequence GetOrCreateSequence(IDictionary<uint, InstructionSequence> sequences, ISet<IEdge> edges,  uint addr)
         {
             InstructionSequence sequence;
             if (!sequences.TryGetValue(addr, out sequence))
@@ -47,6 +47,20 @@ namespace exefile.controlflow
             
             var chopped = sequence.Chop(addr);
             sequences.Add(chopped.Start, chopped);
+
+            var tmp = edges.ToList();
+            foreach (var e in tmp)
+            {
+                if (!e.From.Equals(sequence))
+                    continue;
+                
+                edges.Remove(e);
+                e.From = chopped;
+                edges.Add(e);
+            }
+
+            edges.Add(new AlwaysEdge(sequence, chopped));
+
             return chopped;
         }
 
@@ -63,7 +77,7 @@ namespace exefile.controlflow
             var exit = new ExitNode(Graph);
             Graph.AddNode(exit);
             
-            edges.Add(new AlwaysEdge(entry, GetOrCreateSequence(sequences, start)));
+            edges.Add(new AlwaysEdge(entry, GetOrCreateSequence(sequences, edges, start)));
             
             while (entryPoints.Count > 0)
             {
@@ -71,7 +85,7 @@ namespace exefile.controlflow
                 if (addr < start)
                     continue;
 
-                var block = GetOrCreateSequence(sequences, addr);
+                var block = GetOrCreateSequence(sequences, edges, addr);
                 if (block.ContainsAddress(addr))
                 {
                     Debug.Assert(addr == block.Start);
@@ -103,13 +117,13 @@ namespace exefile.controlflow
                     {
                         block.Instructions.Add(addr + 4, instructions[addr + 4]);
 
-                        edges.Add(new FalseEdge(block, GetOrCreateSequence(sequences, addr + 8)));
+                        edges.Add(new FalseEdge(block, GetOrCreateSequence(sequences, edges, addr + 8)));
                         entryPoints.Enqueue(addr + 8);
 
                         var target = ((ConditionalBranchInstruction) insn).JumpTarget;
                         if (target != null)
                         {
-                            edges.Add(new TrueEdge(block, GetOrCreateSequence(sequences, target.Value)));
+                            edges.Add(new TrueEdge(block, GetOrCreateSequence(sequences, edges, target.Value)));
                             entryPoints.Enqueue(target.Value);
                         }
 
@@ -136,7 +150,7 @@ namespace exefile.controlflow
 
                         var lbl = cpi.JumpTarget;
                         Debug.Assert(lbl.HasValue);
-                        edges.Add(new AlwaysEdge(block, GetOrCreateSequence(sequences, lbl.Value)));
+                        edges.Add(new AlwaysEdge(block, GetOrCreateSequence(sequences, edges, lbl.Value)));
                         entryPoints.Enqueue(lbl.Value);
                         break;
                     }

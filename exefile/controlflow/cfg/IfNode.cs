@@ -21,15 +21,13 @@ namespace exefile.controlflow.cfg
             : base(condition.Graph)
         {
             Debug.Assert(condition.Outs.Count() == 2);
-            Debug.Assert(condition.Outs.Count(e => e is TrueEdge) == 1);
-            Debug.Assert(condition.Outs.Count(e => e is FalseEdge) == 1);
-
+            
             var trueEdge = condition.Outs.First(e => e is TrueEdge);
             var falseEdge = condition.Outs.First(e => e is FalseEdge);
 
             var trueNode = trueEdge.To;
             var falseNode = falseEdge.To;
-            InvertedCondition = trueNode.Outs.Count() != 1 || !(trueNode.Outs.First() is AlwaysEdge);
+            InvertedCondition = trueNode.Ins.Count() != 1 || trueNode.Outs.Count() != 1 || !(trueNode.Outs.First() is AlwaysEdge);
 
             INode body, common;
             if (!InvertedCondition)
@@ -53,6 +51,10 @@ namespace exefile.controlflow.cfg
 
             Graph.ReplaceNode(condition, this);
             Graph.RemoveNode(body);
+            var outs = Outs.ToList();
+            foreach(var e in outs)
+                Graph.RemoveEdge(e);
+            
             Graph.AddEdge(new AlwaysEdge(this, common));
         }
 
@@ -69,14 +71,6 @@ namespace exefile.controlflow.cfg
 
         public override bool ContainsAddress(uint address) =>
             Condition.ContainsAddress(address) || Body.ContainsAddress(address);
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            var writer = new IndentedTextWriter(new StringWriter(sb));
-            Dump(writer);
-            return sb.ToString();
-        }
 
         public override void Dump(IndentedTextWriter writer)
         {

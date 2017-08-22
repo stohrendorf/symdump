@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using core;
 using core.util;
 
@@ -23,11 +25,13 @@ namespace exefile.controlflow.cfg
 
         public IGraph Graph { get; }
 
+        public IEnumerable<IEdge> Ins => Graph.GetIns(this);
+        
         public IEnumerable<IEdge> Outs => Graph.GetOuts(this);
 
         public bool Equals(Node other)
         {
-            return Start == other.Start;
+            return Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
@@ -40,9 +44,16 @@ namespace exefile.controlflow.cfg
 
         public override int GetHashCode()
         {
-            return (int) Start;
+            return Id.GetHashCode();
         }
 
         public virtual string Id => $"n_{Start:x8}";
+
+        public sealed override string ToString()
+        {
+            var sb = new StringBuilder();
+            Dump(new IndentedTextWriter(new StringWriter(sb)));
+            return sb.ToString();
+        }
     }
 }

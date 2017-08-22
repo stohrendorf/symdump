@@ -28,5 +28,8 @@ namespace frontend.Controllers
 
         [JsonProperty("smooth")]
         public VisSmooth Smooth { get; set; } = new VisSmooth();
+        
+        [JsonProperty("color")]
+        public string Color { get; set; } = "#0000ff";
     }
 }

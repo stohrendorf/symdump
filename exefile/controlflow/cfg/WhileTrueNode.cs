@@ -13,8 +13,12 @@ namespace exefile.controlflow.cfg
         {
             Debug.Assert(body.Outs.Count() == 1);
             Debug.Assert(body.Outs.All(e => e is AlwaysEdge));
+            Debug.Assert(body.Outs.First().To.Equals(body));
 
             _body = body;
+            
+            var loop = _body.Outs.First();
+            Graph.RemoveEdge(loop);
             Graph.ReplaceNode(_body, this);
         }
 

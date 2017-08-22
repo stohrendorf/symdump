@@ -58,14 +58,6 @@ namespace exefile.controlflow.cfg
             _condition.ContainsAddress(address) || _trueBody.ContainsAddress(address) ||
             _falseBody.ContainsAddress(address);
 
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            var writer = new IndentedTextWriter(new StringWriter(sb));
-            Dump(writer);
-            return sb.ToString();
-        }
-
         public override void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine("if{");

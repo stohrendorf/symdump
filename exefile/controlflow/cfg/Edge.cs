@@ -1,8 +1,8 @@
 ﻿namespace exefile.controlflow.cfg
 {
-    public class Edge : IEdge
+    public abstract class Edge : IEdge
     {
-        public Edge(INode from, INode to)
+        protected Edge(INode from, INode to)
         {
             From = from;
             To = to;

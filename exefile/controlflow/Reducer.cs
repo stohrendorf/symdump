@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -66,13 +67,24 @@ namespace exefile.controlflow
                     continue;
                 }
 
+                if (sequenceCandidates.Count > 0)
+                {
+                    var candidate = sequenceCandidates.First();
+                    logger.Debug("Doing sequence with:");
+                    logger.Debug(candidate);
+
+                    // ReSharper disable once ObjectCreationAsStatement
+                    new SequenceNode(candidate);
+                    continue;
+                }
+
                 break;
             }
         }
 
         private IEnumerable<INode> FindCandidatesForIf()
         {
-            foreach (var condition in Graph.Nodes)
+            foreach (var condition in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
             {
                 if (condition.Outs.Count() != 2)
                     continue;
@@ -85,25 +97,42 @@ namespace exefile.controlflow
                 if (falseNode == null)
                     continue;
 
+#if DEBUG
+                bool alreadyEmitted = false;
+#endif
+                
                 // if(condition) trueNode;
-                if (Graph.CountIns(trueNode) == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
+                if (trueNode.Ins.Count() == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
                 {
                     if (trueNode.Outs.First().To.Equals(falseNode))
+                    {
                         yield return condition;
+#if DEBUG
+                        alreadyEmitted = true;
+#endif
+                    }
                 }
 
+                // ReSharper disable once InvertIf
                 // if(!condition) falseNode;
-                if (Graph.CountIns(falseNode) == 1 && falseNode.Outs.Count() == 1 && falseNode.Outs.First() is AlwaysEdge)
+                if (falseNode.Ins.Count() == 1 && falseNode.Outs.Count() == 1 && falseNode.Outs.First() is AlwaysEdge)
                 {
+                    // ReSharper disable once InvertIf
                     if (falseNode.Outs.First().To.Equals(trueNode))
+                    {
                         yield return condition;
+#if DEBUG
+                        Debug.Assert(!alreadyEmitted);
+#endif
+                    }
                 }
             }
         }
 
         private IEnumerable<INode> FindCandidatesForIfElse()
         {
-            foreach (var condition in Graph.Nodes)
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var condition in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
             {
                 if (condition.Outs.Count() != 2)
                     continue;
@@ -132,7 +161,7 @@ namespace exefile.controlflow
 
         private IEnumerable<INode> FindCandidatesForWhile()
         {
-            foreach (var condition in Graph.Nodes)
+            foreach (var condition in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
             {
                 if (condition.Outs.Count() != 2)
                     continue;
@@ -145,13 +174,13 @@ namespace exefile.controlflow
                 if (falseNode == null)
                     continue;
 
-                if (Graph.CountIns(trueNode) == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
+                if (trueNode.Ins.Count() == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
                 {
                     if (trueNode.Outs.First().To.Equals(condition))
                         yield return condition;
                 }
 
-                if (Graph.CountIns(falseNode) == 1 && falseNode.Outs.Count() == 1 &&
+                if (falseNode.Ins.Count() == 1 && falseNode.Outs.Count() == 1 &&
                     falseNode.Outs.First() is AlwaysEdge)
                 {
                     if (falseNode.Outs.First().To.Equals(condition))
@@ -163,16 +192,16 @@ namespace exefile.controlflow
         private IEnumerable<INode> FindCandidatesForSequence()
         {
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var seq in Graph.Nodes)
+            foreach (var seq in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
             {
                 if (seq.Outs.Count() != 1)
                     continue;
 
                 var next = seq.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-                if (next == null)
+                if (next == null || next is ExitNode)
                     continue;
 
-                if(Graph.CountIns(next) != 1)
+                if(next.Ins.Count() != 1)
                     continue;
 
                 yield return seq;
@@ -182,7 +211,7 @@ namespace exefile.controlflow
         private IEnumerable<INode> FindCandidatesForWhileTrue()
         {
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var seq in Graph.Nodes)
+            foreach (var seq in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
             {
                 if (seq.Outs.Count() != 1)
                     continue;
@@ -199,7 +228,7 @@ namespace exefile.controlflow
         private IEnumerable<INode> FindCandidatesForDoWhile()
         {
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var body in Graph.Nodes)
+            foreach (var body in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
             {
                 if (body.Outs.Count() != 1)
                     continue;
@@ -208,7 +237,7 @@ namespace exefile.controlflow
                 if (condition == null)
                     continue;
                 
-                if(Graph.CountIns(condition) != 1)
+                if(condition.Ins.Count() != 1)
                     continue;
 
                 if(condition.Outs.Count() != 2)

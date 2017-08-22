@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using core.util;
+using exefile.controlflow.cfg;
 using frontend.Services;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -42,10 +44,24 @@ namespace frontend.Controllers
             try
             {
                 var graph = _appState.ExeFile?.AnalyzeControlFlow(offset);
+#if DEBUG
+                if (graph != null)
+                {
+                    Console.WriteLine("Graph nodes:");
+                    foreach (var n in graph.Nodes)
+                    {
+                        n.Dump(new IndentedTextWriter(Console.Out));
+                    }
+                    Console.WriteLine("Graph edges:");
+                    foreach (var e in graph.Edges)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+#endif
 
                 var nodes = graph?.Nodes
-                    .Select(v => new VisNode {Id = v.Id, Label = v.ToString()})
-                    .ToDictionary(v => v.Id, v => v);
+                    .ToDictionary(v => v.Id, v => new VisNode {Id = v.Id, Label = v.ToString()});
 
                 visGraph.Nodes = nodes?.Values.ToList();
 
@@ -53,13 +69,14 @@ namespace frontend.Controllers
                     .Select(e => new VisEdge
                     {
                         From = nodes?[e.From.Id],
-                        To = nodes?[e.To.Id]
+                        To = nodes?[e.To.Id],
+                        Color = (e is TrueEdge) ? "#00a000" : (e is FalseEdge) ? "#ff0000" : "#0000ff"
                     })
                     .ToList();
 
                 return visGraph;
             }
-            
+
             catch (Exception ex)
             {
                 logger.Error(ex, "Decompilation failed");

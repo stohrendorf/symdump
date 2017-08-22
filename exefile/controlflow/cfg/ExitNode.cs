@@ -17,15 +17,10 @@ namespace exefile.controlflow.cfg
 
         public override void Dump(IndentedTextWriter writer)
         {
-            throw new System.NotImplementedException();
+            writer.WriteLine("ExitNode");
         }
 
-        public override string ToString()
-        {
-            return "ExitNode";
-        }
-        
-        public override uint Start => 0;
+        public override uint Start => uint.MaxValue;
         
         public override string Id => "exit";
     }

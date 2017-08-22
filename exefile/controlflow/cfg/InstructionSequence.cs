@@ -15,8 +15,6 @@ namespace exefile.controlflow.cfg
         {
         }
 
-        public uint Start => Instructions.Keys.First();
-
         public override SortedDictionary<uint, Instruction> Instructions { get; } =
             new SortedDictionary<uint, Instruction>();
 
@@ -28,21 +26,11 @@ namespace exefile.controlflow.cfg
             return address >= Instructions.Keys.First() && address <= Instructions.Keys.Last();
         }
 
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            var writer = new IndentedTextWriter(new StringWriter(sb));
-            Dump(writer);
-            return sb.ToString();
-        }
-
         public override void Dump(IndentedTextWriter writer)
         {
-            if (Instructions.Count > 0)
-                writer.WriteLine($"// start=0x{Start:x8}");
             foreach (var edge in Outs)
             {
-                writer.WriteLine($"// -> {edge}");
+                writer.WriteLine($"// {edge}");
             }
 
             ++writer.Indent;
@@ -56,7 +44,7 @@ namespace exefile.controlflow.cfg
         public InstructionSequence Chop(uint from)
         {
             var result = new InstructionSequence(Graph);
-            foreach (var split in Instructions.Where(i => i.Key >= @from))
+            foreach (var split in Instructions.Where(i => i.Key >= from))
             {
                 result.Instructions.Add(split.Key, split.Value);
             }

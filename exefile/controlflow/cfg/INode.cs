@@ -11,6 +11,9 @@ namespace exefile.controlflow.cfg
         IGraph Graph { get; }
 
         [NotNull]
+        IEnumerable<IEdge> Ins { get; }
+        
+        [NotNull]
         IEnumerable<IEdge> Outs { get; }
         
         bool ContainsAddress(uint address);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using core;
 using core.util;
 
@@ -18,15 +17,10 @@ namespace exefile.controlflow.cfg
 
         public override void Dump(IndentedTextWriter writer)
         {
-            throw new System.NotImplementedException();
+            writer.WriteLine("EntryNode");
         }
 
-        public override string ToString()
-        {
-            return "EntryNode";
-        }
-
-        public override uint Start => 0;
+        public override uint Start => uint.MinValue;
         
         public override string Id => "entry";
     }
