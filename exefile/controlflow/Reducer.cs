@@ -20,10 +20,13 @@ namespace exefile.controlflow
 
         public void Reduce()
         {
-            while(true)
+            bool reduced;
+            do
             {
-                Debug.Assert(Graph.Validate());
+                reduced = false;
                 
+                Debug.Assert(Graph.Validate());
+
                 logger.Debug($"Analysis cycle ({Graph.Nodes.Count()} nodes, {Graph.Edges.Count()} edges)...");
 
                 var whileTrueCandidates = FindCandidatesForWhileTrue().ToList();
@@ -32,9 +35,10 @@ namespace exefile.controlflow
                 {
                     var candidate = whileTrueCandidates.First();
                     logger.Debug("Doing while-true with: " + candidate.Id);
-                    
+
                     // ReSharper disable once ObjectCreationAsStatement
                     new WhileTrueNode(candidate);
+                    reduced = true;
                     continue;
                 }
 
@@ -49,10 +53,11 @@ namespace exefile.controlflow
                         continue;
                     }
                     logger.Debug("Doing do-while with: " + candidate.Id);
-                    
+
                     // ReSharper disable once ObjectCreationAsStatement
                     new DoWhileNode(candidate);
                     doWhileCandidates.Remove(candidate);
+                    reduced = true;
                 }
 
                 var ifCandidates = FindCandidatesForIf().ToList();
@@ -70,6 +75,7 @@ namespace exefile.controlflow
                     // ReSharper disable once ObjectCreationAsStatement
                     new IfNode(candidate);
                     ifCandidates.Remove(candidate);
+                    reduced = true;
                 }
 
                 var ifElseCandidates = FindCandidatesForIfElse().ToList();
@@ -82,12 +88,13 @@ namespace exefile.controlflow
                         ifElseCandidates.Remove(candidate);
                         continue;
                     }
-                    
+
                     logger.Debug("Doing if-else with: " + candidate.Id);
 
                     // ReSharper disable once ObjectCreationAsStatement
                     new IfElseNode(candidate);
                     ifElseCandidates.Remove(candidate);
+                    reduced = true;
                 }
 
                 var sequenceCandidates = FindCandidatesForSequence().ToList();
@@ -105,13 +112,12 @@ namespace exefile.controlflow
                     // ReSharper disable once ObjectCreationAsStatement
                     new SequenceNode(candidate);
                     sequenceCandidates.Remove(candidate);
+                    reduced = true;
                 }
 
                 var whileCandidates = FindCandidatesForWhile().ToList();
                 logger.Debug($" - {whileCandidates.Count} while-candidates");
-
-                break;
-            }
+            } while (reduced);
         }
 
         private static bool IsCandidateForIf(INode condition)
@@ -176,11 +182,17 @@ namespace exefile.controlflow
             if(trueNode.Outs.Count() != 1 || falseNode.Outs.Count() != 1)
                 return false;
 
-            var common = trueNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-            if(common == null)
+            if (trueNode.Equals(falseNode))
+                return false;
+
+            var common1 = trueNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+            if(common1 == null)
+                return false;
+            var common2 = falseNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+            if(common2 == null)
                 return false;
                 
-            return common.Equals(falseNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To);
+            return common1.Equals(common2);
         }
         
         private IEnumerable<INode> FindCandidatesForIfElse()

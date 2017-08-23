@@ -22,7 +22,7 @@ namespace exefile.controlflow.cfg
             Debug.Assert(trueEdge != null);
             Debug.Assert(trueEdge.From.Equals(condition));
 
-            var falseEdge = condition.Outs.First(e => e is TrueEdge);
+            var falseEdge = condition.Outs.First(e => e is FalseEdge);
             Debug.Assert(falseEdge != null);
             Debug.Assert(falseEdge.From.Equals(condition));
 
