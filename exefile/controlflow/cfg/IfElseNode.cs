@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using core;
 using core.util;
 using JetBrains.Annotations;
@@ -16,7 +14,7 @@ namespace exefile.controlflow.cfg
         [NotNull] private readonly INode _trueBody;
         [NotNull] private readonly INode _falseBody;
 
-        public IfElseNode([NotNull] INode condition, IGraph graph) : base(graph)
+        public IfElseNode([NotNull] INode condition) : base(condition.Graph)
         {
             Debug.Assert(condition.Outs.Count() == 2);
 
@@ -28,18 +26,26 @@ namespace exefile.controlflow.cfg
             Debug.Assert(falseEdge != null);
             Debug.Assert(falseEdge.From.Equals(condition));
 
-            Debug.Assert(!trueEdge.To.Equals(falseEdge.To));
+            _trueBody = trueEdge.To;
+            _falseBody = falseEdge.To;
+
+            Debug.Assert(!_trueBody.Equals(_falseBody));
+            Debug.Assert(_trueBody.Ins.Count() == 1);
+            Debug.Assert(_falseBody.Ins.Count() == 1);
+            
+            Debug.Assert(_trueBody.Outs.Count() == 1);
+            Debug.Assert(_falseBody.Outs.Count() == 1);
+
+            var common = _trueBody.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+            Debug.Assert(common != null);
+            Debug.Assert(common.Equals(_falseBody.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To));
 
             _condition = condition;
-            _trueBody = trueEdge.To;
-            Debug.Assert(_trueBody.Outs.Count() == 1);
-            Debug.Assert(_trueBody.Outs.All(e => e is AlwaysEdge));
-
-            _falseBody = falseEdge.To;
-            Debug.Assert(_falseBody.Outs.Count() == 1);
-            Debug.Assert(_falseBody.Outs.All(e => e is AlwaysEdge));
-
-            Debug.Assert(_trueBody.Outs.First().To.Equals(_falseBody.Outs.First().To));
+            
+            Graph.ReplaceNode(_condition, this);
+            Graph.RemoveNode(_trueBody);
+            Graph.RemoveNode(_falseBody);
+            Graph.AddEdge(new AlwaysEdge(this, common));
         }
 
         public override SortedDictionary<uint, Instruction> Instructions

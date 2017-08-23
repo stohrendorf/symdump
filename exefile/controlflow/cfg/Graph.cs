@@ -80,6 +80,8 @@ namespace exefile.controlflow.cfg
             _edges.Remove(edge);
         }
 
+        public bool Contains(INode node) => _nodes.Contains(node);
+
         public bool Validate()
         {
             return _edges.Select(e => e.From).All(n => _nodes.Contains(n))

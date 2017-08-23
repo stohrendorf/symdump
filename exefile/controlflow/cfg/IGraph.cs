@@ -21,5 +21,7 @@ namespace exefile.controlflow.cfg
         void AddEdge([NotNull] IEdge edge);
         
         void RemoveEdge([NotNull] IEdge edge);
+
+        bool Contains([NotNull] INode node);
     }
 }
