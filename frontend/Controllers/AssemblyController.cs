@@ -46,7 +46,12 @@ namespace frontend.Controllers
                 var graph = _appState.ExeFile?.AnalyzeControlFlow(offset);
 
                 var nodes = graph?.Nodes
-                    .ToDictionary(v => v.Id, v => new VisNode {Id = v.Id, Label = v.ToString()});
+                    .ToDictionary(v => v.Id, v => new VisNode
+                    {
+                        Id = v.Id,
+                        Label = v.ToString(),
+                        Color = v is EntryNode ? "#00c000" : v is ExitNode ? "#c00000" : "#c0c0ff"
+                    });
 
                 visGraph.Nodes = nodes?.Values.ToList();
 

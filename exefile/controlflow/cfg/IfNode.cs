@@ -20,6 +20,8 @@ namespace exefile.controlflow.cfg
         public IfNode([NotNull] INode condition)
             : base(condition.Graph)
         {
+            Debug.Assert(IsCandidate(condition));
+
             Debug.Assert(condition.Outs.Count() == 2);
             
             var trueEdge = condition.Outs.First(e => e is TrueEdge);
@@ -83,6 +85,45 @@ namespace exefile.controlflow.cfg
             Body.Dump(writer);
             --writer.Indent;
             writer.WriteLine("}");
+        }
+
+        public static bool IsCandidate([NotNull] INode condition)
+        {
+            if (condition is EntryNode || condition is ExitNode)
+                return false;
+            
+            if (condition.Outs.Count() != 2)
+                return false;
+
+            var trueNode = condition.Outs.FirstOrDefault(e => e is TrueEdge)?.To;
+            if (trueNode == null)
+                return false;
+
+            var falseNode = condition.Outs.FirstOrDefault(e => e is FalseEdge)?.To;
+            if (falseNode == null)
+                return false;
+
+            // if(condition) trueNode;
+            if (trueNode.Ins.Count() == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
+            {
+                if (trueNode.Outs.First().To.Equals(falseNode))
+                {
+                    return true;
+                }
+            }
+
+            // ReSharper disable once InvertIf
+            // if(!condition) falseNode;
+            if (falseNode.Ins.Count() == 1 && falseNode.Outs.Count() == 1 && falseNode.Outs.First() is AlwaysEdge)
+            {
+                // ReSharper disable once InvertIf
+                if (falseNode.Outs.First().To.Equals(trueNode))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -16,6 +16,8 @@ namespace exefile.controlflow.cfg
 
         public IfElseNode([NotNull] INode condition) : base(condition.Graph)
         {
+            Debug.Assert(IsCandidate(condition));
+
             Debug.Assert(condition.Outs.Count() == 2);
 
             var trueEdge = condition.Outs.First(e => e is TrueEdge);
@@ -79,6 +81,41 @@ namespace exefile.controlflow.cfg
             _falseBody.Dump(writer);
             --writer.Indent;
             writer.WriteLine("}");
+        }
+
+        public static bool IsCandidate([NotNull] INode condition)
+        {
+            if (condition is EntryNode || condition is ExitNode)
+                return false;
+            
+            if (condition.Outs.Count() != 2)
+                return false;
+
+            var trueNode = condition.Outs.FirstOrDefault(e => e is TrueEdge)?.To;
+            if (trueNode == null)
+                return false;
+
+            var falseNode = condition.Outs.FirstOrDefault(e => e is FalseEdge)?.To;
+            if (falseNode == null)
+                return false;
+
+            if(trueNode.Ins.Count() != 1 || falseNode.Ins.Count() != 1)
+                return false;
+                
+            if(trueNode.Outs.Count() != 1 || falseNode.Outs.Count() != 1)
+                return false;
+
+            if (trueNode.Equals(falseNode))
+                return false;
+
+            var common1 = trueNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+            if(common1 == null)
+                return false;
+            var common2 = falseNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+            if(common2 == null)
+                return false;
+                
+            return common1.Equals(common2);
         }
     }
 }

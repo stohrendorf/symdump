@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using exefile.controlflow.cfg;
+using JetBrains.Annotations;
 using NLog;
 
 namespace exefile.controlflow
@@ -13,11 +14,33 @@ namespace exefile.controlflow
 
         public readonly Graph Graph;
 
-        public Reducer(Graph graph)
+        public Reducer([NotNull] Graph graph)
         {
             Graph = graph;
         }
 
+        private bool Reduce(string name, Func<INode, bool> predicate, Func<INode, INode> converter)
+        {
+            var candidates = Graph.Nodes.Where(predicate).ToList();
+            logger.Debug($" - {candidates.Count} {name} candidates");
+            bool reduced = false;
+            while (candidates.Count > 0)
+            {
+                var candidate = candidates.First();
+                if (!Graph.Contains(candidate) || !predicate(candidate))
+                {
+                    candidates.Remove(candidate);
+                    continue;
+                }
+                logger.Debug($"Doing {name} with: {candidate.Id}");
+
+                converter(candidate);
+                candidates.Remove(candidate);
+                reduced = true;
+            }
+            return reduced;
+        }
+        
         public void Reduce()
         {
             bool reduced;
@@ -29,285 +52,13 @@ namespace exefile.controlflow
 
                 logger.Debug($"Analysis cycle ({Graph.Nodes.Count()} nodes, {Graph.Edges.Count()} edges)...");
 
-                var whileTrueCandidates = FindCandidatesForWhileTrue().ToList();
-                logger.Debug($" - {whileTrueCandidates.Count} while-true-candidates");
-                if (whileTrueCandidates.Count > 0)
-                {
-                    var candidate = whileTrueCandidates.First();
-                    logger.Debug("Doing while-true with: " + candidate.Id);
-
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new WhileTrueNode(candidate);
-                    reduced = true;
-                    continue;
-                }
-
-                var doWhileCandidates = FindCandidatesForDoWhile().ToList();
-                logger.Debug($" - {doWhileCandidates.Count} do-while-candidates");
-                while (doWhileCandidates.Count > 0)
-                {
-                    var candidate = doWhileCandidates.First();
-                    if (!Graph.Contains(candidate) || !IsCandidateForDoWhile(candidate))
-                    {
-                        doWhileCandidates.Remove(candidate);
-                        continue;
-                    }
-                    logger.Debug("Doing do-while with: " + candidate.Id);
-
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new DoWhileNode(candidate);
-                    doWhileCandidates.Remove(candidate);
-                    reduced = true;
-                }
-
-                var ifCandidates = FindCandidatesForIf().ToList();
-                logger.Debug($" - {ifCandidates.Count} if-candidates");
-                while (ifCandidates.Count > 0)
-                {
-                    var candidate = ifCandidates.First();
-                    if (!Graph.Contains(candidate) || !IsCandidateForIf(candidate))
-                    {
-                        ifCandidates.Remove(candidate);
-                        continue;
-                    }
-                    logger.Debug("Doing if with: " + candidate.Id);
-
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new IfNode(candidate);
-                    ifCandidates.Remove(candidate);
-                    reduced = true;
-                }
-
-                var ifElseCandidates = FindCandidatesForIfElse().ToList();
-                logger.Debug($" - {ifElseCandidates.Count} if-else-candidates");
-                while (ifElseCandidates.Count > 0)
-                {
-                    var candidate = ifElseCandidates.First();
-                    if (!Graph.Contains(candidate) || !IsCandidateForIfElse(candidate))
-                    {
-                        ifElseCandidates.Remove(candidate);
-                        continue;
-                    }
-
-                    logger.Debug("Doing if-else with: " + candidate.Id);
-
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new IfElseNode(candidate);
-                    ifElseCandidates.Remove(candidate);
-                    reduced = true;
-                }
-
-                var sequenceCandidates = FindCandidatesForSequence().ToList();
-                logger.Debug($" - {sequenceCandidates.Count} sequence-candidates");
-                while (sequenceCandidates.Count > 0)
-                {
-                    var candidate = sequenceCandidates.First();
-                    if (!Graph.Contains(candidate) || !IsCandidateForSequence(candidate))
-                    {
-                        sequenceCandidates.Remove(candidate);
-                        continue;
-                    }
-                    logger.Debug("Doing sequence with: " + candidate.Id);
-
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new SequenceNode(candidate);
-                    sequenceCandidates.Remove(candidate);
-                    reduced = true;
-                }
-
-                var whileCandidates = FindCandidatesForWhile().ToList();
-                logger.Debug($" - {whileCandidates.Count} while-candidates");
+                reduced |= Reduce("if", IfNode.IsCandidate, n => new IfNode(n));
+                reduced |= Reduce("if-else", IfElseNode.IsCandidate, n => new IfElseNode(n));
+                reduced |= Reduce("while", WhileNode.IsCandidate, n => new WhileNode(n));
+                reduced |= Reduce("do-while", DoWhileNode.IsCandidate, n => new DoWhileNode(n));
+                reduced |= Reduce("while-true", WhileTrueNode.IsCandidate, n => new WhileTrueNode(n));
+                reduced |= Reduce("sequence", SequenceNode.IsCandidate, n => new SequenceNode(n));
             } while (reduced);
-        }
-
-        private static bool IsCandidateForIf(INode condition)
-        {
-            if (condition.Outs.Count() != 2)
-                return false;
-
-            var trueNode = condition.Outs.FirstOrDefault(e => e is TrueEdge)?.To;
-            if (trueNode == null)
-                return false;
-
-            var falseNode = condition.Outs.FirstOrDefault(e => e is FalseEdge)?.To;
-            if (falseNode == null)
-                return false;
-
-            // if(condition) trueNode;
-            if (trueNode.Ins.Count() == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
-            {
-                if (trueNode.Outs.First().To.Equals(falseNode))
-                {
-                    return true;
-                }
-            }
-
-            // ReSharper disable once InvertIf
-            // if(!condition) falseNode;
-            if (falseNode.Ins.Count() == 1 && falseNode.Outs.Count() == 1 && falseNode.Outs.First() is AlwaysEdge)
-            {
-                // ReSharper disable once InvertIf
-                if (falseNode.Outs.First().To.Equals(trueNode))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        
-        private IEnumerable<INode> FindCandidatesForIf()
-        {
-            return Graph.Nodes
-                .Where(n => !(n is EntryNode) && !(n is ExitNode))
-                .Where(IsCandidateForIf);
-        }
-
-        private static bool IsCandidateForIfElse(INode condition)
-        {
-            if (condition.Outs.Count() != 2)
-                return false;
-
-            var trueNode = condition.Outs.FirstOrDefault(e => e is TrueEdge)?.To;
-            if (trueNode == null)
-                return false;
-
-            var falseNode = condition.Outs.FirstOrDefault(e => e is FalseEdge)?.To;
-            if (falseNode == null)
-                return false;
-
-            if(trueNode.Ins.Count() != 1 || falseNode.Ins.Count() != 1)
-                return false;
-                
-            if(trueNode.Outs.Count() != 1 || falseNode.Outs.Count() != 1)
-                return false;
-
-            if (trueNode.Equals(falseNode))
-                return false;
-
-            var common1 = trueNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-            if(common1 == null)
-                return false;
-            var common2 = falseNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-            if(common2 == null)
-                return false;
-                
-            return common1.Equals(common2);
-        }
-        
-        private IEnumerable<INode> FindCandidatesForIfElse()
-        {
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var condition in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
-            {
-                if (IsCandidateForIfElse(condition))
-                    yield return condition;
-            }
-        }
-
-        private IEnumerable<INode> FindCandidatesForWhile()
-        {
-            foreach (var condition in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
-            {
-                if (condition.Outs.Count() != 2)
-                    continue;
-
-                var trueNode = condition.Outs.FirstOrDefault(e => e is TrueEdge)?.To;
-                if (trueNode == null)
-                    continue;
-
-                var falseNode = condition.Outs.FirstOrDefault(e => e is FalseEdge)?.To;
-                if (falseNode == null)
-                    continue;
-
-                if (trueNode.Ins.Count() == 1 && trueNode.Outs.Count() == 1 && trueNode.Outs.First() is AlwaysEdge)
-                {
-                    if (trueNode.Outs.First().To.Equals(condition))
-                        yield return condition;
-                }
-
-                if (falseNode.Ins.Count() == 1 && falseNode.Outs.Count() == 1 &&
-                    falseNode.Outs.First() is AlwaysEdge)
-                {
-                    if (falseNode.Outs.First().To.Equals(condition))
-                        yield return condition;
-                }
-            }
-        }
-
-        private static bool IsCandidateForSequence(INode seq)
-        {
-            if (seq.Outs.Count() != 1)
-                return false;
-
-            var next = seq.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-            if (next == null || next is ExitNode)
-                return false;
-
-            return next.Ins.Count() == 1;
-        }
-
-        private IEnumerable<INode> FindCandidatesForSequence()
-        {
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var seq in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
-            {
-                if (IsCandidateForSequence(seq))
-                    yield return seq;
-            }
-        }
-        
-        private IEnumerable<INode> FindCandidatesForWhileTrue()
-        {
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var seq in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
-            {
-                if (seq.Outs.Count() != 1)
-                    continue;
-
-                var next = seq.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-                if (next == null)
-                    continue;
-
-                if (next.Equals(seq))
-                    yield return seq;
-            }
-        }
-
-        private static bool IsCandidateForDoWhile(INode body)
-        {
-            if (body.Outs.Count() != 1)
-                return false;
-
-            var condition = body.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-            if (condition == null)
-                return false;
-                
-            if(condition.Ins.Count() != 1)
-                return false;
-
-            if(condition.Outs.Count() != 2)
-                return false;
-
-            var trueEdge = condition.Outs.FirstOrDefault(e => e is TrueEdge);
-            if(trueEdge == null)
-                return false;
-                
-            var falseEdge = condition.Outs.FirstOrDefault(e => e is FalseEdge);
-            if(falseEdge == null)
-                return false;
-
-            return trueEdge.To.Equals(body) || falseEdge.To.Equals(body);
-        }
-        
-        private IEnumerable<INode> FindCandidatesForDoWhile()
-        {
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var body in Graph.Nodes.Where(n => !(n is EntryNode) && !(n is ExitNode)))
-            {
-                if (IsCandidateForDoWhile(body))
-                    yield return body;
-            }
         }
     }
     

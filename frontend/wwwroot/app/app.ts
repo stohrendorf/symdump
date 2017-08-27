@@ -12,7 +12,22 @@ function appInit(): void {
     controlFlow.appendObject("decompileContainer");
 
     let decompileGraph = new vis.Network(document.getElementById('decompileContainer'), {'nodes': [], 'edges': []}, {
-        manipulation: false,
+        "edges": {
+            "smooth": {
+                "type": "cubicBezier",
+                "forceDirection": "vertical",
+                "roundness": 0.35
+            }
+        },
+        "physics": {
+            "repulsion": {
+                "springLength": 350,
+                "nodeDistance": 500
+            },
+            "minVelocity": 0.75,
+            "solver": "repulsion"
+        }
+        /*manipulation: false,
         layout: {
             hierarchical: {
                 enabled: true,
@@ -23,7 +38,7 @@ function appInit(): void {
             hierarchicalRepulsion: {
                 nodeDistance: 300
             }
-        }
+         }*/
     });
     
     let hexFormatter = function (row, cell, value, columnDef, dataContext) {

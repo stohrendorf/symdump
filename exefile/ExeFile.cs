@@ -110,7 +110,7 @@ namespace exefile
             //var flowState = new DataFlowState(_debugSource, func);
 
             var control = new ControlFlowProcessor();
-            control.Process(addr, _instructions);
+            control.Process(addr, _instructions, Callees);
 
             var reducer = new Reducer(control.Graph);
             reducer.Reduce();

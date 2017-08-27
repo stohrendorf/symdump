@@ -20,6 +20,8 @@ namespace exefile.controlflow.cfg
         public DoWhileNode([NotNull] INode body)
             : base(body.Graph)
         {
+            Debug.Assert(IsCandidate(body));
+            
             Debug.Assert(body.Outs.Count() == 1);
             Debug.Assert(body.Outs.All(e => e is AlwaysEdge));
 
@@ -76,6 +78,35 @@ namespace exefile.controlflow.cfg
             _condition.Dump(writer);
             --writer.Indent;
             writer.WriteLine("}");
+        }
+
+        public static bool IsCandidate([NotNull] INode body)
+        {
+            if (body is EntryNode || body is ExitNode)
+                return false;
+            
+            if (body.Outs.Count() != 1)
+                return false;
+
+            var condition = body.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+            if (condition == null)
+                return false;
+                
+            if(condition.Ins.Count() != 1)
+                return false;
+
+            if(condition.Outs.Count() != 2)
+                return false;
+
+            var trueEdge = condition.Outs.FirstOrDefault(e => e is TrueEdge);
+            if(trueEdge == null)
+                return false;
+                
+            var falseEdge = condition.Outs.FirstOrDefault(e => e is FalseEdge);
+            if(falseEdge == null)
+                return false;
+
+            return trueEdge.To.Equals(body) || falseEdge.To.Equals(body);
         }
     }
 }

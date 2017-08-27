@@ -64,7 +64,7 @@ namespace exefile.controlflow
             return chopped;
         }
 
-        public void Process(uint start, [NotNull] IReadOnlyDictionary<uint, Instruction> instructions)
+        public void Process(uint start, [NotNull] IReadOnlyDictionary<uint, Instruction> instructions, [NotNull] IReadOnlyCollection<uint> callees)
         {
             var entryPoints = new Queue<uint>();
             entryPoints.Enqueue(start);
@@ -145,13 +145,17 @@ namespace exefile.controlflow
                     else if (cpi?.Target is LabelOperand && cpi.ReturnAddressTarget == null)
                     {
                         block.Instructions.Add(addr + 4, instructions[addr + 4]);
-
-                        logger.Debug("jmp " + cpi.Target);
-
                         var lbl = cpi.JumpTarget;
                         Debug.Assert(lbl.HasValue);
-                        edges.Add(new AlwaysEdge(block, GetOrCreateSequence(sequences, edges, lbl.Value)));
-                        entryPoints.Enqueue(lbl.Value);
+                        if (!callees.Contains(lbl.Value))
+                        {
+                            edges.Add(new AlwaysEdge(block, GetOrCreateSequence(sequences, edges, lbl.Value)));
+                            entryPoints.Enqueue(lbl.Value);
+                        }
+                        else
+                        {
+                            edges.Add(new AlwaysEdge(block, exit));
+                        }
                         break;
                     }
                 }

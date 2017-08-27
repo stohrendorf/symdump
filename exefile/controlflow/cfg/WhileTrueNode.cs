@@ -11,6 +11,8 @@ namespace exefile.controlflow.cfg
     {
         public WhileTrueNode([NotNull] INode body) : base(body.Graph)
         {
+            Debug.Assert(IsCandidate(body));
+            
             Debug.Assert(body.Outs.Count() == 1);
             Debug.Assert(body.Outs.All(e => e is AlwaysEdge));
             Debug.Assert(body.Outs.First().To.Equals(body));
@@ -35,6 +37,18 @@ namespace exefile.controlflow.cfg
             _body.Dump(writer);
             --writer.Indent;
             writer.WriteLine("}");
+        }
+
+        public static bool IsCandidate([NotNull] INode body)
+        {
+            if (body is EntryNode || body is ExitNode)
+                return false;
+
+            if (body.Outs.Count() != 1)
+                return false;
+
+            var next = body.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+            return next != null && next.Equals(body);
         }
     }
 }

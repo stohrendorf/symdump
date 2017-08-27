@@ -1,14 +1,29 @@
 ///<reference path="../dhtmlx/dhtmlx.d.ts"/>
 function appInit() {
-    var layout = new dhtmlXLayoutObject({parent: "layoutMaster", pattern: "3W"});
+    var layout = new dhtmlXLayoutObject({ parent: "layoutMaster", pattern: "3W" });
     var disassembly = layout.cells("b");
     disassembly.setText("Disassembly");
     disassembly.appendObject("disassemblyText");
     var controlFlow = layout.cells("c");
     controlFlow.setText("Control flow graph");
     controlFlow.appendObject("decompileContainer");
-    var decompileGraph = new vis.Network(document.getElementById('decompileContainer'), {'nodes': [], 'edges': []}, {
-        manipulation: false,
+    var decompileGraph = new vis.Network(document.getElementById('decompileContainer'), { 'nodes': [], 'edges': [] }, {
+        "edges": {
+            "smooth": {
+                "type": "cubicBezier",
+                "forceDirection": "vertical",
+                "roundness": 0.35
+            }
+        },
+        "physics": {
+            "repulsion": {
+                "springLength": 350,
+                "nodeDistance": 500
+            },
+            "minVelocity": 0.75,
+            "solver": "repulsion"
+        }
+        /*manipulation: false,
         layout: {
             hierarchical: {
                 enabled: true,
@@ -19,7 +34,7 @@ function appInit() {
             hierarchicalRepulsion: {
                 nodeDistance: 300
             }
-        }
+         }*/
     });
     var hexFormatter = function (row, cell, value, columnDef, dataContext) {
         return !value ? '' : "0x" + parseInt(value).toString(16);

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using core;
 using core.util;
+using JetBrains.Annotations;
 
 namespace exefile.controlflow.cfg
 {
@@ -13,6 +13,8 @@ namespace exefile.controlflow.cfg
 
         public SequenceNode(INode first) : base(first.Graph)
         {
+            Debug.Assert(IsCandidate(first));
+
             Debug.Assert(first.Outs.Count() == 1);
             Debug.Assert(first.Outs.First() is AlwaysEdge);
 
@@ -67,6 +69,21 @@ namespace exefile.controlflow.cfg
             {
                 node.Dump(writer);
             }
+        }
+
+        public static bool IsCandidate([NotNull] INode seq)
+        {
+            if (seq is EntryNode || seq is ExitNode)
+                return false;
+            
+            if (seq.Outs.Count() != 1)
+                return false;
+
+            var next = seq.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
+            if (next == null || next is ExitNode)
+                return false;
+
+            return next.Ins.Count() == 1;
         }
     }
 }
