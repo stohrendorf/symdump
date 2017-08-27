@@ -109,7 +109,6 @@ namespace exefile.controlflow.cfg
             if (body is EntryNode || body is ExitNode)
                 return false;
 
-            Console.WriteLine("Check: " + body.Id);
             if (body.Ins.Count() < 2 || body.Outs.Count() != 1)
                 return false;
 
