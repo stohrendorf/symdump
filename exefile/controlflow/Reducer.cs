@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using exefile.controlflow.cfg;
@@ -52,6 +51,8 @@ namespace exefile.controlflow
 
                 logger.Debug($"Analysis cycle ({Graph.Nodes.Count()} nodes, {Graph.Edges.Count()} edges)...");
 
+                reduced |= Reduce("disjunctive if", DisjunctiveIfNode.IsCandidate, n => new DisjunctiveIfNode(n));
+                reduced |= Reduce("disjunctive if-else", DisjunctiveIfElseNode.IsCandidate, n => new DisjunctiveIfElseNode(n));
                 reduced |= Reduce("if", IfNode.IsCandidate, n => new IfNode(n));
                 reduced |= Reduce("if-else", IfElseNode.IsCandidate, n => new IfElseNode(n));
                 reduced |= Reduce("while", WhileNode.IsCandidate, n => new WhileNode(n));
