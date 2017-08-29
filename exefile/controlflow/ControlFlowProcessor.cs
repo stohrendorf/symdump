@@ -18,7 +18,7 @@ namespace exefile.controlflow
         public readonly Graph Graph = new Graph();
 
         [NotNull]
-        private InstructionSequence GetOrCreateSequence(IDictionary<uint, InstructionSequence> sequences, ISet<IEdge> edges,  uint addr)
+        private InstructionSequence GetOrCreateSequence(IDictionary<uint, InstructionSequence> sequences, IList<IEdge> edges,  uint addr)
         {
             InstructionSequence sequence;
             if (!sequences.TryGetValue(addr, out sequence))
@@ -55,8 +55,7 @@ namespace exefile.controlflow
                     continue;
                 
                 edges.Remove(e);
-                e.From = chopped;
-                edges.Add(e);
+                edges.Add(e.CloneTyped(chopped, e.To));
             }
 
             edges.Add(new AlwaysEdge(sequence, chopped));
@@ -70,7 +69,7 @@ namespace exefile.controlflow
             entryPoints.Enqueue(start);
 
             var sequences = new Dictionary<uint, InstructionSequence>();
-            var edges = new HashSet<IEdge>();
+            var edges = new List<IEdge>();
             
             var entry = new EntryNode(Graph);
             Graph.AddNode(entry);
@@ -170,6 +169,10 @@ namespace exefile.controlflow
             {
                 Graph.AddEdge(e);
             }
+            
+            Debug.Assert(Graph.Validate());
+            Graph.MakeUniformBooleanEdges();
+            Debug.Assert(Graph.Validate());
         }
     }
 }

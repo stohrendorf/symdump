@@ -1,6 +1,8 @@
-﻿namespace exefile.controlflow.cfg
+﻿using System;
+
+namespace exefile.controlflow.cfg
 {
-    public abstract class Edge : IEdge
+    public abstract class Edge : IEdge, IEquatable<Edge>
     {
         protected Edge(INode from, INode to)
         {
@@ -8,12 +10,31 @@
             To = to;
         }
 
-        public INode From { get; set; }
-        public INode To { get; set; }
+        public INode From { get; }
+        public INode To { get; }
+        public abstract IEdge CloneTyped(INode from, INode to);
 
         public override string ToString()
         {
             return $"-- 0x{From.Start:x8} -- {GetType().Name} -- 0x{To.Start:x8} -->";
+        }
+
+        public bool Equals(Edge other)
+        {
+            return From.Equals(other.From) && To.Equals(other.To);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Edge) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return From.GetHashCode() ^ To.GetHashCode();
         }
     }
 }

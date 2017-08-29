@@ -35,8 +35,7 @@ namespace exefile.controlflow.cfg
             Graph.RemoveNode(next);
             foreach (var e in toReplace)
             {
-                e.From = seq;
-                Graph.AddEdge(e);
+                Graph.AddEdge(e.CloneTyped(seq, e.To));
             }
             
             Debug.Assert(!Graph.Nodes.Contains(next));

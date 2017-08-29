@@ -51,8 +51,11 @@ namespace exefile.controlflow
 
                 logger.Debug($"Analysis cycle ({Graph.Nodes.Count()} nodes, {Graph.Edges.Count()} edges)...");
 
-                reduced |= Reduce("disjunctive if", DisjunctiveIfNode.IsCandidate, n => new DisjunctiveIfNode(n));
-                reduced |= Reduce("disjunctive if-else", DisjunctiveIfElseNode.IsCandidate, n => new DisjunctiveIfElseNode(n));
+                reduced |= Reduce("and clause", AndNode.IsCandidate, n => new AndNode(n));
+                reduced |= Reduce("or clause", OrNode.IsCandidate, n => new OrNode(n));
+                if(reduced)
+                    continue;
+                
                 reduced |= Reduce("if", IfNode.IsCandidate, n => new IfNode(n));
                 reduced |= Reduce("if-else", IfElseNode.IsCandidate, n => new IfElseNode(n));
                 reduced |= Reduce("while", WhileNode.IsCandidate, n => new WhileNode(n));
