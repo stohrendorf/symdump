@@ -1,34 +1,93 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using core;
 using core.util;
 using JetBrains.Annotations;
 
 namespace exefile.controlflow.cfg
 {
-    public class WhileNode : IfNode
+    public class WhileNode : Node
     {
+        [NotNull] private readonly INode _condition;
+
+        [NotNull] private readonly INode _body;
+
+        private readonly bool _invertedCondition;
+
         public WhileNode([NotNull] INode condition)
-            : base(condition)
+            : base(condition.Graph)
         {
             Debug.Assert(IsCandidate(condition));
             
-            Debug.Assert(Condition.Equals(Body.Outs.First().To));
+            Debug.Assert(condition.Outs.Count() == 2);
+            
+            var trueEdge = condition.Outs.First(e => e is TrueEdge);
+            var falseEdge = condition.Outs.First(e => e is FalseEdge);
+
+            var trueNode = trueEdge.To;
+            var falseNode = falseEdge.To;
+            _invertedCondition = trueNode.Ins.Count() != 1 || trueNode.Outs.Count() != 1 || !(trueNode.Outs.First() is AlwaysEdge);
+
+            INode body, common, exit;
+            if (!_invertedCondition)
+            {
+                body = trueNode;
+                exit = falseNode;
+                common = body.Outs.First().To;
+                Debug.Assert(common.Equals(condition));
+            }
+            else
+            {
+                body = falseNode;
+                exit = trueNode;
+                common = body.Outs.First().To;
+                Debug.Assert(common.Equals(condition));
+            }
+
+            Debug.Assert(body.Outs.Count() == 1);
+            Debug.Assert(body.Outs.First() is AlwaysEdge);
+
+            _condition = condition;
+            _body = body;
+
+            Graph.ReplaceNode(condition, this);
+            Graph.RemoveNode(body);
+            var outs = Outs.ToList();
+            foreach(var e in outs)
+                Graph.RemoveEdge(e);
+            
+            Graph.AddEdge(new AlwaysEdge(this, exit));
         }
+
+        public override SortedDictionary<uint, Instruction> Instructions
+        {
+            get
+            {
+                var tmp = new SortedDictionary<uint, Instruction>();
+                foreach (var insn in _condition.Instructions) tmp.Add(insn.Key, insn.Value);
+                foreach (var insn in _body.Instructions) tmp.Add(insn.Key, insn.Value);
+                return tmp;
+            }
+        }
+
+        public override bool ContainsAddress(uint address) =>
+            _condition.ContainsAddress(address) || _body.ContainsAddress(address);
 
         public override void Dump(IndentedTextWriter writer)
         {
-            writer.WriteLine(InvertedCondition ? "while_not{" : "while{");
+            writer.WriteLine(_invertedCondition ? "while_not{" : "while{");
             ++writer.Indent;
-            Condition.Dump(writer);
+            _condition.Dump(writer);
             --writer.Indent;
             writer.WriteLine("} {");
             ++writer.Indent;
-            Body.Dump(writer);
+            _body.Dump(writer);
             --writer.Indent;
             writer.WriteLine("}");
         }
 
-        public new static bool IsCandidate([NotNull] INode condition)
+        public static bool IsCandidate([NotNull] INode condition)
         {
             if (condition is EntryNode || condition is ExitNode)
                 return false;

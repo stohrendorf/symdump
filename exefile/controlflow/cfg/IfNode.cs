@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using core;
 using core.util;
 using JetBrains.Annotations;
@@ -11,11 +9,11 @@ namespace exefile.controlflow.cfg
 {
     public class IfNode : Node
     {
-        [NotNull] protected readonly INode Condition;
+        [NotNull] private readonly INode _condition;
 
-        [NotNull] protected readonly INode Body;
+        [NotNull] private readonly INode _body;
 
-        protected readonly bool InvertedCondition;
+        private readonly bool _invertedCondition;
 
         public IfNode([NotNull] INode condition)
             : base(condition.Graph)
@@ -29,10 +27,10 @@ namespace exefile.controlflow.cfg
 
             var trueNode = trueEdge.To;
             var falseNode = falseEdge.To;
-            InvertedCondition = trueNode.Ins.Count() != 1 || trueNode.Outs.Count() != 1 || !(trueNode.Outs.First() is AlwaysEdge);
+            _invertedCondition = trueNode.Ins.Count() != 1 || trueNode.Outs.Count() != 1 || !(trueNode.Outs.First() is AlwaysEdge);
 
             INode body, common;
-            if (!InvertedCondition)
+            if (!_invertedCondition)
             {
                 body = trueNode;
                 common = body.Outs.First().To;
@@ -48,8 +46,8 @@ namespace exefile.controlflow.cfg
             Debug.Assert(body.Outs.Count() == 1);
             Debug.Assert(body.Outs.First() is AlwaysEdge);
 
-            Condition = condition;
-            Body = body;
+            _condition = condition;
+            _body = body;
 
             Graph.ReplaceNode(condition, this);
             Graph.RemoveNode(body);
@@ -65,24 +63,24 @@ namespace exefile.controlflow.cfg
             get
             {
                 var tmp = new SortedDictionary<uint, Instruction>();
-                foreach (var insn in Condition.Instructions) tmp.Add(insn.Key, insn.Value);
-                foreach (var insn in Body.Instructions) tmp.Add(insn.Key, insn.Value);
+                foreach (var insn in _condition.Instructions) tmp.Add(insn.Key, insn.Value);
+                foreach (var insn in _body.Instructions) tmp.Add(insn.Key, insn.Value);
                 return tmp;
             }
         }
 
         public override bool ContainsAddress(uint address) =>
-            Condition.ContainsAddress(address) || Body.ContainsAddress(address);
+            _condition.ContainsAddress(address) || _body.ContainsAddress(address);
 
         public override void Dump(IndentedTextWriter writer)
         {
-            writer.WriteLine(InvertedCondition ? "if_not{" : "if{");
+            writer.WriteLine(_invertedCondition ? "if_not{" : "if{");
             ++writer.Indent;
-            Condition.Dump(writer);
+            _condition.Dump(writer);
             --writer.Indent;
             writer.WriteLine("} {");
             ++writer.Indent;
-            Body.Dump(writer);
+            _body.Dump(writer);
             --writer.Indent;
             writer.WriteLine("}");
         }
