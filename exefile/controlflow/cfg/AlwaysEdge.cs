@@ -1,8 +1,10 @@
-﻿namespace exefile.controlflow.cfg
+﻿using JetBrains.Annotations;
+
+namespace exefile.controlflow.cfg
 {
     public class AlwaysEdge : Edge
     {
-        public AlwaysEdge(INode from, INode to) : base(from, to)
+        public AlwaysEdge([NotNull] INode from, [NotNull] INode to) : base(from, to)
         {
         }
 

@@ -55,9 +55,9 @@ namespace exefile.controlflow.cfg
             get
             {
                 var tmp = new SortedDictionary<uint, Instruction>();
-                foreach (var insn in _condition.Instructions) tmp.Add(insn.Key, insn.Value);
-                foreach (var insn in _trueBody.Instructions) tmp.Add(insn.Key, insn.Value);
-                foreach (var insn in _falseBody.Instructions) tmp.Add(insn.Key, insn.Value);
+                foreach (var insn in _condition.Instructions) tmp[insn.Key] = insn.Value;
+                foreach (var insn in _trueBody.Instructions) tmp[insn.Key] = insn.Value;
+                foreach (var insn in _falseBody.Instructions) tmp[insn.Key] = insn.Value;
                 return tmp;
             }
         }

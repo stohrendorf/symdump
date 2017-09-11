@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using exefile.controlflow.cfg;
@@ -18,12 +19,8 @@ namespace exefile.controlflow
             Graph = graph;
         }
 
-        private bool Reduce(string name, Func<INode, bool> predicate, Func<INode, INode> converter)
+        private bool Reduce(string name, List<INode> candidates, Func<INode, bool> predicate, Func<INode, INode> converter)
         {
-            logger.Debug("Collecting dominators");
-            var candidates = new TarjanLengauer(Graph).Dominators.Values.Distinct().ToList();
-            //var candidates = Graph.Nodes.Where(predicate).ToList();
-            logger.Debug($" - {candidates.Count} dominators");
             candidates = candidates.Where(predicate).ToList();
             logger.Debug($" - {candidates.Count} {name} candidates");
             bool reduced = false;
@@ -55,23 +52,28 @@ namespace exefile.controlflow
 
                 logger.Debug($"Analysis cycle ({Graph.Nodes.Count()} nodes, {Graph.Edges.Count()} edges)...");
 
-                reduced |= Reduce("and clause", AndNode.IsCandidate, n => new AndNode(n));
-                reduced |= Reduce("or clause", OrNode.IsCandidate, n => new OrNode(n));
+                logger.Debug("Collecting dominators");
+                var candidates = new TarjanLengauer(Graph).Dominators.Values.Distinct().ToList();
+                logger.Debug($" - {candidates.Count} dominators");
+                //var candidates = Graph.Nodes.Where(predicate).ToList();
+
+                reduced |= Reduce("and clause", candidates, AndNode.IsCandidate, n => new AndNode(n));
+                reduced |= Reduce("or clause", candidates, OrNode.IsCandidate, n => new OrNode(n));
                 if(reduced)
                     continue;
                 
-                reduced |= Reduce("if", IfNode.IsCandidate, n => new IfNode(n));
-                reduced |= Reduce("if-else", IfElseNode.IsCandidate, n => new IfElseNode(n));
-                reduced |= Reduce("while", WhileNode.IsCandidate, n => new WhileNode(n));
-                reduced |= Reduce("do-while", DoWhileNode.IsCandidate, n => new DoWhileNode(n));
-                reduced |= Reduce("while-true", WhileTrueNode.IsCandidate, n => new WhileTrueNode(n));
-                reduced |= Reduce("sequence", SequenceNode.IsCandidate, n => new SequenceNode(n));
+                reduced |= Reduce("if", candidates, IfNode.IsCandidate, n => new IfNode(n));
+                reduced |= Reduce("if-else", candidates, IfElseNode.IsCandidate, n => new IfElseNode(n));
+                reduced |= Reduce("while", candidates, WhileNode.IsCandidate, n => new WhileNode(n));
+                reduced |= Reduce("do-while", candidates, DoWhileNode.IsCandidate, n => new DoWhileNode(n));
+                reduced |= Reduce("while-true", candidates, WhileTrueNode.IsCandidate, n => new WhileTrueNode(n));
+                reduced |= Reduce("sequence", candidates, SequenceNode.IsCandidate, n => new SequenceNode(n));
             } while (reduced);
             
-            var candidates = new TarjanLengauer(Graph).Dominators.Values.Distinct().ToList();
-            if (candidates.Count > 0)
+            var doms = new TarjanLengauer(Graph).Dominators.Values.Distinct().ToList();
+            if (doms.Count > 0)
             {
-                logger.Debug($"Dominators left: {string.Join(", ", candidates.Select(c => c.Id))}");
+                logger.Debug($"Dominators left: {string.Join(", ", doms.Select(c => c.Id))}");
             }
         }
     }

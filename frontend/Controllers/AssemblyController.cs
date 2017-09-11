@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using exefile.controlflow.cfg;
 using frontend.Services;
@@ -44,12 +45,18 @@ namespace frontend.Controllers
             {
                 var graph = _appState.ExeFile?.AnalyzeControlFlow(offset);
 
+                IDictionary<INode, INode> doms = null;
+                if (graph != null)
+                {
+                    doms = new TarjanLengauer(graph).Dominators;
+                }
+
                 var nodes = graph?.Nodes
                     .ToDictionary(v => v.Id, v => new VisNode
                     {
                         Id = v.Id,
                         Label = v.ToString(),
-                        Color = v is EntryNode ? "#00c000" : v is ExitNode ? "#c00000" : "#c0c0ff"
+                        Color = v is EntryNode ? "#00c000" : v is ExitNode ? "#c00000" : doms.Values.Contains(v) ? "#00c0ff" : "#c0c0ff"
                     });
 
                 visGraph.Nodes = nodes?.Values.ToList();
@@ -62,6 +69,24 @@ namespace frontend.Controllers
                         Color = (e is TrueEdge) ? "#00a000" : (e is FalseEdge) ? "#ff0000" : "#0000ff"
                     })
                     .ToList();
+
+                if (doms == null)
+                    return visGraph;
+                
+                foreach (var d in doms)
+                {
+                    visGraph.Edges.Add(new VisEdge
+                    {
+                        From = nodes[d.Value.Id],
+                        To = nodes[d.Key.Id],
+                        Color = "#404040",
+                        Dashes = true,
+                        Smooth = new VisEdge.VisSmooth
+                        {
+                            Enabled = false
+                        }
+                    });
+                }
 
                 return visGraph;
             }

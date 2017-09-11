@@ -8,6 +8,9 @@ namespace frontend.Controllers
         {
             [JsonProperty("type")]
             public string Type { get; set; } = "cubicBezier";
+            
+            [JsonProperty("enabled")]
+            public bool Enabled { get; set; } = true;
         }
 
         [JsonIgnore] public VisNode From;
@@ -31,5 +34,8 @@ namespace frontend.Controllers
         
         [JsonProperty("color")]
         public string Color { get; set; } = "#0000ff";
+
+        [JsonProperty("dashes")]
+        public bool Dashes { get; set; } = false;
     }
 }

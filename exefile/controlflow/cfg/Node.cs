@@ -19,7 +19,7 @@ namespace exefile.controlflow.cfg
 
         public abstract SortedDictionary<uint, Instruction> Instructions { get; }
 
-        public virtual uint Start => Instructions.Keys.First();
+        public virtual uint Start => Instructions.Keys.FirstOrDefault();
 
         public abstract void Dump(IndentedTextWriter writer);
 

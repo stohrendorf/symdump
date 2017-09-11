@@ -1,17 +1,20 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace exefile.controlflow.cfg
 {
     public abstract class Edge : IEdge, IEquatable<Edge>
     {
-        protected Edge(INode from, INode to)
+        protected Edge([NotNull] INode from, [NotNull] INode to)
         {
             From = from;
             To = to;
         }
 
         public INode From { get; }
+
         public INode To { get; }
+
         public abstract IEdge CloneTyped(INode from, INode to);
 
         public override string ToString()

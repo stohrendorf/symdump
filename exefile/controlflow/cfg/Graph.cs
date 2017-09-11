@@ -21,8 +21,7 @@ namespace exefile.controlflow.cfg
 
         public void AddNode(INode node)
         {
-            if (!_nodes.Contains(node))
-                _nodes.Add(node);
+            _nodes.Add(node);
         }
 
         public void RemoveNode(INode node)
