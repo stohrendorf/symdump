@@ -20,7 +20,11 @@ namespace exefile.controlflow
 
         private bool Reduce(string name, Func<INode, bool> predicate, Func<INode, INode> converter)
         {
-            var candidates = Graph.Nodes.Where(predicate).ToList();
+            logger.Debug("Collecting dominators");
+            var candidates = new TarjanLengauer(Graph).Dominators.Values.Distinct().ToList();
+            //var candidates = Graph.Nodes.Where(predicate).ToList();
+            logger.Debug($" - {candidates.Count} dominators");
+            candidates = candidates.Where(predicate).ToList();
             logger.Debug($" - {candidates.Count} {name} candidates");
             bool reduced = false;
             while (candidates.Count > 0)
@@ -63,6 +67,12 @@ namespace exefile.controlflow
                 reduced |= Reduce("while-true", WhileTrueNode.IsCandidate, n => new WhileTrueNode(n));
                 reduced |= Reduce("sequence", SequenceNode.IsCandidate, n => new SequenceNode(n));
             } while (reduced);
+            
+            var candidates = new TarjanLengauer(Graph).Dominators.Values.Distinct().ToList();
+            if (candidates.Count > 0)
+            {
+                logger.Debug($"Dominators left: {string.Join(", ", candidates.Select(c => c.Id))}");
+            }
         }
     }
     
