@@ -26,6 +26,7 @@ namespace symfile
         private readonly Dictionary<string, TypeDecoration> _typedefs = new Dictionary<string, TypeDecoration>();
         private readonly Dictionary<string, UnionLayout> _unions = new Dictionary<string, UnionLayout>();
         private readonly byte _version;
+        // ReSharper disable once NotAccessedField.Local
         private string _mxInfo;
         public readonly Dictionary<string, CompoundLayout> CurrentlyDefining = new Dictionary<string, CompoundLayout>();
 
@@ -54,24 +55,16 @@ namespace symfile
         {
             if (tag == null)
                 return null;
-            
-            StructLayout result;
-            if (!_structs.TryGetValue(tag, out result))
-                return null;
 
-            return result;
+            return !_structs.TryGetValue(tag, out var result) ? null : result;
         }
 
         public UnionLayout FindUnionDef(string tag)
         {
             if (tag == null)
                 return null;
-            
-            UnionLayout result;
-            if (!_unions.TryGetValue(tag, out result))
-                return null;
 
-            return result;
+            return !_unions.TryGetValue(tag, out var result) ? null : result;
         }
 
         public IMemoryLayout FindTypeDefinition(string tag)
@@ -86,12 +79,8 @@ namespace symfile
         {
             if (string.IsNullOrEmpty(label))
                 return null;
-            
-            TypeDecoration ti;
-            if (!_externs.TryGetValue(label, out ti))
-                return null;
-            
-            return FindTypeDefinition(ti.Tag);
+
+            return !_externs.TryGetValue(label, out var ti) ? null : FindTypeDefinition(ti.Tag);
         }
         
         public void Dump(TextWriter output)
@@ -223,8 +212,7 @@ namespace symfile
         {
             var e = new EnumDef(reader, name, this);
 
-            EnumDef already;
-            if (_enums.TryGetValue(name, out already))
+            if (_enums.TryGetValue(name, out var already))
             {
                 if (!e.Equals(already))
                     throw new Exception($"Non-uniform definitions of enum {name}");
@@ -239,8 +227,7 @@ namespace symfile
         {
             var e = new UnionLayout(reader, name, this);
 
-            UnionLayout already;
-            if (_unions.TryGetValue(name, out already))
+            if (_unions.TryGetValue(name, out var already))
             {
                 if (e.Equals(already))
                     return;
@@ -265,8 +252,7 @@ namespace symfile
         {
             var e = new StructLayout(reader, name, this);
 
-            StructLayout already;
-            if (_structs.TryGetValue(name, out already))
+            if (_structs.TryGetValue(name, out var already))
             {
                 if (e.Equals(already))
                     return;
@@ -291,8 +277,7 @@ namespace symfile
 
         private void AddTypedef(string name, TypeDecoration typeDecoration)
         {
-            TypeDecoration already;
-            if (_typedefs.TryGetValue(name, out already))
+            if (_typedefs.TryGetValue(name, out var already))
             {
                 if (!typeDecoration.Equals(already))
                     throw new Exception($"Non-uniform definitions of typedef for {name}");
@@ -350,25 +335,21 @@ namespace symfile
             // first try to find a memory layout which contains this address
             var typedLabel = Labels.LastOrDefault(kv => kv.Key <= addr).Value.First();
             var memoryLayout = FindTypeDefinitionForLabel(typedLabel.Name);
-            if (memoryLayout != null)
+            if (memoryLayout == null)
+                return !Labels.TryGetValue(addr, out var lbls) ? $"lbl_{addr:X}" : lbls.First().Name;
+            
+            try
             {
-                try
-                {
-                    var path = memoryLayout.GetAccessPathTo(addr - typedLabel.Address);
-                    if (path != null)
-                        return typedLabel.Name + "." + path;
-                }
-                catch
-                {
-                    // ignored
-                }
+                var path = memoryLayout.GetAccessPathTo(addr - typedLabel.Address);
+                if (path != null)
+                    return typedLabel.Name + "." + path;
+            }
+            catch
+            {
+                // ignored
             }
 
-            IList<NamedLocation> lbls;
-            if (!Labels.TryGetValue(addr, out lbls))
-                return $"lbl_{addr:X}";
-
-            return lbls.First().Name;
+            return !Labels.TryGetValue(addr, out var lbls2) ? $"lbl_{addr:X}" : lbls2.First().Name;
         }
     }
 }

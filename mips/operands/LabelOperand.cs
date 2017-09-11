@@ -1,4 +1,5 @@
-﻿using core;
+﻿using System.Diagnostics;
+using core;
 using core.expression;
 
 namespace mips.operands
@@ -22,7 +23,9 @@ namespace mips.operands
 
         public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            return new NamedMemoryLayout(Label, Address, dataFlowState.DebugSource.FindTypeDefinitionForLabel(Label));
+            var typeDef = dataFlowState.DebugSource.FindTypeDefinitionForLabel(Label);
+            Debug.Assert(typeDef != null);
+            return new NamedMemoryLayout(Label, Address, typeDef);
         }
 
         public override string ToString()

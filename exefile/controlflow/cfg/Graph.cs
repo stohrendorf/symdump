@@ -42,19 +42,19 @@ namespace exefile.controlflow.cfg
 
         public void ReplaceNode(INode oldNode, INode newNode)
         {
-            if (_nodes.Contains(oldNode))
-            {
-                _nodes.Remove(oldNode);
-                AddNode(newNode);
+            if (!_nodes.Contains(oldNode))
+                return;
+            
+            _nodes.Remove(oldNode);
+            AddNode(newNode);
 
-                var oldEdges = _edges.ToList();
-                _edges = new HashSet<IEdge>();
-                foreach (var e in oldEdges)
-                {
-                    var from = e.From.Equals(oldNode) ? newNode : e.From;
-                    var to = e.To.Equals(oldNode) ? newNode : e.To;
-                    _edges.Add(e.CloneTyped(from, to));
-                }
+            var oldEdges = _edges.ToList();
+            _edges = new HashSet<IEdge>();
+            foreach (var e in oldEdges)
+            {
+                var from = e.From.Equals(oldNode) ? newNode : e.From;
+                var to = e.To.Equals(oldNode) ? newNode : e.To;
+                _edges.Add(e.CloneTyped(from, to));
             }
         }
 

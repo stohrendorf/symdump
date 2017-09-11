@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using core.util;
@@ -12,8 +11,8 @@ namespace frontend.Services
 {
     public class AppState
     {
-        public SymFile SymFile = null;
-        public ExeFile ExeFile = null;
+        public SymFile SymFile;
+        public ExeFile ExeFile;
 
         public AppState()
         {

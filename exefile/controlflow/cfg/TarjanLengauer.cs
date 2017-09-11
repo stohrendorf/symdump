@@ -10,10 +10,7 @@ namespace exefile.controlflow.cfg
 
         public TarjanLengauer(IGraph graph)
         {
-            IList<INode> vertices;
-            IDictionary<INode, int> semi;
-            IDictionary<INode, INode> dfsParents;
-            Dfs(graph, out vertices, out semi, out dfsParents);
+            Dfs(graph, out var vertices, out var semi, out var dfsParents);
 
             var buckets = new Dictionary<INode, ISet<INode>>();
             var roots = new Dictionary<INode, INode>();
@@ -28,8 +25,7 @@ namespace exefile.controlflow.cfg
                     if (semi[u] < semi[cursor])
                         semi[cursor] = semi[u];
 
-                    ISet<INode> bucket;
-                    if (!buckets.TryGetValue(vertices[semi[cursor]], out bucket))
+                    if (!buckets.TryGetValue(vertices[semi[cursor]], out var bucket))
                         buckets[vertices[semi[cursor]]] = bucket = new HashSet<INode>();
                     bucket.Add(cursor);
 

@@ -1,4 +1,6 @@
-﻿using core;
+﻿using System.Diagnostics;
+using System.Reflection.Metadata;
+using core;
 using core.expression;
 using mips.disasm;
 
@@ -37,7 +39,9 @@ namespace mips.operands
 
             var address = (uint) (((ValueNode) expression).Value + Offset);
             var name = dataFlowState.DebugSource.GetSymbolName(address);
-            return new NamedMemoryLayout(name, address, dataFlowState.DebugSource.FindTypeDefinitionForLabel(name));
+            var typeDef = dataFlowState.DebugSource.FindTypeDefinitionForLabel(name);
+            Debug.Assert(typeDef != null);
+            return new NamedMemoryLayout(name, address, typeDef);
         }
 
         public override string ToString()

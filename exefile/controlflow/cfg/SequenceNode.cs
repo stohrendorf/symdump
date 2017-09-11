@@ -21,8 +21,7 @@ namespace exefile.controlflow.cfg
             var next = first.Outs.First().To;
             Debug.Assert(next.Ins.Count() == 1);
 
-            var seq = first as SequenceNode;
-            if (seq == null)
+            if (!(first is SequenceNode seq))
             {
                 seq = this;
                 seq.Nodes.Add(first);

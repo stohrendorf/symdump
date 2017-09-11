@@ -33,9 +33,9 @@ namespace exefile.controlflow.cfg
             Debug.Assert(!sFalse.Equals(c0));
             Debug.Assert(!sFalse.Equals(c1));
 
-            if (c0 is OrNode)
+            if (c0 is OrNode c0Or)
             {
-                _nodes = ((OrNode) c0)._nodes;
+                _nodes = c0Or._nodes;
                 _nodes.Add(c1);
             }
             else

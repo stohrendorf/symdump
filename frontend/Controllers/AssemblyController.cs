@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using core.util;
 using exefile.controlflow.cfg;
 using frontend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -58,8 +57,8 @@ namespace frontend.Controllers
                 visGraph.Edges = graph?.Edges
                     .Select(e => new VisEdge
                     {
-                        From = nodes?[e.From.Id],
-                        To = nodes?[e.To.Id],
+                        From = nodes[e.From.Id],
+                        To = nodes[e.To.Id],
                         Color = (e is TrueEdge) ? "#00a000" : (e is FalseEdge) ? "#ff0000" : "#0000ff"
                     })
                     .ToList();

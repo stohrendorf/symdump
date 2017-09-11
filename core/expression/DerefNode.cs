@@ -18,9 +18,9 @@ namespace core.expression
 
         public string ToCode()
         {
-            if (Inner is RegisterOffsetNode)
+            if (Inner is RegisterOffsetNode node)
             {
-                var c = ((RegisterOffsetNode) Inner).TryDeref();
+                var c = node.TryDeref();
                 if (c != null)
                     return c;
             }

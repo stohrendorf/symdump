@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using core;
 using frontend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +40,7 @@ namespace frontend.Controllers
             return _appState.ExeFile?.Callees.Select(address => new TreeViewItem
             {
                 Id = (int) address,
-                Text = $"0x{address:x8} " + _appState.SymFile.GetSymbolName(address, 0),
+                Text = $"0x{address:x8} " + _appState.SymFile.GetSymbolName(address),
                 Userdata = new Dictionary<string, string> {{"address", address.ToString()}}
             });
         }

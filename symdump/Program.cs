@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Linq;
 using core.util;
 using exefile;
 using NLog;

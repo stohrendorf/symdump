@@ -54,7 +54,6 @@ namespace symfile.code
         public IMemoryLayout ReturnType => _returnType.MemoryLayout;
         private readonly Block _body;
         private readonly string _file;
-        private readonly uint _lastLine;
         private readonly uint _line;
         private readonly uint _mask;
         private readonly int _maskOffs;
@@ -106,7 +105,7 @@ namespace symfile.code
                 switch (typedValue.Type & 0x7f)
                 {
                     case 14: // end of function
-                        _lastLine = reader.ReadUInt32();
+                        reader.ReadUInt32();
                         return;
                     case 16: // begin of block
                         _body.SubBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), this,

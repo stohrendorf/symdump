@@ -38,8 +38,7 @@ namespace exefile.controlflow.cfg
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Node) obj);
+            return obj.GetType() == GetType() && Equals((Node) obj);
         }
 
         public override int GetHashCode()

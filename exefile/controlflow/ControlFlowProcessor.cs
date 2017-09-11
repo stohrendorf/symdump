@@ -20,8 +20,7 @@ namespace exefile.controlflow
         [NotNull]
         private InstructionSequence GetOrCreateSequence(IDictionary<uint, InstructionSequence> sequences, IList<IEdge> edges,  uint addr)
         {
-            InstructionSequence sequence;
-            if (!sequences.TryGetValue(addr, out sequence))
+            if (!sequences.TryGetValue(addr, out var sequence))
             {
                 // we don't have a sequence starting at addr, so find the best matching candidate,
                 // which then either needs splitting, or we can safely add a new sequence
@@ -112,14 +111,14 @@ namespace exefile.controlflow
                         continue;
                     }
 
-                    if (insn is ConditionalBranchInstruction)
+                    if (insn is ConditionalBranchInstruction instruction)
                     {
                         block.Instructions.Add(addr + 4, instructions[addr + 4]);
 
                         edges.Add(new FalseEdge(block, GetOrCreateSequence(sequences, edges, addr + 8)));
                         entryPoints.Enqueue(addr + 8);
 
-                        var target = ((ConditionalBranchInstruction) insn).JumpTarget;
+                        var target = instruction.JumpTarget;
                         if (target != null)
                         {
                             edges.Add(new TrueEdge(block, GetOrCreateSequence(sequences, edges, target.Value)));

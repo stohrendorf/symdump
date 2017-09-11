@@ -1,5 +1,4 @@
-﻿using frontend.Migrations;
-using frontend.Models;
+﻿using frontend.Models;
 using frontend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

@@ -124,10 +124,7 @@ namespace symfile.type
             }
             catch (ArgumentOutOfRangeException)
             {
-                if (memLayout == null)
-                    throw new Exception("Non-primitive types must have a memory layout");
-
-                MemoryLayout = memLayout;
+                MemoryLayout = memLayout ?? throw new Exception("Non-primitive types must have a memory layout");
             }
 
             var dimIdx = 0;

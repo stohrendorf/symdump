@@ -46,9 +46,8 @@ namespace exefile.dataflow
             }
 
             IExpressionNode condition = null;
-            if (insn is ConditionalBranchInstruction)
+            if (insn is ConditionalBranchInstruction cbi)
             {
-                var cbi = (ConditionalBranchInstruction) insn;
                 condition = (ConditionalBranchNode) cbi.ToExpressionNode(this);
             }
 
@@ -57,9 +56,9 @@ namespace exefile.dataflow
 
             logger.Debug("[eval] " + insn.AsReadable());
 
-            if (insn is CallPtrInstruction)
+            if (insn is CallPtrInstruction instruction)
             {
-                return Pocess((CallPtrInstruction) insn);
+                return Pocess(instruction);
             }
             else if (insn is ArithmeticInstruction)
             {
@@ -90,9 +89,9 @@ namespace exefile.dataflow
         private void Process(DataCopyInstruction insn)
         {
             var copyTo = insn.Dst;
-            if (copyTo is RegisterOperand)
+            if (copyTo is RegisterOperand operand)
             {
-                _registers[((RegisterOperand) copyTo).Register] = insn.Src.ToExpressionNode(this);
+                _registers[operand.Register] = insn.Src.ToExpressionNode(this);
             }
             else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).Register == Register.sp)
             {
@@ -114,9 +113,8 @@ namespace exefile.dataflow
         private bool Process(ArithmeticInstruction arith)
         {
             var dst = arith.Destination;
-            if (dst is RegisterOperand)
+            if (dst is RegisterOperand reg)
             {
-                var reg = (RegisterOperand) dst;
                 _registers[reg.Register] = arith.ToExpressionNode(this);
                 if (reg.Register != Register.sp || !arith.IsInplace || !(arith.Rhs is ImmediateOperand))
                     return true;
@@ -159,9 +157,9 @@ namespace exefile.dataflow
             {
                 DumpState();
 
-                if (insn.Target is LabelOperand)
+                if (insn.Target is LabelOperand operand)
                 {
-                    var fn = DebugSource.FindFunction(((LabelOperand) insn.Target).Label);
+                    var fn = DebugSource.FindFunction(operand.Label);
                     if (fn != null)
                     {
                         logger.Debug("// " + fn.GetSignature());
@@ -169,8 +167,7 @@ namespace exefile.dataflow
                         var parameters = new List<string>();
                         foreach (var p in fn.RegisterParameters)
                         {
-                            IExpressionNode tmp;
-                            if (_registers.TryGetValue((Register) p.Key, out tmp))
+                            if (_registers.TryGetValue((Register) p.Key, out var tmp))
                                 parameters.Add(tmp.ToCode());
                             else
                                 parameters.Add("__UNKNOWN__");
@@ -200,7 +197,7 @@ namespace exefile.dataflow
                 return true;
             }
 
-            if (insn.Target is RegisterOperand && ((RegisterOperand) insn.Target).Register == Register.ra)
+            if (insn.Target is RegisterOperand registerOperand && registerOperand.Register == Register.ra)
             {
                 logger.Debug("return");
             }
@@ -227,8 +224,7 @@ namespace exefile.dataflow
 
         public IExpressionNode GetRegisterExpression(int registerId)
         {
-            IExpressionNode expression;
-            _registers.TryGetValue((Register) registerId, out expression);
+            _registers.TryGetValue((Register) registerId, out var expression);
             return expression;
         }
     }

@@ -8,7 +8,6 @@ using core;
 using core.util;
 using exefile.controlflow;
 using exefile.controlflow.cfg;
-using exefile.dataflow;
 using mips.disasm;
 using mips.instructions;
 using mips.operands;
@@ -53,8 +52,7 @@ namespace exefile
 
         private IEnumerable<string> GetSymbolNames(uint addr)
         {
-            IList<NamedLocation> lbls;
-            _debugSource.Labels.TryGetValue(addr + _header.tAddr, out lbls);
+            _debugSource.Labels.TryGetValue(addr + _header.tAddr, out var lbls);
             return lbls?.Select(l => l.Name);
         }
 
@@ -66,8 +64,7 @@ namespace exefile
 
         private void AddXref(uint from, uint to)
         {
-            HashSet<uint> froms;
-            if (!_xrefs.TryGetValue(to, out froms))
+            if (!_xrefs.TryGetValue(to, out var froms))
                 _xrefs.Add(to, froms = new HashSet<uint>());
 
             froms.Add(from);
@@ -78,8 +75,7 @@ namespace exefile
 
         private HashSet<uint> GetXrefs(uint to)
         {
-            HashSet<uint> froms;
-            _xrefs.TryGetValue(to, out froms);
+            _xrefs.TryGetValue(to, out var froms);
             return froms;
         }
 
@@ -89,6 +85,7 @@ namespace exefile
             data = _data[ofs++];
             data |= (uint) _data[ofs++] << 8;
             data |= (uint) _data[ofs++] << 16;
+            // ReSharper disable once RedundantAssignment
             data |= (uint) _data[ofs++] << 24;
             return data;
         }
@@ -168,8 +165,7 @@ namespace exefile
                 index += 4;
                 var insn = _instructions[index - 4] = DecodeInstruction(data, index);
 
-                var cbranchInsn = insn as ConditionalBranchInstruction;
-                if (cbranchInsn != null)
+                if (insn is ConditionalBranchInstruction)
                 {
                     data = DataAt(index);
                     index += 4;
@@ -181,8 +177,7 @@ namespace exefile
                     continue;
                 }
 
-                var callInsn = insn as CallPtrInstruction;
-                if (callInsn != null)
+                if (insn is CallPtrInstruction callInsn)
                 {
                     data = DataAt(index);
                     index += 4;
@@ -250,10 +245,10 @@ namespace exefile
                     && a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as ArithmeticInstruction;
-                    if (b2?.Operands[2] is ImmediateOperand && (b2.Operands[0] as RegisterOperand)?.Register == (b2.Operands[1] as RegisterOperand)?.Register)
+                    if (b2.Operands[2] is ImmediateOperand operand && (b2.Operands[0] as RegisterOperand)?.Register == (b2.Operands[1] as RegisterOperand)?.Register)
                     {
                         uint offs = (uint) ((ImmediateOperand) a.Operands[1]).Value |
-                                    (uint) ((ImmediateOperand) b2.Operands[2]).Value;
+                                    (uint) operand.Value;
                         _instructions[addr] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
                         _instructions[addr + 4] = new NopInstruction();
                         addr += 4;
@@ -269,10 +264,10 @@ namespace exefile
                     && a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as ArithmeticInstruction;
-                    if (b2?.Operands[2] is ImmediateOperand)
+                    if (b2.Operands[2] is ImmediateOperand operand)
                     {
                         uint offs = (uint) ((ImmediateOperand) a.Operands[1]).Value |
-                                    (uint) ((ImmediateOperand) b2.Operands[2]).Value;
+                                    (uint) operand.Value;
                         _instructions[addr + 4] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
                         addr += 4;
                         ++joinCount;
@@ -286,7 +281,7 @@ namespace exefile
                     && a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as DataCopyInstruction;
-                    if (b2?.Operands[0] is RegisterOperand && (b2.Operands[1] as RegisterOffsetOperand)?.Register == Register.at)
+                    if (b2.Operands[0] is RegisterOperand && (b2.Operands[1] as RegisterOffsetOperand)?.Register == Register.at)
                     {
                         uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value |
                                             ((RegisterOffsetOperand) b.Operands[1]).Offset);
@@ -310,7 +305,7 @@ namespace exefile
                     && a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as DataCopyInstruction;
-                    if (b2?.Operands[0] is RegisterOperand)
+                    if (b2.Operands[0] is RegisterOperand)
                     {
                         uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value |
                                             ((RegisterOffsetOperand) b.Operands[1]).Offset);
@@ -323,7 +318,6 @@ namespace exefile
                         _instructions[addr + 4] = new NopInstruction();
                         addr += 4;
                         ++joinCount;
-                        continue;
                     }
                 }
             }
