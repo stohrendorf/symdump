@@ -62,11 +62,16 @@ namespace exefile.controlflow
                 if(reduced)
                     continue;
                 
-                reduced |= Reduce("if", candidates, IfNode.IsCandidate, n => new IfNode(n));
-                reduced |= Reduce("if-else", candidates, IfElseNode.IsCandidate, n => new IfElseNode(n));
+                // prefer loops over ifs
                 reduced |= Reduce("while", candidates, WhileNode.IsCandidate, n => new WhileNode(n));
                 reduced |= Reduce("do-while", candidates, DoWhileNode.IsCandidate, n => new DoWhileNode(n));
                 reduced |= Reduce("while-true", candidates, WhileTrueNode.IsCandidate, n => new WhileTrueNode(n));
+                reduced |= Reduce("if", candidates, IfNode.IsCandidate, n => new IfNode(n));
+                reduced |= Reduce("if-else", candidates, IfElseNode.IsCandidate, n => new IfElseNode(n));
+                if(reduced)
+                    continue;
+
+                // only join as a last resort
                 reduced |= Reduce("sequence", candidates, SequenceNode.IsCandidate, n => new SequenceNode(n));
             } while (reduced);
             

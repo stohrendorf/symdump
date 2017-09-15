@@ -81,6 +81,9 @@ namespace exefile.controlflow.cfg
             if (next == null || next is ExitNode)
                 return false;
 
+            if (next.Outs.Any(e => e.To.Equals(seq)))
+                return false;
+            
             return next.Ins.Count() == 1;
         }
     }
