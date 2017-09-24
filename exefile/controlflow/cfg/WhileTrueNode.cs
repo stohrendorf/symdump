@@ -9,6 +9,8 @@ namespace exefile.controlflow.cfg
 {
     public class WhileTrueNode : Node
     {
+        public override string Id => "whiletrue_" + _body.Id;
+
         public WhileTrueNode([NotNull] INode body) : base(body.Graph)
         {
             Debug.Assert(IsCandidate(body));

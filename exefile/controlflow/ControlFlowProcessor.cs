@@ -180,7 +180,6 @@ namespace exefile.controlflow
                 GetOrCreateSequence(sequences, edges, splitAt);
             }
             
-#if false
             // duplicate the branch-delay instructions.
             var branches = sequences
                 .Where(s => edges.Count(e => e.From.Equals(s.Value)) == 2)
@@ -196,9 +195,11 @@ namespace exefile.controlflow
                     logger.Debug(e);
                 }
 
-                var delayInsn = GetOrCreateSequence(sequences, edges, branch.Instructions.Keys.Last());
+                var delayInsn = branch.Chop(branch.Instructions.Keys.Last());
                 Debug.Assert(delayInsn.Instructions.Count == 1);
                 Debug.Assert(branch.Instructions.Count > 0);
+
+                sequences.Add(delayInsn.Start, delayInsn);
                 
                 logger.Debug($"Duplicating: {branch.Id} | {delayInsn.Id}");
                 foreach (var e in edges.Where(e => e.From.Equals(delayInsn)))
@@ -206,21 +207,16 @@ namespace exefile.controlflow
                     logger.Debug(e);
                 }
                 
-                Debug.Assert(edges.Count(e => e.From.Equals(delayInsn) && e is FalseEdge) == 1);
-                var f = edges.First(e => e.From.Equals(delayInsn) && e is FalseEdge);
-                Debug.Assert(edges.Count(e => e.From.Equals(delayInsn) && e is TrueEdge) == 1);
-                var t = edges.First(e => e.From.Equals(delayInsn) && e is TrueEdge); 
+                Debug.Assert(edges.Count(e => e.From.Equals(branch) && e is FalseEdge) == 1);
+                var f = edges.First(e => e.From.Equals(branch) && e is FalseEdge);
+                Debug.Assert(edges.Count(e => e.From.Equals(branch) && e is TrueEdge) == 1);
+                var t = edges.First(e => e.From.Equals(branch) && e is TrueEdge); 
 
                 var dup = new DuplicatedNode<InstructionSequence>(delayInsn);
                 Graph.AddNode(dup);
                 
-                Debug.Assert(!dup.Equals(delayInsn));
-                
-                Debug.Assert(edges.Count(e => e.To.Equals(delayInsn)) == 1);
                 Debug.Assert(edges.Count(e => e.From.Equals(t.From)) == 2);
                 Debug.Assert(edges.Count(e => e.From.Equals(f.From)) == 2);
-                if(!edges.Remove(edges.First(e => e.To.Equals(delayInsn))))
-                    throw new Exception("Failed to detach branch delay slot");
                 if(!edges.Remove(t))
                     throw new Exception("Failed to detach true branch");
                 if(!edges.Remove(f))
@@ -236,7 +232,6 @@ namespace exefile.controlflow
                 edges.Add(new TrueEdge(branch, dup));
                 edges.Add(new AlwaysEdge(dup, t.To));
             }
-#endif
             
             foreach (var s in sequences.Values)
             {

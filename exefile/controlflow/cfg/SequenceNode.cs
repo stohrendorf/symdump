@@ -11,6 +11,8 @@ namespace exefile.controlflow.cfg
     {
         public readonly IList<INode> Nodes = new List<INode>();
 
+        public override string Id => "seq_" + Nodes[0].Id;
+
         public SequenceNode(INode first) : base(first.Graph)
         {
             Debug.Assert(IsCandidate(first));

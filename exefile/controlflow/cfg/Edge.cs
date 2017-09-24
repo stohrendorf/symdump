@@ -24,7 +24,7 @@ namespace exefile.controlflow.cfg
 
         public bool Equals(Edge other)
         {
-            return From.Equals(other.From) && To.Equals(other.To);
+            return ReferenceEquals(From, other.From) && ReferenceEquals(To, other.To);
         }
 
         public override bool Equals(object obj)

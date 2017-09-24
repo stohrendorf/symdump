@@ -15,6 +15,8 @@ namespace exefile.controlflow.cfg
 
         private readonly bool _invertedCondition;
 
+        public override string Id => "if_" + _condition.Id;
+
         public IfNode([NotNull] INode condition)
             : base(condition.Graph)
         {

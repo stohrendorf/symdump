@@ -12,6 +12,8 @@ namespace exefile.controlflow.cfg
     {
         [NotNull] private readonly INode _inner;
 
+        public override string Id => "not_" + _inner.Id;
+
         public NotNode([NotNull] INode inner) : base(inner.Graph)
         {
             Debug.Assert(!(inner is NotNode));

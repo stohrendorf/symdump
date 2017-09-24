@@ -15,6 +15,8 @@ namespace exefile.controlflow.cfg
 
         private readonly bool _invertedCondition;
 
+        public override string Id => "while_" + _condition.Id;
+
         public WhileNode([NotNull] INode condition)
             : base(condition.Graph)
         {

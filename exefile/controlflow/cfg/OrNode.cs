@@ -13,6 +13,8 @@ namespace exefile.controlflow.cfg
 
         public override uint Start => _nodes.First().Start;
 
+        public override string Id => "or_" + _nodes[0].Id;
+
         public OrNode([NotNull] INode c0) : base(c0.Graph)
         {
             Debug.Assert(c0.Outs.Count() == 2);

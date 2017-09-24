@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using core;
 using core.util;
@@ -8,6 +9,8 @@ namespace exefile.controlflow.cfg
 {
     public class InstructionSequence : Node
     {
+        public override string Id => $"insnseq_{Start:x8}";
+
         public InstructionSequence([NotNull] IGraph graph)
             : base(graph)
         {
@@ -39,6 +42,8 @@ namespace exefile.controlflow.cfg
 
         public InstructionSequence Chop(uint from)
         {
+            Debug.Assert(ContainsAddress(from));
+            
             var result = new InstructionSequence(Graph);
             foreach (var split in Instructions.Where(i => i.Key >= from))
             {
@@ -48,6 +53,9 @@ namespace exefile.controlflow.cfg
             {
                 Instructions.Remove(rm);
             }
+
+            Debug.Assert(!ContainsAddress(from));
+            Debug.Assert(result.ContainsAddress(from));
 
             return result;
         }

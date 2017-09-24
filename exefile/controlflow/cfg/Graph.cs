@@ -14,10 +14,10 @@ namespace exefile.controlflow.cfg
         public IEnumerable<IEdge> Edges => _edges;
 
         public IEnumerable<IEdge> GetIns(INode node)
-            => _edges.Where(e => e.To.Equals(node));
+            => _edges.Where(e => ReferenceEquals(e.To, node));
 
         public IEnumerable<IEdge> GetOuts(INode node)
-            => _edges.Where(e => e.From.Equals(node));
+            => _edges.Where(e => ReferenceEquals(e.From, node));
 
         public void AddNode(INode node)
         {
@@ -31,7 +31,7 @@ namespace exefile.controlflow.cfg
             _nodes.Remove(node);
             var old = _edges;
             _edges = new HashSet<IEdge>();
-            foreach (var e in old.Where(e => !e.To.Equals(node) && !e.From.Equals(node)))
+            foreach (var e in old.Where(e => !ReferenceEquals(e.To, node) && !ReferenceEquals(e.From, node)))
             {
                 _edges.Add(e);
             }
@@ -51,8 +51,8 @@ namespace exefile.controlflow.cfg
             _edges = new HashSet<IEdge>();
             foreach (var e in oldEdges)
             {
-                var from = e.From.Equals(oldNode) ? newNode : e.From;
-                var to = e.To.Equals(oldNode) ? newNode : e.To;
+                var from = ReferenceEquals(e.From, oldNode) ? newNode : e.From;
+                var to = ReferenceEquals(e.To, oldNode) ? newNode : e.To;
                 _edges.Add(e.CloneTyped(from, to));
             }
         }
@@ -78,7 +78,7 @@ namespace exefile.controlflow.cfg
         {
             return _edges.Select(e => e.From).All(n => _nodes.Contains(n))
                    && _edges.Select(e => e.To).All(n => _nodes.Contains(n))
-                   && _nodes.All(n => _edges.Any(e => n.Equals(e.From) || n.Equals(e.To)));
+                   && _nodes.All(n => _edges.Any(e => ReferenceEquals(n, e.From) || ReferenceEquals(n, e.To)));
         }
 
         /// <summary>

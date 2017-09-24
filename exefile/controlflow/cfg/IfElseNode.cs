@@ -14,6 +14,8 @@ namespace exefile.controlflow.cfg
         [NotNull] private readonly INode _trueBody;
         [NotNull] private readonly INode _falseBody;
 
+        public override string Id => "ifelse_" + _condition.Id;
+
         public IfElseNode([NotNull] INode condition) : base(condition.Graph)
         {
             Debug.Assert(IsCandidate(condition));
