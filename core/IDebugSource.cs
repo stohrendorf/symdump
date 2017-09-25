@@ -12,7 +12,7 @@ namespace core
         SortedDictionary<uint, IList<NamedLocation>> Labels { get; }
 
         [CanBeNull]
-        IFunction FindFunction(uint addr);
+        IFunction FindFunction(uint globalAddress);
 
         [CanBeNull]
         IFunction FindFunction(string name);
@@ -21,7 +21,7 @@ namespace core
         IMemoryLayout FindTypeDefinitionForLabel(string label);
 
         [NotNull]
-        string GetSymbolName(uint addr, int rel = 0);
+        string GetSymbolName(uint globalAddress, int relative = 0);
 
         [CanBeNull]
         IMemoryLayout FindTypeDefinition(string tag);

@@ -138,10 +138,10 @@ namespace symfile
             {
                 var lbl = new NamedLocation((uint)fileEntry.Value, reader.ReadPascalString());
 
-                if (!Labels.ContainsKey(lbl.Address))
-                    Labels.Add(lbl.Address, new List<NamedLocation>());
+                if (!Labels.ContainsKey(lbl.GlobalAddress))
+                    Labels.Add(lbl.GlobalAddress, new List<NamedLocation>());
 
-                Labels[lbl.Address].Add(lbl);
+                Labels[lbl.GlobalAddress].Add(lbl);
                 return;
             }
 
@@ -318,9 +318,9 @@ namespace symfile
                 throw new Exception("Gomorrha");
         }
 
-        public IFunction FindFunction(uint addr)
+        public IFunction FindFunction(uint globalAddress)
         {
-            return Functions.FirstOrDefault(f => f.Address == addr);
+            return Functions.FirstOrDefault(f => f.GlobalAddress == globalAddress);
         }
 
         public IFunction FindFunction(string name)
@@ -328,19 +328,19 @@ namespace symfile
             return Functions.FirstOrDefault(f => f.Name.Equals(name));
         }
         
-        public string GetSymbolName(uint addr, int rel = 0)
+        public string GetSymbolName(uint globalAddress, int relative = 0)
         {
-            addr = (uint) (addr + rel);
+            globalAddress = (uint) (globalAddress + relative);
             
             // first try to find a memory layout which contains this address
-            var typedLabel = Labels.LastOrDefault(kv => kv.Key <= addr).Value.First();
+            var typedLabel = Labels.LastOrDefault(kv => kv.Key <= globalAddress).Value.First();
             var memoryLayout = FindTypeDefinitionForLabel(typedLabel.Name);
             if (memoryLayout == null)
-                return !Labels.TryGetValue(addr, out var lbls) ? $"lbl_{addr:X}" : lbls.First().Name;
+                return !Labels.TryGetValue(globalAddress, out var lbls) ? $"lbl_{globalAddress:X}" : lbls.First().Name;
             
             try
             {
-                var path = memoryLayout.GetAccessPathTo(addr - typedLabel.Address);
+                var path = memoryLayout.GetAccessPathTo(globalAddress - typedLabel.GlobalAddress);
                 if (path != null)
                     return typedLabel.Name + "." + path;
             }
@@ -349,7 +349,7 @@ namespace symfile
                 // ignored
             }
 
-            return !Labels.TryGetValue(addr, out var lbls2) ? $"lbl_{addr:X}" : lbls2.First().Name;
+            return !Labels.TryGetValue(globalAddress, out var lbls2) ? $"lbl_{globalAddress:X}" : lbls2.First().Name;
         }
     }
 }

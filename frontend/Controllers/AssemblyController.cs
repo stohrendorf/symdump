@@ -23,7 +23,7 @@ namespace frontend.Controllers
         [HttpGet("instructions/{offset}/{length}")]
         public IEnumerable<LineInfo> Instructions([FromRoute] int offset, [FromRoute] int length)
         {
-            return _appState.ExeFile.Instructions
+            return _appState.ExeFile.RelocatedInstructions
                 .Where(kv => kv.Key >= offset)
                 .OrderBy(kv => kv.Key)
                 .Take(length)
@@ -65,10 +65,12 @@ namespace frontend.Controllers
                     {
                         From = nodes[e.From.Id],
                         To = nodes[e.To.Id],
-                        Color = (e is TrueEdge) ? "#00a000" : (e is FalseEdge) ? "#ff0000" : "#0000ff"
+                        Color = (e is TrueEdge) ? "#00a000" : (e is FalseEdge) ? "#ff0000" : "#0000ff",
+                        Dashes = e is CaseEdge
                     })
                     .ToList();
 
+#if false
                 if (doms == null)
                     return visGraph;
                 
@@ -86,6 +88,7 @@ namespace frontend.Controllers
                         }
                     });
                 }
+#endif
 
                 return visGraph;
             }

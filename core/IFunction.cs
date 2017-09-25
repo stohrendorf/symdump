@@ -20,7 +20,7 @@ namespace core
         [NotNull]
         string Name { get; }
         
-        uint Address { get; }
+        uint GlobalAddress { get; }
         
         IMemoryLayout ReturnType { get; }
     }

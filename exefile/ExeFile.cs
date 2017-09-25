@@ -25,8 +25,10 @@ namespace exefile
 
         private readonly Header _header;
 
-        public IEnumerable<KeyValuePair<uint, Instruction>> Instructions => _instructions
-            .Select(kv => new KeyValuePair<uint, Instruction>(kv.Key + _header.tAddr, kv.Value));
+        public IEnumerable<KeyValuePair<uint, Instruction>> RelocatedInstructions => _instructions
+            .Select(kv => new KeyValuePair<uint, Instruction>(MakeGlobal(kv.Key), kv.Value));
+
+        public IReadOnlyDictionary<uint, Instruction> Instructions => _instructions;
 
         public IReadOnlyCollection<uint> Callees => _callees;
 
@@ -42,7 +44,7 @@ namespace exefile
 
             _header = new Header(reader);
             reader.BaseStream.Seek(0x800, SeekOrigin.Begin);
-            _data = reader.ReadBytes((int) _header.tSize);
+            _data = reader.ReadBytes((int) (reader.BaseStream.Length - reader.BaseStream.Position));
 
             _gpBase = _debugSource.Labels
                 .Where(byOffset => byOffset.Value.Any(lbl => lbl.Name.Equals("__SN_GP_BASE")))
@@ -50,19 +52,19 @@ namespace exefile
                 .FirstOrDefault();
         }
 
-        private IEnumerable<string> GetSymbolNames(uint addr)
+        private IEnumerable<string> GetLocalSymbolNames(uint localAddress)
         {
-            _debugSource.Labels.TryGetValue(addr + _header.tAddr, out var lbls);
+            _debugSource.Labels.TryGetValue(MakeGlobal(localAddress), out var lbls);
             return lbls?.Select(l => l.Name);
         }
 
-        private void AddCall(uint from, uint to)
+        private void AddLocalCall(uint from, uint to)
         {
-            AddXref(from, to);
+            AddLocalXref(from, to);
             _callees.Add(to);
         }
 
-        private void AddXref(uint from, uint to)
+        private void AddLocalXref(uint from, uint to)
         {
             if (!_xrefs.TryGetValue(to, out var froms))
                 _xrefs.Add(to, froms = new HashSet<uint>());
@@ -73,21 +75,52 @@ namespace exefile
                 _analysisQueue.Enqueue(to);
         }
 
-        private HashSet<uint> GetXrefs(uint to)
+        public uint MakeGlobal(uint addr)
+        {
+            return addr + _header.tAddr;
+        }
+
+        public uint MakeLocal(uint addr)
+        {
+            if (addr < _header.tAddr)
+                throw new ArgumentOutOfRangeException(nameof(addr), "Address out of range to make local");
+
+            return addr - _header.tAddr;
+        }
+
+        private HashSet<uint> GetGlobalXrefs(uint to)
         {
             _xrefs.TryGetValue(to, out var froms);
             return froms;
         }
 
-        private uint DataAt(uint ofs)
+        public uint WordAtGlobal(uint address)
+        {
+            return WordAtLocal(MakeLocal(address));
+        }
+
+        public uint WordAtLocal(uint address)
         {
             uint data;
-            data = _data[ofs++];
-            data |= (uint) _data[ofs++] << 8;
-            data |= (uint) _data[ofs++] << 16;
+            data = _data[address++];
+            data |= (uint) _data[address++] << 8;
+            data |= (uint) _data[address++] << 16;
             // ReSharper disable once RedundantAssignment
-            data |= (uint) _data[ofs++] << 24;
+            data |= (uint) _data[address++] << 24;
             return data;
+        }
+
+        public bool ContainsGlobal(uint address, bool onlyCode = true)
+        {
+            return ContainsLocal(MakeLocal(address), onlyCode);
+        }
+
+        public bool ContainsLocal(uint address, bool onlyCode = true)
+        {
+            if (onlyCode)
+                return address < _header.tSize;
+            else
+                return address < _data.Length;
         }
 
         private static Opcode ExtractOpcode(uint data)
@@ -95,19 +128,18 @@ namespace exefile
             return (Opcode) (data >> 26);
         }
 
-        public Graph AnalyzeControlFlow(uint addr)
+        public Graph AnalyzeControlFlow(uint globalAddress)
         {
-            logger.Info($"Started control flow analysis of address 0x{addr:x8}");
+            logger.Info($"Started control flow analysis of address 0x{globalAddress:x8}");
 
-            var func = _debugSource.FindFunction(addr);
+            var func = _debugSource.FindFunction(globalAddress);
             if (func != null)
                 logger.Debug(func.GetSignature());
-            addr -= _header.tAddr;
 
             //var flowState = new DataFlowState(_debugSource, func);
 
             var control = new ControlFlowProcessor();
-            control.Process(addr, _instructions, Callees);
+            control.Process(MakeLocal(globalAddress), this);
 
             var reducer = new Reducer(control.Graph);
             reducer.Reduce();
@@ -146,62 +178,78 @@ namespace exefile
 #endif
         }
 
+        public void Disassemble(uint localStart)
+        {
+            _analysisQueue.Clear();
+            _analysisQueue.Enqueue(localStart);
+            DisassembleImpl();
+        }
+
         public void Disassemble()
+        {
+            _analysisQueue.Clear();
+            _analysisQueue.Enqueue(MakeLocal(_header.pc0));
+            foreach (var addr in _debugSource.Functions.Select(f => f.GlobalAddress))
+                _analysisQueue.Enqueue(MakeLocal(addr));
+            DisassembleImpl();
+        }
+
+        private void DisassembleImpl()
         {
             logger.Info("Disassembly started");
 
-            _analysisQueue.Clear();
-            _analysisQueue.Enqueue(_header.pc0 - _header.tAddr);
-            foreach (var addr in _debugSource.Functions.Select(f => f.Address))
-                _analysisQueue.Enqueue(addr - _header.tAddr);
-
+            bool needsJoin = false;
+            
             while (_analysisQueue.Count != 0)
             {
-                var index = _analysisQueue.Dequeue();
-                if (_instructions.ContainsKey(index) || index >= _data.Length)
+                var localAddress = _analysisQueue.Dequeue();
+                if (_instructions.ContainsKey(localAddress) || localAddress >= _header.tSize)
                     continue;
 
-                var data = DataAt(index);
-                index += 4;
-                var insn = _instructions[index - 4] = DecodeInstruction(data, index);
+                needsJoin = true;
+
+                var data = WordAtLocal(localAddress);
+                localAddress += 4;
+                var insn = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
 
                 if (insn is ConditionalBranchInstruction)
                 {
-                    data = DataAt(index);
-                    index += 4;
-                    var insn2 = _instructions[index - 4] = DecodeInstruction(data, index);
+                    data = WordAtLocal(localAddress);
+                    localAddress += 4;
+                    var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
                     insn2.IsBranchDelaySlot = true;
 
-                    _analysisQueue.Enqueue(index);
+                    _analysisQueue.Enqueue(localAddress);
 
                     continue;
                 }
 
                 if (insn is CallPtrInstruction callInsn)
                 {
-                    data = DataAt(index);
-                    index += 4;
-                    var insn2 = _instructions[index - 4] = DecodeInstruction(data, index);
+                    data = WordAtLocal(localAddress);
+                    localAddress += 4;
+                    var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
                     insn2.IsBranchDelaySlot = true;
 
                     if (callInsn.ReturnAddressTarget?.Register == Register.ra)
-                        _analysisQueue.Enqueue(index);
+                        _analysisQueue.Enqueue(localAddress);
 
                     continue;
                 }
 
-                _analysisQueue.Enqueue(index);
+                _analysisQueue.Enqueue(localAddress);
             }
 
             logger.Info($"Disassembled {_instructions.Count} instructions, detected {_callees.Count} callees");
 
-            JoinLoadStoreInstructions();
+            if(needsJoin)
+                JoinLoadStoreInstructions();
         }
 
         private void JoinLoadStoreInstructions()
         {
-            uint addr = _instructions.Keys.First();
-            Debug.Assert(addr % 4 == 0);
+            uint localAddress = _instructions.Keys.First();
+            Debug.Assert(localAddress % 4 == 0);
             uint last = _instructions.Keys.Last();
             Debug.Assert(last % 4 == 0);
             Debug.Assert(last + 4 != 0);
@@ -209,35 +257,38 @@ namespace exefile
             logger.Info("Joining split load/store instructions");
 
             uint joinCount = 0;
-            
-            for (; addr <= last; addr += 4)
+
+            for (; localAddress <= last; localAddress += 4)
             {
-                if(!_instructions.ContainsKey(addr) || !_instructions.ContainsKey(addr+4))
-                    continue;
-                
-                // only join if the second instruction is not referenced
-                if(_callees.Contains(addr+4) || _xrefs.ContainsKey(addr+4))
+                if (!_instructions.ContainsKey(localAddress) || !_instructions.ContainsKey(localAddress + 4))
                     continue;
 
-                var a = _instructions[addr];
-                var b = _instructions[addr+4];
-                
+                // only join if the second instruction is not referenced
+                if (_callees.Contains(localAddress + 4) || _xrefs.ContainsKey(localAddress + 4))
+                    continue;
+
+                var a = _instructions[localAddress];
+                var b = _instructions[localAddress + 4];
+
                 // la $x, addr  <==>  lui $at, addr>>16; addiu $x, $at, addr&0xffff
-                if (a is DataCopyInstruction && (a.Operands[0] as RegisterOperand)?.Register == Register.at && a.Operands[1] is ImmediateOperand)
+                if (a is DataCopyInstruction && (a.Operands[0] as RegisterOperand)?.Register == Register.at &&
+                    a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as ArithmeticInstruction;
-                    if (b2?.Operands[0] is RegisterOperand && (b2.Operands[1] as RegisterOperand)?.Register == Register.at && b2.Operands[2] is ImmediateOperand)
+                    if (b2?.Operands[0] is RegisterOperand &&
+                        (b2.Operands[1] as RegisterOperand)?.Register == Register.at &&
+                        b2.Operands[2] is ImmediateOperand)
                     {
-                        uint offs = (uint) ((ImmediateOperand) a.Operands[1]).Value |
-                                    (uint) ((ImmediateOperand) b2.Operands[2]).Value;
-                        _instructions[addr] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
-                        _instructions[addr + 4] = new NopInstruction();
-                        addr += 4;
+                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
+                                            ((ImmediateOperand) b2.Operands[2]).Value);
+                        _instructions[localAddress] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
+                        _instructions[localAddress + 4] = new NopInstruction();
+                        localAddress += 4;
                         ++joinCount;
                         continue;
                     }
                 }
-                
+
                 // a variation: use in-place register instead of $at
                 // la $x, addr  <==>  lui $x, addr>>16; addiu $x, $x, addr&0xffff
                 if (a is DataCopyInstruction && b is ArithmeticInstruction
@@ -245,18 +296,19 @@ namespace exefile
                     && a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as ArithmeticInstruction;
-                    if (b2.Operands[2] is ImmediateOperand operand && (b2.Operands[0] as RegisterOperand)?.Register == (b2.Operands[1] as RegisterOperand)?.Register)
+                    if (b2.Operands[2] is ImmediateOperand operand && (b2.Operands[0] as RegisterOperand)?.Register ==
+                        (b2.Operands[1] as RegisterOperand)?.Register)
                     {
-                        uint offs = (uint) ((ImmediateOperand) a.Operands[1]).Value |
-                                    (uint) operand.Value;
-                        _instructions[addr] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
-                        _instructions[addr + 4] = new NopInstruction();
-                        addr += 4;
+                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
+                                            operand.Value);
+                        _instructions[localAddress] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
+                        _instructions[localAddress + 4] = new NopInstruction();
+                        localAddress += 4;
                         ++joinCount;
                         continue;
                     }
                 }
-                
+
                 // a variation: use temp register instead of $at
                 // la $x, addr  <==>  lui $x2, addr>>16; addiu $x, $x2, addr&0xffff
                 if (a is DataCopyInstruction && b is ArithmeticInstruction
@@ -266,62 +318,65 @@ namespace exefile
                     var b2 = b as ArithmeticInstruction;
                     if (b2.Operands[2] is ImmediateOperand operand)
                     {
-                        uint offs = (uint) ((ImmediateOperand) a.Operands[1]).Value |
-                                    (uint) operand.Value;
-                        _instructions[addr + 4] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
-                        addr += 4;
+                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
+                                            operand.Value);
+                        _instructions[localAddress + 4] =
+                            new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
+                        localAddress += 4;
                         ++joinCount;
                         continue;
                     }
                 }
-                
+
                 // lw $x, addr  <==>  lui $at, addr>>16; lw $x, (addr&0xffff)($at)
                 if (a is DataCopyInstruction && b is DataCopyInstruction
                     && (a.Operands[0] as RegisterOperand)?.Register == Register.at
                     && a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as DataCopyInstruction;
-                    if (b2.Operands[0] is RegisterOperand && (b2.Operands[1] as RegisterOffsetOperand)?.Register == Register.at)
+                    if (b2.Operands[0] is RegisterOperand &&
+                        (b2.Operands[1] as RegisterOffsetOperand)?.Register == Register.at)
                     {
-                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value |
+                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
                                             ((RegisterOffsetOperand) b.Operands[1]).Offset);
 
                         var src = new LabelOperand(_debugSource.GetSymbolName(offs), offs);
                         var srcSize = b2.SrcSize;
                         var dstSize = b2.DstSize;
-                        
-                        _instructions[addr] = new DataCopyInstruction(b2.Operands[0], dstSize, src, srcSize);
-                        _instructions[addr + 4] = new NopInstruction();
-                        addr += 4;
+
+                        _instructions[localAddress] = new DataCopyInstruction(b2.Operands[0], dstSize, src, srcSize);
+                        _instructions[localAddress + 4] = new NopInstruction();
+                        localAddress += 4;
                         ++joinCount;
                         continue;
                     }
                 }
-                
+
                 // a variation: use in-place register instead of $at
                 // lw $x, addr  <==>  lui $x, addr>>16; lw $x, (addr&0xffff)($x)
                 if (a is DataCopyInstruction && b is DataCopyInstruction
-                    && (a.Operands[0] as RegisterOperand)?.Register == (b.Operands[1] as RegisterOffsetOperand)?.Register
+                    && (a.Operands[0] as RegisterOperand)?.Register ==
+                    (b.Operands[1] as RegisterOffsetOperand)?.Register
                     && a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as DataCopyInstruction;
                     if (b2.Operands[0] is RegisterOperand)
                     {
-                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value |
+                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
                                             ((RegisterOffsetOperand) b.Operands[1]).Offset);
 
                         var src = new LabelOperand(_debugSource.GetSymbolName(offs), offs);
                         var srcSize = b2.SrcSize;
                         var dstSize = b2.DstSize;
-                        
-                        _instructions[addr] = new DataCopyInstruction(b2.Operands[0], dstSize, src, srcSize);
-                        _instructions[addr + 4] = new NopInstruction();
-                        addr += 4;
+
+                        _instructions[localAddress] = new DataCopyInstruction(b2.Operands[0], dstSize, src, srcSize);
+                        _instructions[localAddress + 4] = new NopInstruction();
+                        localAddress += 4;
                         ++joinCount;
                     }
                 }
             }
-            
+
             logger.Info($"Joined {joinCount} load/store instructions");
         }
 
@@ -334,15 +389,15 @@ namespace exefile
                 if (insn.Value is NopInstruction)
                     continue;
 
-                var f = _debugSource.FindFunction(insn.Key + _header.tAddr);
+                var f = _debugSource.FindFunction(MakeGlobal(insn.Key));
 
-                var xrefsHere = GetXrefs(insn.Key);
+                var xrefsHere = GetGlobalXrefs(MakeGlobal(insn.Key));
                 if (xrefsHere != null)
                 {
                     logger.Debug("# XRefs:");
                     foreach (var xref in xrefsHere)
                         logger.Debug("# - " + _debugSource.GetSymbolName(xref));
-                    var names = GetSymbolNames(insn.Key);
+                    var names = GetLocalSymbolNames(insn.Key);
                     if (names != null)
                         foreach (var name in names)
                             logger.Debug(name + ":");
@@ -370,74 +425,74 @@ namespace exefile
             return regofs;
         }
 
-        private Instruction DecodeInstruction(uint data, uint index)
+        private Instruction DecodeInstruction(uint data, uint localAddress)
         {
             switch (ExtractOpcode(data))
             {
                 case Opcode.RegisterFormat:
                     return DecodeRegisterFormat(data);
                 case Opcode.PCRelative:
-                    return DecodePcRelative(index, data);
+                    return DecodePcRelative(localAddress, data);
                 case Opcode.j:
-                    AddXref(index - 4, (data & 0x03FFFFFF) << 2);
+                    AddLocalXref(localAddress - 4, (data & 0x03FFFFFF) << 2);
                     _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
                     return new CallPtrInstruction(
                         new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2),
                             (data & 0x03FFFFFF) << 2),
                         null);
                 case Opcode.jal:
-                    AddCall(index - 4, (data & 0x03FFFFFF) << 2);
+                    AddLocalCall(localAddress - 4, (data & 0x03FFFFFF) << 2);
                     _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
                     return new CallPtrInstruction(
                         new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2),
                             (data & 0x03FFFFFF) << 2),
                         new RegisterOperand(Register.ra));
                 case Opcode.beq:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(Operator.Equal,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                                (uint) (index + ((short) data << 2))));
+                            new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                                (uint) (localAddress + ((short) data << 2))));
                     else
                         return new ConditionalBranchInstruction(Operator.Equal,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                                (uint) (index + ((short) data << 2))));
+                            new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                                (uint) (localAddress + ((short) data << 2))));
                 case Opcode.bne:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(Operator.NotEqual,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                                (uint) (index + ((short) data << 2))));
+                            new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                                (uint) (localAddress + ((short) data << 2))));
                     else
                         return new ConditionalBranchInstruction(Operator.NotEqual,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                                (uint) (index + ((short) data << 2))));
+                            new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                                (uint) (localAddress + ((short) data << 2))));
                 case Opcode.blez:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.LessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                            (uint) (index + ((short) data << 2))));
+                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                            (uint) (localAddress + ((short) data << 2))));
                 case Opcode.bgtz:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                            (uint) (index + ((short) data << 2))));
+                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                            (uint) (localAddress + ((short) data << 2))));
                 case Opcode.addi:
                     return new ArithmeticInstruction(Operator.Add,
                         new RegisterOperand(data, 16),
@@ -452,7 +507,7 @@ namespace exefile
                         return new ArithmeticInstruction(Operator.Add,
                             new RegisterOperand(data, 16),
                             new RegisterOperand(data, 21),
-                            new ImmediateOperand((ushort) data));
+                            new ImmediateOperand((short) data));
                 case Opcode.subi:
                     return new ArithmeticInstruction(Operator.Sub,
                         new RegisterOperand(data, 16),
@@ -462,7 +517,7 @@ namespace exefile
                     return new ArithmeticInstruction(Operator.Sub,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand((ushort) data));
+                        new ImmediateOperand((short) data));
                 case Opcode.andi:
                     return new ArithmeticInstruction(Operator.BitAnd,
                         new RegisterOperand(data, 16),
@@ -483,7 +538,7 @@ namespace exefile
                         new RegisterOperand(data, 16), 4,
                         new ImmediateOperand((ushort) data << 16), 4);
                 case Opcode.CpuControl:
-                    return DecodeCpuControl(index, data);
+                    return DecodeCpuControl(localAddress, data);
                 case Opcode.FloatingPoint:
                     return new WordData(data);
                 case Opcode.lb:
@@ -551,37 +606,37 @@ namespace exefile
                 case Opcode.cop3:
                     return new SimpleInstruction("cop3", null, new ImmediateOperand(data & ((1 << 26) - 1)));
                 case Opcode.beql:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Equal,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                            (uint) (index + ((short) data << 2))));
+                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                            (uint) (localAddress + ((short) data << 2))));
                 case Opcode.bnel:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.NotEqual,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                            (uint) (index + ((short) data << 2))));
+                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                            (uint) (localAddress + ((short) data << 2))));
                 case Opcode.blezl:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedLessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                            (uint) (index + ((short) data << 2))));
+                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                            (uint) (localAddress + ((short) data << 2))));
                 case Opcode.bgtzl:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(_debugSource.GetSymbolName(index, (short) data << 2),
-                            (uint) (index + ((short) data << 2))));
+                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
+                            (uint) (localAddress + ((short) data << 2))));
                 default:
                     return new WordData(data);
             }
@@ -694,7 +749,7 @@ namespace exefile
             }
         }
 
-        private Instruction DecodeCpuControl(uint index, uint data)
+        private Instruction DecodeCpuControl(uint localAddress, uint data)
         {
             switch ((CpuControlOpcode) ((data >> 21) & 0x1f))
             {
@@ -705,15 +760,15 @@ namespace exefile
                     switch ((data >> 16) & 0x1f)
                     {
                         case 0:
-                            AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                            AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                             return new SimpleInstruction("bc0f", null,
-                                new LabelOperand(_debugSource.GetSymbolName(index, (ushort) data << 2),
-                                    (uint) (index + ((short) data << 2))));
+                                new LabelOperand(_debugSource.GetSymbolName(localAddress, (ushort) data << 2),
+                                    (uint) (localAddress + ((short) data << 2))));
                         case 1:
-                            AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                            AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                             return new SimpleInstruction("bc0t", null,
-                                new LabelOperand(_debugSource.GetSymbolName(index, (ushort) data << 2),
-                                    (uint) (index + ((short) data << 2))));
+                                new LabelOperand(_debugSource.GetSymbolName(localAddress, (ushort) data << 2),
+                                    (uint) (localAddress + ((short) data << 2))));
                         default:
                             return new WordData(data);
                     }
@@ -746,37 +801,37 @@ namespace exefile
             }
         }
 
-        private Instruction DecodePcRelative(uint index, uint data)
+        private Instruction DecodePcRelative(uint localAddress, uint data)
         {
             var rs = new RegisterOperand(data, 21);
-            var offset = new LabelOperand(_debugSource.GetSymbolName(index, (ushort) data << 2),
-                (uint) (index + ((short) data << 2)));
+            var offset = new LabelOperand(_debugSource.GetSymbolName(localAddress, (ushort) data << 2),
+                (uint) (localAddress + ((short) data << 2)));
             switch ((data >> 16) & 0x1f)
             {
                 case 0: // bltz
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 1: // bgez
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 16: // bltzal
-                    AddCall(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalCall(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalCallInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 17: // bgezal
-                    AddCall(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddLocalCall(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
+                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalCallInstruction(Operator.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),

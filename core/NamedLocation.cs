@@ -5,22 +5,22 @@ namespace core
 {
     public class NamedLocation
     {
-        public NamedLocation(uint address, [NotNull] string name)
+        public NamedLocation(uint globalAddress, [NotNull] string name)
         {
             Debug.Assert(!string.IsNullOrEmpty(name));
 
-            Address = address;
+            GlobalAddress = globalAddress;
             Name = name;
         }
 
-        public readonly uint Address;
+        public readonly uint GlobalAddress;
 
         [NotNull]
         public string Name { get; }
 
         public override string ToString()
         {
-            return $"0x{Address:X} {Name}";
+            return $"0x{GlobalAddress:X} {Name}";
         }
     }
 }

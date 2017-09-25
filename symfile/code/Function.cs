@@ -50,7 +50,7 @@ namespace symfile.code
             }
         }
 
-        public uint Address { get; }
+        public uint GlobalAddress { get; }
         public IMemoryLayout ReturnType => _returnType.MemoryLayout;
         private readonly Block _body;
         private readonly string _file;
@@ -77,7 +77,7 @@ namespace symfile.code
 
         public Function(BinaryReader reader, uint ofs, SymFile symFile)
         {
-            Address = ofs;
+            GlobalAddress = ofs;
 
             _stackBase = (Register) reader.ReadUInt16();
             _stackFrameSize = reader.ReadUInt32();
@@ -89,7 +89,7 @@ namespace symfile.code
             _file = reader.ReadPascalString();
             Name = reader.ReadPascalString();
 
-            _body = new Block(Address, _line, this, symFile);
+            _body = new Block(GlobalAddress, _line, this, symFile);
 
             symFile.FuncTypes.TryGetValue(Name, out _returnType);
 
@@ -152,7 +152,7 @@ namespace symfile.code
         public void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine("/*");
-            writer.WriteLine($" * Offset 0x{Address:X}");
+            writer.WriteLine($" * Offset 0x{GlobalAddress:X}");
             writer.WriteLine($" * {_file} (line {_line})");
             writer.WriteLine($" * Stack frame base ${_stackBase}, size {_stackFrameSize}");
             writer.WriteLine($" * Caller return address in ${_returnAddressRegister}");
