@@ -34,7 +34,7 @@ namespace exefile.controlflow
                 }
             }
 
-            if (sequence != null && sequence.Instructions.Count > 0 && sequence.Start == addr)
+            if (sequence != null && sequence.InstructionList.Count > 0 && sequence.InstructionList.Keys.First() == addr)
                 return sequence;
 
             if (sequence == null)
@@ -43,21 +43,21 @@ namespace exefile.controlflow
                 return sequence;
             }
 
-            if (sequence.Instructions.Count <= 0 || sequence.Start == addr)
+            if (sequence.InstructionList.Count <= 0 || sequence.InstructionList.Keys.First() == addr)
             {
                 return sequence;
             }
 
             logger.Debug($"Splitting {sequence.Id} at 0x{addr:x8}");
 
-            if (sequence.Instructions[addr].IsBranchDelaySlot)
+            if (sequence.InstructionList[addr].IsBranchDelaySlot)
             {
                 throw new Exception("Cannot split branch delay slots");
             }
 
             var chopped = sequence.Chop(addr);
-            Debug.Assert(chopped.Instructions.Count > 0);
-            sequences.Add(chopped.Start, chopped);
+            Debug.Assert(chopped.InstructionList.Count > 0);
+            sequences.Add(chopped.InstructionList.Keys.First(), chopped);
 
             foreach (var e in edges.ToList())
             {
@@ -97,7 +97,7 @@ namespace exefile.controlflow
                 var block = GetOrCreateSequence(sequences, edges, localAddress);
                 if (block.ContainsAddress(localAddress))
                 {
-                    Debug.Assert(localAddress == block.Start);
+                    Debug.Assert(localAddress == block.InstructionList.Keys.First());
                     logger.Debug($"Already processed: 0x{localAddress:X}");
                     continue;
                 }
@@ -107,14 +107,14 @@ namespace exefile.controlflow
 
                 for (;; localAddress += 4)
                 {
-                    if (block.Instructions.Count > 0 && sequences.ContainsKey(localAddress))
+                    if (block.InstructionList.Count > 0 && sequences.ContainsKey(localAddress))
                     {
                         edges.Add(new AlwaysEdge(block, sequences[localAddress]));
                         break;
                     }
 
                     var insn = exeFile.Instructions[localAddress];
-                    block.Instructions.Add(localAddress, insn);
+                    block.InstructionList.Add(localAddress, insn);
 
                     logger.Debug($"[eval 0x{localAddress:X}] {insn.AsReadable()}");
 
@@ -125,7 +125,7 @@ namespace exefile.controlflow
 
                     if (insn is ConditionalBranchInstruction instruction)
                     {
-                        block.Instructions.Add(localAddress + 4, exeFile.Instructions[localAddress + 4]);
+                        block.InstructionList.Add(localAddress + 4, exeFile.Instructions[localAddress + 4]);
 
                         edges.Add(new FalseEdge(block, GetOrCreateSequence(sequences, edges, localAddress + 8)));
                         entryPoints.Enqueue(localAddress + 8);
@@ -143,7 +143,7 @@ namespace exefile.controlflow
                     var cpi = insn as CallPtrInstruction;
                     if (cpi?.Target is RegisterOperand)
                     {
-                        block.Instructions.Add(localAddress + 4, exeFile.Instructions[localAddress + 4]);
+                        block.InstructionList.Add(localAddress + 4, exeFile.Instructions[localAddress + 4]);
                         var target = (RegisterOperand) cpi.Target;
                         if (target.Register == Register.ra)
                         {
@@ -159,7 +159,7 @@ namespace exefile.controlflow
                             Register? baseTableRegister = null;
                             uint? tableOffset = null;
                             bool failed = false;
-                            foreach (var revInsn in block.Instructions.Reverse().Skip(1))
+                            foreach (var revInsn in block.InstructionList.Reverse().Skip(1))
                             {
                                 logger.Debug($"[swich analysis] 0x{revInsn.Key:x8} {revInsn.Value.AsReadable()}");
                                 if (revInsn.Value is NopInstruction)
@@ -222,7 +222,7 @@ namespace exefile.controlflow
                                 var pred = edges.Where(e => ReferenceEquals(e.To, block)).Select(e => e.From).ToList();
                                 if (pred.Count == 1 && pred[0] is InstructionSequence)
                                 {
-                                    var insns = ((InstructionSequence) pred[0]).Instructions;
+                                    var insns = ((InstructionSequence) pred[0]).InstructionList;
                                     if (insns.Count > 0 && insns.Values.Last() is DataCopyInstruction)
                                     {
                                         var dci = (DataCopyInstruction) insns.Values.Last();
@@ -245,7 +245,7 @@ namespace exefile.controlflow
                             {
                                 logger.Debug($"Switch-case table probably at 0x{tableOffset:x8}");
                                 var first = sequences.Keys.First();
-                                var lastKeys = sequences.Values.Last().Instructions.Keys;
+                                var lastKeys = sequences.Values.Last().InstructionList.Keys;
                                 uint last = lastKeys.Count > 0 ? lastKeys.Last() : sequences.Keys.Last();
                                 
                                 logger.Debug($"Function bounds: 0x{first:x8} .. 0x{last:x8}");
@@ -266,7 +266,7 @@ namespace exefile.controlflow
                     }
                     else if (cpi?.Target is LabelOperand && cpi.ReturnAddressTarget == null)
                     {
-                        block.Instructions.Add(localAddress + 4, exeFile.Instructions[localAddress + 4]);
+                        block.InstructionList.Add(localAddress + 4, exeFile.Instructions[localAddress + 4]);
                         var lbl = cpi.JumpTarget;
                         Debug.Assert(lbl.HasValue);
                         if (!exeFile.Callees.Contains(lbl.Value))
@@ -299,11 +299,11 @@ namespace exefile.controlflow
                     logger.Debug(e);
                 }
 
-                var delayInsn = branch.Chop(branch.Instructions.Keys.Last());
-                Debug.Assert(delayInsn.Instructions.Count == 1);
-                Debug.Assert(branch.Instructions.Count > 0);
+                var delayInsn = branch.Chop(branch.InstructionList.Keys.Last());
+                Debug.Assert(delayInsn.InstructionList.Count == 1);
+                Debug.Assert(branch.InstructionList.Count > 0);
 
-                sequences.Add(delayInsn.Start, delayInsn);
+                sequences.Add(delayInsn.InstructionList.Keys.First(), delayInsn);
 
                 logger.Debug($"Duplicating: {branch.Id} | {delayInsn.Id}");
                 foreach (var e in edges.Where(e => ReferenceEquals(e.From, delayInsn)))

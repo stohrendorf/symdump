@@ -28,7 +28,7 @@ namespace exefile.controlflow.cfg
 
         [NotNull] private readonly INode _body;
 
-        public override SortedDictionary<uint, Instruction> Instructions => _body.Instructions;
+        public override IEnumerable<Instruction> Instructions => _body.Instructions;
 
         public override bool ContainsAddress(uint address) => _body.ContainsAddress(address);
 

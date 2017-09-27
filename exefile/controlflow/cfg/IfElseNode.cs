@@ -52,15 +52,13 @@ namespace exefile.controlflow.cfg
             Graph.AddEdge(new AlwaysEdge(this, common));
         }
 
-        public override SortedDictionary<uint, Instruction> Instructions
+        public override IEnumerable<Instruction> Instructions
         {
             get
             {
-                var tmp = new SortedDictionary<uint, Instruction>();
-                foreach (var insn in _condition.Instructions) tmp[insn.Key] = insn.Value;
-                foreach (var insn in _trueBody.Instructions) tmp[insn.Key] = insn.Value;
-                foreach (var insn in _falseBody.Instructions) tmp[insn.Key] = insn.Value;
-                return tmp;
+                foreach (var insn in _condition.Instructions) yield return insn;
+                foreach (var insn in _trueBody.Instructions) yield return insn;
+                foreach (var insn in _falseBody.Instructions) yield return insn;
             }
         }
 

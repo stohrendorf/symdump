@@ -39,7 +39,7 @@ namespace exefile.controlflow.cfg
         public override bool ContainsAddress(uint address)
             => _inner.ContainsAddress(address);
 
-        public override SortedDictionary<uint, Instruction> Instructions => _inner.Instructions;
+        public override IEnumerable<Instruction> Instructions => _inner.Instructions;
 
         public override void Dump(IndentedTextWriter writer)
         {

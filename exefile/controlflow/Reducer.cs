@@ -18,13 +18,12 @@ namespace exefile.controlflow
         public Reducer([NotNull] Graph graph)
         {
             Graph = graph;
+            Debug.Assert(Graph.Validate());
             
             {
                 var nops = Graph.Nodes
                     .Where(n => n.Outs.Count() == 1 && n.Outs.First() is AlwaysEdge)
-                    .Where(n => (n as InstructionSequence)?.Instructions.Count == 1)
-                    .Cast<InstructionSequence>()
-                    .Where(n => n.Instructions.First().Value is NopInstruction)
+                    .Where(n => n.Instructions.Any() && n.Instructions.All(i => i is NopInstruction))
                     .ToList();
                     
                 if(nops.Count > 0)
@@ -40,29 +39,8 @@ namespace exefile.controlflow
                     Graph.RemoveNode(nop);
                 }
             }
-
-            {
-                var nops = Graph.Nodes
-                    .Where(n => n.Outs.Count() == 1 && n.Outs.First() is AlwaysEdge)
-                    .Where(n => (n as DuplicatedNode<InstructionSequence>)?.Instructions.Count == 1)
-                    .Cast<DuplicatedNode<InstructionSequence>>()
-                    .Where(n => n.Instructions.First().Value is NopInstruction)
-                    .ToList();
-                    
-                if(nops.Count > 0)
-                    logger.Debug($"Removing {nops.Count} duplicated nop-only nodes");
-                foreach (var nop in nops)
-                {
-                    var next = nop.Outs.First().To;
-                    foreach (var e in nop.Ins.ToList())
-                    {
-                        Graph.AddEdge(e.CloneTyped(e.From, next));
-                    }
-
-                    Graph.RemoveNode(nop);
-                }
-            }
-
+            
+            Debug.Assert(Graph.Validate());
         }
 
         private bool Reduce(string name, List<INode> candidates, Func<INode, bool> predicate, Func<INode, INode> converter)

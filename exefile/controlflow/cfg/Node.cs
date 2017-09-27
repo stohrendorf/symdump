@@ -17,10 +17,8 @@ namespace exefile.controlflow.cfg
 
         public abstract bool ContainsAddress(uint address);
 
-        public abstract SortedDictionary<uint, Instruction> Instructions { get; }
+        public abstract IEnumerable<Instruction> Instructions { get; }
 
-        public virtual uint Start => Instructions.Keys.FirstOrDefault();
-        
         public abstract string Id { get; }
 
         public abstract void Dump(IndentedTextWriter writer);

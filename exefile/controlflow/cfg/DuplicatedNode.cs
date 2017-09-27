@@ -25,7 +25,7 @@ namespace exefile.controlflow.cfg
             return Inner.ContainsAddress(address);
         }
 
-        public override SortedDictionary<uint, Instruction> Instructions => Inner.Instructions;
+        public override IEnumerable<Instruction> Instructions => Inner.Instructions;
 
         public override void Dump(IndentedTextWriter writer)
             => Inner.Dump(writer);

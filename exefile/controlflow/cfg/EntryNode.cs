@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using core;
 using core.util;
 
@@ -12,16 +13,13 @@ namespace exefile.controlflow.cfg
 
         public override bool ContainsAddress(uint address) => false;
 
-        public override SortedDictionary<uint, Instruction> Instructions { get; } =
-            new SortedDictionary<uint, Instruction>();
+        public override IEnumerable<Instruction> Instructions => Enumerable.Empty<Instruction>();
 
         public override void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine("EntryNode");
         }
 
-        public override uint Start => uint.MinValue;
-        
         public override string Id => "entry";
     }
 }

@@ -9,22 +9,23 @@ namespace exefile.controlflow.cfg
 {
     public class InstructionSequence : Node
     {
-        public override string Id => $"insnseq_{Start:x8}";
+        public override string Id => $"insnseq_{InstructionList.Keys.First():x8}";
+
+        public SortedDictionary<uint, Instruction> InstructionList { get; } = new SortedDictionary<uint, Instruction>();
 
         public InstructionSequence([NotNull] IGraph graph)
             : base(graph)
         {
         }
 
-        public override SortedDictionary<uint, Instruction> Instructions { get; } =
-            new SortedDictionary<uint, Instruction>();
+        public override IEnumerable<Instruction> Instructions => InstructionList.Values;
 
         public override bool ContainsAddress(uint address)
         {
-            if (Instructions.Count == 0)
+            if (InstructionList.Count == 0)
                 return false;
 
-            return address >= Instructions.Keys.First() && address <= Instructions.Keys.Last();
+            return address >= InstructionList.Keys.First() && address <= InstructionList.Keys.Last();
         }
 
         public override void Dump(IndentedTextWriter writer)
@@ -34,7 +35,7 @@ namespace exefile.controlflow.cfg
                 writer.WriteLine($"// {edge}");
             }
 
-            foreach (var insn in Instructions)
+            foreach (var insn in InstructionList)
             {
                 writer.WriteLine($"0x{insn.Key:X}  {insn.Value.AsReadable()}");
             }
@@ -45,13 +46,13 @@ namespace exefile.controlflow.cfg
             Debug.Assert(ContainsAddress(from));
             
             var result = new InstructionSequence(Graph);
-            foreach (var split in Instructions.Where(i => i.Key >= from))
+            foreach (var split in InstructionList.Where(i => i.Key >= from))
             {
-                result.Instructions.Add(split.Key, split.Value);
+                result.InstructionList.Add(split.Key, split.Value);
             }
-            foreach (var rm in result.Instructions.Keys)
+            foreach (var rm in result.InstructionList.Keys)
             {
-                Instructions.Remove(rm);
+                InstructionList.Remove(rm);
             }
 
             Debug.Assert(!ContainsAddress(from));

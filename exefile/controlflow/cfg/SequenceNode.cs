@@ -47,21 +47,7 @@ namespace exefile.controlflow.cfg
             return Nodes.Any(n => n.ContainsAddress(address));
         }
 
-        public override SortedDictionary<uint, Instruction> Instructions
-        {
-            get
-            {
-                var tmp = new SortedDictionary<uint, Instruction>();
-                foreach (var node in Nodes)
-                {
-                    foreach (var insn in node.Instructions)
-                    {
-                        tmp.Add(insn.Key, insn.Value);
-                    }
-                }
-                return tmp;
-            }
-        }
+        public override IEnumerable<Instruction> Instructions => Nodes.SelectMany(node => node.Instructions);
 
         public override void Dump(IndentedTextWriter writer)
         {

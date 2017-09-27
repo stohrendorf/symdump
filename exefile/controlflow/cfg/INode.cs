@@ -19,11 +19,9 @@ namespace exefile.controlflow.cfg
         bool ContainsAddress(uint address);
         
         [NotNull]
-        SortedDictionary<uint, Instruction> Instructions { get; }
+        IEnumerable<Instruction> Instructions { get; }
         
         void Dump([NotNull] IndentedTextWriter writer);
-        
-        uint Start { get; }
         
         string Id { get; }
     }

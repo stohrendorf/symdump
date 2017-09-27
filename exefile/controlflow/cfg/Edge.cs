@@ -19,7 +19,7 @@ namespace exefile.controlflow.cfg
 
         public override string ToString()
         {
-            return $"-- 0x{From.Start:x8} -- {GetType().Name} -- 0x{To.Start:x8} -->";
+            return $"-- {From.Id} -- {GetType().Name} -- {To.Id} -->";
         }
 
         public bool Equals(Edge other)

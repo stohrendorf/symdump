@@ -11,8 +11,6 @@ namespace exefile.controlflow.cfg
     {
         private readonly IList<INode> _nodes;
 
-        public override uint Start => _nodes.First().Start;
-
         public override string Id => "or_" + _nodes[0].Id;
 
         public OrNode([NotNull] INode c0) : base(c0.Graph)
@@ -86,17 +84,7 @@ namespace exefile.controlflow.cfg
         public override bool ContainsAddress(uint address)
             => _nodes.Any(n => n.ContainsAddress(address));
 
-        public override SortedDictionary<uint, Instruction> Instructions
-        {
-            get
-            {
-                var result = new SortedDictionary<uint, Instruction>();
-                foreach (var n in _nodes)
-                foreach (var insn in n.Instructions)
-                    result.Add(insn.Key, insn.Value);
-                return result;
-            }
-        }
+        public override IEnumerable<Instruction> Instructions => _nodes.SelectMany(n => n.Instructions);
 
         public override void Dump(IndentedTextWriter writer)
         {
