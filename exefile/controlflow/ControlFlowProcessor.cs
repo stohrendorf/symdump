@@ -61,7 +61,7 @@ namespace exefile.controlflow
 
             foreach (var e in edges.ToList())
             {
-                if (!e.From.Equals(sequence))
+                if (!ReferenceEquals(e.From, sequence))
                     continue;
 
                 edges.Remove(e);
@@ -283,18 +283,8 @@ namespace exefile.controlflow
                 }
             }
 
-            // split branching instructions for better analysis
-            var branching = sequences
-                .SelectMany(s => s.Value.Instructions)
-                .Where(i => i.Value is CallPtrInstruction || i.Value is ConditionalBranchInstruction)
-                .Select(i => i.Key)
-                .ToList();
-            foreach (var splitAt in branching)
-            {
-                GetOrCreateSequence(sequences, edges, splitAt);
-            }
-
-            // duplicate the branch-delay instructions.
+            // split branching instructions for better analysis,
+            // and duplicate the branch-delay instructions.
             var branches = sequences
                 .Where(s => edges.Count(e => e.From == s.Value) == 2)
                 .Select(s => s.Value)
@@ -304,7 +294,7 @@ namespace exefile.controlflow
                 // the situation we have:  if+delay -T-> true;       if+delay -F-> false
                 // what we want is:        if -T-> delay -A-> true;  if -F-> delay(dup) -A-> false
                 logger.Debug("xxxx " + branch.Id);
-                foreach (var e in edges.Where(e => e.From.Equals(branch)))
+                foreach (var e in edges.Where(e => ReferenceEquals(e.From, branch)))
                 {
                     logger.Debug(e);
                 }
@@ -316,21 +306,21 @@ namespace exefile.controlflow
                 sequences.Add(delayInsn.Start, delayInsn);
 
                 logger.Debug($"Duplicating: {branch.Id} | {delayInsn.Id}");
-                foreach (var e in edges.Where(e => e.From.Equals(delayInsn)))
+                foreach (var e in edges.Where(e => ReferenceEquals(e.From, delayInsn)))
                 {
                     logger.Debug(e);
                 }
 
-                Debug.Assert(edges.Count(e => e.From.Equals(branch) && e is FalseEdge) == 1);
-                var f = edges.First(e => e.From.Equals(branch) && e is FalseEdge);
-                Debug.Assert(edges.Count(e => e.From.Equals(branch) && e is TrueEdge) == 1);
-                var t = edges.First(e => e.From.Equals(branch) && e is TrueEdge);
+                Debug.Assert(edges.Count(e => ReferenceEquals(e.From, branch) && e is FalseEdge) == 1);
+                var f = edges.First(e => ReferenceEquals(e.From, branch) && e is FalseEdge);
+                Debug.Assert(edges.Count(e => ReferenceEquals(e.From, branch) && e is TrueEdge) == 1);
+                var t = edges.First(e => ReferenceEquals(e.From, branch) && e is TrueEdge);
 
                 var dup = new DuplicatedNode<InstructionSequence>(delayInsn);
                 Graph.AddNode(dup);
 
-                Debug.Assert(edges.Count(e => e.From.Equals(t.From)) == 2);
-                Debug.Assert(edges.Count(e => e.From.Equals(f.From)) == 2);
+                Debug.Assert(edges.Count(e => ReferenceEquals(e.From, t.From)) == 2);
+                Debug.Assert(edges.Count(e => ReferenceEquals(e.From, f.From)) == 2);
                 if (!edges.Remove(t))
                     throw new Exception("Failed to detach true branch");
                 if (!edges.Remove(f))
