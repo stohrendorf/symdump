@@ -1,13 +1,13 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using frontend.Models;
+using JetBrains.Annotations;
 
 namespace frontend.Migrations
 {
     [DbContext(typeof(Context))]
+    [UsedImplicitly]
+    // ReSharper disable once PartialTypeWithSinglePart
     partial class ContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -15,7 +15,7 @@ namespace frontend.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
 
-            modelBuilder.Entity("frontend.Models.BinaryFile", b =>
+            modelBuilder.Entity(typeof(BinaryFile), b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -31,7 +31,7 @@ namespace frontend.Migrations
                     b.ToTable("BinaryFile");
                 });
 
-            modelBuilder.Entity("frontend.Models.Project", b =>
+            modelBuilder.Entity(typeof(Project), b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -49,13 +49,13 @@ namespace frontend.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("frontend.Models.Project", b =>
+            modelBuilder.Entity(typeof(Project), b =>
                 {
-                    b.HasOne("frontend.Models.BinaryFile", "Exe")
+                    b.HasOne(typeof(BinaryFile), "Exe")
                         .WithMany()
                         .HasForeignKey("ExeId");
 
-                    b.HasOne("frontend.Models.BinaryFile", "Sym")
+                    b.HasOne(typeof(BinaryFile), "Sym")
                         .WithMany()
                         .HasForeignKey("SymId");
                 });

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace frontend.Migrations
 {
+    [UsedImplicitly]
     public partial class InitialSetup : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -12,10 +12,10 @@ namespace frontend.Migrations
                 name: "BinaryFile",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
-                    Data = table.Column<byte[]>(nullable: false),
-                    Name = table.Column<string>(nullable: false)
+                    Data = table.Column<byte[]>(),
+                    Name = table.Column<string>()
                 },
                 constraints: table =>
                 {
@@ -26,7 +26,7 @@ namespace frontend.Migrations
                 name: "Projects",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
                     ExeId = table.Column<int>(nullable: true),
                     SymId = table.Column<int>(nullable: true)

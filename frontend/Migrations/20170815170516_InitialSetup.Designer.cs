@@ -16,7 +16,7 @@ namespace frontend.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
 
-            modelBuilder.Entity("frontend.Models.BinaryFile", b =>
+            modelBuilder.Entity(typeof(frontend.Models.BinaryFile), b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -32,7 +32,7 @@ namespace frontend.Migrations
                     b.ToTable("BinaryFile");
                 });
 
-            modelBuilder.Entity("frontend.Models.Project", b =>
+            modelBuilder.Entity(typeof(frontend.Models.Project), b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -50,13 +50,13 @@ namespace frontend.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("frontend.Models.Project", b =>
+            modelBuilder.Entity(typeof(frontend.Models.Project), b =>
                 {
-                    b.HasOne("frontend.Models.BinaryFile", "Exe")
+                    b.HasOne(typeof(frontend.Models.BinaryFile), "Exe")
                         .WithMany()
                         .HasForeignKey("ExeId");
 
-                    b.HasOne("frontend.Models.BinaryFile", "Sym")
+                    b.HasOne(typeof(frontend.Models.BinaryFile), "Sym")
                         .WithMany()
                         .HasForeignKey("SymId");
                 });
