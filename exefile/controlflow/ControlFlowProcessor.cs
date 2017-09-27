@@ -127,13 +127,15 @@ namespace exefile.controlflow
                     {
                         block.InstructionList.Add(localAddress + 4, exeFile.Instructions[localAddress + 4]);
 
-                        edges.Add(new FalseEdge(block, GetOrCreateSequence(sequences, edges, localAddress + 8)));
+                        var condition = GetOrCreateSequence(sequences, edges, localAddress);
+                        
+                        edges.Add(new FalseEdge(condition, GetOrCreateSequence(sequences, edges, localAddress + 8)));
                         entryPoints.Enqueue(localAddress + 8);
 
                         var target = instruction.JumpTarget;
                         if (target != null)
                         {
-                            edges.Add(new TrueEdge(block, GetOrCreateSequence(sequences, edges, target.Value)));
+                            edges.Add(new TrueEdge(condition, GetOrCreateSequence(sequences, edges, target.Value)));
                             entryPoints.Enqueue(target.Value);
                         }
 
@@ -252,7 +254,11 @@ namespace exefile.controlflow
                                 uint caseIndex = 0;
                                 for(uint offset = tableOffset.Value; exeFile.ContainsGlobal(offset, false); offset += 4)
                                 {
-                                    uint dst = exeFile.MakeLocal(exeFile.WordAtGlobal(offset));
+                                    uint lblOffset = exeFile.WordAtGlobal(offset);
+                                    if(!exeFile.ContainsGlobal(lblOffset))
+                                        break;
+                                    
+                                    uint dst = exeFile.MakeLocal(lblOffset);
                                     logger.Debug($"Possible case label: 0x{dst:x8}");
                                     if(dst < first || dst > last)
                                         break;
@@ -286,7 +292,7 @@ namespace exefile.controlflow
             // split branching instructions for better analysis,
             // and duplicate the branch-delay instructions.
             var branches = sequences
-                .Where(s => edges.Count(e => e.From == s.Value) == 2)
+                .Where(s => edges.Count(e => ReferenceEquals(e.From, s.Value)) == 2)
                 .Select(s => s.Value)
                 .ToList();
             foreach (var branch in branches)

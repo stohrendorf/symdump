@@ -95,8 +95,7 @@ namespace frontend.Controllers
 
             catch (Exception ex)
             {
-                logger.Error(ex, "Decompilation failed");
-                logger.Error(ex.StackTrace);
+                logger.Error(ex, "Control flow analysis failed");
                 return visGraph;
             }
         }

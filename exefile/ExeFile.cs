@@ -112,7 +112,14 @@ namespace exefile
 
         public bool ContainsGlobal(uint address, bool onlyCode = true)
         {
-            return ContainsLocal(MakeLocal(address), onlyCode);
+            try
+            {
+                return ContainsLocal(MakeLocal(address), onlyCode);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return false;
+            }
         }
 
         public bool ContainsLocal(uint address, bool onlyCode = true)

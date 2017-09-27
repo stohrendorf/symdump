@@ -14,7 +14,7 @@ namespace frontend
             var consoleTarget = new ColoredConsoleTarget();
             nlogConfig.AddTarget("console", consoleTarget);
             consoleTarget.Layout =
-                @"[${date:format=HH\:mm\:ss.fff} ${pad:padding=5:inner=${level:uppercase=true}}] ${logger} | ${message}";
+                @"[${date:format=HH\:mm\:ss.fff} ${pad:padding=5:inner=${level:uppercase=true}}] ${logger} | ${message} ${exception:format=tostring}";
             var nlogDebugRule = new LoggingRule("*", LogLevel.Debug, consoleTarget);
             nlogConfig.LoggingRules.Add(nlogDebugRule);
             LogManager.Configuration = nlogConfig;
