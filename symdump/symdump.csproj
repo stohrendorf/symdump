@@ -4,7 +4,7 @@
     <RootNamespace>symdump</RootNamespace>
     <AssemblyName>symdump</AssemblyName>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -30,7 +30,8 @@
     <ProjectReference Include="..\symfile\symfile.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NLog" Version="5.0.0-beta09"/>
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta5"/>
+    <PackageReference Include="Microsoft.NETCore.App" Version="2.0.0"/>
+    <PackageReference Include="NLog" Version="5.0.0-beta11"/>
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta6"/>
   </ItemGroup>
 </Project>
