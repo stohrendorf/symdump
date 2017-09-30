@@ -13,6 +13,10 @@ namespace exefile.controlflow.cfg
 
         public override string Id => "or_" + _nodes[0].Id;
 
+        public override IEnumerable<int> InputRegisters => _nodes.SelectMany(n => n.InputRegisters).Distinct();
+
+        public override IEnumerable<int> OutputRegisters => _nodes.SelectMany(n => n.OutputRegisters).Distinct();
+
         public OrNode([NotNull] INode c0) : base(c0.Graph)
         {
             Debug.Assert(c0.Outs.Count() == 2);

@@ -15,6 +15,10 @@ namespace exefile.controlflow.cfg
 
         public override string Id => "dup_" + Inner.Id;
 
+        public override IEnumerable<int> InputRegisters => Inner.InputRegisters;
+
+        public override IEnumerable<int> OutputRegisters => Inner.OutputRegisters;
+
         public DuplicatedNode([NotNull] T inner) : base(inner.Graph)
         {
             Inner = inner;

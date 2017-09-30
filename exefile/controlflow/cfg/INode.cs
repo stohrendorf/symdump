@@ -24,5 +24,11 @@ namespace exefile.controlflow.cfg
         void Dump([NotNull] IndentedTextWriter writer);
         
         string Id { get; }
+        
+        [NotNull]
+        IEnumerable<int> InputRegisters { get; }
+        
+        [NotNull]
+        IEnumerable<int> OutputRegisters { get; }
     }
 }

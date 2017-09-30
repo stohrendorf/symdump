@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace core
 {
@@ -15,7 +16,14 @@ namespace core
 
         [NotNull]
         public abstract IExpressionNode ToExpressionNode([NotNull] IDataFlowState dataFlowState);
+
+        [CanBeNull]
+        public abstract uint? JumpTarget { get; }
+
+        [NotNull]
+        public abstract IEnumerable<int> InputRegisters { get; }
         
-        [CanBeNull] public abstract uint? JumpTarget { get; }
+        [NotNull]
+        public abstract IEnumerable<int> OutputRegisters { get; }
     }
 }

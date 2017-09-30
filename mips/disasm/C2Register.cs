@@ -37,6 +37,7 @@ namespace mips.disasm
         irgb,
         orgb,
         lzcs,
-        lzcr
+        lzcr,
+        Sentinel
     }
 }

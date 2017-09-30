@@ -17,6 +17,10 @@ namespace exefile.controlflow.cfg
 
         public override string Id => "while_" + _condition.Id;
 
+        public override IEnumerable<int> InputRegisters => _condition.InputRegisters.Concat(_body.InputRegisters).Distinct();
+
+        public override IEnumerable<int> OutputRegisters => _condition.OutputRegisters.Concat(_body.OutputRegisters).Distinct();
+
         public WhileNode([NotNull] INode condition)
             : base(condition.Graph)
         {

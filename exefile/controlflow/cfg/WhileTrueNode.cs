@@ -30,6 +30,10 @@ namespace exefile.controlflow.cfg
 
         public override IEnumerable<Instruction> Instructions => _body.Instructions;
 
+        public override IEnumerable<int> InputRegisters => _body.InputRegisters;
+
+        public override IEnumerable<int> OutputRegisters => _body.OutputRegisters;
+
         public override bool ContainsAddress(uint address) => _body.ContainsAddress(address);
 
         public override void Dump(IndentedTextWriter writer)

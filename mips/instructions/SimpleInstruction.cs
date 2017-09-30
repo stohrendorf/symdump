@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using core;
+using mips.operands;
+using static mips.disasm.RegisterUtil;
 
 namespace mips.instructions
 {
@@ -10,6 +13,32 @@ namespace mips.instructions
         public readonly string Mnemonic;
 
         public override uint? JumpTarget => null;
+        public override IEnumerable<int> InputRegisters => OutputRegisters;
+
+        public override IEnumerable<int> OutputRegisters
+        {
+            get
+            {
+                foreach (var operand in Operands)
+                {
+                    switch (operand)
+                    {
+                        case RegisterOperand r:
+                            yield return ToInt(r.Register);
+                            break;
+                        case RegisterOffsetOperand r:
+                            yield return ToInt(r.Register);
+                            break;
+                        case C0RegisterOperand r:
+                            yield return ToInt(r.Register);
+                            break;
+                        case C2RegisterOperand r:
+                            yield return ToInt(r.Register);
+                            break;
+                    }
+                }
+            }
+        }
 
         public SimpleInstruction(string mnemonic, string format, params IOperand[] operands)
         {

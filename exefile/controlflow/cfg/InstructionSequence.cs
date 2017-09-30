@@ -4,12 +4,19 @@ using System.Linq;
 using core;
 using core.util;
 using JetBrains.Annotations;
+using static mips.disasm.RegisterUtil;
 
 namespace exefile.controlflow.cfg
 {
     public class InstructionSequence : Node
     {
         public override string Id => $"insnseq_{InstructionList.Keys.First():x8}";
+
+        public override IEnumerable<int> InputRegisters
+            => InstructionList.Values.SelectMany(i => i.InputRegisters).Distinct();
+        
+        public override IEnumerable<int> OutputRegisters
+            => InstructionList.Values.SelectMany(i => i.OutputRegisters).Distinct();
 
         public SortedDictionary<uint, Instruction> InstructionList { get; } = new SortedDictionary<uint, Instruction>();
 
@@ -33,6 +40,16 @@ namespace exefile.controlflow.cfg
             foreach (var edge in Outs)
             {
                 writer.WriteLine($"// {edge}");
+            }
+
+            {
+                var inputs = InputRegisters.Select(RegisterStringFromInt);
+                writer.WriteLine($"// input {string.Join(", ", inputs)}");
+            }
+
+            {
+                var outputs = OutputRegisters.Select(RegisterStringFromInt);
+                writer.WriteLine($"// output {string.Join(", ", outputs)}");
             }
 
             foreach (var insn in InstructionList)

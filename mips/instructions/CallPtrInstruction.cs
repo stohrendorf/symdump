@@ -1,6 +1,8 @@
-﻿using core;
+﻿using System.Collections.Generic;
+using core;
 using mips.disasm;
 using mips.operands;
+using static mips.disasm.RegisterUtil;
 
 namespace mips.instructions
 {
@@ -13,6 +15,37 @@ namespace mips.instructions
 
         public override uint? JumpTarget => (Target as LabelOperand)?.Address;
 
+        public override IEnumerable<int> InputRegisters
+        {
+            get
+            {
+                switch (Target)
+                {
+                    case RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case RegisterOffsetOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C0RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C2RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                }
+            }
+        }
+
+        public override IEnumerable<int> OutputRegisters
+        {
+            get
+            {
+                if (ReturnAddressTarget != null)
+                    yield return (int) ReturnAddressTarget.Register;
+            }
+        }
+
         // ReSharper disable once SuggestBaseTypeForParameter
         public CallPtrInstruction(IOperand target, RegisterOperand returnAddressTarget)
         {
@@ -23,7 +56,9 @@ namespace mips.instructions
         {
             if (ReturnAddressTarget != null)
             {
-                return ReturnAddressTarget.Register == Register.ra ? $"{Target}()" : $"${ReturnAddressTarget} = __RET_ADDR; {Target}()";
+                return ReturnAddressTarget.Register == Register.ra
+                    ? $"{Target}()"
+                    : $"${ReturnAddressTarget} = __RET_ADDR; {Target}()";
             }
 
             return $"goto {Target}";

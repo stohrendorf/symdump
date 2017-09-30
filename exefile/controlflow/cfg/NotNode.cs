@@ -14,6 +14,10 @@ namespace exefile.controlflow.cfg
 
         public override string Id => "not_" + _inner.Id;
 
+        public override IEnumerable<int> InputRegisters => _inner.InputRegisters;
+
+        public override IEnumerable<int> OutputRegisters => _inner.OutputRegisters;
+
         public NotNode([NotNull] INode inner) : base(inner.Graph)
         {
             Debug.Assert(!(inner is NotNode));

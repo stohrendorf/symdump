@@ -21,5 +21,9 @@ namespace exefile.controlflow.cfg
         }
 
         public override string Id => "exit";
+        
+        public override IEnumerable<int> InputRegisters => Enumerable.Empty<int>();
+
+        public override IEnumerable<int> OutputRegisters => Enumerable.Empty<int>();
     }
 }

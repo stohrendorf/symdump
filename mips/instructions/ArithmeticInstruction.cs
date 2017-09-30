@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using core;
 using core.expression;
 using mips.disasm;
 using mips.operands;
+using static mips.disasm.RegisterUtil;
 
 namespace mips.instructions
 {
@@ -29,6 +31,62 @@ namespace mips.instructions
         public IOperand Destination => Operands[0];
         public IOperand Lhs => Operands[1];
         public IOperand Rhs => Operands[2];
+
+        public override IEnumerable<int> OutputRegisters
+        {
+            get
+            {
+                switch (Destination)
+                {
+                    case RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C0RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C2RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                }
+            }
+        }
+        public override IEnumerable<int> InputRegisters
+        {
+            get
+            {
+                switch (Lhs)
+                {
+                    case RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case RegisterOffsetOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C0RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C2RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                }
+                
+                switch (Rhs)
+                {
+                    case RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case RegisterOffsetOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C0RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C2RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                }
+            }
+        }
 
         public bool IsInplace => Destination.Equals(Lhs);
 

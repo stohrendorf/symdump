@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using core;
 using core.util;
@@ -20,6 +18,8 @@ namespace exefile.controlflow.cfg
         public abstract IEnumerable<Instruction> Instructions { get; }
 
         public abstract string Id { get; }
+        public abstract IEnumerable<int> InputRegisters { get; }
+        public abstract IEnumerable<int> OutputRegisters { get; }
 
         public abstract void Dump(IndentedTextWriter writer);
 

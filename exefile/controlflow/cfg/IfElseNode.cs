@@ -16,6 +16,10 @@ namespace exefile.controlflow.cfg
 
         public override string Id => "ifelse_" + _condition.Id;
 
+        public override IEnumerable<int> InputRegisters => _condition.InputRegisters.Concat(_trueBody.InputRegisters).Concat(_falseBody.InputRegisters).Distinct();
+
+        public override IEnumerable<int> OutputRegisters => _condition.OutputRegisters.Concat(_trueBody.OutputRegisters).Concat(_falseBody.OutputRegisters).Distinct();
+
         public IfElseNode([NotNull] INode condition) : base(condition.Graph)
         {
             Debug.Assert(IsCandidate(condition));

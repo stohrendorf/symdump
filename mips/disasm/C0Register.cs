@@ -37,6 +37,7 @@ namespace mips.disasm
         r28,
         r29,
         r30,
-        r31
+        r31,
+        Sentinel
     }
 }

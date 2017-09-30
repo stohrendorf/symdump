@@ -17,6 +17,10 @@ namespace exefile.controlflow.cfg
 
         public override string Id => "dowhile_" + _body.Id;
 
+        public override IEnumerable<int> InputRegisters => _condition.InputRegisters.Concat(_body.InputRegisters).Distinct();
+
+        public override IEnumerable<int> OutputRegisters => _condition.OutputRegisters.Concat(_body.OutputRegisters).Distinct();
+
         public DoWhileNode([NotNull] INode body)
             : base(body.Graph)
         {

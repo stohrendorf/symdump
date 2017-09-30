@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using core;
 
 namespace mips.instructions
@@ -8,6 +10,8 @@ namespace mips.instructions
         public readonly uint Data;
 
         public override uint? JumpTarget => null;
+        public override IEnumerable<int> InputRegisters => Enumerable.Empty<int>();
+        public override IEnumerable<int> OutputRegisters => Enumerable.Empty<int>();
 
         public WordData(uint data)
         {

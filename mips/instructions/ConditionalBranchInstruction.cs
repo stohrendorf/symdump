@@ -1,6 +1,9 @@
-﻿using core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using core;
 using core.expression;
 using mips.operands;
+using static mips.disasm.RegisterUtil;
 
 namespace mips.instructions
 {
@@ -22,6 +25,46 @@ namespace mips.instructions
 
         public override IOperand[] Operands { get; }
 
+        public override IEnumerable<int> OutputRegisters => Enumerable.Empty<int>();
+
+        public override IEnumerable<int> InputRegisters
+        {
+            get
+            {
+                switch (Lhs)
+                {
+                    case RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case RegisterOffsetOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C0RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C2RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                }
+
+                switch (Rhs)
+                {
+                    case RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case RegisterOffsetOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C0RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C2RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                }
+            }
+        }
+
         public override string AsReadable()
         {
             var op = Operator.AsCode();
@@ -31,7 +74,8 @@ namespace mips.instructions
 
         public override IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            return new ConditionalBranchNode(Operator, Lhs.ToExpressionNode(dataFlowState), Rhs.ToExpressionNode(dataFlowState), Target.ToExpressionNode(dataFlowState) as NamedMemoryLayout);
+            return new ConditionalBranchNode(Operator, Lhs.ToExpressionNode(dataFlowState),
+                Rhs.ToExpressionNode(dataFlowState), Target.ToExpressionNode(dataFlowState) as NamedMemoryLayout);
         }
     }
 }

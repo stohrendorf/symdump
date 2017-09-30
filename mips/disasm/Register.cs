@@ -35,6 +35,7 @@ namespace mips.disasm
         gp = 28,
         sp = 29,
         fp = 30,
-        ra = 31
+        ra = 31,
+        Sentinel
     }
 }

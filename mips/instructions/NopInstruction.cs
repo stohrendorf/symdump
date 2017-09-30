@@ -1,4 +1,6 @@
-﻿using core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using core;
 
 namespace mips.instructions
 {
@@ -7,6 +9,8 @@ namespace mips.instructions
         public override IOperand[] Operands { get; } = new IOperand[0];
 
         public override uint? JumpTarget => null;
+        public override IEnumerable<int> InputRegisters => Enumerable.Empty<int>();
+        public override IEnumerable<int> OutputRegisters => Enumerable.Empty<int>();
 
         public override string AsReadable()
         {

@@ -1,5 +1,8 @@
-﻿using core;
+﻿using System.Collections.Generic;
+using core;
 using core.expression;
+using mips.operands;
+using static mips.disasm.RegisterUtil;
 
 namespace mips.instructions
 {
@@ -20,6 +23,47 @@ namespace mips.instructions
 
         public IOperand Src => Operands[1];
         public IOperand Dst => Operands[0];
+
+        public override IEnumerable<int> OutputRegisters
+        {
+            get
+            {
+                switch (Dst)
+                {
+                    case RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C0RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C2RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                }
+            }
+        }
+
+        public override IEnumerable<int> InputRegisters
+        {
+            get
+            {
+                switch (Src)
+                {
+                    case RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case RegisterOffsetOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C0RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                    case C2RegisterOperand r:
+                        yield return ToInt(r.Register);
+                        break;
+                }
+            }
+        }
 
         public override string AsReadable()
         {

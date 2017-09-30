@@ -49,6 +49,11 @@ namespace exefile.controlflow.cfg
 
         public override IEnumerable<Instruction> Instructions => Nodes.SelectMany(node => node.Instructions);
 
+        public override IEnumerable<int> InputRegisters => Nodes.SelectMany(n => n.InputRegisters).Distinct();
+
+        public override IEnumerable<int> OutputRegisters => Nodes.SelectMany(n => n.OutputRegisters).Distinct();
+
+
         public override void Dump(IndentedTextWriter writer)
         {
             foreach (var node in Nodes)
