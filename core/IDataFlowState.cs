@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using core.util;
+using JetBrains.Annotations;
 
 namespace core
 {
@@ -7,5 +8,9 @@ namespace core
         [NotNull] IDebugSource DebugSource { get; }
         
         [CanBeNull] IExpressionNode GetRegisterExpression(int registerId);
+
+        bool Apply([NotNull] Instruction insn, [CanBeNull] Instruction nextInsn);
+
+        void DumpState(IndentedTextWriter writer);
     }
 }

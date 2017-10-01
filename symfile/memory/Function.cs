@@ -52,7 +52,8 @@ namespace symfile.memory
 
         public string GetAccessPathTo(uint offset)
         {
-            throw new NotImplementedException();
+            // TODO: throw new NotImplementedException();
+            return $"<FUNC@{offset}>";
         }
     }
 }

@@ -69,15 +69,15 @@ namespace exefile.controlflow.cfg
         public override bool ContainsAddress(uint address) =>
             _condition.ContainsAddress(address) || _body.ContainsAddress(address);
 
-        public override void Dump(IndentedTextWriter writer)
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
         {
             writer.WriteLine("do {");
             ++writer.Indent;
-            _body.Dump(writer);
+            _body.Dump(writer, dataFlowState);
             --writer.Indent;
             writer.WriteLine(_invertedCondition ? "} while_not {" : "} while {");
             ++writer.Indent;
-            _condition.Dump(writer);
+            _condition.Dump(writer, dataFlowState);
             --writer.Indent;
             writer.WriteLine("}");
         }

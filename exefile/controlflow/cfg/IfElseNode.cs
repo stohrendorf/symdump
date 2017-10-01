@@ -70,19 +70,19 @@ namespace exefile.controlflow.cfg
             _condition.ContainsAddress(address) || _trueBody.ContainsAddress(address) ||
             _falseBody.ContainsAddress(address);
 
-        public override void Dump(IndentedTextWriter writer)
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
         {
             writer.WriteLine("if{");
             ++writer.Indent;
-            _condition.Dump(writer);
+            _condition.Dump(writer, dataFlowState);
             --writer.Indent;
             writer.WriteLine("} {");
             ++writer.Indent;
-            _trueBody.Dump(writer);
+            _trueBody.Dump(writer, dataFlowState);
             --writer.Indent;
             writer.WriteLine("} else {");
             ++writer.Indent;
-            _falseBody.Dump(writer);
+            _falseBody.Dump(writer, dataFlowState);
             --writer.Indent;
             writer.WriteLine("}");
         }

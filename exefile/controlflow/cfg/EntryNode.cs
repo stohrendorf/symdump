@@ -15,7 +15,7 @@ namespace exefile.controlflow.cfg
 
         public override IEnumerable<Instruction> Instructions => Enumerable.Empty<Instruction>();
 
-        public override void Dump(IndentedTextWriter writer)
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
         {
             writer.WriteLine("EntryNode");
         }

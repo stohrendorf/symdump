@@ -41,15 +41,20 @@ namespace core.expression
         [CanBeNull]
         public string TryDeref()
         {
-            if (Operator != Operator.Add || !(Lhs is NamedMemoryLayout) || !(Rhs is ValueNode))
+            if (Operator != Operator.Add
+                || !(Lhs is NamedMemoryLayout namedMemoryLayout)
+                || !(Rhs is ValueNode valueNode))
                 return null;
 
-            var memoryLayout = ((NamedMemoryLayout) Lhs).MemoryLayout;
-            Debug.Assert(memoryLayout.Pointee != null);
-            var member = memoryLayout.Pointee.GetAccessPathTo(
-                (uint) ((ValueNode) Rhs).Value
-            );
-            return ((NamedMemoryLayout) Lhs).Label + "->" + member;
+            var memoryLayout = namedMemoryLayout.MemoryLayout;
+
+            if (memoryLayout.Pointee == null)
+            {
+                return $"((char*){namedMemoryLayout.Label})[{valueNode.Value}]";
+            }
+            
+            var member = memoryLayout.Pointee.GetAccessPathTo((uint) valueNode.Value);
+            return namedMemoryLayout.Label + "->" + member;
         }
 
         public override string ToString()

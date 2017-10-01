@@ -42,7 +42,7 @@ namespace mips.instructions
             get
             {
                 if (ReturnAddressTarget != null)
-                    yield return (int) ReturnAddressTarget.Register;
+                    yield return ToInt(ReturnAddressTarget.Register);
             }
         }
 

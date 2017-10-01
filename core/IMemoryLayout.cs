@@ -36,4 +36,24 @@ namespace core
         [CanBeNull]
         IMemoryLayout Pointee { get; }
     }
+
+    public class UndefinedMemoryLayout : IMemoryLayout
+    {
+        public static readonly UndefinedMemoryLayout Instance = new UndefinedMemoryLayout();
+        
+        public uint DataSize => 1;
+        public int Precedence => int.MaxValue;
+        public string FundamentalType => "char";
+        public string AsIncompleteDeclaration(string identifier, string argList)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string GetAccessPathTo(uint offset)
+        {
+            return $"[{offset}]";
+        }
+
+        public IMemoryLayout Pointee => Instance;
+    }
 }

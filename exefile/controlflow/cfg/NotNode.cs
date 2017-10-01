@@ -45,11 +45,11 @@ namespace exefile.controlflow.cfg
 
         public override IEnumerable<Instruction> Instructions => _inner.Instructions;
 
-        public override void Dump(IndentedTextWriter writer)
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
         {
             writer.WriteLine("!{");
             ++writer.Indent;
-            _inner.Dump(writer);
+            _inner.Dump(writer, dataFlowState);
             --writer.Indent;
             writer.WriteLine("}");
         }

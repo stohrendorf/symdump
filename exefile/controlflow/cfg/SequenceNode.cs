@@ -54,11 +54,11 @@ namespace exefile.controlflow.cfg
         public override IEnumerable<int> OutputRegisters => Nodes.SelectMany(n => n.OutputRegisters).Distinct();
 
 
-        public override void Dump(IndentedTextWriter writer)
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
         {
             foreach (var node in Nodes)
             {
-                node.Dump(writer);
+                node.Dump(writer, dataFlowState);
             }
         }
 

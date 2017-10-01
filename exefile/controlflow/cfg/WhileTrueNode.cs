@@ -36,11 +36,11 @@ namespace exefile.controlflow.cfg
 
         public override bool ContainsAddress(uint address) => _body.ContainsAddress(address);
 
-        public override void Dump(IndentedTextWriter writer)
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
         {
             writer.WriteLine("while(true) {");
             ++writer.Indent;
-            _body.Dump(writer);
+            _body.Dump(writer, dataFlowState);
             --writer.Indent;
             writer.WriteLine("}");
         }

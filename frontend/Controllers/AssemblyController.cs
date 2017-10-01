@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using core.util;
 using exefile.controlflow.cfg;
+using exefile.dataflow;
 using frontend.Services;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -35,6 +39,16 @@ namespace frontend.Controllers
                 });
         }
 
+        private string ToLabel(INode node)
+        {
+            var sb = new StringBuilder();
+            if(_appState.SymFile != null)
+                node.Dump(new IndentedTextWriter(new StringWriter(sb)), new DataFlowState(_appState.SymFile));
+            else
+                node.Dump(new IndentedTextWriter(new StringWriter(sb)), null);
+            return sb.ToString();
+        }
+        
         [HttpGet("decompile/{offset}")]
         public VisGraph Decompile([FromRoute] uint offset)
         {
@@ -54,7 +68,7 @@ namespace frontend.Controllers
                     .ToDictionary(v => v.Id, v => new VisNode
                     {
                         Id = v.Id,
-                        Label = v.ToString(),
+                        Label = ToLabel(v),
                         Color = v is EntryNode ? "#00c000" : v is ExitNode ? "#c00000" : doms.Values.Contains(v) ? "#00c0ff" : "#c0c0ff"
                     });
 

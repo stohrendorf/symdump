@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection.Metadata;
 using core;
 using core.expression;
 using mips.disasm;
@@ -30,9 +29,9 @@ namespace mips.operands
 
         public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            var expression = dataFlowState.GetRegisterExpression((int) Register);
+            var expression = dataFlowState.GetRegisterExpression(RegisterUtil.ToInt(Register));
             if (expression == null)
-                return new RegisterOffsetNode((int) Register, Offset);
+                return new RegisterOffsetNode(RegisterUtil.ToInt(Register), Offset);
 
             if (!(expression is ValueNode))
                 return new DerefNode(new ExpressionNode(Operator.Add, expression, new ValueNode(Offset)));
@@ -40,8 +39,7 @@ namespace mips.operands
             var address = (uint) (((ValueNode) expression).Value + Offset);
             var name = dataFlowState.DebugSource.GetSymbolName(address);
             var typeDef = dataFlowState.DebugSource.FindTypeDefinitionForLabel(name);
-            Debug.Assert(typeDef != null);
-            return new NamedMemoryLayout(name, address, typeDef);
+            return new NamedMemoryLayout(name, address, typeDef ?? UndefinedMemoryLayout.Instance);
         }
 
         public override string ToString()

@@ -26,8 +26,8 @@ namespace mips.operands
 
         public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            var expression = dataFlowState.GetRegisterExpression((int) Register);
-            return expression ?? new RegisterNode((int) Register);
+            var expression = dataFlowState.GetRegisterExpression(RegisterUtil.ToInt(Register));
+            return expression ?? new RegisterNode(RegisterUtil.ToInt(Register));
         }
 
         public override string ToString()

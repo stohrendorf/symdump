@@ -42,12 +42,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0"/>
-    <PackageReference Include="NLog" Version="5.0.0-beta11"/>
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta6"/>
-    <PackageReference Include="xunit" Version="2.2.0"/>
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0"/>
+      <PackageReference Include="JetBrains.Annotations" Version="11.0.0"/>
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0"/>
+      <PackageReference Include="NLog" Version="5.0.0-beta11"/>
+      <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta6"/>
+      <PackageReference Include="xunit" Version="2.2.0"/>
+      <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0"/>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
                    Other similar extension points exist, see Microsoft.Common.targets.

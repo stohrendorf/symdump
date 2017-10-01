@@ -90,7 +90,7 @@ namespace exefile.controlflow.cfg
 
         public override IEnumerable<Instruction> Instructions => _nodes.SelectMany(n => n.Instructions);
 
-        public override void Dump(IndentedTextWriter writer)
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
         {
             writer.WriteLine("{");
             ++writer.Indent;
@@ -104,7 +104,7 @@ namespace exefile.controlflow.cfg
                 first = false;
 
                 ++writer.Indent;
-                n.Dump(writer);
+                n.Dump(writer, dataFlowState);
                 --writer.Indent;
             }
             --writer.Indent;

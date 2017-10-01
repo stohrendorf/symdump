@@ -8,8 +8,13 @@ namespace core
         [NotNull]
         string ToCode();
 
-        [NotNull] IEnumerable<int> UsedRegisters { get; }
-        [NotNull] IEnumerable<int> UsedStack { get; }
-        [NotNull] IEnumerable<uint> UsedMemory { get; }
+        [NotNull]
+        IEnumerable<int> UsedRegisters { get; }
+
+        [NotNull]
+        IEnumerable<int> UsedStack { get; }
+
+        [NotNull]
+        IEnumerable<uint> UsedMemory { get; }
     }
 }

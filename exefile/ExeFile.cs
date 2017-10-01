@@ -143,7 +143,7 @@ namespace exefile
             if (func != null)
                 logger.Debug(func.GetSignature());
 
-            //var flowState = new DataFlowState(_debugSource, func);
+            //var flowState = new DataFlowState(_debugSource);
 
             var control = new ControlFlowProcessor();
             control.Process(MakeLocal(globalAddress), this);

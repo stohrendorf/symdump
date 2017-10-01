@@ -21,18 +21,18 @@ namespace exefile.controlflow.cfg
         public abstract IEnumerable<int> InputRegisters { get; }
         public abstract IEnumerable<int> OutputRegisters { get; }
 
-        public abstract void Dump(IndentedTextWriter writer);
+        public abstract void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState);
 
         public IGraph Graph { get; }
 
         public IEnumerable<IEdge> Ins => Graph.GetIns(this);
-        
+
         public IEnumerable<IEdge> Outs => Graph.GetOuts(this);
 
         public sealed override string ToString()
         {
             var sb = new StringBuilder();
-            Dump(new IndentedTextWriter(new StringWriter(sb)));
+            Dump(new IndentedTextWriter(new StringWriter(sb)), null);
             return sb.ToString();
         }
     }

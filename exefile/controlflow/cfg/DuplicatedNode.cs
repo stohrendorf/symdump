@@ -31,7 +31,7 @@ namespace exefile.controlflow.cfg
 
         public override IEnumerable<Instruction> Instructions => Inner.Instructions;
 
-        public override void Dump(IndentedTextWriter writer)
-            => Inner.Dump(writer);
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
+            => Inner.Dump(writer, dataFlowState);
     }
 }

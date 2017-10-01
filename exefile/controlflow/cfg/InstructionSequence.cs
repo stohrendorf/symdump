@@ -35,7 +35,7 @@ namespace exefile.controlflow.cfg
             return address >= InstructionList.Keys.First() && address <= InstructionList.Keys.Last();
         }
 
-        public override void Dump(IndentedTextWriter writer)
+        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
         {
             foreach (var edge in Outs)
             {
@@ -54,8 +54,10 @@ namespace exefile.controlflow.cfg
 
             foreach (var insn in InstructionList)
             {
+                dataFlowState?.Apply(insn.Value, null);
                 writer.WriteLine($"0x{insn.Key:X}  {insn.Value.AsReadable()}");
             }
+            dataFlowState?.DumpState(writer);
         }
 
         public InstructionSequence Chop(uint from)

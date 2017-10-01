@@ -24,8 +24,7 @@ namespace mips.operands
         public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
             var typeDef = dataFlowState.DebugSource.FindTypeDefinitionForLabel(Label);
-            Debug.Assert(typeDef != null);
-            return new NamedMemoryLayout(Label, Address, typeDef);
+            return new NamedMemoryLayout(Label, Address, typeDef ?? UndefinedMemoryLayout.Instance);
         }
 
         public override string ToString()

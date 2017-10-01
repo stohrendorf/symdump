@@ -304,6 +304,41 @@ namespace exefile.controlflow
                 {
                     logger.Debug(e);
                 }
+                
+                // see if we can simply swap the branch delay slot with the condition,
+                // because that simplifies the control flow graph.
+                {
+                    var delaySlot = branch.InstructionList.Last().Value;
+                    Debug.Assert(delaySlot.IsBranchDelaySlot);
+                    var condition = branch.InstructionList.Reverse().Skip(1).First().Value;
+                    Debug.Assert(!condition.OutputRegisters.Any());
+
+                    if (!delaySlot.OutputRegisters.Intersect(condition.InputRegisters).Any() && !condition.InputRegisters.Intersect(delaySlot.OutputRegisters).Any())
+                    {
+                        logger.Debug($"Reordering {branch.Id}");
+                        
+                        var tmp = new InstructionCollection(branch);
+                        var cnd = tmp.InstructionList[tmp.InstructionList.Count - 2];
+                        tmp.InstructionList.Remove(cnd);
+                        tmp.InstructionList.Add(cnd);
+                        Graph.AddNode(tmp);
+
+                        foreach (var e in edges.Where(e => ReferenceEquals(e.From, branch)).ToList())
+                        {
+                            edges.Remove(e);
+                            edges.Add(e.CloneTyped(tmp, e.To));
+                        }
+                        
+                        foreach (var e in edges.Where(e => ReferenceEquals(e.To, branch)).ToList())
+                        {
+                            edges.Remove(e);
+                            edges.Add(e.CloneTyped(e.From, tmp));
+                        }
+
+                        sequences.Remove(branch.InstructionList.Keys.First());
+                        continue;
+                    }
+                }
 
                 var delayInsn = branch.Chop(branch.InstructionList.Keys.Last());
                 Debug.Assert(delayInsn.InstructionList.Count == 1);

@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using core;
 using core.expression;
+using core.util;
 using mips.disasm;
 using mips.instructions;
 using mips.operands;
@@ -14,30 +17,19 @@ namespace exefile.dataflow
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly SortedDictionary<Register, IExpressionNode> _registers =
-            new SortedDictionary<Register, IExpressionNode>();
+        private readonly SortedDictionary<int, IExpressionNode> _registers =
+            new SortedDictionary<int, IExpressionNode>();
 
         private readonly List<IExpressionNode> _stack = new List<IExpressionNode>();
 
         public IDebugSource DebugSource { get; }
 
-        public DataFlowState(IDebugSource debugSource, IFunction func)
+        public DataFlowState(IDebugSource debugSource)
         {
             DebugSource = debugSource;
-
-            if (func == null)
-                return;
-
-            foreach (var param in func.RegisterParameters)
-            {
-                var p = param.Value;
-                _registers[(Register) param.Key] = new NamedMemoryLayout(p.Name, 0, p.MemoryLayout);
-            }
-
-            DumpState();
         }
 
-        public bool Process(Instruction insn, Instruction nextInsn)
+        public bool Apply(Instruction insn, Instruction nextInsn)
         {
             if (insn is NopInstruction)
             {
@@ -52,110 +44,108 @@ namespace exefile.dataflow
             }
 
             if (nextInsn != null && nextInsn.IsBranchDelaySlot)
-                Process(nextInsn, null);
+                Apply(nextInsn, null);
 
             logger.Debug("[eval] " + insn.AsReadable());
 
-            if (insn is CallPtrInstruction instruction)
+            switch (insn)
             {
-                return Pocess(instruction);
-            }
-            else if (insn is ArithmeticInstruction)
-            {
-                return Process((ArithmeticInstruction) insn);
-            }
-            else if (insn is DataCopyInstruction)
-            {
-                var copy = (DataCopyInstruction) insn;
-                Process(copy);
-                return true;
-            }
-            else if (insn is ConditionalBranchInstruction)
-            {
-                Debug.Assert(condition != null);
-                logger.Debug(condition.ToCode());
-            }
-            else
-            {
-                DumpState();
+                case CallPtrInstruction instruction:
+                    return Apply(instruction);
+                case ArithmeticInstruction instruction:
+                    return Apply(instruction);
+                case DataCopyInstruction instruction:
+                    Apply(instruction);
+                    return true;
+                case ConditionalBranchInstruction _:
+                    Debug.Assert(condition != null);
+                    logger.Debug(condition.ToCode());
+                    break;
+                default:
+                    DumpState(new IndentedTextWriter(Console.Out));
 
-                logger.Warn("[raw] " + insn.AsReadable());
-                _registers.Clear();
+                    logger.Warn("[raw] " + insn.AsReadable());
+                    _registers.Clear();
+                    break;
             }
 
             return true;
         }
 
-        private void Process(DataCopyInstruction insn)
+        private void Apply(DataCopyInstruction insn)
         {
             var copyTo = insn.Dst;
-            if (copyTo is RegisterOperand operand)
+            switch (copyTo)
             {
-                _registers[operand.Register] = insn.Src.ToExpressionNode(this);
-            }
-            else if (copyTo is RegisterOffsetOperand && ((RegisterOffsetOperand) copyTo).Register == Register.sp)
-            {
-                var ofs = ((RegisterOffsetOperand) copyTo).Offset;
-                // FIXME: handle non-dword data
-                Debug.Assert(ofs % 4 == 0);
-                // FIXME: If ofs is <0, assume it's a parameter...
-                Debug.Assert(ofs >= 0 && ofs / 4 < _stack.Count);
-                _stack[ofs / 4] = insn.Src.ToExpressionNode(this);
-            }
-            else
-            {
-                DumpState();
+                case RegisterOperand operand:
+                    _registers[RegisterUtil.ToInt(operand.Register)] = insn.Src.ToExpressionNode(this);
+                    break;
+                case RegisterOffsetOperand registerOffsetOperand when registerOffsetOperand.Register == Register.sp:
+                    var ofs = registerOffsetOperand.Offset;
+                    // FIXME: handle non-dword data
+                    Debug.Assert(ofs % 4 == 0);
+                    // FIXME: If ofs is <0, assume it's a parameter...
+                    Debug.Assert(ofs >= 0);
+                    if (ofs / 4 >= _stack.Count)
+                        _stack.AddRange(Enumerable.Repeat<IExpressionNode>(null, 1 + ofs / 4 - _stack.Count));
+                    _stack[ofs / 4] = insn.Src.ToExpressionNode(this);
+                    break;
+                default:
+                    DumpState(new IndentedTextWriter(Console.Out));
 
-                logger.Debug(insn.ToExpressionNode(this).ToCode());
+                    logger.Debug(insn.ToExpressionNode(this).ToCode());
+                    break;
             }
         }
 
-        private bool Process(ArithmeticInstruction arith)
+        private bool Apply(ArithmeticInstruction arith)
         {
             var dst = arith.Destination;
-            if (dst is RegisterOperand reg)
+            switch (dst)
             {
-                _registers[reg.Register] = arith.ToExpressionNode(this);
-                if (reg.Register != Register.sp || !arith.IsInplace || !(arith.Rhs is ImmediateOperand))
-                    return true;
+                case RegisterOperand reg:
+                    _registers[RegisterUtil.ToInt(reg.Register)] = arith.ToExpressionNode(this);
+                    if (reg.Register != Register.sp || !arith.IsInplace || !(arith.Rhs is ImmediateOperand))
+                        return true;
 
-                // stack frame size change
-                var delta = (int) ((ImmediateOperand) arith.Rhs).Value;
-                Debug.Assert(delta % 4 == 0);
-                delta /= 4;
-                if (arith.Operator == Operator.Sub)
-                    delta = -delta;
+                    // stack frame size change
+                    var delta = (int) ((ImmediateOperand) arith.Rhs).Value;
+                    Debug.Assert(delta % 4 == 0);
+                    delta /= 4;
+                    if (arith.Operator == Operator.Sub)
+                        delta = -delta;
 
-                if (delta > 0)
-                {
-                    _stack.RemoveRange(0, delta);
-                }
-                else if (delta < 0)
-                {
-                    for (; delta < 0; ++delta)
-                        _stack.Insert(0, null);
-                }
-            }
-            else if (dst is RegisterOffsetOperand && ((RegisterOffsetOperand) dst).Register == Register.sp)
-            {
-                var ofs = ((RegisterOffsetOperand) dst).Offset;
-                Debug.Assert(ofs % 4 == 0);
-                _stack[ofs / 4] = arith.ToExpressionNode(this);
-            }
-            else
-            {
-                DumpState();
+                    if (delta > 0)
+                    {
+                        _stack.RemoveRange(0, Math.Min(_stack.Count, delta));
+                    }
+                    else if (delta < 0)
+                    {
+                        for (; delta < 0; ++delta)
+                            _stack.Insert(0, null);
+                    }
+                    break;
+                case RegisterOffsetOperand registerOffsetOperand when registerOffsetOperand.Register == Register.sp:
+                    var ofs = registerOffsetOperand.Offset;
+                    Debug.Assert(ofs % 4 == 0);
+                    if (ofs / 4 >= _stack.Count)
+                        _stack.AddRange(Enumerable.Repeat<IExpressionNode>(null, 1 + ofs / 4 - _stack.Count));
+                    _stack[ofs / 4] = arith.ToExpressionNode(this);
+                    break;
+                default:
+                    DumpState(new IndentedTextWriter(Console.Out));
 
-                logger.Debug(arith.ToExpressionNode(this).ToCode());
+                    logger.Debug(arith.ToExpressionNode(this).ToCode());
+                    break;
             }
             return true;
         }
 
-        private bool Pocess(CallPtrInstruction insn)
+        private bool Apply(CallPtrInstruction insn)
         {
             if (insn.ReturnAddressTarget != null)
             {
-                DumpState();
+                DumpState(new IndentedTextWriter(Console.Out));
 
                 if (insn.Target is LabelOperand operand)
                 {
@@ -167,7 +157,7 @@ namespace exefile.dataflow
                         var parameters = new List<string>();
                         foreach (var p in fn.RegisterParameters)
                         {
-                            if (_registers.TryGetValue((Register) p.Key, out var tmp))
+                            if (_registers.TryGetValue(p.Key, out var tmp))
                                 parameters.Add(tmp.ToCode());
                             else
                                 parameters.Add("__UNKNOWN__");
@@ -182,7 +172,8 @@ namespace exefile.dataflow
                         if (!fn.GetSignature().StartsWith("void ")) // TODO this is ugly
                         {
                             logger.Debug($"ret = {fn.Name}({string.Join(", ", parameters)})");
-                            _registers[Register.v0] = new NamedMemoryLayout("ret", 0, fn.ReturnType);
+                            _registers[RegisterUtil.ToInt(Register.v0)] =
+                                new NamedMemoryLayout("ret", 0, fn.ReturnType);
                         }
                         else
                         {
@@ -193,7 +184,7 @@ namespace exefile.dataflow
                 }
 
                 logger.Debug(insn.AsReadable());
-                _registers.Remove(Register.v0);
+                _registers.Remove(RegisterUtil.ToInt(Register.v0));
                 return true;
             }
 
@@ -203,28 +194,45 @@ namespace exefile.dataflow
             }
             else
             {
-                DumpState();
+                DumpState(new IndentedTextWriter(Console.Out));
 
                 logger.Debug("[jmp] " + insn.AsReadable());
             }
             return false;
         }
 
-        public void DumpState()
+        public void DumpState(IndentedTextWriter writer)
         {
-            var regDump = string.Join("; ", _registers.Select(reg => reg.Key + " = " + reg.Value.ToCode()));
+            if (_registers.Count > 0)
+            {
+                writer.WriteLine("// Registers:");
+                ++writer.Indent;
+                foreach (var reg in _registers)
+                {
+                    writer.WriteLine("// $" + RegisterUtil.RegisterStringFromInt(reg.Key) + " = " + reg.Value.ToCode());
+                }
+                --writer.Indent;
+            }
+
             var sel = Enumerable
                 .Range(0, _stack.Count)
-                .Where(i => _stack[i] != null)
-                .Select(i => "sp[" + (i * 4) + "] = " + _stack[i].ToCode());
-            var stackDump = string.Join("; ", sel);
-            logger.Debug("    # Registers: " + regDump);
-            logger.Debug("    # Stack: " + stackDump);
+                .Where(i => _stack[i] != null);
+
+            if (!sel.Any())
+                return;
+
+            writer.WriteLine("// Stack:");
+            ++writer.Indent;
+            foreach (var s in sel.Select(i => "// sp[" + (i * 4) + "] = " + _stack[i].ToCode()))
+            {
+                writer.WriteLine(s);
+            }
+            --writer.Indent;
         }
 
         public IExpressionNode GetRegisterExpression(int registerId)
         {
-            _registers.TryGetValue((Register) registerId, out var expression);
+            _registers.TryGetValue(registerId, out var expression);
             return expression;
         }
     }

@@ -21,7 +21,7 @@ namespace exefile.controlflow.cfg
         [NotNull]
         IEnumerable<Instruction> Instructions { get; }
         
-        void Dump([NotNull] IndentedTextWriter writer);
+        void Dump([NotNull] IndentedTextWriter writer, [CanBeNull] IDataFlowState dataFlowState);
         
         string Id { get; }
         
