@@ -293,29 +293,37 @@ namespace symfile
             var ti = stream.ReadTypeDecoration(withDimensions, this);
             var name = stream.ReadPascalString();
 
-            if (ti.ClassType == ClassType.FileName)
-                return;
-
-            if (ti.ClassType == ClassType.Enum && ti.BaseType == BaseType.EnumDef)
-                ReadEnum(stream, name);
-            else if (ti.ClassType == ClassType.Struct && ti.BaseType == BaseType.StructDef)
-                ReadStruct(stream, name);
-            else if (ti.ClassType == ClassType.Union && ti.BaseType == BaseType.UnionDef)
-                ReadUnion(stream, name);
-            else if (ti.ClassType == ClassType.Typedef)
-                AddTypedef(name, ti);
-            else if (ti.ClassType == ClassType.External)
-                if (ti.IsFunctionReturnType)
-                    FuncTypes.Add(name, ti);
-                else
-                    _externs.Add(name, ti);
-            else if (ti.ClassType == ClassType.Static)
-                if (ti.IsFunctionReturnType)
-                    FuncTypes.Add(name, ti);
-                else
-                    _externs.Add(name, ti);
-            else
-                throw new Exception("Gomorrha");
+            switch (ti.ClassType)
+            {
+                case ClassType.FileName:
+                    return;
+                case ClassType.Enum when ti.BaseType == BaseType.EnumDef:
+                    ReadEnum(stream, name);
+                    break;
+                case ClassType.Struct when ti.BaseType == BaseType.StructDef:
+                    ReadStruct(stream, name);
+                    break;
+                case ClassType.Union when ti.BaseType == BaseType.UnionDef:
+                    ReadUnion(stream, name);
+                    break;
+                case ClassType.Typedef:
+                    AddTypedef(name, ti);
+                    break;
+                case ClassType.External:
+                    if (ti.IsFunctionReturnType)
+                        FuncTypes.Add(name, ti);
+                    else
+                        _externs.Add(name, ti);
+                    break;
+                case ClassType.Static:
+                    if (ti.IsFunctionReturnType)
+                        FuncTypes.Add(name, ti);
+                    else
+                        _externs.Add(name, ti);
+                    break;
+                default:
+                    throw new Exception("Gomorrha");
+            }
         }
 
         public IFunction FindFunction(uint globalAddress)

@@ -1,7 +1,10 @@
 ﻿// ReSharper disable InconsistentNaming
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace mips.disasm
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public enum Register
     {
         zero = 0,

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using core.instruction;
-using exefile.controlflow.cfg;
 using JetBrains.Annotations;
 using NLog;
 
-namespace exefile.controlflow
+namespace core.cfg
 {
     public class Reducer
     {

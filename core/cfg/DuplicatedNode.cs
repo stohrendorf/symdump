@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using core;
 using core.util;
 using JetBrains.Annotations;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     // We need this because nodes are considered equal if their Ids are equal,
     // thus adding a cloned node would effectively be a no-op, and can also

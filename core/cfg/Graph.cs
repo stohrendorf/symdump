@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public class Graph : IGraph
     {
@@ -127,7 +127,7 @@ namespace exefile.controlflow.cfg
                 .Concat(edges.Where(e => !(e is TrueEdge || e is FalseEdge)));
         }
 
-        /// <inheritdoc cref="GetTopologicallyOrdered(System.Collections.Generic.ICollection{exefile.controlflow.cfg.IEdge})"/>
+        /// <inheritdoc cref="GetTopologicallyOrdered(System.Collections.Generic.ICollection{core.cfg.IEdge})"/>
         private static IEnumerable<IEdge> GetTopologicallyOrdered(IEnumerable<IEdge> edges)
         {
             return GetTopologicallyOrdered(edges.ToList());

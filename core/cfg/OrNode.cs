@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using core;
 using core.util;
 using JetBrains.Annotations;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public class OrNode : Node
     {

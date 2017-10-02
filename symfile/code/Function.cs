@@ -35,18 +35,17 @@ namespace symfile.code
 
             public override string ToString()
             {
-                if (TypeDecoration.ClassType == ClassType.Argument)
+                switch (TypeDecoration.ClassType)
                 {
-                    Debug.Assert(StackOffset != null);
-                    return $"{TypeDecoration.AsDeclaration(Name)} /*${StackBase} {StackOffset}*/";
+                    case ClassType.Argument:
+                        Debug.Assert(StackOffset != null);
+                        return $"{TypeDecoration.AsDeclaration(Name)} /*${StackBase} {StackOffset}*/";
+                    case ClassType.RegParam:
+                        Debug.Assert(Register != null);
+                        return $"{TypeDecoration.AsDeclaration(Name)} /*${Register}*/";
+                    default:
+                        throw new Exception("Meh");
                 }
-                else if (TypeDecoration.ClassType == ClassType.RegParam)
-                {
-                    Debug.Assert(Register != null);
-                    return $"{TypeDecoration.AsDeclaration(Name)} /*${Register}*/";
-                }
-                else
-                    throw new Exception("Meh");
             }
         }
 

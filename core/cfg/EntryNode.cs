@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using core;
 using core.util;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public sealed class EntryNode : Node
     {

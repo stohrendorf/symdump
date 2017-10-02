@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public abstract class Edge : IEdge, IEquatable<Edge>
     {

@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public class CaseEdge : Edge
     {

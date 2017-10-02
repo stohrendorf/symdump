@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public class TarjanLengauer
     {

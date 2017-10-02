@@ -25,12 +25,12 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\core\core.csproj"/>
-    <ProjectReference Include="..\exefile\exefile.csproj"/>
-    <ProjectReference Include="..\symfile\symfile.csproj"/>
+      <ProjectReference Include="..\core\core.csproj"/>
+      <ProjectReference Include="..\exefile\exefile.csproj"/>
+      <ProjectReference Include="..\symfile\symfile.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NLog" Version="5.0.0-beta11"/>
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta6"/>
+      <PackageReference Include="NLog" Version="5.0.0-beta11"/>
+      <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta7"/>
   </ItemGroup>
 </Project>

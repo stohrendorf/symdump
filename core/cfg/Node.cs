@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using core;
 using core.util;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public abstract class Node : INode
     {

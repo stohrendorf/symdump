@@ -5,11 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using core;
+using core.cfg;
 using core.instruction;
 using core.operand;
 using core.util;
 using exefile.controlflow;
-using exefile.controlflow.cfg;
 using mips.disasm;
 using NLog;
 
@@ -239,29 +239,31 @@ namespace exefile
                 localAddress += 4;
                 var insn = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
 
-                if (insn is ConditionalBranchInstruction)
+                switch (insn)
                 {
-                    data = WordAtLocal(localAddress);
-                    localAddress += 4;
-                    var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
-                    insn2.IsBranchDelaySlot = true;
+                    case ConditionalBranchInstruction _:
+                    {
+                        data = WordAtLocal(localAddress);
+                        localAddress += 4;
+                        var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
+                        insn2.IsBranchDelaySlot = true;
 
-                    _analysisQueue.Enqueue(localAddress);
-
-                    continue;
-                }
-
-                if (insn is CallPtrInstruction callInsn)
-                {
-                    data = WordAtLocal(localAddress);
-                    localAddress += 4;
-                    var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
-                    insn2.IsBranchDelaySlot = true;
-
-                    if (callInsn.ReturnAddressTarget?.Register == RegisterUtil.ToInt(Register.ra))
                         _analysisQueue.Enqueue(localAddress);
 
-                    continue;
+                        continue;
+                    }
+                    case CallPtrInstruction callInsn:
+                    {
+                        data = WordAtLocal(localAddress);
+                        localAddress += 4;
+                        var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
+                        insn2.IsBranchDelaySlot = true;
+
+                        if (callInsn.ReturnAddressTarget?.Register == RegisterUtil.ToInt(Register.ra))
+                            _analysisQueue.Enqueue(localAddress);
+
+                        continue;
+                    }
                 }
 
                 _analysisQueue.Enqueue(localAddress);

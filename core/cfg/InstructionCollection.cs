@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using core;
 using core.util;
 using JetBrains.Annotations;
-using static mips.disasm.RegisterUtil;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public class InstructionCollection : Node
     {
@@ -46,12 +44,12 @@ namespace exefile.controlflow.cfg
             }
 
             {
-                var inputs = InputRegisters.Select(RegisterStringFromInt);
+                var inputs = InputRegisters.Select(i => $"${i}");
                 writer.WriteLine($"// input {string.Join(", ", inputs)}");
             }
 
             {
-                var outputs = OutputRegisters.Select(RegisterStringFromInt);
+                var outputs = OutputRegisters.Select(i => $"${i}");
                 writer.WriteLine($"// output {string.Join(", ", outputs)}");
             }
 

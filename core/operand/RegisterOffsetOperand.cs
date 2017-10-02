@@ -42,7 +42,7 @@ namespace core.operand
 
         public override string ToString()
         {
-            return $"({Offset} + ${Register})";
+            return $"*({Offset} + ${Register})";
         }
     }
 }

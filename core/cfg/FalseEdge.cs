@@ -1,4 +1,4 @@
-﻿namespace exefile.controlflow.cfg
+﻿namespace core.cfg
 {
     public class FalseEdge : Edge
     {

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using core;
 using core.util;
 using JetBrains.Annotations;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public interface INode
     {

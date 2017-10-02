@@ -58,11 +58,11 @@ function appInit(): void {
         rowHeight: 20
     });
 
-    dataView.onRowCountChanged.subscribe(function (e, args) {
+    dataView.onRowCountChanged.subscribe((e, args) => {
         grid.updateRowCount();
         grid.render();
     });
-    dataView.onRowsChanged.subscribe(function (e, args) {
+    dataView.onRowsChanged.subscribe((e, args) => {
         grid.invalidateRows(args.rows);
         grid.render();
     });
@@ -71,7 +71,7 @@ function appInit(): void {
     symbols.setText("Symbols");
     symbols.setWidth(300);
     let symbolsTree = symbols.attachTreeView();
-    symbolsTree.attachEvent("onSelect", function (id: string, mode: boolean): void {
+    symbolsTree.attachEvent("onSelect", (id: string, mode: boolean) => {
         let address = symbolsTree.getUserData(id)["address"];
         let instructions = dhx.s2j(dhx.ajax.getSync("api/assembly/instructions/" + address + "/200").xmlDoc.responseText);
 
@@ -121,12 +121,12 @@ function appInit(): void {
         let file = this.files[0];
         form.append('file', file, file.name);
 
-        xhr.onload = function () {
+        xhr.onload = () => {
             windowSystem.unload();
             postUploadAction();
         };
 
-        xhr.onprogress = function (event) {
+        xhr.onprogress = event => {
             let p = event.loaded * 100.0 / event.total;
             uploadInfo.attachHTMLString("<p>Please wait...</p><p>" + p + "%</p>");
         };
@@ -135,17 +135,17 @@ function appInit(): void {
         xhr.send(form);
     });
 
-    menu.attachEvent('onclick', function (id): void {
+    menu.attachEvent('onclick', id => {
         if (id === 'ftLoadSym') {
             uploadUrl = 'api/upload/sym';
-            postUploadAction = function () {
+            postUploadAction = () => {
                 symbolsTree.loadStruct("api/symbols/callees");
             };
             fileInput.click();
         }
         else if (id === 'ftLoadExe') {
             uploadUrl = 'api/upload/exe';
-            postUploadAction = function () {
+            postUploadAction = () => {
                 dataView.beginUpdate();
                 dataView.setItems([]);
                 dataView.endUpdate();

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using core;
 using core.util;
 using JetBrains.Annotations;
 
-namespace exefile.controlflow.cfg
+namespace core.cfg
 {
     public class NotNode : Node
     {
@@ -31,12 +30,17 @@ namespace exefile.controlflow.cfg
             foreach (var e in edges)
             {
                 Graph.RemoveEdge(e);
-                if (e is TrueEdge)
-                    Graph.AddEdge(new FalseEdge(e.From, e.To));
-                else if (e is FalseEdge)
-                    Graph.AddEdge(new TrueEdge(e.From, e.To));
-                else
-                    throw new Exception("Unexpected edge type: " + e.GetType().FullName);
+                switch (e)
+                {
+                    case TrueEdge _:
+                        Graph.AddEdge(new FalseEdge(e.From, e.To));
+                        break;
+                    case FalseEdge _:
+                        Graph.AddEdge(new TrueEdge(e.From, e.To));
+                        break;
+                    default:
+                        throw new Exception("Unexpected edge type: " + e.GetType().FullName);
+                }
             }
         }
 

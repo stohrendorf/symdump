@@ -209,7 +209,7 @@ namespace exefile.dataflow
                 ++writer.Indent;
                 foreach (var reg in _registers)
                 {
-                    writer.WriteLine("// $" + RegisterUtil.RegisterStringFromInt(reg.Key) + " = " + reg.Value.ToCode());
+                    writer.WriteLine("// $" + reg.Key + " = " + reg.Value.ToCode());
                 }
                 --writer.Indent;
             }
