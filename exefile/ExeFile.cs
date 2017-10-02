@@ -856,14 +856,14 @@ namespace exefile
                 case 16: // bltzal
                     AddLocalCall(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalCallInstruction(Operator.SignedLess,
+                    return new ConditionalBranchInstruction(Operator.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 17: // bgezal
                     AddLocalCall(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalCallInstruction(Operator.SignedGreaterEqual,
+                    return new ConditionalBranchInstruction(Operator.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
                         offset);

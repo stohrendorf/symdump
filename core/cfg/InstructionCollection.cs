@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using core.instruction;
+using core.operand;
 using core.util;
 using JetBrains.Annotations;
 
@@ -59,6 +61,24 @@ namespace core.cfg
                 writer.WriteLine($"0x{insn.Key:X}  {insn.Value.AsReadable()}");
             }
             dataFlowState?.DumpState(writer);
+
+            if (!(InstructionList.Last().Value is ConditionalBranchInstruction branch))
+                return;
+
+            writer.WriteLine("// Condition including dataflow state:");
+            if(branch.Lhs is RegisterOperand lhsRegOp && dataFlowState?.GetRegisterExpression(lhsRegOp.Register) != null)
+                writer.Write(dataFlowState.GetRegisterExpression(lhsRegOp.Register).ToCode());
+            else
+                writer.Write(branch.Lhs);
+
+            writer.Write($" {branch.Operator.AsCode()} ");
+            
+            if(branch.Rhs is RegisterOperand rhsRegOp && dataFlowState?.GetRegisterExpression(rhsRegOp.Register) != null)
+                writer.Write(dataFlowState.GetRegisterExpression(rhsRegOp.Register).ToCode());
+            else
+                writer.Write(branch.Rhs);
+            
+            writer.WriteLine();
         }
     }
 }
