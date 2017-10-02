@@ -22,23 +22,63 @@ namespace core.cfg
             var next = first.Outs.First().To;
             Debug.Assert(next.Ins.Count() == 1);
 
-            if (!(first is SequenceNode seq))
+            if (!(first is SequenceNode sequence))
             {
-                seq = this;
-                seq.Nodes.Add(first);
+                sequence = this;
+                sequence.Nodes.Add(first);
+                Simplify();
                 Graph.ReplaceNode(first, this);
             }
 
-            seq.Nodes.Add(next);
+            sequence.Nodes.Add(next);
+            Simplify();
 
             var toReplace = next.Outs.ToList();
             Graph.RemoveNode(next);
             foreach (var e in toReplace)
             {
-                Graph.AddEdge(e.CloneTyped(seq, e.To));
+                Graph.AddEdge(e.CloneTyped(sequence, e.To));
             }
-            
+
             Debug.Assert(!Graph.Nodes.Contains(next));
+        }
+
+        /// <summary>
+        /// Joins adjoining instruction sequences. Assumes that only the last node needs to be joined. 
+        /// </summary>
+        private void Simplify()
+        {
+            if (Nodes.Count < 2)
+                return;
+
+            if (!(Nodes[Nodes.Count - 2] is InstructionCollection))
+            {
+                if (!(Nodes[Nodes.Count - 2] is InstructionSequence tmp))
+                    return;
+
+                Nodes[Nodes.Count - 2] = new InstructionCollection(tmp);
+            }
+            var first = Nodes[Nodes.Count - 2] as InstructionCollection;
+            Debug.Assert(first != null);
+
+            switch (Nodes[Nodes.Count - 1])
+            {
+                case InstructionSequence sequence:
+                    foreach (var insn in sequence.InstructionList)
+                    {
+                        first.InstructionList.Add(insn);
+                    }
+                    Nodes.RemoveAt(Nodes.Count - 1);
+                    return;
+
+                case InstructionCollection collection:
+                    foreach (var insn in collection.InstructionList)
+                    {
+                        first.InstructionList.Add(insn);
+                    }
+                    Nodes.RemoveAt(Nodes.Count - 1);
+                    return;
+            }
         }
 
         public override bool ContainsAddress(uint address)
@@ -65,7 +105,7 @@ namespace core.cfg
         {
             if (seq is EntryNode || seq is ExitNode)
                 return false;
-            
+
             if (seq.Outs.Count() != 1)
                 return false;
 
@@ -75,7 +115,7 @@ namespace core.cfg
 
             if (next.Outs.Any(e => e.To.Equals(seq)))
                 return false;
-            
+
             return next.Ins.Count() == 1;
         }
     }
