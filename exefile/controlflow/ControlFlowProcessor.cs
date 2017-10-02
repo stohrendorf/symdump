@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using core;
+using core.instruction;
+using core.operand;
 using exefile.controlflow.cfg;
 using JetBrains.Annotations;
 using mips.disasm;
-using mips.instructions;
-using mips.operands;
 using NLog;
 
 namespace exefile.controlflow
@@ -147,7 +147,7 @@ namespace exefile.controlflow
                     {
                         block.InstructionList.Add(localAddress + 4, exeFile.Instructions[localAddress + 4]);
                         var target = (RegisterOperand) cpi.Target;
-                        if (target.Register == Register.ra)
+                        if (target.Register == RegisterUtil.ToInt(Register.ra))
                         {
                             edges.Add(new AlwaysEdge(block, exit));
                             logger.Debug("return");
@@ -157,8 +157,8 @@ namespace exefile.controlflow
                             logger.Debug($"Goto register {target.Register} (switch-case?)");
 
                             var jmpReg = target.Register;
-                            Register? tablePtrRegister = null;
-                            Register? baseTableRegister = null;
+                            int? tablePtrRegister = null;
+                            int? baseTableRegister = null;
                             uint? tableOffset = null;
                             bool failed = false;
                             foreach (var revInsn in block.InstructionList.Reverse().Skip(1))

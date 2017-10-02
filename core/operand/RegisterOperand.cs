@@ -1,21 +1,20 @@
-﻿using core;
+﻿using System.Collections.Generic;
 using core.expression;
-using mips.disasm;
 
-namespace mips.operands
+namespace core.operand
 {
     public class RegisterOperand : IOperand
     {
-        public readonly Register Register;
+        public readonly int Register;
 
-        public RegisterOperand(Register register)
+        public RegisterOperand(int register)
         {
             Register = register;
         }
 
-        public RegisterOperand(uint data, int offset)
-            : this((Register) ((data >> offset) & 0x1f))
+        public IEnumerable<int> TouchedRegisters
         {
+            get { yield return Register; }
         }
 
         public bool Equals(IOperand other)
@@ -26,8 +25,8 @@ namespace mips.operands
 
         public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            var expression = dataFlowState.GetRegisterExpression(RegisterUtil.ToInt(Register));
-            return expression ?? new RegisterNode(RegisterUtil.ToInt(Register));
+            var expression = dataFlowState.GetRegisterExpression(Register);
+            return expression ?? new RegisterNode(Register);
         }
 
         public override string ToString()

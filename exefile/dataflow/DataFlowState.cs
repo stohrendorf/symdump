@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using core;
 using core.expression;
+using core.instruction;
+using core.operand;
 using core.util;
+using JetBrains.Annotations;
 using mips.disasm;
-using mips.instructions;
-using mips.operands;
 using NLog;
 
 namespace exefile.dataflow
@@ -24,7 +24,7 @@ namespace exefile.dataflow
 
         public IDebugSource DebugSource { get; }
 
-        public DataFlowState(IDebugSource debugSource)
+        public DataFlowState([CanBeNull] IDebugSource debugSource)
         {
             DebugSource = debugSource;
         }
@@ -78,9 +78,9 @@ namespace exefile.dataflow
             switch (copyTo)
             {
                 case RegisterOperand operand:
-                    _registers[RegisterUtil.ToInt(operand.Register)] = insn.Src.ToExpressionNode(this);
+                    _registers[operand.Register] = insn.Src.ToExpressionNode(this);
                     break;
-                case RegisterOffsetOperand registerOffsetOperand when registerOffsetOperand.Register == Register.sp:
+                case RegisterOffsetOperand registerOffsetOperand when registerOffsetOperand.Register == RegisterUtil.ToInt(Register.sp):
                     var ofs = registerOffsetOperand.Offset;
                     // FIXME: handle non-dword data
                     Debug.Assert(ofs % 4 == 0);
@@ -104,8 +104,8 @@ namespace exefile.dataflow
             switch (dst)
             {
                 case RegisterOperand reg:
-                    _registers[RegisterUtil.ToInt(reg.Register)] = arith.ToExpressionNode(this);
-                    if (reg.Register != Register.sp || !arith.IsInplace || !(arith.Rhs is ImmediateOperand))
+                    _registers[reg.Register] = arith.ToExpressionNode(this);
+                    if (reg.Register != RegisterUtil.ToInt(Register.sp) || !arith.IsInplace || !(arith.Rhs is ImmediateOperand))
                         return true;
 
                     // stack frame size change
@@ -125,7 +125,7 @@ namespace exefile.dataflow
                             _stack.Insert(0, null);
                     }
                     break;
-                case RegisterOffsetOperand registerOffsetOperand when registerOffsetOperand.Register == Register.sp:
+                case RegisterOffsetOperand registerOffsetOperand when registerOffsetOperand.Register == RegisterUtil.ToInt(Register.sp):
                     var ofs = registerOffsetOperand.Offset;
                     Debug.Assert(ofs % 4 == 0);
                     if (ofs / 4 >= _stack.Count)
@@ -149,7 +149,7 @@ namespace exefile.dataflow
 
                 if (insn.Target is LabelOperand operand)
                 {
-                    var fn = DebugSource.FindFunction(operand.Label);
+                    var fn = DebugSource?.FindFunction(operand.Label);
                     if (fn != null)
                     {
                         logger.Debug("// " + fn.GetSignature());
@@ -188,7 +188,7 @@ namespace exefile.dataflow
                 return true;
             }
 
-            if (insn.Target is RegisterOperand registerOperand && registerOperand.Register == Register.ra)
+            if (insn.Target is RegisterOperand registerOperand && registerOperand.Register == RegisterUtil.ToInt(Register.ra))
             {
                 logger.Debug("return");
             }
@@ -216,14 +216,15 @@ namespace exefile.dataflow
 
             var sel = Enumerable
                 .Range(0, _stack.Count)
-                .Where(i => _stack[i] != null);
+                .Where(i => _stack[i] != null)
+                .ToList();
 
             if (!sel.Any())
                 return;
 
             writer.WriteLine("// Stack:");
             ++writer.Indent;
-            foreach (var s in sel.Select(i => "// sp[" + (i * 4) + "] = " + _stack[i].ToCode()))
+            foreach (var s in sel.Select(i => $"// sp[{i * 4}] = {_stack[i].ToCode()}"))
             {
                 writer.WriteLine(s);
             }

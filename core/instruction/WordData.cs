@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using core;
 
-namespace mips.instructions
+namespace core.instruction
 {
     public class WordData : Instruction
     {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using core.instruction;
 using exefile.controlflow.cfg;
 using JetBrains.Annotations;
-using mips.instructions;
 using NLog;
 
 namespace exefile.controlflow

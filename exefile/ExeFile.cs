@@ -5,12 +5,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using core;
+using core.instruction;
+using core.operand;
 using core.util;
 using exefile.controlflow;
 using exefile.controlflow.cfg;
 using mips.disasm;
-using mips.instructions;
-using mips.operands;
 using NLog;
 
 namespace exefile
@@ -201,12 +201,32 @@ namespace exefile
             DisassembleImpl();
         }
 
+        private static RegisterOperand MakeRegisterOperand(uint data, int offset)
+        {
+            return new RegisterOperand(RegisterUtil.ToInt((Register) ((data >> offset) & 0x1f)));
+        }
+
+        private static RegisterOperand MakeC0RegisterOperand(uint data, int offset)
+        {
+            return new RegisterOperand(RegisterUtil.ToInt((C0Register) ((data >> offset) & 0x1f)));
+        }
+
+        private static RegisterOperand MakeC2RegisterOperand(uint data, int offset)
+        {
+            return new RegisterOperand(RegisterUtil.ToInt((C2Register) ((data >> offset) & 0x1f)));
+        }
+
+        private static RegisterOffsetOperand MakeRegisterOffsetOperand(uint data, int shift, int offset)
+        {
+            return new RegisterOffsetOperand(RegisterUtil.ToInt((Register) ((data >> shift) & 0x1f)), offset);
+        }
+        
         private void DisassembleImpl()
         {
             logger.Info("Disassembly started");
 
             bool needsJoin = false;
-            
+
             while (_analysisQueue.Count != 0)
             {
                 var localAddress = _analysisQueue.Dequeue();
@@ -238,7 +258,7 @@ namespace exefile
                     var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
                     insn2.IsBranchDelaySlot = true;
 
-                    if (callInsn.ReturnAddressTarget?.Register == Register.ra)
+                    if (callInsn.ReturnAddressTarget?.Register == RegisterUtil.ToInt(Register.ra))
                         _analysisQueue.Enqueue(localAddress);
 
                     continue;
@@ -249,7 +269,7 @@ namespace exefile
 
             logger.Info($"Disassembled {_instructions.Count} instructions, detected {_callees.Count} callees");
 
-            if(needsJoin)
+            if (needsJoin)
                 JoinLoadStoreInstructions();
         }
 
@@ -278,17 +298,18 @@ namespace exefile
                 var b = _instructions[localAddress + 4];
 
                 // la $x, addr  <==>  lui $at, addr>>16; addiu $x, $at, addr&0xffff
-                if (a is DataCopyInstruction && (a.Operands[0] as RegisterOperand)?.Register == Register.at &&
+                if (a is DataCopyInstruction && (a.Operands[0] as RegisterOperand)?.Register == RegisterUtil.ToInt(Register.at) &&
                     a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as ArithmeticInstruction;
                     if (b2?.Operands[0] is RegisterOperand &&
-                        (b2.Operands[1] as RegisterOperand)?.Register == Register.at &&
+                        (b2.Operands[1] as RegisterOperand)?.Register == RegisterUtil.ToInt(Register.at) &&
                         b2.Operands[2] is ImmediateOperand)
                     {
                         uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
                                             ((ImmediateOperand) b2.Operands[2]).Value);
-                        _instructions[localAddress] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
+                        _instructions[localAddress] =
+                            new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
                         _instructions[localAddress + 4] = new NopInstruction();
                         localAddress += 4;
                         ++joinCount;
@@ -308,7 +329,8 @@ namespace exefile
                     {
                         uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
                                             operand.Value);
-                        _instructions[localAddress] = new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
+                        _instructions[localAddress] =
+                            new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
                         _instructions[localAddress + 4] = new NopInstruction();
                         localAddress += 4;
                         ++joinCount;
@@ -337,12 +359,12 @@ namespace exefile
 
                 // lw $x, addr  <==>  lui $at, addr>>16; lw $x, (addr&0xffff)($at)
                 if (a is DataCopyInstruction && b is DataCopyInstruction
-                    && (a.Operands[0] as RegisterOperand)?.Register == Register.at
+                    && (a.Operands[0] as RegisterOperand)?.Register == RegisterUtil.ToInt(Register.at)
                     && a.Operands[1] is ImmediateOperand)
                 {
                     var b2 = b as DataCopyInstruction;
                     if (b2.Operands[0] is RegisterOperand &&
-                        (b2.Operands[1] as RegisterOffsetOperand)?.Register == Register.at)
+                        (b2.Operands[1] as RegisterOffsetOperand)?.Register == RegisterUtil.ToInt(Register.at))
                     {
                         uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
                                             ((RegisterOffsetOperand) b.Operands[1]).Offset);
@@ -421,11 +443,11 @@ namespace exefile
 
         private IOperand MakeGpBasedOperand(uint data, int shift, int offset)
         {
-            var regofs = new RegisterOffsetOperand(data, shift, offset);
+            var regofs = MakeRegisterOffsetOperand(data, shift, offset);
             if (_gpBase == null)
                 return regofs;
 
-            if (regofs.Register == Register.gp)
+            if (regofs.Register == RegisterUtil.ToInt(Register.gp))
                 return new LabelOperand(_debugSource.GetSymbolName(_gpBase.Value, regofs.Offset),
                     (uint) (_gpBase.Value + regofs.Offset));
 
@@ -453,20 +475,20 @@ namespace exefile
                     return new CallPtrInstruction(
                         new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2),
                             (data & 0x03FFFFFF) << 2),
-                        new RegisterOperand(Register.ra));
+                        new RegisterOperand(RegisterUtil.ToInt(Register.ra)));
                 case Opcode.beq:
                     AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(Operator.Equal,
-                            new RegisterOperand(data, 21),
+                            MakeRegisterOperand(data, 21),
                             new ImmediateOperand(0),
                             new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                                 (uint) (localAddress + ((short) data << 2))));
                     else
                         return new ConditionalBranchInstruction(Operator.Equal,
-                            new RegisterOperand(data, 21),
-                            new RegisterOperand(data, 16),
+                            MakeRegisterOperand(data, 21),
+                            MakeRegisterOperand(data, 16),
                             new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                                 (uint) (localAddress + ((short) data << 2))));
                 case Opcode.bne:
@@ -474,21 +496,21 @@ namespace exefile
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(Operator.NotEqual,
-                            new RegisterOperand(data, 21),
+                            MakeRegisterOperand(data, 21),
                             new ImmediateOperand(0),
                             new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                                 (uint) (localAddress + ((short) data << 2))));
                     else
                         return new ConditionalBranchInstruction(Operator.NotEqual,
-                            new RegisterOperand(data, 21),
-                            new RegisterOperand(data, 16),
+                            MakeRegisterOperand(data, 21),
+                            MakeRegisterOperand(data, 16),
                             new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                                 (uint) (localAddress + ((short) data << 2))));
                 case Opcode.blez:
                     AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.LessEqual,
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                             (uint) (localAddress + ((short) data << 2))));
@@ -496,53 +518,53 @@ namespace exefile
                     AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Greater,
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                             (uint) (localAddress + ((short) data << 2))));
                 case Opcode.addi:
                     return new ArithmeticInstruction(Operator.Add,
-                        new RegisterOperand(data, 16),
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 16),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.addiu:
                     if (((data >> 21) & 0x1F) == 0)
                         return new DataCopyInstruction(
-                            new RegisterOperand(data, 16), 4,
+                            MakeRegisterOperand(data, 16), 4,
                             new ImmediateOperand((short) data), 4);
                     else
                         return new ArithmeticInstruction(Operator.Add,
-                            new RegisterOperand(data, 16),
-                            new RegisterOperand(data, 21),
+                            MakeRegisterOperand(data, 16),
+                            MakeRegisterOperand(data, 21),
                             new ImmediateOperand((short) data));
                 case Opcode.subi:
                     return new ArithmeticInstruction(Operator.Sub,
-                        new RegisterOperand(data, 16),
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 16),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.subiu:
                     return new ArithmeticInstruction(Operator.Sub,
-                        new RegisterOperand(data, 16),
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 16),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.andi:
                     return new ArithmeticInstruction(Operator.BitAnd,
-                        new RegisterOperand(data, 16),
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 16),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.ori:
                     return new ArithmeticInstruction(Operator.BitOr,
-                        new RegisterOperand(data, 16),
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 16),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.xori:
                     return new ArithmeticInstruction(Operator.BitXor,
-                        new RegisterOperand(data, 16),
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 16),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
                 case Opcode.lui:
                     return new DataCopyInstruction(
-                        new RegisterOperand(data, 16), 4,
+                        MakeRegisterOperand(data, 16), 4,
                         new ImmediateOperand((ushort) data << 16), 4);
                 case Opcode.CpuControl:
                     return DecodeCpuControl(localAddress, data);
@@ -550,60 +572,60 @@ namespace exefile
                     return new WordData(data);
                 case Opcode.lb:
                     return new DataCopyInstruction(
-                        new RegisterOperand(data, 16), 4,
+                        MakeRegisterOperand(data, 16), 4,
                         MakeGpBasedOperand(data, 21, (short) data), 1
                     );
                 case Opcode.lh:
                     return new DataCopyInstruction(
-                        new RegisterOperand(data, 16), 4,
+                        MakeRegisterOperand(data, 16), 4,
                         MakeGpBasedOperand(data, 21, (short) data), 2
                     );
                 case Opcode.lwl:
-                    return new SimpleInstruction("lwl", null, new RegisterOperand(data, 16),
+                    return new SimpleInstruction("lwl", null, MakeRegisterOperand(data, 16),
                         MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.lw:
                     return new DataCopyInstruction(
-                        new RegisterOperand(data, 16), 4,
+                        MakeRegisterOperand(data, 16), 4,
                         MakeGpBasedOperand(data, 21, (short) data), 4);
                 case Opcode.lbu:
                     return new DataCopyInstruction(
-                        new RegisterOperand(data, 16), 4,
+                        MakeRegisterOperand(data, 16), 4,
                         MakeGpBasedOperand(data, 21, (short) data), 1
                     );
                 case Opcode.lhu:
                     return new DataCopyInstruction(
-                        new RegisterOperand(data, 16), 4,
+                        MakeRegisterOperand(data, 16), 4,
                         MakeGpBasedOperand(data, 21, (short) data), 2
                     );
                 case Opcode.lwr:
-                    return new SimpleInstruction("lwr", null, new RegisterOperand(data, 16),
+                    return new SimpleInstruction("lwr", null, MakeRegisterOperand(data, 16),
                         MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sb:
                     return new DataCopyInstruction(
                         MakeGpBasedOperand(data, 21, (short) data), 1,
-                        new RegisterOperand(data, 16), 4
+                        MakeRegisterOperand(data, 16), 4
                     );
                 case Opcode.sh:
                     return new DataCopyInstruction(
                         MakeGpBasedOperand(data, 21, (short) data), 2,
-                        new RegisterOperand(data, 16), 4
+                        MakeRegisterOperand(data, 16), 4
                     );
                 case Opcode.swl:
-                    return new SimpleInstruction("swl", null, new RegisterOperand(data, 16),
+                    return new SimpleInstruction("swl", null, MakeRegisterOperand(data, 16),
                         MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sw:
                     return new DataCopyInstruction(
                         MakeGpBasedOperand(data, 21, (short) data), 4,
-                        new RegisterOperand(data, 16), 4);
+                        MakeRegisterOperand(data, 16), 4);
                 case Opcode.swr:
-                    return new SimpleInstruction("swr", null, new RegisterOperand(data, 16),
+                    return new SimpleInstruction("swr", null, MakeRegisterOperand(data, 16),
                         MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.swc1:
-                    return new SimpleInstruction("swc1", null, new RegisterOperand(data, 16),
-                        new ImmediateOperand((short) data), new RegisterOperand(data, 21));
+                    return new SimpleInstruction("swc1", null, MakeRegisterOperand(data, 16),
+                        new ImmediateOperand((short) data), MakeRegisterOperand(data, 21));
                 case Opcode.lwc1:
-                    return new SimpleInstruction("lwc1", null, new C2RegisterOperand(data, 16),
-                        new ImmediateOperand((short) data), new RegisterOperand(data, 21));
+                    return new SimpleInstruction("lwc1", null, MakeC2RegisterOperand(data, 16),
+                        new ImmediateOperand((short) data), MakeRegisterOperand(data, 21));
                 case Opcode.cop0:
                     return new SimpleInstruction("cop0", null, new ImmediateOperand(data & ((1 << 26) - 1)));
                 case Opcode.cop1:
@@ -616,23 +638,23 @@ namespace exefile
                     AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Equal,
-                        new RegisterOperand(data, 21),
-                        new RegisterOperand(data, 16),
+                        MakeRegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 16),
                         new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                             (uint) (localAddress + ((short) data << 2))));
                 case Opcode.bnel:
                     AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.NotEqual,
-                        new RegisterOperand(data, 21),
-                        new RegisterOperand(data, 16),
+                        MakeRegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 16),
                         new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                             (uint) (localAddress + ((short) data << 2))));
                 case Opcode.blezl:
                     AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.SignedLessEqual,
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                             (uint) (localAddress + ((short) data << 2))));
@@ -640,7 +662,7 @@ namespace exefile
                     AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
                     _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
                     return new ConditionalBranchInstruction(Operator.Greater,
-                        new RegisterOperand(data, 21),
+                        MakeRegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
                             (uint) (localAddress + ((short) data << 2))));
@@ -651,9 +673,9 @@ namespace exefile
 
         private static Instruction DecodeRegisterFormat(uint data)
         {
-            var rd = new RegisterOperand(data, 11);
-            var rs2 = new RegisterOperand(data, 16);
-            var rs1 = new RegisterOperand(data, 21);
+            var rd = MakeRegisterOperand(data, 11);
+            var rs2 = MakeRegisterOperand(data, 16);
+            var rs1 = MakeRegisterOperand(data, 21);
             switch ((OpcodeFunction) (data & 0x3f))
             {
                 case OpcodeFunction.sll:
@@ -721,7 +743,7 @@ namespace exefile
                     return new ArithmeticInstruction(Operator.Add,
                         rd, rs1, rs2);
                 case OpcodeFunction.addu:
-                    if (rs2.Register == Register.zero)
+                    if (rs2.Register == RegisterUtil.ToInt(Register.zero))
                         return new DataCopyInstruction(rd, 4, rs1, 4);
                     else
                         return new ArithmeticInstruction(Operator.Add, rd, rs1, rs2);
@@ -761,8 +783,8 @@ namespace exefile
             switch ((CpuControlOpcode) ((data >> 21) & 0x1f))
             {
                 case CpuControlOpcode.mtc0:
-                    return new SimpleInstruction("mtc0", null, new RegisterOperand(data, 16),
-                        new C0RegisterOperand(data, 11));
+                    return new SimpleInstruction("mtc0", null, MakeRegisterOperand(data, 16),
+                        MakeC0RegisterOperand(data, 11));
                 case CpuControlOpcode.bc0:
                     switch ((data >> 16) & 0x1f)
                     {
@@ -782,8 +804,8 @@ namespace exefile
                 case CpuControlOpcode.tlb:
                     return DecodeTlb(data);
                 case CpuControlOpcode.mfc0:
-                    return new SimpleInstruction("mfc0", null, new RegisterOperand(data, 16),
-                        new C0RegisterOperand(data, 11));
+                    return new SimpleInstruction("mfc0", null, MakeRegisterOperand(data, 16),
+                        MakeC0RegisterOperand(data, 11));
                 default:
                     return new WordData(data);
             }
@@ -810,7 +832,7 @@ namespace exefile
 
         private Instruction DecodePcRelative(uint localAddress, uint data)
         {
-            var rs = new RegisterOperand(data, 21);
+            var rs = MakeRegisterOperand(data, 21);
             var offset = new LabelOperand(_debugSource.GetSymbolName(localAddress, (ushort) data << 2),
                 (uint) (localAddress + ((short) data << 2)));
             switch ((data >> 16) & 0x1f)
@@ -858,17 +880,17 @@ namespace exefile
             switch (cf)
             {
                 case 0:
-                    return new SimpleInstruction("mfc2", null, new RegisterOperand(opc, 16),
-                        new ImmediateOperand((short) opc), new C2RegisterOperand(opc, 21));
+                    return new SimpleInstruction("mfc2", null, MakeRegisterOperand(opc, 16),
+                        new ImmediateOperand((short) opc), MakeC2RegisterOperand(opc, 21));
                 case 2:
-                    return new SimpleInstruction("cfc2", null, new RegisterOperand(opc, 16),
-                        new ImmediateOperand((short) opc), new C2RegisterOperand(opc, 21));
+                    return new SimpleInstruction("cfc2", null, MakeRegisterOperand(opc, 16),
+                        new ImmediateOperand((short) opc), MakeC2RegisterOperand(opc, 21));
                 case 4:
-                    return new SimpleInstruction("mtc2", null, new RegisterOperand(opc, 16),
-                        new ImmediateOperand((short) opc), new C2RegisterOperand(opc, 21));
+                    return new SimpleInstruction("mtc2", null, MakeRegisterOperand(opc, 16),
+                        new ImmediateOperand((short) opc), MakeC2RegisterOperand(opc, 21));
                 case 6:
-                    return new SimpleInstruction("ctc2", null, new RegisterOperand(opc, 16),
-                        new ImmediateOperand((short) opc), new C2RegisterOperand(opc, 21));
+                    return new SimpleInstruction("ctc2", null, MakeRegisterOperand(opc, 16),
+                        new ImmediateOperand((short) opc), MakeC2RegisterOperand(opc, 21));
                 default:
                     return new WordData(data);
             }

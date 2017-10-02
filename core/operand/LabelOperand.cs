@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
-using core;
+﻿using System.Collections.Generic;
+using System.Linq;
 using core.expression;
 
-namespace mips.operands
+namespace core.operand
 {
     public class LabelOperand : IOperand
     {
@@ -15,6 +15,8 @@ namespace mips.operands
             Address = address;
         }
 
+        public IEnumerable<int> TouchedRegisters => Enumerable.Empty<int>();
+
         public bool Equals(IOperand other)
         {
             var o = other as LabelOperand;
@@ -23,7 +25,7 @@ namespace mips.operands
 
         public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            var typeDef = dataFlowState.DebugSource.FindTypeDefinitionForLabel(Label);
+            var typeDef = dataFlowState.DebugSource?.FindTypeDefinitionForLabel(Label);
             return new NamedMemoryLayout(Label, Address, typeDef ?? UndefinedMemoryLayout.Instance);
         }
 

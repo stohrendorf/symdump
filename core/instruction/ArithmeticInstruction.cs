@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using core;
+using System.Linq;
 using core.expression;
-using mips.disasm;
-using mips.operands;
-using static mips.disasm.RegisterUtil;
+using core.operand;
 
-namespace mips.instructions
+namespace core.instruction
 {
     public class ArithmeticInstruction : Instruction
     {
@@ -17,12 +15,6 @@ namespace mips.instructions
         public ArithmeticInstruction(Operator @operator, IOperand dest, IOperand lhs, IOperand rhs)
         {
             Operator = @operator;
-            if ((@operator == Operator.Add || @operator == Operator.Sub) && dest.Equals(lhs) &&
-                (dest is RegisterOperand) &&
-                ((RegisterOperand) dest).Register == Register.sp && (rhs is ImmediateOperand))
-            {
-                rhs = new ImmediateOperand((short) ((ImmediateOperand) rhs).Value);
-            }
             Operands = new[] {dest, lhs, rhs};
         }
 
@@ -39,54 +31,14 @@ namespace mips.instructions
                 switch (Destination)
                 {
                     case RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C0RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C2RegisterOperand r:
-                        yield return ToInt(r.Register);
+                        yield return r.Register;
                         break;
                 }
             }
         }
+
         public override IEnumerable<int> InputRegisters
-        {
-            get
-            {
-                switch (Lhs)
-                {
-                    case RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case RegisterOffsetOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C0RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C2RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                }
-                
-                switch (Rhs)
-                {
-                    case RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case RegisterOffsetOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C0RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C2RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                }
-            }
-        }
+            => Lhs.TouchedRegisters.Concat(Rhs.TouchedRegisters);
 
         public bool IsInplace => Destination.Equals(Lhs);
 

@@ -51,7 +51,7 @@ namespace core
                 case Operator.SignedGreaterEqual:
                     return ">=";
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(@operator));
             }
         }
     }

@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using core;
 using core.expression;
-using mips.operands;
-using static mips.disasm.RegisterUtil;
+using core.operand;
 
-namespace mips.instructions
+namespace core.instruction
 {
     public class DataCopyInstruction : Instruction
     {
@@ -31,39 +29,14 @@ namespace mips.instructions
                 switch (Dst)
                 {
                     case RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C0RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C2RegisterOperand r:
-                        yield return ToInt(r.Register);
+                        yield return r.Register;
                         break;
                 }
             }
         }
 
         public override IEnumerable<int> InputRegisters
-        {
-            get
-            {
-                switch (Src)
-                {
-                    case RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case RegisterOffsetOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C0RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                    case C2RegisterOperand r:
-                        yield return ToInt(r.Register);
-                        break;
-                }
-            }
-        }
+            => Src.TouchedRegisters;
 
         public override string AsReadable()
         {

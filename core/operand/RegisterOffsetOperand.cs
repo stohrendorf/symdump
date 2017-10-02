@@ -1,24 +1,22 @@
-﻿using System.Diagnostics;
-using core;
+﻿using System.Collections.Generic;
 using core.expression;
-using mips.disasm;
 
-namespace mips.operands
+namespace core.operand
 {
     public class RegisterOffsetOperand : IOperand
     {
         public readonly int Offset;
-        public readonly Register Register;
+        public readonly int Register;
 
-        public RegisterOffsetOperand(Register register, int offset)
+        public RegisterOffsetOperand(int register, int offset)
         {
             Register = register;
             Offset = offset;
         }
 
-        public RegisterOffsetOperand(uint data, int shift, int offset)
-            : this((Register) ((data >> shift) & 0x1f), offset)
+        public IEnumerable<int> TouchedRegisters
         {
+            get { yield return Register; }
         }
 
         public bool Equals(IOperand other)
@@ -29,22 +27,22 @@ namespace mips.operands
 
         public IExpressionNode ToExpressionNode(IDataFlowState dataFlowState)
         {
-            var expression = dataFlowState.GetRegisterExpression(RegisterUtil.ToInt(Register));
+            var expression = dataFlowState.GetRegisterExpression(Register);
             if (expression == null)
-                return new RegisterOffsetNode(RegisterUtil.ToInt(Register), Offset);
+                return new RegisterOffsetNode(Register, Offset);
 
             if (!(expression is ValueNode))
                 return new DerefNode(new ExpressionNode(Operator.Add, expression, new ValueNode(Offset)));
 
             var address = (uint) (((ValueNode) expression).Value + Offset);
-            var name = dataFlowState.DebugSource.GetSymbolName(address);
-            var typeDef = dataFlowState.DebugSource.FindTypeDefinitionForLabel(name);
+            var name = dataFlowState.DebugSource?.GetSymbolName(address);
+            var typeDef = dataFlowState.DebugSource?.FindTypeDefinitionForLabel(name);
             return new NamedMemoryLayout(name, address, typeDef ?? UndefinedMemoryLayout.Instance);
         }
 
         public override string ToString()
         {
-            return $"{Offset}(${Register})";
+            return $"({Offset} + ${Register})";
         }
     }
 }

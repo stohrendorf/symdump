@@ -1,7 +1,8 @@
-﻿using core;
+﻿using System.Collections.Generic;
+using System.Linq;
 using core.expression;
 
-namespace mips.operands
+namespace core.operand
 {
     public class ImmediateOperand : IOperand
     {
@@ -11,6 +12,8 @@ namespace mips.operands
         {
             Value = value;
         }
+
+        public IEnumerable<int> TouchedRegisters => Enumerable.Empty<int>();
 
         public bool Equals(IOperand other)
         {

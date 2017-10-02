@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace core
@@ -7,5 +8,8 @@ namespace core
     {
         [NotNull]
         IExpressionNode ToExpressionNode([NotNull] IDataFlowState dataFlowState);
+
+        [NotNull]
+        IEnumerable<int> TouchedRegisters { get; }
     }
 }

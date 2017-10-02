@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using core;
-using mips.operands;
-using static mips.disasm.RegisterUtil;
 
-namespace mips.instructions
+namespace core.instruction
 {
     public class SimpleInstruction : Instruction
     {
@@ -16,29 +13,7 @@ namespace mips.instructions
         public override IEnumerable<int> InputRegisters => OutputRegisters;
 
         public override IEnumerable<int> OutputRegisters
-        {
-            get
-            {
-                foreach (var operand in Operands)
-                {
-                    switch (operand)
-                    {
-                        case RegisterOperand r:
-                            yield return ToInt(r.Register);
-                            break;
-                        case RegisterOffsetOperand r:
-                            yield return ToInt(r.Register);
-                            break;
-                        case C0RegisterOperand r:
-                            yield return ToInt(r.Register);
-                            break;
-                        case C2RegisterOperand r:
-                            yield return ToInt(r.Register);
-                            break;
-                    }
-                }
-            }
-        }
+            => Operands.SelectMany(o => o.TouchedRegisters).Distinct();
 
         public SimpleInstruction(string mnemonic, string format, params IOperand[] operands)
         {
