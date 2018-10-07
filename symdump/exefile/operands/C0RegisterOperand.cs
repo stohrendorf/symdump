@@ -4,11 +4,11 @@ namespace symdump.exefile.operands
 {
     public class C0RegisterOperand : IOperand
     {
-        public readonly C0Register register;
+        private readonly C0Register _register;
 
-        public C0RegisterOperand(C0Register register)
+        private C0RegisterOperand(C0Register register)
         {
-            this.register = register;
+            _register = register;
         }
 
         public C0RegisterOperand(uint data, int offset)
@@ -19,12 +19,12 @@ namespace symdump.exefile.operands
         public bool Equals(IOperand other)
         {
             var o = other as C0RegisterOperand;
-            return register == o?.register;
+            return _register == o?._register;
         }
 
         public override string ToString()
         {
-            return $"${register}";
+            return $"${_register}";
         }
     }
 }

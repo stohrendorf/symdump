@@ -2,22 +2,22 @@
 {
     public class ImmediateOperand : IOperand
     {
-        public readonly long value;
+        private readonly long _value;
 
         public ImmediateOperand(long value)
         {
-            this.value = value;
+            _value = value;
         }
 
         public bool Equals(IOperand other)
         {
             var o = other as ImmediateOperand;
-            return value == o?.value;
+            return _value == o?._value;
         }
 
         public override string ToString()
         {
-            return value >= 0 ? $"0x{value:X}" : $"-0x{-value:X}";
+            return _value >= 0 ? $"0x{_value:X}" : $"-0x{-_value:X}";
         }
     }
 }

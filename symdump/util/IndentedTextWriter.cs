@@ -5,29 +5,30 @@ namespace symdump.util
 {
     public class IndentedTextWriter : TextWriter
     {
-        private readonly TextWriter m_inner;
-        private bool m_indent = true;
+        private readonly TextWriter _inner;
+        private bool _indent = true;
 
         public IndentedTextWriter(TextWriter inner)
         {
-            m_inner = inner;
+            _inner = inner;
         }
 
-        public int indent { get; set; }
+        public int Indent { get; set; }
 
-        public override Encoding Encoding => m_inner.Encoding;
+        public override Encoding Encoding => _inner.Encoding;
 
         public override void Write(char ch)
         {
-            if (m_indent)
+            if (_indent)
             {
-                m_indent = false;
-                for (var i = 0; i < indent; ++i)
-                    m_inner.Write("  ");
+                _indent = false;
+                for (var i = 0; i < Indent; ++i)
+                    _inner.Write("  ");
             }
-            m_inner.Write(ch);
+
+            _inner.Write(ch);
             if (ch == '\n')
-                m_indent = true;
+                _indent = true;
         }
     }
 }

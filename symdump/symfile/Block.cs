@@ -9,110 +9,112 @@ namespace symdump.symfile
 {
     public class Block
     {
-        public readonly uint endLine;
-        public readonly uint endOffset;
+        private readonly uint _endLine;
+        private readonly uint _endOffset;
 
-        public readonly Function function;
-        public readonly List<Label> labels = new List<Label>();
-        public readonly uint startLine;
+        private readonly Function _function;
+        private readonly List<Label> _labels = new List<Label>();
+        private readonly uint _startLine;
 
-        public readonly uint startOffset;
-        public readonly List<Block> subBlocks = new List<Block>();
-        public readonly Dictionary<string, TypeInfo> typedefs = new Dictionary<string, TypeInfo>();
-        public readonly List<string> vars = new List<string>();
+        private readonly uint _startOffset;
+        private readonly List<Block> _subBlocks = new List<Block>();
+        private readonly Dictionary<string, TypeInfo> _typedefs = new Dictionary<string, TypeInfo>();
+        private readonly List<string> _vars = new List<string>();
 
         public Block(BinaryReader reader, uint ofs, uint ln, Function f)
         {
-            startOffset = ofs;
-            startLine = ln;
-            function = f;
+            _startOffset = ofs;
+            _startLine = ln;
+            _function = f;
 
             while (true)
             {
                 var typedValue = new TypedValue(reader);
 
-                if (reader.skipSld(typedValue))
+                if (reader.SkipSld(typedValue))
                     continue;
 
-                switch (typedValue.type & 0x7f)
+                switch (typedValue.Type & 0x7f)
                 {
                     case 16:
-                        subBlocks.Add(new Block(reader, (uint) typedValue.value, reader.ReadUInt32(), function));
+                        _subBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), _function));
                         break;
                     case 18:
-                        endOffset = (uint) typedValue.value;
-                        endLine = reader.ReadUInt32();
+                        _endOffset = (uint) typedValue.Value;
+                        _endLine = reader.ReadUInt32();
                         return;
                     case 20:
                     {
-                        var ti = reader.readTypeInfo(false);
-                        var memberName = reader.readPascalString();
+                        var ti = reader.ReadTypeInfo(false);
+                        var memberName = reader.ReadPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
-                        switch (ti.classType)
+                        switch (ti.ClassType)
                         {
                             case ClassType.AutoVar:
-                                vars.Add($"{ti.asCode(memberName)}; // stack offset {typedValue.value}");
+                                _vars.Add($"{ti.AsCode(memberName)}; // stack offset {typedValue.Value}");
                                 break;
                             case ClassType.Register:
-                                vars.Add($"{ti.asCode(memberName)}; // ${(Register) typedValue.value}");
+                                _vars.Add($"{ti.AsCode(memberName)}; // ${(Register) typedValue.Value}");
                                 break;
                             case ClassType.Static:
-                                vars.Add($"static {ti.asCode(memberName)}; // offset 0x{typedValue.value:x}");
+                                _vars.Add($"static {ti.AsCode(memberName)}; // offset 0x{typedValue.Value:x}");
                                 break;
                             case ClassType.Typedef:
-                                typedefs.Add(memberName, ti);
+                                _typedefs.Add(memberName, ti);
                                 break;
                             case ClassType.Label:
-                                labels.Add(new Label(typedValue, memberName));
+                                _labels.Add(new Label(typedValue, memberName));
                                 break;
                             default:
-                                throw new Exception($"Unexpected class type {ti.classType}");
+                                throw new Exception($"Unexpected class type {ti.ClassType}");
                         }
+
                         break;
                     }
                     case 22:
                     {
-                        var ti = reader.readTypeInfo(true);
-                        var memberName = reader.readPascalString();
+                        var ti = reader.ReadTypeInfo(true);
+                        var memberName = reader.ReadPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
-                        switch (ti.classType)
+                        switch (ti.ClassType)
                         {
                             case ClassType.AutoVar:
-                                vars.Add($"{ti.asCode(memberName)}; // stack offset {typedValue.value}");
+                                _vars.Add($"{ti.AsCode(memberName)}; // stack offset {typedValue.Value}");
                                 break;
                             case ClassType.Register:
-                                vars.Add($"{ti.asCode(memberName)}; // ${(Register) typedValue.value}");
+                                _vars.Add($"{ti.AsCode(memberName)}; // ${(Register) typedValue.Value}");
                                 break;
                             case ClassType.Static:
-                                vars.Add($"static {ti.asCode(memberName)}; // offset 0x{typedValue.value:x}");
+                                _vars.Add($"static {ti.AsCode(memberName)}; // offset 0x{typedValue.Value:x}");
                                 break;
                             case ClassType.Typedef:
-                                typedefs.Add(memberName, ti);
+                                _typedefs.Add(memberName, ti);
                                 break;
                             case ClassType.Label:
-                                labels.Add(new Label(typedValue, memberName));
+                                _labels.Add(new Label(typedValue, memberName));
                                 break;
                             default:
-                                throw new Exception($"Unexpected class type {ti.classType}");
+                                throw new Exception($"Unexpected class type {ti.ClassType}");
                         }
+
                         break;
                     }
                 }
             }
         }
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
-            writer.WriteLine($"{{ // line {startLine}, offset 0x{startOffset:x}");
-            ++writer.indent;
-            foreach (var t in typedefs)
-                writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
-            vars.ForEach(writer.WriteLine);
-            foreach (var l in labels)
+            writer.WriteLine($"{{ // line {_startLine}, offset 0x{_startOffset:x}");
+            ++writer.Indent;
+            foreach (var t in _typedefs)
+                writer.WriteLine($"typedef {t.Value.AsCode(t.Key)};");
+            _vars.ForEach(writer.WriteLine);
+            foreach (var l in _labels)
                 writer.WriteLine(l);
-            subBlocks.ForEach(b => b.dump(writer));
-            --writer.indent;
-            writer.WriteLine($"}} // line {endLine}, offset 0x{endOffset:x}");
+            _subBlocks.ForEach(b => b.Dump(writer));
+            --writer.Indent;
+            writer.WriteLine($"}} // line {_endLine}, offset 0x{_endOffset:x}");
         }
     }
 }

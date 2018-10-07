@@ -9,94 +9,94 @@ namespace symdump.symfile
 {
     public class SymFile
     {
-        private readonly Dictionary<string, EnumDef> m_enums = new Dictionary<string, EnumDef>();
-        private readonly SortedSet<string> m_externs = new SortedSet<string>();
-        public readonly List<Function> functions = new List<Function>();
-        private readonly Dictionary<string, string> m_funcTypes = new Dictionary<string, string>();
-        internal readonly Dictionary<uint, List<Label>> labels = new Dictionary<uint, List<Label>>();
-        private readonly Dictionary<string, StructDef> m_structs = new Dictionary<string, StructDef>();
-        private readonly byte m_targetUnit;
-        private readonly Dictionary<string, TypeInfo> m_typedefs = new Dictionary<string, TypeInfo>();
-        private readonly Dictionary<string, UnionDef> m_unions = new Dictionary<string, UnionDef>();
-        private readonly byte m_version;
-        private string m_mxInfo;
+        private readonly Dictionary<string, EnumDef> _enums = new Dictionary<string, EnumDef>();
+        private readonly SortedSet<string> _externs = new SortedSet<string>();
+        public readonly List<Function> Functions = new List<Function>();
+        private readonly Dictionary<string, string> _funcTypes = new Dictionary<string, string>();
+        internal readonly Dictionary<uint, List<Label>> Labels = new Dictionary<uint, List<Label>>();
+        private readonly Dictionary<string, StructDef> _structs = new Dictionary<string, StructDef>();
+        private readonly byte _targetUnit;
+        private readonly Dictionary<string, TypeInfo> _typedefs = new Dictionary<string, TypeInfo>();
+        private readonly Dictionary<string, UnionDef> _unions = new Dictionary<string, UnionDef>();
+        private readonly byte _version;
+        private string _mxInfo;
 
         public SymFile(BinaryReader stream)
         {
             stream.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            stream.skip(3);
-            m_version = stream.ReadByte();
-            m_targetUnit = stream.ReadByte();
+            stream.Skip(3);
+            _version = stream.ReadByte();
+            _targetUnit = stream.ReadByte();
 
-            stream.skip(3);
+            stream.Skip(3);
             while (stream.BaseStream.Position < stream.BaseStream.Length)
-                dumpEntry(stream);
+                DumpEntry(stream);
         }
 
-        public void dump(TextWriter output)
+        public void Dump(TextWriter output)
         {
             var writer = new IndentedTextWriter(output);
-            writer.WriteLine($"Version = {m_version}, targetUnit = {m_targetUnit}");
+            writer.WriteLine($"Version = {_version}, targetUnit = {_targetUnit}");
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_enums.Count} enums");
-            foreach (var e in m_enums.Values)
-                e.dump(writer);
+            writer.WriteLine($"// {_enums.Count} enums");
+            foreach (var e in _enums.Values)
+                e.Dump(writer);
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_unions.Count} unions");
-            foreach (var e in m_unions.Values)
-                e.dump(writer);
+            writer.WriteLine($"// {_unions.Count} unions");
+            foreach (var e in _unions.Values)
+                e.Dump(writer);
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_structs.Count} structs");
-            foreach (var e in m_structs.Values)
-                e.dump(writer);
+            writer.WriteLine($"// {_structs.Count} structs");
+            foreach (var e in _structs.Values)
+                e.Dump(writer);
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_typedefs.Count} typedefs");
-            foreach (var t in m_typedefs)
-                writer.WriteLine($"typedef {t.Value.asCode(t.Key)};");
+            writer.WriteLine($"// {_typedefs.Count} typedefs");
+            foreach (var t in _typedefs)
+                writer.WriteLine($"typedef {t.Value.AsCode(t.Key)};");
 
             writer.WriteLine();
-            writer.WriteLine($"// {labels.Count} labels");
-            foreach (var l in labels)
+            writer.WriteLine($"// {Labels.Count} labels");
+            foreach (var l in Labels)
             foreach (var l2 in l.Value)
                 writer.WriteLine(l2);
 
             writer.WriteLine();
-            writer.WriteLine($"// {m_externs.Count} external declarations");
-            foreach (var e in m_externs)
+            writer.WriteLine($"// {_externs.Count} external declarations");
+            foreach (var e in _externs)
                 writer.WriteLine(e);
 
             writer.WriteLine();
-            writer.WriteLine($"// {functions.Count} functions");
-            foreach (var f in functions)
-                f.dump(writer);
+            writer.WriteLine($"// {Functions.Count} functions");
+            foreach (var f in Functions)
+                f.Dump(writer);
         }
 
-        private void dumpEntry(BinaryReader stream)
+        private void DumpEntry(BinaryReader stream)
         {
             var typedValue = new TypedValue(stream);
-            if (typedValue.type == 8)
+            if (typedValue.Type == 8)
             {
-                m_mxInfo = $"${typedValue.value:X} MX-info {stream.ReadByte():X}";
+                _mxInfo = $"${typedValue.Value:X} MX-info {stream.ReadByte():X}";
                 return;
             }
 
-            if (typedValue.isLabel)
+            if (typedValue.IsLabel)
             {
                 var lbl = new Label(typedValue, stream);
 
-                if (!labels.ContainsKey(lbl.offset))
-                    labels.Add(lbl.offset, new List<Label>());
+                if (!Labels.ContainsKey(lbl.Offset))
+                    Labels.Add(lbl.Offset, new List<Label>());
 
-                labels[lbl.offset].Add(lbl);
+                Labels[lbl.Offset].Add(lbl);
                 return;
             }
 
-            switch (typedValue.type & 0x7f)
+            switch (typedValue.Type & 0x7f)
             {
                 case 0:
 #if WITH_SLD
@@ -107,21 +107,21 @@ namespace symdump.symfile
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {stream.ReadU1()}");
                 #else
-                    stream.skip(1);
+                    stream.Skip(1);
 #endif
                     break;
                 case 4:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by word {stream.ReadUInt16()}");
 #else
-                    stream.skip(2);
+                    stream.Skip(2);
 #endif
                     break;
                 case 6:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Set SLD linenum to {stream.ReadUInt32()}");
 #else
-                    stream.skip(4);
+                    stream.Skip(4);
 #endif
                     break;
                 case 8:
@@ -129,8 +129,8 @@ namespace symdump.symfile
                 writer.WriteLine($"${typedValue.value:X} Set SLD to line {stream.ReadUInt32()} of file " +
                     stream.readPascalString());
 #else
-                    stream.skip(4);
-                    stream.skip(stream.ReadByte());
+                    stream.Skip(4);
+                    stream.Skip(stream.ReadByte());
 #endif
                     break;
                 case 10:
@@ -139,32 +139,32 @@ namespace symdump.symfile
 #endif
                     break;
                 case 12:
-                    dumpType12(stream, typedValue.value);
+                    DumpType12(stream, typedValue.Value);
                     break;
                 case 20:
-                    dumpType20(stream, typedValue.value);
+                    DumpType20(stream, typedValue.Value);
                     break;
                 case 22:
-                    dumpType22(stream, typedValue.value);
+                    DumpType22(stream, typedValue.Value);
                     break;
                 default:
                     throw new Exception("Sodom");
             }
         }
 
-        private void dumpType12(BinaryReader stream, int offset)
+        private void DumpType12(BinaryReader stream, int offset)
         {
-            functions.Add(new Function(stream, (uint) offset, m_funcTypes));
+            Functions.Add(new Function(stream, (uint) offset, _funcTypes));
             //writer.WriteLine("{");
             //++writer.Indent;
         }
 
-        private void readEnum(BinaryReader reader, string name)
+        private void ReadEnum(BinaryReader reader, string name)
         {
             var e = new EnumDef(reader, name);
 
             EnumDef already;
-            if (m_enums.TryGetValue(name, out already))
+            if (_enums.TryGetValue(name, out already))
             {
                 if (!e.Equals(already))
                     throw new Exception($"Non-uniform definitions of enum {name}");
@@ -172,65 +172,65 @@ namespace symdump.symfile
                 return;
             }
 
-            m_enums.Add(name, e);
+            _enums.Add(name, e);
         }
 
-        private void readUnion(BinaryReader reader, string name)
+        private void ReadUnion(BinaryReader reader, string name)
         {
             var e = new UnionDef(reader, name);
 
             UnionDef already;
-            if (m_unions.TryGetValue(name, out already))
+            if (_unions.TryGetValue(name, out already))
             {
                 if (e.Equals(already))
                     return;
 
-                if (!e.isFake)
+                if (!e.IsFake)
                     throw new Exception($"Non-uniform definitions of union {name}");
 
                 // generate new "fake fake" name
                 var n = 0;
-                while (m_unions.ContainsKey($"{name}.{n}"))
+                while (_unions.ContainsKey($"{name}.{n}"))
                     ++n;
 
-                m_unions.Add($"{name}.{n}", e);
+                _unions.Add($"{name}.{n}", e);
 
                 return;
             }
 
-            m_unions.Add(name, e);
+            _unions.Add(name, e);
         }
 
-        private void readStruct(BinaryReader reader, string name)
+        private void ReadStruct(BinaryReader reader, string name)
         {
             var e = new StructDef(reader, name);
 
             StructDef already;
-            if (m_structs.TryGetValue(name, out already))
+            if (_structs.TryGetValue(name, out already))
             {
                 if (e.Equals(already))
                     return;
 
-                if (!e.isFake)
+                if (!e.IsFake)
                     Console.WriteLine($"WARNING: Non-uniform definitions of struct {name}");
 
                 // generate new "fake fake" name
                 var n = 0;
-                while (m_structs.ContainsKey($"{name}.{n}"))
+                while (_structs.ContainsKey($"{name}.{n}"))
                     ++n;
 
-                m_structs.Add($"{name}.{n}", e);
+                _structs.Add($"{name}.{n}", e);
 
                 return;
             }
 
-            m_structs.Add(name, e);
+            _structs.Add(name, e);
         }
 
-        private void addTypedef(string name, TypeInfo typeInfo)
+        private void AddTypedef(string name, TypeInfo typeInfo)
         {
             TypeInfo already;
-            if (m_typedefs.TryGetValue(name, out already))
+            if (_typedefs.TryGetValue(name, out already))
             {
                 if (!typeInfo.Equals(already))
                     throw new Exception($"Non-uniform definitions of typedef for {name}");
@@ -238,67 +238,68 @@ namespace symdump.symfile
                 return;
             }
 
-            m_typedefs.Add(name, typeInfo);
+            _typedefs.Add(name, typeInfo);
         }
 
-        private void dumpType20(BinaryReader stream, int offset)
+        private void DumpType20(BinaryReader stream, int offset)
         {
-            var ti = stream.readTypeInfo(false);
-            var name = stream.readPascalString();
+            var ti = stream.ReadTypeInfo(false);
+            var name = stream.ReadPascalString();
 
-            if (ti.classType == ClassType.Enum && ti.typeDef.baseType == BaseType.EnumDef)
+            if (ti.ClassType == ClassType.Enum && ti.TypeDef.BaseType == BaseType.EnumDef)
             {
-                readEnum(stream, name);
+                ReadEnum(stream, name);
                 return;
             }
-            if (ti.classType == ClassType.FileName)
+
+            if (ti.ClassType == ClassType.FileName)
                 return;
-            if (ti.classType == ClassType.Struct && ti.typeDef.baseType == BaseType.StructDef)
-                readStruct(stream, name);
-            else if (ti.classType == ClassType.Union && ti.typeDef.baseType == BaseType.UnionDef)
-                readUnion(stream, name);
-            else if (ti.classType == ClassType.Typedef)
-                addTypedef(name, ti);
-            else if (ti.classType == ClassType.External)
-                if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes[name] = ti.asCode("").Trim();
+            if (ti.ClassType == ClassType.Struct && ti.TypeDef.BaseType == BaseType.StructDef)
+                ReadStruct(stream, name);
+            else if (ti.ClassType == ClassType.Union && ti.TypeDef.BaseType == BaseType.UnionDef)
+                ReadUnion(stream, name);
+            else if (ti.ClassType == ClassType.Typedef)
+                AddTypedef(name, ti);
+            else if (ti.ClassType == ClassType.External)
+                if (ti.TypeDef.IsFunctionReturnType)
+                    _funcTypes[name] = ti.AsCode("").Trim();
                 else
-                    m_externs.Add($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
-            else if (ti.classType == ClassType.Static)
-                if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes[name] = ti.asCode("").Trim();
+                    _externs.Add($"extern {ti.AsCode(name)}; // offset 0x{offset:X}");
+            else if (ti.ClassType == ClassType.Static)
+                if (ti.TypeDef.IsFunctionReturnType)
+                    _funcTypes[name] = ti.AsCode("").Trim();
                 else
-                    m_externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
+                    _externs.Add($"static {ti.AsCode(name)}; // offset 0x{offset:X}");
             else
                 throw new Exception("Gomorrha");
         }
 
-        private void dumpType22(BinaryReader stream, int offset)
+        private void DumpType22(BinaryReader stream, int offset)
         {
-            var ti = stream.readTypeInfo(true);
-            var name = stream.readPascalString();
+            var ti = stream.ReadTypeInfo(true);
+            var name = stream.ReadPascalString();
 
-            if (ti.classType == ClassType.Enum && ti.typeDef.baseType == BaseType.EnumDef)
-                readEnum(stream, name);
-            else if (ti.classType == ClassType.Typedef)
-                addTypedef(name, ti);
-            else if (ti.classType == ClassType.External)
-                if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes[name] = ti.asCode("").Trim();
+            if (ti.ClassType == ClassType.Enum && ti.TypeDef.BaseType == BaseType.EnumDef)
+                ReadEnum(stream, name);
+            else if (ti.ClassType == ClassType.Typedef)
+                AddTypedef(name, ti);
+            else if (ti.ClassType == ClassType.External)
+                if (ti.TypeDef.IsFunctionReturnType)
+                    _funcTypes[name] = ti.AsCode("").Trim();
                 else
-                    m_externs.Add($"extern {ti.asCode(name)}; // offset 0x{offset:X}");
-            else if (ti.classType == ClassType.Static)
-                if (ti.typeDef.isFunctionReturnType)
-                    m_funcTypes[name] = ti.asCode("").Trim();
+                    _externs.Add($"extern {ti.AsCode(name)}; // offset 0x{offset:X}");
+            else if (ti.ClassType == ClassType.Static)
+                if (ti.TypeDef.IsFunctionReturnType)
+                    _funcTypes[name] = ti.AsCode("").Trim();
                 else
-                    m_externs.Add($"static {ti.asCode(name)}; // offset 0x{offset:X}");
+                    _externs.Add($"static {ti.AsCode(name)}; // offset 0x{offset:X}");
             else
                 throw new Exception("Gomorrha");
         }
 
-        public Function findFunction(uint addr)
+        public Function FindFunction(uint addr)
         {
-            return functions.FirstOrDefault(f => f.address == addr);
+            return Functions.FirstOrDefault(f => f.Address == addr);
         }
     }
 }

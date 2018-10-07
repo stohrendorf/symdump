@@ -8,100 +8,100 @@ namespace symdump
 {
     public class TypeDef : IEquatable<TypeDef>
     {
-        public readonly BaseType baseType;
-        public readonly DerivedType[] derivedTypes = new DerivedType[6];
+        public readonly BaseType BaseType;
+        private readonly DerivedType[] _derivedTypes = new DerivedType[6];
 
         public TypeDef(BinaryReader fs)
         {
             var val = fs.ReadUInt16();
-            baseType = (BaseType) (val & 0x0f);
+            BaseType = (BaseType) (val & 0x0f);
             for (var i = 0; i < 6; ++i)
             {
                 var x = (val >> (i * 2 + 4)) & 3;
-                derivedTypes[i] = (DerivedType) x;
+                _derivedTypes[i] = (DerivedType) x;
             }
         }
 
-        public bool isFunctionReturnType => derivedTypes.Contains(DerivedType.FunctionReturnType);
+        public bool IsFunctionReturnType => _derivedTypes.Contains(DerivedType.FunctionReturnType);
 
         public bool Equals(TypeDef other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return baseType == other.baseType && derivedTypes.SequenceEqual(other.derivedTypes);
+            return BaseType == other.BaseType && _derivedTypes.SequenceEqual(other._derivedTypes);
         }
 
         public override string ToString()
         {
-            var attribs = string.Join(",", derivedTypes.Where(e => e != DerivedType.None));
-            return attribs.Length == 0 ? baseType.ToString() : $"{baseType}({attribs})";
+            var attributes = string.Join(",", _derivedTypes.Where(e => e != DerivedType.None));
+            return attributes.Length == 0 ? BaseType.ToString() : $"{BaseType}({attributes})";
         }
 
-        public string asCode(string name, TypeInfo typeInfo)
+        public string AsCode(string name, TypeInfo typeInfo)
         {
             var dimIdx = 0;
 
-            string ctype;
-            switch (baseType)
+            string cType;
+            switch (BaseType)
             {
                 case BaseType.StructDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.tag));
-                    ctype = $"struct {typeInfo.tag}";
+                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.Tag));
+                    cType = $"struct {typeInfo.Tag}";
                     break;
                 case BaseType.UnionDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.tag));
-                    ctype = $"union {typeInfo.tag}";
+                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.Tag));
+                    cType = $"union {typeInfo.Tag}";
                     break;
                 case BaseType.EnumDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.tag));
-                    ctype = $"enum {typeInfo.tag}";
+                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.Tag));
+                    cType = $"enum {typeInfo.Tag}";
                     break;
                 case BaseType.Char:
-                    ctype = "char";
+                    cType = "char";
                     break;
                 case BaseType.Short:
-                    ctype = "short";
+                    cType = "short";
                     break;
                 case BaseType.Int:
-                    ctype = "int";
+                    cType = "int";
                     break;
                 case BaseType.Long:
-                    ctype = "long";
+                    cType = "long";
                     break;
                 case BaseType.Float:
-                    ctype = "float";
+                    cType = "float";
                     break;
                 case BaseType.Double:
-                    ctype = "double";
+                    cType = "double";
                     break;
                 case BaseType.UChar:
-                    ctype = "unsigned char";
+                    cType = "unsigned char";
                     break;
                 case BaseType.UShort:
-                    ctype = "unsigned short";
+                    cType = "unsigned short";
                     break;
                 case BaseType.UInt:
-                    ctype = "unsigned int";
+                    cType = "unsigned int";
                     break;
                 case BaseType.ULong:
-                    ctype = "unsigned long";
+                    cType = "unsigned long";
                     break;
                 case BaseType.Void:
-                    ctype = "void";
+                    cType = "void";
                     break;
                 default:
-                    throw new Exception($"Unexpected base type {baseType}");
+                    throw new Exception($"Unexpected base type {BaseType}");
             }
 
             var needsParens = false;
-            foreach (var dt in derivedTypes)
+            foreach (var dt in _derivedTypes)
                 switch (dt)
                 {
                     case DerivedType.None:
                         continue;
                     case DerivedType.Array:
                         Debug.Assert(name != null);
-                        name += $"[{typeInfo.dims[dimIdx]}]";
+                        name += $"[{typeInfo.Dims[dimIdx]}]";
                         ++dimIdx;
                         needsParens = true;
                         break;
@@ -111,6 +111,7 @@ namespace symdump
                             name = needsParens ? $"({name})()" : $"{name}()";
                             needsParens = true;
                         }
+
                         break;
                     case DerivedType.Pointer:
                         name = $"*{name}";
@@ -118,7 +119,7 @@ namespace symdump
                         break;
                 }
 
-            return $"{ctype} {name}";
+            return $"{cType} {name}";
         }
 
         public override bool Equals(object obj)
@@ -133,7 +134,7 @@ namespace symdump
         {
             unchecked
             {
-                return ((int) baseType * 397) ^ (derivedTypes != null ? derivedTypes.GetHashCode() : 0);
+                return ((int) BaseType * 397) ^ (_derivedTypes != null ? _derivedTypes.GetHashCode() : 0);
             }
         }
     }

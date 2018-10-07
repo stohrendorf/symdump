@@ -4,13 +4,13 @@ namespace symdump.exefile.operands
 {
     public class RegisterOffsetOperand : IOperand
     {
-        public readonly int offset;
-        public readonly Register register;
+        public readonly int Offset;
+        public readonly Register Register;
 
-        public RegisterOffsetOperand(Register register, int offset)
+        private RegisterOffsetOperand(Register register, int offset)
         {
-            this.register = register;
-            this.offset = offset;
+            Register = register;
+            Offset = offset;
         }
 
         public RegisterOffsetOperand(uint data, int shift, int offset)
@@ -21,12 +21,12 @@ namespace symdump.exefile.operands
         public bool Equals(IOperand other)
         {
             var o = other as RegisterOffsetOperand;
-            return register == o?.register && offset == o.offset;
+            return Register == o?.Register && Offset == o.Offset;
         }
 
         public override string ToString()
         {
-            return $"{offset}(${register})";
+            return $"{Offset}(${Register})";
         }
     }
 }

@@ -6,42 +6,42 @@ namespace symdump.symfile
 {
     public class StructMember : IEquatable<StructMember>
     {
-        public readonly string name;
-        public readonly TypedValue typedValue;
-        public readonly TypeInfo typeInfo;
+        private readonly string _name;
+        public readonly TypedValue TypedValue;
+        public readonly TypeInfo TypeInfo;
 
         public StructMember(TypedValue tv, BinaryReader reader, bool extended)
         {
-            typeInfo = reader.readTypeInfo(extended);
-            name = reader.readPascalString();
-            typedValue = tv;
+            TypeInfo = reader.ReadTypeInfo(extended);
+            _name = reader.ReadPascalString();
+            TypedValue = tv;
 
-            if (typeInfo.classType != ClassType.Bitfield && typeInfo.classType != ClassType.StructMember &&
-                typeInfo.classType != ClassType.UnionMember && typeInfo.classType != ClassType.EndOfStruct)
-                throw new Exception($"Unexpected class {typeInfo.classType}");
+            if (TypeInfo.ClassType != ClassType.Bitfield && TypeInfo.ClassType != ClassType.StructMember &&
+                TypeInfo.ClassType != ClassType.UnionMember && TypeInfo.ClassType != ClassType.EndOfStruct)
+                throw new Exception($"Unexpected class {TypeInfo.ClassType}");
         }
 
         public bool Equals(StructMember other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(name, other.name) && typeInfo.Equals(other.typeInfo) &&
-                   typedValue.Equals(other.typedValue);
+            return string.Equals(_name, other._name) && TypeInfo.Equals(other.TypeInfo) &&
+                   TypedValue.Equals(other.TypedValue);
         }
 
         public override string ToString()
         {
-            switch (typeInfo.classType)
+            switch (TypeInfo.ClassType)
             {
                 case ClassType.Bitfield:
-                    return typeInfo.asCode(name) +
-                           $" : {typeInfo.size}; // offset={typedValue.value / 8}.{typedValue.value % 8}";
+                    return TypeInfo.AsCode(_name) +
+                           $" : {TypeInfo.Size}; // offset={TypedValue.Value / 8}.{TypedValue.Value % 8}";
                 case ClassType.StructMember:
                 case ClassType.UnionMember:
-                    return typeInfo.asCode(name) +
-                           $"; // size={typeInfo.size}, offset={typedValue.value}";
+                    return TypeInfo.AsCode(_name) +
+                           $"; // size={TypeInfo.Size}, offset={TypedValue.Value}";
                 default:
-                    throw new Exception($"Unexpected class {typeInfo.classType}");
+                    throw new Exception($"Unexpected class {TypeInfo.ClassType}");
             }
         }
 
@@ -57,9 +57,9 @@ namespace symdump.symfile
         {
             unchecked
             {
-                var hashCode = name != null ? name.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (typeInfo != null ? typeInfo.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (typedValue != null ? typedValue.GetHashCode() : 0);
+                var hashCode = _name != null ? _name.GetHashCode() : 0;
+                hashCode = (hashCode * 397) ^ (TypeInfo != null ? TypeInfo.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (TypedValue != null ? TypedValue.GetHashCode() : 0);
                 return hashCode;
             }
         }

@@ -5,24 +5,26 @@ namespace symdump.exefile.instructions
 {
     public class CallPtrInstruction : Instruction
     {
-        public override IOperand[] operands { get; }
+        public override IOperand[] Operands { get; }
 
-        public IOperand target => operands[0];
-        public RegisterOperand returnAddressTarget => (RegisterOperand) (operands.Length > 1 ? operands[1] : null);
+        private IOperand Target => Operands[0];
+        private RegisterOperand ReturnAddressTarget => (RegisterOperand) (Operands.Length > 1 ? Operands[1] : null);
 
-        public CallPtrInstruction(IOperand target, RegisterOperand returnAddressTarget)
+        public CallPtrInstruction(IOperand target, IOperand returnAddressTarget)
         {
-            operands = returnAddressTarget == null ? new[] {target} : new[] {target, returnAddressTarget};
+            Operands = returnAddressTarget == null ? new[] {target} : new[] {target, returnAddressTarget};
         }
 
-        public override string asReadable()
+        public override string AsReadable()
         {
-            if (returnAddressTarget != null)
+            if (ReturnAddressTarget != null)
             {
-                return returnAddressTarget.register == Register.ra ? $"{target}()" : $"{returnAddressTarget} = __RET_ADDR; {target}()";
+                return ReturnAddressTarget.Register == Register.ra
+                    ? $"{Target}()"
+                    : $"{ReturnAddressTarget} = __RET_ADDR; {Target}()";
             }
 
-            return $"goto {target}";
+            return $"goto {Target}";
         }
     }
 }

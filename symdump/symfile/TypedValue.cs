@@ -5,27 +5,27 @@ namespace symdump.symfile
 {
     public class TypedValue : IEquatable<TypedValue>
     {
-        public readonly byte type;
-        public readonly int value;
+        public readonly byte Type;
+        public readonly int Value;
 
         public TypedValue(BinaryReader fs)
         {
-            value = fs.ReadInt32();
-            type = fs.ReadByte();
+            Value = fs.ReadInt32();
+            Type = fs.ReadByte();
         }
 
-        public bool isLabel => (type & 0x80) == 0;
+        public bool IsLabel => (Type & 0x80) == 0;
 
         public bool Equals(TypedValue other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return type == other.type && value == other.value;
+            return Type == other.Type && Value == other.Value;
         }
 
         public override string ToString()
         {
-            return $"value={value} type={type} isLabel={isLabel}";
+            return $"value={Value} type={Type} isLabel={IsLabel}";
         }
 
         public override bool Equals(object obj)
@@ -40,7 +40,7 @@ namespace symdump.symfile
         {
             unchecked
             {
-                return (type.GetHashCode() * 397) ^ value;
+                return (Type.GetHashCode() * 397) ^ Value;
             }
         }
     }

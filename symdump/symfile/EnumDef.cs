@@ -9,49 +9,49 @@ namespace symdump.symfile
 {
     public class EnumDef : IEquatable<EnumDef>
     {
-        private readonly Dictionary<string, int> m_members = new Dictionary<string, int>();
-        private readonly string m_name;
-        private readonly uint m_size;
+        private readonly Dictionary<string, int> _members = new Dictionary<string, int>();
+        private readonly string _name;
+        private readonly uint _size;
 
         public EnumDef(BinaryReader stream, string name)
         {
-            m_name = name;
+            _name = name;
             while (true)
             {
                 var typedValue = new TypedValue(stream);
-                if (typedValue.type == (0x80 | 20))
+                if (typedValue.Type == (0x80 | 20))
                 {
-                    var ti = stream.readTypeInfo(false);
-                    var memberName = stream.readPascalString();
+                    var ti = stream.ReadTypeInfo(false);
+                    var memberName = stream.ReadPascalString();
 
-                    if (ti.classType == ClassType.EndOfStruct)
+                    if (ti.ClassType == ClassType.EndOfStruct)
                         break;
 
-                    if (ti.classType != ClassType.EnumMember)
+                    if (ti.ClassType != ClassType.EnumMember)
                         throw new Exception("Unexpected class");
 
-                    m_members.Add(memberName, typedValue.value);
+                    _members.Add(memberName, typedValue.Value);
                 }
-                else if (typedValue.type == (0x80 | 22))
+                else if (typedValue.Type == (0x80 | 22))
                 {
-                    var ti = stream.readTypeInfo(true);
-                    if (ti.typeDef.baseType != BaseType.Null)
-                        throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.typeDef.baseType}");
+                    var ti = stream.ReadTypeInfo(true);
+                    if (ti.TypeDef.BaseType != BaseType.Null)
+                        throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.TypeDef.BaseType}");
 
-                    if (ti.dims.Length != 0)
-                        throw new Exception($"Expected dims=0, but it's {ti.dims.Length}");
+                    if (ti.Dims.Length != 0)
+                        throw new Exception($"Expected dims=0, but it's {ti.Dims.Length}");
 
-                    if (ti.tag != name)
-                        throw new Exception($"Expected name={name}, but it's {ti.tag}");
+                    if (ti.Tag != name)
+                        throw new Exception($"Expected name={name}, but it's {ti.Tag}");
 
-                    var tag = stream.readPascalString();
+                    var tag = stream.ReadPascalString();
                     if (tag != ".eos")
                         throw new Exception($"Expected tag=.eos, but it's {tag}");
 
-                    if (ti.classType != ClassType.EndOfStruct)
-                        throw new Exception($"Expected classType={ClassType.EndOfStruct}, but it's {ti.classType}");
+                    if (ti.ClassType != ClassType.EndOfStruct)
+                        throw new Exception($"Expected classType={ClassType.EndOfStruct}, but it's {ti.ClassType}");
 
-                    m_size = ti.size;
+                    _size = ti.Size;
                     break;
                 }
                 else
@@ -65,7 +65,7 @@ namespace symdump.symfile
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return m_members.SequenceEqual(other.m_members) && string.Equals(m_name, other.m_name);
+            return _members.SequenceEqual(other._members) && string.Equals(_name, other._name);
         }
 
         public override bool Equals(object obj)
@@ -80,33 +80,33 @@ namespace symdump.symfile
         {
             unchecked
             {
-                return (m_members.GetHashCode() * 397) ^ m_name.GetHashCode();
+                return (_members.GetHashCode() * 397) ^ _name.GetHashCode();
             }
         }
 
-        public void dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer)
         {
-            string ctype;
-            switch (m_size)
+            string cType;
+            switch (_size)
             {
                 case 1:
-                    ctype = "char";
+                    cType = "char";
                     break;
                 case 2:
-                    ctype = "short";
+                    cType = "short";
                     break;
                 case 4:
-                    ctype = "int";
+                    cType = "int";
                     break;
                 default:
                     throw new Exception("$Cannot determine primitive type for size {size}");
             }
 
-            writer.WriteLine($"enum {m_name} : {ctype} {{");
-            ++writer.indent;
-            foreach (var kvp in m_members)
+            writer.WriteLine($"enum {_name} : {cType} {{");
+            ++writer.Indent;
+            foreach (var kvp in _members)
                 writer.WriteLine($"{kvp.Key} = {kvp.Value},");
-            --writer.indent;
+            --writer.Indent;
             writer.WriteLine("};");
         }
     }
