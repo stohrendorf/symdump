@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using core.microcode;
 using core.util;
 using JetBrains.Annotations;
 
@@ -11,10 +12,6 @@ namespace core.cfg
         private readonly IList<INode> _nodes;
 
         public override string Id => "or_" + _nodes[0].Id;
-
-        public override IEnumerable<int> InputRegisters => _nodes.SelectMany(n => n.InputRegisters).Distinct();
-
-        public override IEnumerable<int> OutputRegisters => _nodes.SelectMany(n => n.OutputRegisters).Distinct();
 
         public OrNode([NotNull] INode c0) : base(c0.Graph)
         {
@@ -87,27 +84,6 @@ namespace core.cfg
         public override bool ContainsAddress(uint address)
             => _nodes.Any(n => n.ContainsAddress(address));
 
-        public override IEnumerable<Instruction> Instructions => _nodes.SelectMany(n => n.Instructions);
-
-        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
-        {
-            writer.WriteLine("{");
-            ++writer.Indent;
-            bool first = true;
-            foreach (var n in _nodes)
-            {
-                if (!first)
-                {
-                    writer.WriteLine("||");
-                }
-                first = false;
-
-                ++writer.Indent;
-                n.Dump(writer, dataFlowState);
-                --writer.Indent;
-            }
-            --writer.Indent;
-            writer.WriteLine("}");
-        }
+        public override IEnumerable<MicroInsn> Instructions => _nodes.SelectMany(n => n.Instructions);
     }
 }

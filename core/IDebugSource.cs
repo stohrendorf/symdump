@@ -21,7 +21,7 @@ namespace core
         IMemoryLayout FindTypeDefinitionForLabel(string label);
 
         [NotNull]
-        string GetSymbolName(uint globalAddress, int relative = 0);
+        string GetSymbolName(uint localAddress, int relative = 0);
 
         [CanBeNull]
         IMemoryLayout FindTypeDefinition(string tag);

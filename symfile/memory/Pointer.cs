@@ -6,7 +6,7 @@ namespace symfile.memory
 {
     public class Pointer : IMemoryLayout, IEquatable<Pointer>
     {
-        public int Precedence => Operator.Dereference.GetPrecedence(false);
+        public int Precedence => 2;
 
         public string FundamentalType => Inner.FundamentalType;
 

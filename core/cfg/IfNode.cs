@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using core.microcode;
 using core.util;
 using JetBrains.Annotations;
 
@@ -15,10 +16,6 @@ namespace core.cfg
         private readonly bool _invertedCondition;
 
         public override string Id => "if_" + _condition.Id;
-
-        public override IEnumerable<int> InputRegisters => _condition.InputRegisters.Concat(_body.InputRegisters).Distinct();
-
-        public override IEnumerable<int> OutputRegisters => _condition.OutputRegisters.Concat(_body.OutputRegisters).Distinct();
 
         public IfNode([NotNull] INode condition)
             : base(condition.Graph)
@@ -63,7 +60,7 @@ namespace core.cfg
             Graph.AddEdge(new AlwaysEdge(this, common));
         }
 
-        public override IEnumerable<Instruction> Instructions
+        public override IEnumerable<MicroInsn> Instructions
         {
             get
             {
@@ -74,19 +71,6 @@ namespace core.cfg
 
         public override bool ContainsAddress(uint address) =>
             _condition.ContainsAddress(address) || _body.ContainsAddress(address);
-
-        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
-        {
-            writer.WriteLine(_invertedCondition ? "if_not{" : "if{");
-            ++writer.Indent;
-            _condition.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine("} {");
-            ++writer.Indent;
-            _body.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine("}");
-        }
 
         public static bool IsCandidate([NotNull] INode condition)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using core.util;
+using core.microcode;
 using JetBrains.Annotations;
 
 namespace core.cfg
@@ -15,10 +15,6 @@ namespace core.cfg
         private readonly bool _invertedCondition;
 
         public override string Id => "dowhile_" + _body.Id;
-
-        public override IEnumerable<int> InputRegisters => _condition.InputRegisters.Concat(_body.InputRegisters).Distinct();
-
-        public override IEnumerable<int> OutputRegisters => _condition.OutputRegisters.Concat(_body.OutputRegisters).Distinct();
 
         public DoWhileNode([NotNull] INode body)
             : base(body.Graph)
@@ -56,7 +52,7 @@ namespace core.cfg
             Graph.RemoveNode(_condition);
         }
 
-        public override IEnumerable<Instruction> Instructions
+        public override IEnumerable<MicroInsn> Instructions
         {
             get
             {
@@ -67,19 +63,6 @@ namespace core.cfg
 
         public override bool ContainsAddress(uint address) =>
             _condition.ContainsAddress(address) || _body.ContainsAddress(address);
-
-        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
-        {
-            writer.WriteLine("do {");
-            ++writer.Indent;
-            _body.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine(_invertedCondition ? "} while_not {" : "} while {");
-            ++writer.Indent;
-            _condition.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine("}");
-        }
 
         public static bool IsCandidate([NotNull] INode body)
         {

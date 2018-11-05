@@ -1,33 +1,21 @@
 ﻿using System.Collections.Generic;
-using core.util;
+using core.microcode;
 using JetBrains.Annotations;
 
 namespace core.cfg
 {
     public interface INode
     {
-        [NotNull]
-        IGraph Graph { get; }
+        [NotNull] IGraph Graph { get; }
 
-        [NotNull]
-        IEnumerable<IEdge> Ins { get; }
-        
-        [NotNull]
-        IEnumerable<IEdge> Outs { get; }
-        
+        [NotNull] IEnumerable<IEdge> Ins { get; }
+
+        [NotNull] IEnumerable<IEdge> Outs { get; }
+
         bool ContainsAddress(uint address);
-        
-        [NotNull]
-        IEnumerable<Instruction> Instructions { get; }
-        
-        void Dump([NotNull] IndentedTextWriter writer, [CanBeNull] IDataFlowState dataFlowState);
-        
+
+        [NotNull] IEnumerable<MicroInsn> Instructions { get; }
+
         string Id { get; }
-        
-        [NotNull]
-        IEnumerable<int> InputRegisters { get; }
-        
-        [NotNull]
-        IEnumerable<int> OutputRegisters { get; }
     }
 }

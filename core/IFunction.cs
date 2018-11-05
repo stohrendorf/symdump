@@ -9,7 +9,7 @@ namespace core
         void Dump([NotNull] IndentedTextWriter writer);
         
         [NotNull]
-        IEnumerable<KeyValuePair<int, IDeclaration>> RegisterParameters { get; }
+        IEnumerable<KeyValuePair<uint, IDeclaration>> RegisterParameters { get; }
 
         [NotNull]
         IEnumerable<KeyValuePair<int, IDeclaration>> StackParameters { get; }

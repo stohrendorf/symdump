@@ -61,8 +61,8 @@ namespace symfile.code
         private readonly IDictionary<Register, ArgumentInfo> _registerParameters =
             new SortedDictionary<Register, ArgumentInfo>();
 
-        public IEnumerable<KeyValuePair<int, IDeclaration>> RegisterParameters =>
-            _registerParameters.Select(p => new KeyValuePair<int, IDeclaration>(RegisterUtil.ToInt(p.Key), p.Value));
+        public IEnumerable<KeyValuePair<uint, IDeclaration>> RegisterParameters =>
+            _registerParameters.Select(p => new KeyValuePair<uint, IDeclaration>(RegisterUtil.ToUInt(p.Key), p.Value));
 
         private readonly IDictionary<int, ArgumentInfo> _stackParameters = new SortedDictionary<int, ArgumentInfo>();
         

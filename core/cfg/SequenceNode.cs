@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using core.util;
+using core.microcode;
 using JetBrains.Annotations;
 
 namespace core.cfg
@@ -86,20 +86,7 @@ namespace core.cfg
             return Nodes.Any(n => n.ContainsAddress(address));
         }
 
-        public override IEnumerable<Instruction> Instructions => Nodes.SelectMany(node => node.Instructions);
-
-        public override IEnumerable<int> InputRegisters => Nodes.SelectMany(n => n.InputRegisters).Distinct();
-
-        public override IEnumerable<int> OutputRegisters => Nodes.SelectMany(n => n.OutputRegisters).Distinct();
-
-
-        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
-        {
-            foreach (var node in Nodes)
-            {
-                node.Dump(writer, dataFlowState);
-            }
-        }
+        public override IEnumerable<MicroInsn> Instructions => Nodes.SelectMany(node => node.Instructions);
 
         public static bool IsCandidate([NotNull] INode seq)
         {

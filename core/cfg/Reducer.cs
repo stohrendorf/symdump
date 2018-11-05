@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using core.instruction;
+using core.microcode;
 using JetBrains.Annotations;
 using NLog;
 
@@ -22,7 +22,7 @@ namespace core.cfg
             {
                 var nops = Graph.Nodes
                     .Where(n => n.Outs.Count() == 1 && n.Outs.First() is AlwaysEdge)
-                    .Where(n => n.Instructions.Any() && n.Instructions.All(i => i is NopInstruction))
+                    .Where(n => n.Instructions.Any() && n.Instructions.All(i => i.Opcode == MicroOpcode.Nop))
                     .ToList();
                     
                 if(nops.Count > 0)

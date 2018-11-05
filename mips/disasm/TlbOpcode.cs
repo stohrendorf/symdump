@@ -3,6 +3,7 @@
 namespace mips.disasm
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
     public enum TlbOpcode
     {
         tlbr = 1,

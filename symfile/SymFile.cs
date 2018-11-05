@@ -336,9 +336,9 @@ namespace symfile
             return Functions.FirstOrDefault(f => f.Name.Equals(name));
         }
         
-        public string GetSymbolName(uint globalAddress, int relative = 0)
+        public string GetSymbolName(uint localAddress, int relative = 0)
         {
-            globalAddress = (uint) (globalAddress + relative);
+            var globalAddress = (uint) (localAddress + relative);
             
             // first try to find a memory layout which contains this address
             var typedLabel = Labels.LastOrDefault(kv => kv.Key <= globalAddress).Value.First();

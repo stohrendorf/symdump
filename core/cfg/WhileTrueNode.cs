@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using core.util;
+using core.microcode;
 using JetBrains.Annotations;
 
 namespace core.cfg
@@ -27,22 +27,9 @@ namespace core.cfg
 
         [NotNull] private readonly INode _body;
 
-        public override IEnumerable<Instruction> Instructions => _body.Instructions;
-
-        public override IEnumerable<int> InputRegisters => _body.InputRegisters;
-
-        public override IEnumerable<int> OutputRegisters => _body.OutputRegisters;
+        public override IEnumerable<MicroInsn> Instructions => _body.Instructions;
 
         public override bool ContainsAddress(uint address) => _body.ContainsAddress(address);
-
-        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
-        {
-            writer.WriteLine("while(true) {");
-            ++writer.Indent;
-            _body.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine("}");
-        }
 
         public static bool IsCandidate([NotNull] INode body)
         {

@@ -8,7 +8,7 @@ namespace symfile.memory
 {
     public class Array : IMemoryLayout, IEquatable<Array>
     {
-        public int Precedence => Operator.Array.GetPrecedence(false);
+        public int Precedence => 1;
 
         public string FundamentalType => Inner.FundamentalType;
 

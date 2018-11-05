@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using core;
-using core.cfg;
-using core.instruction;
-using core.operand;
+using core.microcode;
 using core.util;
-using exefile.controlflow;
 using mips.disasm;
 using NLog;
 
@@ -25,17 +21,12 @@ namespace exefile
 
         private readonly Header _header;
 
-        public IEnumerable<KeyValuePair<uint, Instruction>> RelocatedInstructions => _instructions
-            .Select(kv => new KeyValuePair<uint, Instruction>(MakeGlobal(kv.Key), kv.Value));
-
-        public IReadOnlyDictionary<uint, Instruction> Instructions => _instructions;
-
-        public IReadOnlyCollection<uint> Callees => _callees;
-
         private readonly IDebugSource _debugSource;
-        private readonly Dictionary<uint, HashSet<uint>> _xrefs = new Dictionary<uint, HashSet<uint>>();
-        private readonly SortedSet<uint> _callees = new SortedSet<uint>();
-        private readonly SortedDictionary<uint, Instruction> _instructions = new SortedDictionary<uint, Instruction>();
+        private readonly IDictionary<uint, MicroAssembly> _decoded = new Dictionary<uint, MicroAssembly>();
+        public ISet<uint> Callees = new SortedSet<uint>();
+
+        public IEnumerable<KeyValuePair<uint, MicroAssembly>> RelocatedInstructions =>
+            _decoded.Select(kv => new KeyValuePair<uint, MicroAssembly>(MakeGlobal(kv.Key), kv.Value));
 
         public ExeFile(EndianBinaryReader reader, IDebugSource debugSource)
         {
@@ -52,27 +43,10 @@ namespace exefile
                 .FirstOrDefault();
         }
 
-        private IEnumerable<string> GetLocalSymbolNames(uint localAddress)
+        private void EnqueueForAnalysis(uint localAddress)
         {
-            _debugSource.Labels.TryGetValue(MakeGlobal(localAddress), out var lbls);
-            return lbls?.Select(l => l.Name);
-        }
-
-        private void AddLocalCall(uint from, uint to)
-        {
-            AddLocalXref(from, to);
-            _callees.Add(to);
-        }
-
-        private void AddLocalXref(uint from, uint to)
-        {
-            if (!_xrefs.TryGetValue(to, out var froms))
-                _xrefs.Add(to, froms = new HashSet<uint>());
-
-            froms.Add(from);
-
-            if (!_instructions.ContainsKey(to))
-                _analysisQueue.Enqueue(to);
+            if (!_decoded.ContainsKey(localAddress))
+                _analysisQueue.Enqueue(localAddress);
         }
 
         public uint MakeGlobal(uint addr)
@@ -86,12 +60,6 @@ namespace exefile
                 throw new ArgumentOutOfRangeException(nameof(addr), "Address out of range to make local");
 
             return addr - _header.tAddr;
-        }
-
-        private HashSet<uint> GetGlobalXrefs(uint to)
-        {
-            _xrefs.TryGetValue(to, out var froms);
-            return froms;
         }
 
         public uint WordAtGlobal(uint address)
@@ -135,56 +103,6 @@ namespace exefile
             return (Opcode) (data >> 26);
         }
 
-        public Graph AnalyzeControlFlow(uint globalAddress)
-        {
-            logger.Info($"Started control flow analysis of address 0x{globalAddress:x8}");
-
-            var func = _debugSource.FindFunction(globalAddress);
-            if (func != null)
-                logger.Debug(func.GetSignature());
-
-            //var flowState = new DataFlowState(_debugSource);
-
-            var control = new ControlFlowProcessor();
-            control.Process(MakeLocal(globalAddress), this);
-
-            var reducer = new Reducer(control.Graph);
-            reducer.Reduce();
-            //reducer.Dump(new IndentedTextWriter(Console.Out));
-
-            return reducer.Graph;
-
-#if false
-            {
-                Console.WriteLine();
-                var itw = new IndentedTextWriter(Console.Out);
-                control.Dump(itw);
-            }
-
-            foreach (var insnPair in _instructions.Where(i => i.Key >= addr))
-            {
-                var xrefs = GetXrefs(insnPair.Key);
-                if (xrefs != null)
-                {
-                    flowState.DumpState();
-                    logger.Debug(_debugSource.GetSymbolName(insnPair.Key) + ":");
-                }
-
-                var insn = insnPair.Value;
-                if (insn is NopInstruction || insn.IsBranchDelaySlot)
-                {
-                    continue;
-                }
-
-                //Console.WriteLine($"??? 0x{insnPair.Key:X}  " + insn.asReadable());
-
-                var nextInsn = _instructions[insnPair.Key + 4];
-                if (!flowState.Process(insn, nextInsn))
-                    break;
-            }
-#endif
-        }
-
         public void Disassemble(uint localStart)
         {
             _analysisQueue.Clear();
@@ -196,484 +114,421 @@ namespace exefile
         {
             _analysisQueue.Clear();
             _analysisQueue.Enqueue(MakeLocal(_header.pc0));
-            foreach (var addr in _debugSource.Functions.Select(f => f.GlobalAddress))
-                _analysisQueue.Enqueue(MakeLocal(addr));
+            foreach (var addr in _debugSource.Functions.Select(f => f.GlobalAddress).Select(MakeLocal))
+                _analysisQueue.Enqueue(addr);
             DisassembleImpl();
         }
 
-        private static RegisterOperand MakeRegisterOperand(uint data, int offset)
+        private static IMicroArg MakeRegisterOperand(uint data, int offset)
         {
-            return new RegisterOperand(RegisterUtil.ToInt((Register) ((data >> offset) & 0x1f)));
+            var r = (Register) ((data >> offset) & 0x1f);
+            return new RegisterArg(RegisterUtil.ToUInt(r));
         }
 
-        private static RegisterOperand MakeC0RegisterOperand(uint data, int offset)
+        private static RegisterArg MakeC0RegisterOperand(uint data, int offset)
         {
-            return new RegisterOperand(RegisterUtil.ToInt((C0Register) ((data >> offset) & 0x1f)));
+            return new RegisterArg(RegisterUtil.ToUInt((C0Register) ((data >> offset) & 0x1f)));
         }
 
-        private static RegisterOperand MakeC2RegisterOperand(uint data, int offset)
+        private static RegisterArg MakeC2RegisterOperand(uint data, int offset)
         {
-            return new RegisterOperand(RegisterUtil.ToInt((C2Register) ((data >> offset) & 0x1f)));
+            return new RegisterArg(RegisterUtil.ToUInt((C2Register) ((data >> offset) & 0x1f)));
         }
 
-        private static RegisterOffsetOperand MakeRegisterOffsetOperand(uint data, int shift, int offset)
+        private static RegisterMemArg MakeRegisterOffsetOperand(uint data, int shift, int offset)
         {
-            return new RegisterOffsetOperand(RegisterUtil.ToInt((Register) ((data >> shift) & 0x1f)), offset);
+            return new RegisterMemArg(RegisterUtil.ToUInt((Register) ((data >> shift) & 0x1f)), offset);
         }
-        
+
         private void DisassembleImpl()
         {
             logger.Info("Disassembly started");
 
-            bool needsJoin = false;
-
             while (_analysisQueue.Count != 0)
             {
                 var localAddress = _analysisQueue.Dequeue();
-                if (_instructions.ContainsKey(localAddress) || localAddress >= _header.tSize)
+                if (_decoded.ContainsKey(localAddress) || localAddress >= _header.tSize)
                     continue;
 
-                needsJoin = true;
+                var asm = new MicroAssembly();
+                _decoded[localAddress] = asm;
 
                 var data = WordAtLocal(localAddress);
                 localAddress += 4;
-                var insn = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
-
-                switch (insn)
-                {
-                    case ConditionalBranchInstruction _:
-                    {
-                        data = WordAtLocal(localAddress);
-                        localAddress += 4;
-                        var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
-                        insn2.IsBranchDelaySlot = true;
-
-                        _analysisQueue.Enqueue(localAddress);
-
-                        continue;
-                    }
-                    case CallPtrInstruction callInsn:
-                    {
-                        data = WordAtLocal(localAddress);
-                        localAddress += 4;
-                        var insn2 = _instructions[localAddress - 4] = DecodeInstruction(data, localAddress);
-                        insn2.IsBranchDelaySlot = true;
-
-                        if (callInsn.ReturnAddressTarget?.Register == RegisterUtil.ToInt(Register.ra))
-                            _analysisQueue.Enqueue(localAddress);
-
-                        continue;
-                    }
-                }
-
-                _analysisQueue.Enqueue(localAddress);
-            }
-
-            logger.Info($"Disassembled {_instructions.Count} instructions, detected {_callees.Count} callees");
-
-            if (needsJoin)
-                JoinLoadStoreInstructions();
-        }
-
-        private void JoinLoadStoreInstructions()
-        {
-            uint localAddress = _instructions.Keys.First();
-            Debug.Assert(localAddress % 4 == 0);
-            uint last = _instructions.Keys.Last();
-            Debug.Assert(last % 4 == 0);
-            Debug.Assert(last + 4 != 0);
-
-            logger.Info("Joining split load/store instructions");
-
-            uint joinCount = 0;
-
-            for (; localAddress <= last; localAddress += 4)
-            {
-                if (!_instructions.ContainsKey(localAddress) || !_instructions.ContainsKey(localAddress + 4))
-                    continue;
-
-                // only join if the second instruction is not referenced
-                if (_callees.Contains(localAddress + 4) || _xrefs.ContainsKey(localAddress + 4))
-                    continue;
-
-                var a = _instructions[localAddress];
-                var b = _instructions[localAddress + 4];
-
-                // la $x, addr  <==>  lui $at, addr>>16; addiu $x, $at, addr&0xffff
-                if (a is DataCopyInstruction && (a.Operands[0] as RegisterOperand)?.Register == RegisterUtil.ToInt(Register.at) &&
-                    a.Operands[1] is ImmediateOperand)
-                {
-                    var b2 = b as ArithmeticInstruction;
-                    if (b2?.Operands[0] is RegisterOperand &&
-                        (b2.Operands[1] as RegisterOperand)?.Register == RegisterUtil.ToInt(Register.at) &&
-                        b2.Operands[2] is ImmediateOperand)
-                    {
-                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
-                                            ((ImmediateOperand) b2.Operands[2]).Value);
-                        _instructions[localAddress] =
-                            new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
-                        _instructions[localAddress + 4] = new NopInstruction();
-                        localAddress += 4;
-                        ++joinCount;
-                        continue;
-                    }
-                }
-
-                // a variation: use in-place register instead of $at
-                // la $x, addr  <==>  lui $x, addr>>16; addiu $x, $x, addr&0xffff
-                if (a is DataCopyInstruction && b is ArithmeticInstruction
-                    && (a.Operands[0] as RegisterOperand)?.Register == (b.Operands[1] as RegisterOperand)?.Register
-                    && a.Operands[1] is ImmediateOperand)
-                {
-                    var b2 = b as ArithmeticInstruction;
-                    if (b2.Operands[2] is ImmediateOperand operand && (b2.Operands[0] as RegisterOperand)?.Register ==
-                        (b2.Operands[1] as RegisterOperand)?.Register)
-                    {
-                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
-                                            operand.Value);
-                        _instructions[localAddress] =
-                            new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
-                        _instructions[localAddress + 4] = new NopInstruction();
-                        localAddress += 4;
-                        ++joinCount;
-                        continue;
-                    }
-                }
-
-                // a variation: use temp register instead of $at
-                // la $x, addr  <==>  lui $x2, addr>>16; addiu $x, $x2, addr&0xffff
-                if (a is DataCopyInstruction && b is ArithmeticInstruction
-                    && (a.Operands[0] as RegisterOperand)?.Register == (b.Operands[1] as RegisterOperand)?.Register
-                    && a.Operands[1] is ImmediateOperand)
-                {
-                    var b2 = b as ArithmeticInstruction;
-                    if (b2.Operands[2] is ImmediateOperand operand)
-                    {
-                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
-                                            operand.Value);
-                        _instructions[localAddress + 4] =
-                            new DataCopyInstruction(b2.Operands[0], 4, new ImmediateOperand(offs), 4);
-                        localAddress += 4;
-                        ++joinCount;
-                        continue;
-                    }
-                }
-
-                // lw $x, addr  <==>  lui $at, addr>>16; lw $x, (addr&0xffff)($at)
-                if (a is DataCopyInstruction && b is DataCopyInstruction
-                    && (a.Operands[0] as RegisterOperand)?.Register == RegisterUtil.ToInt(Register.at)
-                    && a.Operands[1] is ImmediateOperand)
-                {
-                    var b2 = b as DataCopyInstruction;
-                    if (b2.Operands[0] is RegisterOperand &&
-                        (b2.Operands[1] as RegisterOffsetOperand)?.Register == RegisterUtil.ToInt(Register.at))
-                    {
-                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
-                                            ((RegisterOffsetOperand) b.Operands[1]).Offset);
-
-                        var src = new LabelOperand(_debugSource.GetSymbolName(offs), offs);
-                        var srcSize = b2.SrcSize;
-                        var dstSize = b2.DstSize;
-
-                        _instructions[localAddress] = new DataCopyInstruction(b2.Operands[0], dstSize, src, srcSize);
-                        _instructions[localAddress + 4] = new NopInstruction();
-                        localAddress += 4;
-                        ++joinCount;
-                        continue;
-                    }
-                }
-
-                // a variation: use in-place register instead of $at
-                // lw $x, addr  <==>  lui $x, addr>>16; lw $x, (addr&0xffff)($x)
-                if (a is DataCopyInstruction && b is DataCopyInstruction
-                    && (a.Operands[0] as RegisterOperand)?.Register ==
-                    (b.Operands[1] as RegisterOffsetOperand)?.Register
-                    && a.Operands[1] is ImmediateOperand)
-                {
-                    var b2 = b as DataCopyInstruction;
-                    if (b2.Operands[0] is RegisterOperand)
-                    {
-                        uint offs = (uint) (((ImmediateOperand) a.Operands[1]).Value +
-                                            ((RegisterOffsetOperand) b.Operands[1]).Offset);
-
-                        var src = new LabelOperand(_debugSource.GetSymbolName(offs), offs);
-                        var srcSize = b2.SrcSize;
-                        var dstSize = b2.DstSize;
-
-                        _instructions[localAddress] = new DataCopyInstruction(b2.Operands[0], dstSize, src, srcSize);
-                        _instructions[localAddress + 4] = new NopInstruction();
-                        localAddress += 4;
-                        ++joinCount;
-                    }
-                }
-            }
-
-            logger.Info($"Joined {joinCount} load/store instructions");
-        }
-
-        public void Dump()
-        {
-            foreach (var insn in _instructions)
-            {
-                if (_callees.Contains(insn.Key))
-                    logger.Debug("### FUNCTION");
-                if (insn.Value is NopInstruction)
-                    continue;
-
-                var f = _debugSource.FindFunction(MakeGlobal(insn.Key));
-
-                var xrefsHere = GetGlobalXrefs(MakeGlobal(insn.Key));
-                if (xrefsHere != null)
-                {
-                    logger.Debug("# XRefs:");
-                    foreach (var xref in xrefsHere)
-                        logger.Debug("# - " + _debugSource.GetSymbolName(xref));
-                    var names = GetLocalSymbolNames(insn.Key);
-                    if (names != null)
-                        foreach (var name in names)
-                            logger.Debug(name + ":");
-                    else
-                        logger.Debug(_debugSource.GetSymbolName(insn.Key) + ":");
-                }
-
-                if (f != null)
-                    logger.Debug(f.GetSignature());
-
-                logger.Debug($"  0x{insn.Key:X}  {insn.Value.AsReadable()}");
+                DecodeInstruction(asm, data, ref localAddress, false);
+                EnqueueForAnalysis(localAddress);
             }
         }
 
-        private IOperand MakeGpBasedOperand(uint data, int shift, int offset)
+        private IMicroArg MakeGpBasedOperand(uint data, int shift, int offset)
         {
             var regofs = MakeRegisterOffsetOperand(data, shift, offset);
             if (_gpBase == null)
                 return regofs;
 
-            if (regofs.Register == RegisterUtil.ToInt(Register.gp))
-                return new LabelOperand(_debugSource.GetSymbolName(_gpBase.Value, regofs.Offset),
-                    (uint) (_gpBase.Value + regofs.Offset));
+            if (regofs.Register == RegisterUtil.ToUInt(Register.gp))
+                return new AddressValue((uint) (_gpBase.Value + regofs.Offset),
+                    _debugSource.GetSymbolName(_gpBase.Value, regofs.Offset));
 
             return regofs;
         }
 
-        private Instruction DecodeInstruction(uint data, uint localAddress)
+        private void DecodeInstruction(MicroAssembly asm, uint data, ref uint nextInsnAddressLocal, bool inDelaySlot)
         {
             switch (ExtractOpcode(data))
             {
                 case Opcode.RegisterFormat:
-                    return DecodeRegisterFormat(data);
+                    DecodeRegisterFormat(asm, data);
+                    break;
                 case Opcode.PCRelative:
-                    return DecodePcRelative(localAddress, data);
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    DecodePcRelative(asm, ref nextInsnAddressLocal, data);
+                    break;
                 case Opcode.j:
-                    AddLocalXref(localAddress - 4, (data & 0x03FFFFFF) << 2);
-                    _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(
-                        new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2),
-                            (data & 0x03FFFFFF) << 2),
-                        null);
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (data & 0x03FFFFFF) << 2;
+                    var tgt = new AddressValue(addr, _debugSource.GetSymbolName(addr));
+                    EnqueueForAnalysis(MakeLocal(addr));
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.Jmp, tgt);
+                }
+                    break;
                 case Opcode.jal:
-                    AddLocalCall(localAddress - 4, (data & 0x03FFFFFF) << 2);
-                    _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
-                    return new CallPtrInstruction(
-                        new LabelOperand(_debugSource.GetSymbolName((data & 0x03FFFFFF) << 2),
-                            (data & 0x03FFFFFF) << 2),
-                        new RegisterOperand(RegisterUtil.ToInt(Register.ra)));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (data & 0x03FFFFFF) << 2;
+                    var tgt = new AddressValue(addr, _debugSource.GetSymbolName(addr));
+                    EnqueueForAnalysis(MakeLocal(addr));
+                    Callees.Add(addr);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.Call, new RegisterArg(RegisterUtil.ToUInt(Register.ra)), tgt);
+                }
+                    break;
                 case Opcode.beq:
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    if (((data >> 16) & 0x1F) == 0)
-                        return new ConditionalBranchInstruction(Operator.Equal,
-                            MakeRegisterOperand(data, 21),
-                            new ImmediateOperand(0),
-                            new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                                (uint) (localAddress + ((short) data << 2))));
-                    else
-                        return new ConditionalBranchInstruction(Operator.Equal,
-                            MakeRegisterOperand(data, 21),
-                            MakeRegisterOperand(data, 16),
-                            new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                                (uint) (localAddress + ((short) data << 2))));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
+                    var tgt = new AddressValue(addr,
+                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2));
+                    EnqueueForAnalysis(addr);
+                    var r1 = MakeRegisterOperand(data, 21);
+                    var r2 = MakeRegisterOperand(data, 16);
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.Cmp, r1, r2);
+                    asm.Add(MicroOpcode.SetEq, tmp);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmp, tgt);
+                }
+                    break;
                 case Opcode.bne:
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    if (((data >> 16) & 0x1F) == 0)
-                        return new ConditionalBranchInstruction(Operator.NotEqual,
-                            MakeRegisterOperand(data, 21),
-                            new ImmediateOperand(0),
-                            new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                                (uint) (localAddress + ((short) data << 2))));
-                    else
-                        return new ConditionalBranchInstruction(Operator.NotEqual,
-                            MakeRegisterOperand(data, 21),
-                            MakeRegisterOperand(data, 16),
-                            new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                                (uint) (localAddress + ((short) data << 2))));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
+                    var tgt = new AddressValue(addr,
+                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2));
+                    EnqueueForAnalysis(addr);
+                    var r1 = MakeRegisterOperand(data, 21);
+                    var r2 = MakeRegisterOperand(data, 16);
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.Cmp, r1, r2);
+                    asm.Add(MicroOpcode.SetEq, tmp);
+                    asm.Add(MicroOpcode.LogicalNot, tmp);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmp, tgt);
+                }
+                    break;
                 case Opcode.blez:
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.LessEqual,
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand(0),
-                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                            (uint) (localAddress + ((short) data << 2))));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
+                    var tgt = new AddressValue(addr,
+                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2));
+                    EnqueueForAnalysis(addr);
+                    var r1 = MakeRegisterOperand(data, 21);
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.Cmp, r1, new ConstValue(0, 32));
+                    asm.Add(MicroOpcode.SSetLE, tmp);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmp, tgt);
+                }
+                    break;
                 case Opcode.bgtz:
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.Greater,
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand(0),
-                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                            (uint) (localAddress + ((short) data << 2))));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
+                    var tgt = new AddressValue(addr,
+                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2));
+                    EnqueueForAnalysis(addr);
+                    var r1 = MakeRegisterOperand(data, 21);
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.Cmp, r1, new ConstValue(0, 32));
+                    asm.Add(MicroOpcode.SSetLE, tmp);
+                    asm.Add(MicroOpcode.LogicalNot, tmp);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmp, tgt);
+                }
+                    break;
                 case Opcode.addi:
-                    return new ArithmeticInstruction(Operator.Add,
-                        MakeRegisterOperand(data, 16),
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                    asm.Add(MicroOpcode.Add, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                        new ConstValue((ushort) data, 16));
+                    break;
                 case Opcode.addiu:
-                    if (((data >> 21) & 0x1F) == 0)
-                        return new DataCopyInstruction(
-                            MakeRegisterOperand(data, 16), 4,
-                            new ImmediateOperand((short) data), 4);
-                    else
-                        return new ArithmeticInstruction(Operator.Add,
-                            MakeRegisterOperand(data, 16),
-                            MakeRegisterOperand(data, 21),
-                            new ImmediateOperand((short) data));
+                    asm.Add(MicroOpcode.Add, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                        new ConstValue((ushort) data, 16));
+                    break;
                 case Opcode.subi:
-                    return new ArithmeticInstruction(Operator.Sub,
-                        MakeRegisterOperand(data, 16),
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                    asm.Add(MicroOpcode.Sub, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                        new ConstValue((ushort) data, 16));
+                    break;
                 case Opcode.subiu:
-                    return new ArithmeticInstruction(Operator.Sub,
-                        MakeRegisterOperand(data, 16),
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                    asm.Add(MicroOpcode.Sub, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                        new ConstValue((ushort) data, 16));
+                    break;
                 case Opcode.andi:
-                    return new ArithmeticInstruction(Operator.BitAnd,
-                        MakeRegisterOperand(data, 16),
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                    asm.Add(MicroOpcode.And, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                        new ConstValue((ushort) data, 16));
+                    break;
                 case Opcode.ori:
-                    return new ArithmeticInstruction(Operator.BitOr,
-                        MakeRegisterOperand(data, 16),
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                    asm.Add(MicroOpcode.Or, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                        new ConstValue((ushort) data, 16));
+                    break;
                 case Opcode.xori:
-                    return new ArithmeticInstruction(Operator.BitXor,
-                        MakeRegisterOperand(data, 16),
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                    asm.Add(MicroOpcode.XOr, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                        new ConstValue((ushort) data, 16));
+                    break;
                 case Opcode.lui:
-                    return new DataCopyInstruction(
-                        MakeRegisterOperand(data, 16), 4,
-                        new ImmediateOperand((ushort) data << 16), 4);
+                    asm.Add(new CopyInsn(MakeRegisterOperand(data, 16),
+                        new ConstValue((ulong) ((ushort) data << 16), 32), 32));
+                    break;
                 case Opcode.CpuControl:
-                    return DecodeCpuControl(localAddress, data);
+                    DecodeCpuControl(asm, nextInsnAddressLocal, data);
+                    break;
                 case Opcode.FloatingPoint:
-                    return new WordData(data);
+                    asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                    break;
                 case Opcode.lb:
-                    return new DataCopyInstruction(
-                        MakeRegisterOperand(data, 16), 4,
-                        MakeGpBasedOperand(data, 21, (short) data), 1
-                    );
+                {
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(new CopyInsn(tmp, MakeGpBasedOperand(data, 21, (short) data), 8));
+                    asm.Add(new SignedCastInsn(tmp, 8, 32));
+                    asm.Add(new CopyInsn(MakeRegisterOperand(data, 16), tmp, 32));
+                }
+                    break;
                 case Opcode.lh:
-                    return new DataCopyInstruction(
-                        MakeRegisterOperand(data, 16), 4,
-                        MakeGpBasedOperand(data, 21, (short) data), 2
-                    );
+                {
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(new CopyInsn(tmp, MakeGpBasedOperand(data, 21, (short) data), 16));
+                    asm.Add(new SignedCastInsn(tmp, 16, 32));
+                    asm.Add(new CopyInsn(MakeRegisterOperand(data, 16), tmp, 32));
+                }
+                    break;
                 case Opcode.lwl:
-                    return new SimpleInstruction("lwl", null, MakeRegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    asm.Add(new UnsupportedInsn("lwl", MakeRegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data)));
+                    break;
                 case Opcode.lw:
-                    return new DataCopyInstruction(
-                        MakeRegisterOperand(data, 16), 4,
-                        MakeGpBasedOperand(data, 21, (short) data), 4);
+                    asm.Add(new CopyInsn(MakeRegisterOperand(data, 16), MakeGpBasedOperand(data, 21, (short) data),
+                        32));
+                    break;
                 case Opcode.lbu:
-                    return new DataCopyInstruction(
-                        MakeRegisterOperand(data, 16), 4,
-                        MakeGpBasedOperand(data, 21, (short) data), 1
-                    );
+                {
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(new CopyInsn(tmp, MakeGpBasedOperand(data, 21, (short) data), 8));
+                    asm.Add(new UnsignedCastInsn(tmp, 8, 32));
+                    asm.Add(new CopyInsn(MakeRegisterOperand(data, 16), tmp, 32));
+                }
+                    break;
                 case Opcode.lhu:
-                    return new DataCopyInstruction(
-                        MakeRegisterOperand(data, 16), 4,
-                        MakeGpBasedOperand(data, 21, (short) data), 2
-                    );
+                {
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(new CopyInsn(tmp, MakeGpBasedOperand(data, 21, (short) data), 16));
+                    asm.Add(new UnsignedCastInsn(tmp, 16, 32));
+                    asm.Add(new CopyInsn(MakeRegisterOperand(data, 16), tmp, 32));
+                }
+                    break;
                 case Opcode.lwr:
-                    return new SimpleInstruction("lwr", null, MakeRegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    asm.Add(new UnsupportedInsn("lwr", MakeRegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data)));
+                    break;
                 case Opcode.sb:
-                    return new DataCopyInstruction(
-                        MakeGpBasedOperand(data, 21, (short) data), 1,
-                        MakeRegisterOperand(data, 16), 4
-                    );
+                {
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(new CopyInsn(tmp, MakeRegisterOperand(data, 16), 32));
+                    asm.Add(new UnsignedCastInsn(tmp, 32, 8));
+                    asm.Add(new CopyInsn(MakeGpBasedOperand(data, 21, (short) data), tmp, 8));
+                }
+                    break;
                 case Opcode.sh:
-                    return new DataCopyInstruction(
-                        MakeGpBasedOperand(data, 21, (short) data), 2,
-                        MakeRegisterOperand(data, 16), 4
-                    );
+                {
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(new CopyInsn(tmp, MakeRegisterOperand(data, 16), 32));
+                    asm.Add(new UnsignedCastInsn(tmp, 32, 16));
+                    asm.Add(new CopyInsn(MakeGpBasedOperand(data, 21, (short) data), tmp, 16));
+                }
+                    break;
                 case Opcode.swl:
-                    return new SimpleInstruction("swl", null, MakeRegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    asm.Add(new UnsupportedInsn("swl", MakeRegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data)));
+                    break;
                 case Opcode.sw:
-                    return new DataCopyInstruction(
-                        MakeGpBasedOperand(data, 21, (short) data), 4,
-                        MakeRegisterOperand(data, 16), 4);
+                    asm.Add(new CopyInsn(MakeGpBasedOperand(data, 21, (short) data), MakeRegisterOperand(data, 16),
+                        32));
+                    break;
                 case Opcode.swr:
-                    return new SimpleInstruction("swr", null, MakeRegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    asm.Add(new UnsupportedInsn("swr", MakeRegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data)));
+                    break;
                 case Opcode.swc1:
-                    return new SimpleInstruction("swc1", null, MakeRegisterOperand(data, 16),
-                        new ImmediateOperand((short) data), MakeRegisterOperand(data, 21));
+                    asm.Add(new UnsupportedInsn("swc1", MakeRegisterOperand(data, 16),
+                        new ConstValue((ushort) data, 16), MakeRegisterOperand(data, 21)));
+                    break;
                 case Opcode.lwc1:
-                    return new SimpleInstruction("lwc1", null, MakeC2RegisterOperand(data, 16),
-                        new ImmediateOperand((short) data), MakeRegisterOperand(data, 21));
+                    asm.Add(new UnsupportedInsn("lwc1", MakeC2RegisterOperand(data, 16),
+                        new ConstValue((ushort) data, 16), MakeRegisterOperand(data, 21)));
+                    break;
                 case Opcode.cop0:
-                    return new SimpleInstruction("cop0", null, new ImmediateOperand(data & ((1 << 26) - 1)));
+                    asm.Add(new UnsupportedInsn("cop0", new ConstValue(data & ((1 << 26) - 1), 26)));
+                    break;
                 case Opcode.cop1:
-                    return new SimpleInstruction("cop1", null, new ImmediateOperand(data & ((1 << 26) - 1)));
+                    asm.Add(new UnsupportedInsn("cop1", new ConstValue(data & ((1 << 26) - 1), 26)));
+                    break;
                 case Opcode.cop2:
-                    return DecodeCop2(data);
+                    DecodeCop2(asm, data);
+                    break;
                 case Opcode.cop3:
-                    return new SimpleInstruction("cop3", null, new ImmediateOperand(data & ((1 << 26) - 1)));
+                    asm.Add(new UnsupportedInsn("cop3", new ConstValue(data & ((1 << 26) - 1), 26)));
+                    break;
                 case Opcode.beql:
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.Equal,
-                        MakeRegisterOperand(data, 21),
-                        MakeRegisterOperand(data, 16),
-                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                            (uint) (localAddress + ((short) data << 2))));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
+                    var tgt = new AddressValue(addr,
+                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2));
+                    EnqueueForAnalysis(addr);
+                    asm.Add(MicroOpcode.Cmp, MakeRegisterOperand(data, 21), MakeRegisterOperand(data, 16));
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.SetEq, tmp);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmp, tgt);
+                }
+                    break;
                 case Opcode.bnel:
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.NotEqual,
-                        MakeRegisterOperand(data, 21),
-                        MakeRegisterOperand(data, 16),
-                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                            (uint) (localAddress + ((short) data << 2))));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
+                    var tgt = new AddressValue(addr,
+                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2));
+                    EnqueueForAnalysis(addr);
+                    asm.Add(MicroOpcode.Cmp, MakeRegisterOperand(data, 21), MakeRegisterOperand(data, 16));
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.SetEq, tmp);
+                    asm.Add(MicroOpcode.LogicalNot, tmp);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmp, tgt);
+                }
+                    break;
                 case Opcode.blezl:
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.SignedLessEqual,
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand(0),
-                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                            (uint) (localAddress + ((short) data << 2))));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
+                    var tgt = new AddressValue(addr,
+                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2));
+                    EnqueueForAnalysis(addr);
+                    asm.Add(MicroOpcode.Cmp, MakeRegisterOperand(data, 21), new ConstValue(0, 32));
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.SSetLE, tmp);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmp, tgt);
+                }
+                    break;
                 case Opcode.bgtzl:
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.Greater,
-                        MakeRegisterOperand(data, 21),
-                        new ImmediateOperand(0),
-                        new LabelOperand(_debugSource.GetSymbolName(localAddress, (short) data << 2),
-                            (uint) (localAddress + ((short) data << 2))));
+                {
+                    if (inDelaySlot)
+                    {
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        break;
+                    }
+
+                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
+                    var tgt = new AddressValue(addr,
+                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2));
+                    EnqueueForAnalysis(addr);
+                    asm.Add(MicroOpcode.Cmp, MakeRegisterOperand(data, 21), new ConstValue(0, 32));
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.SSetLE, tmp);
+                    asm.Add(MicroOpcode.LogicalNot, tmp);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmp, tgt);
+                }
+                    break;
                 default:
-                    return new WordData(data);
+                    asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                    break;
             }
         }
 
-        private static Instruction DecodeRegisterFormat(uint data)
+        private static void DecodeRegisterFormat(MicroAssembly asm, uint data)
         {
             var rd = MakeRegisterOperand(data, 11);
             var rs2 = MakeRegisterOperand(data, 16);
@@ -682,288 +537,361 @@ namespace exefile
             {
                 case OpcodeFunction.sll:
                     if (data == 0)
-                        return new NopInstruction();
+                        asm.Add(MicroOpcode.Nop);
                     else
-                        return new ArithmeticInstruction(Operator.Shl,
-                            rd, rs2,
-                            new ImmediateOperand((int) (data >> 6) & 0x1F));
+                        asm.Add(MicroOpcode.SHL, rd, rs2, new ConstValue(data >> 6 & 0x1F, 5));
+                    break;
                 case OpcodeFunction.srl:
-                    return new ArithmeticInstruction(Operator.Shr,
-                        rd, rs2,
-                        new ImmediateOperand((int) (data >> 6) & 0x1F));
-                case OpcodeFunction.sra:
-                    return new ArithmeticInstruction(Operator.Sar,
-                        rd, rs2,
-                        new ImmediateOperand((int) (data >> 6) & 0x1F));
-                case OpcodeFunction.sllv:
-                    return new ArithmeticInstruction(Operator.Shl,
-                        rd, rs2,
-                        rs1);
-                case OpcodeFunction.srlv:
-                    return new ArithmeticInstruction(Operator.Shr,
-                        rd, rs2,
-                        rs1);
-                case OpcodeFunction.srav:
-                    return new ArithmeticInstruction(Operator.Sar,
-                        rd, rs2,
-                        rs1);
-                case OpcodeFunction.jr:
-                    return new CallPtrInstruction(rs1, null);
-                case OpcodeFunction.jalr:
-                    return new CallPtrInstruction(rs1, rd);
-                case OpcodeFunction.syscall:
-                    return new SimpleInstruction("syscall", "trap(SYSCALL, {0})",
-                        new ImmediateOperand((int) (data >> 6) & 0xFFFFF));
-                case OpcodeFunction.break_:
-                    return new SimpleInstruction("break", "trap(BREAK, {0})",
-                        new ImmediateOperand((int) (data >> 6) & 0xFFFFF));
-                case OpcodeFunction.mfhi:
-                    return new SimpleInstruction("mfhi", "{0} = __DIV_REMAINDER_OR_MULT_HI()",
-                        rd);
-                case OpcodeFunction.mthi:
-                    return new SimpleInstruction("mthi", "__LOAD_DIV_REMAINDER_OR_MULT_HI({0})",
-                        rd);
-                case OpcodeFunction.mflo:
-                    return new SimpleInstruction("mflo", "{0} = __DIV_OR_MULT_LO()",
-                        rd);
-                case OpcodeFunction.mtlo:
-                    return new SimpleInstruction("mtlo", "__LOAD_DIV_OR_MULT_LO({0})",
-                        rd);
-                case OpcodeFunction.mult:
-                    return new SimpleInstruction("mult", "__MULT((signed){0}, (signed){1})",
-                        rs1, rs2);
-                case OpcodeFunction.multu:
-                    return new SimpleInstruction("multu", "__MULT((unsigned){0}, (unsigned){1})",
-                        rs1, rs2);
-                case OpcodeFunction.div:
-                    return new SimpleInstruction("div", "__DIV((signed){0}, (signed){1})",
-                        rs1, rs2);
-                case OpcodeFunction.divu:
-                    return new SimpleInstruction("divu", "__DIV((unsigned){0}, (unsigned){1})",
-                        rs1, rs2);
-                case OpcodeFunction.add:
-                    return new ArithmeticInstruction(Operator.Add,
-                        rd, rs1, rs2);
-                case OpcodeFunction.addu:
-                    if (rs2.Register == RegisterUtil.ToInt(Register.zero))
-                        return new DataCopyInstruction(rd, 4, rs1, 4);
+                    if (data == 0)
+                        asm.Add(MicroOpcode.Nop);
                     else
-                        return new ArithmeticInstruction(Operator.Add, rd, rs1, rs2);
+                        asm.Add(MicroOpcode.SRL, rd, rs2, new ConstValue(data >> 6 & 0x1F, 5));
+                    break;
+                case OpcodeFunction.sra:
+                    if (data == 0)
+                        asm.Add(MicroOpcode.Nop);
+                    else
+                        asm.Add(MicroOpcode.SRA, rd, rs2, new ConstValue(data >> 6 & 0x1F, 5));
+                    break;
+                case OpcodeFunction.sllv:
+                    asm.Add(MicroOpcode.SHL, rd, rs2, rs1);
+                    break;
+                case OpcodeFunction.srlv:
+                    asm.Add(MicroOpcode.SRL, rd, rs2, rs1);
+                    break;
+                case OpcodeFunction.srav:
+                    asm.Add(MicroOpcode.SRA, rd, rs2, rs1);
+                    break;
+                case OpcodeFunction.jr:
+                    asm.Add(MicroOpcode.Jmp, rs1);
+                    break;
+                case OpcodeFunction.jalr:
+                    asm.Add(MicroOpcode.Call, rd, rs1);
+                    break;
+                case OpcodeFunction.syscall:
+                    asm.Add(new UnsupportedInsn("syscall", new ConstValue(data >> 6 & 0xFFFFF, 20)));
+                    break;
+                case OpcodeFunction.break_:
+                    asm.Add(new UnsupportedInsn("break", new ConstValue(data >> 6 & 0xFFFFF, 20)));
+                    break;
+                case OpcodeFunction.mfhi:
+                    asm.Add(new UnsupportedInsn("mfhi", rd));
+                    break;
+                case OpcodeFunction.mthi:
+                    asm.Add(new UnsupportedInsn("mthi", rd));
+                    break;
+                case OpcodeFunction.mflo:
+                    asm.Add(new UnsupportedInsn("mflo", rd));
+                    break;
+                case OpcodeFunction.mtlo:
+                    asm.Add(new UnsupportedInsn("mtlo", rd));
+                    break;
+                case OpcodeFunction.mult:
+                    asm.Add(new UnsupportedInsn("mult", rs1, rs2));
+                    break;
+                case OpcodeFunction.multu:
+                    asm.Add(new UnsupportedInsn("multu", rs1, rs2));
+                    break;
+                case OpcodeFunction.div:
+                    asm.Add(new UnsupportedInsn("div", rs1, rs2));
+                    break;
+                case OpcodeFunction.divu:
+                    asm.Add(new UnsupportedInsn("divu", rs1, rs2));
+                    break;
+                case OpcodeFunction.add:
+                    asm.Add(MicroOpcode.Add, rd, rs1, rs2);
+                    return;
+                case OpcodeFunction.addu:
+                    asm.Add(MicroOpcode.Add, rd, rs1, rs2);
+                    return;
                 case OpcodeFunction.sub:
-                    return new ArithmeticInstruction(Operator.Sub,
-                        rd, rs1, rs2);
+                    asm.Add(MicroOpcode.Sub, rd, rs1, rs2);
+                    return;
                 case OpcodeFunction.subu:
-                    return new ArithmeticInstruction(Operator.Sub,
-                        rd, rs1, rs2);
+                    asm.Add(MicroOpcode.Sub, rd, rs1, rs2);
+                    return;
                 case OpcodeFunction.and:
-                    return new ArithmeticInstruction(Operator.BitAnd,
-                        rd, rs1, rs2);
+                    asm.Add(MicroOpcode.And, rd, rs1, rs2);
+                    return;
                 case OpcodeFunction.or:
-                    return new ArithmeticInstruction(Operator.BitOr,
-                        rd, rs1, rs2);
+                    asm.Add(MicroOpcode.Or, rd, rs1, rs2);
+                    return;
                 case OpcodeFunction.xor:
-                    return new ArithmeticInstruction(Operator.BitXor,
-                        rd, rs1, rs2);
+                    asm.Add(MicroOpcode.XOr, rd, rs1, rs2);
+                    return;
                 case OpcodeFunction.nor:
-                    return new SimpleInstruction("nor", "{0} = ~({1} | {2})", rd,
-                        rs1, rs2);
+                {
+                    var tmp = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.Copy, tmp, rs1);
+                    asm.Add(MicroOpcode.Or, tmp, rs2);
+                    asm.Add(MicroOpcode.Not, tmp);
+                    asm.Add(MicroOpcode.Copy, rd, tmp);
+                }
+                    break;
                 case OpcodeFunction.slt:
-                    return new SimpleInstruction("slt", "{0} = {1} < {2} ? 1 : 0",
-                        rd, rs1,
-                        rs2);
+                    asm.Add(MicroOpcode.Cmp, rs1, rs2);
+                    asm.Add(MicroOpcode.SSetL, rd);
+                    break;
                 case OpcodeFunction.sltu:
-                    return new SimpleInstruction("sltu", "{0} = {1} < {2} ? 1 : 0",
-                        rd, rs1,
-                        rs2);
+                    asm.Add(MicroOpcode.Cmp, rs1, rs2);
+                    asm.Add(MicroOpcode.USetL, rd);
+                    break;
                 default:
-                    return new WordData(data);
+                    asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                    break;
             }
         }
 
-        private Instruction DecodeCpuControl(uint localAddress, uint data)
+        private void DecodeCpuControl(MicroAssembly asm, uint nextInsnAddressLocal, uint data)
         {
             switch ((CpuControlOpcode) ((data >> 21) & 0x1f))
             {
                 case CpuControlOpcode.mtc0:
-                    return new SimpleInstruction("mtc0", null, MakeRegisterOperand(data, 16),
-                        MakeC0RegisterOperand(data, 11));
+                    asm.Add(new UnsupportedInsn("mtc0", MakeRegisterOperand(data, 16),
+                        MakeC0RegisterOperand(data, 11)));
+                    break;
                 case CpuControlOpcode.bc0:
                     switch ((data >> 16) & 0x1f)
                     {
                         case 0:
-                            AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                            return new SimpleInstruction("bc0f", null,
-                                new LabelOperand(_debugSource.GetSymbolName(localAddress, (ushort) data << 2),
-                                    (uint) (localAddress + ((short) data << 2))));
+                            EnqueueForAnalysis((uint) ((nextInsnAddressLocal + (short) data) << 2));
+                            asm.Add(new UnsupportedInsn("bc0f",
+                                new AddressValue((uint) (nextInsnAddressLocal + ((short) data << 2)),
+                                    _debugSource.GetSymbolName(nextInsnAddressLocal, (ushort) data << 2))));
+                            break;
                         case 1:
-                            AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                            return new SimpleInstruction("bc0t", null,
-                                new LabelOperand(_debugSource.GetSymbolName(localAddress, (ushort) data << 2),
-                                    (uint) (localAddress + ((short) data << 2))));
+                            EnqueueForAnalysis((uint) ((nextInsnAddressLocal + (short) data) << 2));
+                            asm.Add(new UnsupportedInsn("bc0t",
+                                new AddressValue((uint) (nextInsnAddressLocal + ((short) data << 2)),
+                                    _debugSource.GetSymbolName(nextInsnAddressLocal, (ushort) data << 2))));
+                            break;
                         default:
-                            return new WordData(data);
+                            asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                            break;
                     }
+
+                    break;
                 case CpuControlOpcode.tlb:
-                    return DecodeTlb(data);
+                    DecodeTlb(asm, data);
+                    break;
                 case CpuControlOpcode.mfc0:
-                    return new SimpleInstruction("mfc0", null, MakeRegisterOperand(data, 16),
-                        MakeC0RegisterOperand(data, 11));
+                    asm.Add(new UnsupportedInsn("mfc0", MakeRegisterOperand(data, 16),
+                        MakeC0RegisterOperand(data, 11)));
+                    break;
                 default:
-                    return new WordData(data);
+                    asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                    break;
             }
         }
 
-        private static Instruction DecodeTlb(uint data)
+        private static void DecodeTlb(MicroAssembly asm, uint data)
         {
             switch ((TlbOpcode) (data & 0x1f))
             {
                 case TlbOpcode.tlbr:
-                    return new SimpleInstruction("tlbr", null);
+                    asm.Add(new UnsupportedInsn("tlbr"));
+                    break;
                 case TlbOpcode.tlbwi:
-                    return new SimpleInstruction("tlbwi", null);
+                    asm.Add(new UnsupportedInsn("tlbwi"));
+                    break;
                 case TlbOpcode.tlbwr:
-                    return new SimpleInstruction("tlbwr", null);
+                    asm.Add(new UnsupportedInsn("tlbwr"));
+                    break;
                 case TlbOpcode.tlbp:
-                    return new SimpleInstruction("tlbp", null);
+                    asm.Add(new UnsupportedInsn("tlbp"));
+                    break;
                 case TlbOpcode.rfe:
-                    return new SimpleInstruction("rfe", "__RETURN_FROM_EXCEPTION()");
+                    asm.Add(new UnsupportedInsn("rfe"));
+                    break;
                 default:
-                    return new WordData(data);
+                    asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                    break;
             }
         }
 
-        private Instruction DecodePcRelative(uint localAddress, uint data)
+        private void DecodePcRelative(MicroAssembly asm, ref uint nextInsnAddressLocal, uint data)
         {
             var rs = MakeRegisterOperand(data, 21);
-            var offset = new LabelOperand(_debugSource.GetSymbolName(localAddress, (ushort) data << 2),
-                (uint) (localAddress + ((short) data << 2)));
+            var addr = (short) data << 2;
+            var offset = new AddressValue((ulong) (nextInsnAddressLocal + addr),
+                _debugSource.GetSymbolName(nextInsnAddressLocal, addr));
             switch ((data >> 16) & 0x1f)
             {
                 case 0: // bltz
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.SignedLess,
-                        rs,
-                        new ImmediateOperand(0),
-                        offset);
+                {
+                    EnqueueForAnalysis((uint) ((nextInsnAddressLocal + (short) data) << 2));
+                    asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
+                    var tmpReg = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.SSetL, tmpReg);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
+                    break;
+                }
                 case 1: // bgez
-                    AddLocalXref(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.SignedGreaterEqual,
-                        rs,
-                        new ImmediateOperand(0),
-                        offset);
+                {
+                    EnqueueForAnalysis((uint) (nextInsnAddressLocal + addr));
+                    asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
+                    var tmpReg = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.SSetL, tmpReg);
+                    asm.Add(MicroOpcode.LogicalNot, tmpReg);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
+                    break;
+                }
                 case 16: // bltzal
-                    AddLocalCall(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.SignedLess,
-                        rs,
-                        new ImmediateOperand(0),
-                        offset);
+                {
+                    EnqueueForAnalysis((uint) (nextInsnAddressLocal + addr));
+                    asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
+                    var tmpReg = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.SSetL, tmpReg);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
+                    break;
+                }
                 case 17: // bgezal
-                    AddLocalCall(localAddress - 4, (uint) ((localAddress + (short) data) << 2));
-                    _analysisQueue.Enqueue(localAddress + (uint) ((short) data << 2));
-                    return new ConditionalBranchInstruction(Operator.SignedGreaterEqual,
-                        rs,
-                        new ImmediateOperand(0),
-                        offset);
+                {
+                    EnqueueForAnalysis((uint) (nextInsnAddressLocal + addr));
+                    asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
+                    var tmpReg = asm.GetTmpReg();
+                    asm.Add(MicroOpcode.SSetL, tmpReg);
+                    asm.Add(MicroOpcode.LogicalNot, tmpReg);
+                    nextInsnAddressLocal += 4;
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
+                    break;
+                }
                 default:
-                    return new WordData(data);
+                    asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                    break;
             }
         }
 
-        private static Instruction DecodeCop2(uint data)
+        private static void DecodeCop2(MicroAssembly asm, uint data)
         {
             var opc = data & ((1 << 26) - 1);
             if (((data >> 25) & 1) != 0)
-                return DecodeCop2Gte(opc);
+            {
+                DecodeCop2Gte(asm, opc);
+                return;
+            }
 
             var cf = (opc >> 21) & 0x1F;
             switch (cf)
             {
                 case 0:
-                    return new SimpleInstruction("mfc2", null, MakeRegisterOperand(opc, 16),
-                        new ImmediateOperand((short) opc), MakeC2RegisterOperand(opc, 21));
+                    asm.Add(new UnsupportedInsn("mfc2", MakeRegisterOperand(opc, 16),
+                        new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
+                    break;
                 case 2:
-                    return new SimpleInstruction("cfc2", null, MakeRegisterOperand(opc, 16),
-                        new ImmediateOperand((short) opc), MakeC2RegisterOperand(opc, 21));
+                    asm.Add(new UnsupportedInsn("cfc2", MakeRegisterOperand(opc, 16),
+                        new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
+                    break;
                 case 4:
-                    return new SimpleInstruction("mtc2", null, MakeRegisterOperand(opc, 16),
-                        new ImmediateOperand((short) opc), MakeC2RegisterOperand(opc, 21));
+                    asm.Add(new UnsupportedInsn("mtc2", MakeRegisterOperand(opc, 16),
+                        new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
+                    break;
                 case 6:
-                    return new SimpleInstruction("ctc2", null, MakeRegisterOperand(opc, 16),
-                        new ImmediateOperand((short) opc), MakeC2RegisterOperand(opc, 21));
+                    asm.Add(new UnsupportedInsn("ctc2", MakeRegisterOperand(opc, 16),
+                        new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
+                    break;
                 default:
-                    return new WordData(data);
+                    asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                    break;
             }
         }
 
-        private static Instruction DecodeCop2Gte(uint data)
+        private static void DecodeCop2Gte(MicroAssembly asm, uint data)
         {
             switch (data & 0x1F003FF)
             {
                 case 0x0400012:
-                    return new SimpleInstruction("mvmva",
-                        null,
-                        new ImmediateOperand((int) (data >> 19) & 1),
-                        new ImmediateOperand((int) (data >> 17) & 3),
-                        new ImmediateOperand((int) (data >> 15) & 3),
-                        new ImmediateOperand((int) (data >> 13) & 3),
-                        new ImmediateOperand((int) (data >> 10) & 1)
-                    );
+                    asm.Add(new UnsupportedInsn("mvmva",
+                        new ConstValue(data >> 19 & 1, 1),
+                        new ConstValue(data >> 17 & 3, 2),
+                        new ConstValue(data >> 15 & 3, 2),
+                        new ConstValue(data >> 13 & 3, 2),
+                        new ConstValue(data >> 10 & 1, 1)
+                    ));
+                    break;
                 case 0x0a00428:
-                    return new SimpleInstruction("sqr", null,
-                        new ImmediateOperand((int) (data >> 19) & 1));
+                    asm.Add(new UnsupportedInsn("sqr",
+                        new ConstValue(data >> 19 & 1, 1)));
+                    break;
                 case 0x170000C:
-                    return new SimpleInstruction("op", null,
-                        new ImmediateOperand((int) (data >> 19) & 1));
+                    asm.Add(new UnsupportedInsn("op",
+                        new ConstValue(data >> 19 & 1, 1)));
+                    break;
                 case 0x190003D:
-                    return new SimpleInstruction("gpf", null,
-                        new ImmediateOperand((int) (data >> 19) & 1));
+                    asm.Add(new UnsupportedInsn("gpf",
+                        new ConstValue(data >> 19 & 1, 1)));
+                    break;
                 case 0x1A0003E:
-                    return new SimpleInstruction("gpl", null,
-                        new ImmediateOperand((int) (data >> 19) & 1));
+                    asm.Add(new UnsupportedInsn("gpl",
+                        new ConstValue(data >> 19 & 1, 1)));
+                    break;
                 default:
                     switch (data)
                     {
                         case 0x0180001:
-                            return new SimpleInstruction("rtps", null);
+                            asm.Add(new UnsupportedInsn("rtps"));
+                            break;
                         case 0x0280030:
-                            return new SimpleInstruction("rtpt", null);
+                            asm.Add(new UnsupportedInsn("rtpt"));
+                            break;
                         case 0x0680029:
-                            return new SimpleInstruction("dcpl", null);
+                            asm.Add(new UnsupportedInsn("dcpl"));
+                            break;
                         case 0x0780010:
-                            return new SimpleInstruction("dcps", null);
+                            asm.Add(new UnsupportedInsn("dcps"));
+                            break;
                         case 0x0980011:
-                            return new SimpleInstruction("intpl", null);
+                            asm.Add(new UnsupportedInsn("intpl"));
+                            break;
                         case 0x0C8041E:
-                            return new SimpleInstruction("ncs", null);
+                            asm.Add(new UnsupportedInsn("ncs"));
+                            break;
                         case 0x0D80420:
-                            return new SimpleInstruction("nct", null);
+                            asm.Add(new UnsupportedInsn("nct"));
+                            break;
                         case 0x0E80413:
-                            return new SimpleInstruction("ncds", null);
+                            asm.Add(new UnsupportedInsn("ncds"));
+                            break;
                         case 0x0F80416:
-                            return new SimpleInstruction("ncdt", null);
+                            asm.Add(new UnsupportedInsn("ncdt"));
+                            break;
                         case 0x0F8002A:
-                            return new SimpleInstruction("dpct", null);
+                            asm.Add(new UnsupportedInsn("dpct"));
+                            break;
                         case 0x108041B:
-                            return new SimpleInstruction("nccs", null);
+                            asm.Add(new UnsupportedInsn("nccs"));
+                            break;
                         case 0x118043F:
-                            return new SimpleInstruction("ncct", null);
+                            asm.Add(new UnsupportedInsn("ncct"));
+                            break;
                         case 0x1280414:
-                            return new SimpleInstruction("cdp", null);
+                            asm.Add(new UnsupportedInsn("cdp"));
+                            break;
                         case 0x138041C:
-                            return new SimpleInstruction("cc", null);
+                            asm.Add(new UnsupportedInsn("cc"));
+                            break;
                         case 0x1400006:
-                            return new SimpleInstruction("nclip", null);
+                            asm.Add(new UnsupportedInsn("nclip"));
+                            break;
                         case 0x158002D:
-                            return new SimpleInstruction("avsz3", null);
+                            asm.Add(new UnsupportedInsn("avsz3"));
+                            break;
                         case 0x168002E:
-                            return new SimpleInstruction("avsz4", null);
+                            asm.Add(new UnsupportedInsn("avsz4"));
+                            break;
                         default:
-                            return new SimpleInstruction("cop2", null,
-                                new ImmediateOperand(data));
+                            asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
+                            break;
                     }
+
+                    break;
             }
         }
 

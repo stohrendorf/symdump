@@ -4,19 +4,19 @@ namespace mips.disasm
 {
     public static class RegisterUtil
     {
-        public static int ToInt(Register r)
+        public static uint ToUInt(Register r)
         {
-            return (int) r;
+            return (uint) r;
         }
 
-        public static int ToInt(C0Register r)
+        public static uint ToUInt(C0Register r)
         {
-            return ToInt(Register.Sentinel) + (int) r;
+            return ToUInt(Register.Sentinel) + (uint) r;
         }
 
-        public static int ToInt(C2Register r)
+        public static uint ToUInt(C2Register r)
         {
-            return ToInt(C0Register.Sentinel) + (int) r;
+            return ToUInt(C0Register.Sentinel) + (uint) r;
         }
 
         public static Register? RegisterFromInt(int i)

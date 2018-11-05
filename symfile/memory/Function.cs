@@ -6,7 +6,7 @@ namespace symfile.memory
 {
     public class Function : IMemoryLayout, IEquatable<Function>
     {
-        public int Precedence => Operator.FunctionCall.GetPrecedence(false);
+        public int Precedence => 1;
 
         public string FundamentalType => _inner.FundamentalType;
 

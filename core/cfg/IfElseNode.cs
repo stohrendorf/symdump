@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using core.microcode;
 using core.util;
 using JetBrains.Annotations;
 
@@ -14,10 +15,6 @@ namespace core.cfg
         [NotNull] private readonly INode _falseBody;
 
         public override string Id => "ifelse_" + _condition.Id;
-
-        public override IEnumerable<int> InputRegisters => _condition.InputRegisters.Concat(_trueBody.InputRegisters).Concat(_falseBody.InputRegisters).Distinct();
-
-        public override IEnumerable<int> OutputRegisters => _condition.OutputRegisters.Concat(_trueBody.OutputRegisters).Concat(_falseBody.OutputRegisters).Distinct();
 
         public IfElseNode([NotNull] INode condition) : base(condition.Graph)
         {
@@ -55,7 +52,7 @@ namespace core.cfg
             Graph.AddEdge(new AlwaysEdge(this, common));
         }
 
-        public override IEnumerable<Instruction> Instructions
+        public override IEnumerable<MicroInsn> Instructions
         {
             get
             {
@@ -68,23 +65,6 @@ namespace core.cfg
         public override bool ContainsAddress(uint address) =>
             _condition.ContainsAddress(address) || _trueBody.ContainsAddress(address) ||
             _falseBody.ContainsAddress(address);
-
-        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
-        {
-            writer.WriteLine("if{");
-            ++writer.Indent;
-            _condition.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine("} {");
-            ++writer.Indent;
-            _trueBody.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine("} else {");
-            ++writer.Indent;
-            _falseBody.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine("}");
-        }
 
         public static bool IsCandidate([NotNull] INode condition)
         {

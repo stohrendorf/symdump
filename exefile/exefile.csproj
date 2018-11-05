@@ -49,6 +49,10 @@
       <PackageReference Include="xunit" Version="2.2.0"/>
       <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0"/>
   </ItemGroup>
+    <ItemGroup>
+        <Folder Include="controlflow"/>
+        <Folder Include="dataflow"/>
+    </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
                    Other similar extension points exist, see Microsoft.Common.targets.
               <Target Name="BeforeBuild">

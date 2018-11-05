@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using core.microcode;
 using core.util;
 using JetBrains.Annotations;
 
@@ -12,10 +13,6 @@ namespace core.cfg
         [NotNull] private readonly INode _inner;
 
         public override string Id => "not_" + _inner.Id;
-
-        public override IEnumerable<int> InputRegisters => _inner.InputRegisters;
-
-        public override IEnumerable<int> OutputRegisters => _inner.OutputRegisters;
 
         public NotNode([NotNull] INode inner) : base(inner.Graph)
         {
@@ -47,15 +44,6 @@ namespace core.cfg
         public override bool ContainsAddress(uint address)
             => _inner.ContainsAddress(address);
 
-        public override IEnumerable<Instruction> Instructions => _inner.Instructions;
-
-        public override void Dump(IndentedTextWriter writer, IDataFlowState dataFlowState)
-        {
-            writer.WriteLine("!{");
-            ++writer.Indent;
-            _inner.Dump(writer, dataFlowState);
-            --writer.Indent;
-            writer.WriteLine("}");
-        }
+        public override IEnumerable<MicroInsn> Instructions => _inner.Instructions;
     }
 }

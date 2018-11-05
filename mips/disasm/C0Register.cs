@@ -4,6 +4,7 @@ namespace mips.disasm
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
     public enum C0Register
     {
         inx,
