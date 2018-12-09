@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         transform: rotate(360deg);
     }
 }
-
 @keyframes dhx_loader_dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -31,7 +30,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         stroke-dashoffset: -124px;
     }
 }
-
 .dhx_tooltip {
     display: none;
     position: absolute;
@@ -54,18 +52,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background: -moz-linear-gradient(#efefef 0%, #f6f6f6 50%, #efefef 100%);
     background: #efefef;
 }
-
 .dhx_noselect {
     -moz-user-select: none;
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
 }
-
 .dhx_allow_selection {
     -moz-user-select: text;
     -user-select: text;
 }
-
 .dhx_dataview {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -74,7 +69,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -moz-user-select: -moz-none;
     -khtml-select: none;
 }
-
 .dhx_drag_zone {
     position: absolute;
     border: 1px solid #A4BED4;
@@ -83,13 +77,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -khtml-box-shadow: 5px 5px 5px #888;
     background: #fff;
 }
-
 .dhx_dataview_default_item,
 .dhx_dataview_default_item_selected {
     cursor: pointer;
     background-color: white;
 }
-
 .dhx_dataview .dhx_dataview_default_item,
 .dhx_dataview .dhx_dataview_default_item_selected {
     border-right: 1px solid #eeeeee;
@@ -104,32 +96,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAABAQMAAADO7O3JAAAAA1BMVEUzmc3EAelNAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==");
     position: relative;
 }
-
 .dhx_dataview_item {
     font-family: Roboto, Arial, Helvetica;
     font-size: 14px;
     color: #404040;
 }
-
 .dhx_dataview_item .dhx_strong {
     font-weight: bold;
     display: block;
     padding-bottom: 6px;
 }
-
 .dhx_dataview_default_item_selected .dhx_light {
     color: #C3C3C3;
 }
-
 .dhx_dataview_item .dhx_light {
     color: #919191;
 }
-
 .dhx_drag_over {
     background-color: #eeeeee;
     background-repeat: repeat-x;
 }
-
 .dhx_pager_item,
 .dhx_pager_item_selected {
     float: left;
@@ -143,7 +129,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: pointer;
     background-color: white;
 }
-
 .dhx_pager_item_selected {
     background-color: lightgrey;
     color: white;

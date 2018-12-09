@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Open effects (experimental)</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         body {
@@ -19,6 +19,7 @@
         var opacity = 90;
         var myMenu;
         var myContextMenu;
+
         function doOnLoad() {
             myMenu = new dhtmlXMenuObject({
                 parent: "menuObj",
@@ -45,6 +46,7 @@
                 byId("opacityBtns").innerHTML += '<input type="button" value="' + w + '" onclick="changeOpacity(' + w + ');" style="margin-left: 5px;">';
             }
         }
+
         function unloadMenu() {
             myMenu.unload();
             myMenu = null;
@@ -86,14 +88,14 @@
 </div>
 <table border="0">
     <tr>
-        <td valign="top" align="left">
+        <td align="left" valign="top">
             <div style="background-color: white; float: left; padding: 20px; border-radius: 5px;">
                 <div>
                     <div>Mode</div>
-                    <input type="button" value="Opacity" onclick="effectOnOff('opacity');">
-                    <input type="button" value="Slide" onclick="effectOnOff('slide');">
-                    <input type="button" value="Slide & Opacity" onclick="effectOnOff('slide+');">
-                    <input type="button" value="Disable All" onclick="effectOnOff(null);">
+                    <input onclick="effectOnOff('opacity');" type="button" value="Opacity">
+                    <input onclick="effectOnOff('slide');" type="button" value="Slide">
+                    <input onclick="effectOnOff('slide+');" type="button" value="Slide & Opacity">
+                    <input onclick="effectOnOff(null);" type="button" value="Disable All">
                     <!-- speed buttons -->
                     <div style="margin-top: 5px;">Speed (ms)</div>
                     <div id="speedBtns"></div>
@@ -107,9 +109,9 @@
                 <div id="opacityval"></div>
             </div>
         </td>
-        <td valign="top" align="left">
-            <div style="background-color: white; float: left; padding: 20px; border-radius: 5px; position: relative;"
-                 id="contextMenu">
+        <td align="left" valign="top">
+            <div id="contextMenu"
+                 style="background-color: white; float: left; padding: 20px; border-radius: 5px; position: relative;">
                 <span style="font-weight:bold;position:relative;">menu.enableEffect(name, maxOpacity, effectSpeed);</span><br>
                 where:<br>
                 name - str (mandatory), effect name, values - "opacity" or "slide" or "slide+" (slide with opacity)<br>

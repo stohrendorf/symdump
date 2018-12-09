@@ -14,7 +14,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
 .dhxeditor_dhx_skyblue {
     position: relative;
 }
-
 .dhxeditor_dhx_skyblue iframe.dhxeditor_mainiframe {
     position: absolute;
     overflow: hidden;
@@ -23,7 +22,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     width: 100%;
     height: 100%;
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_stb {
     position: relative;
     height: 30px;
@@ -34,7 +32,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background: -webkit-linear-gradient(#e2efff, #d3e7ff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button {
     float: left;
     position: relative;
@@ -48,24 +45,19 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 1;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button.btn_bold {
     margin-left: 5px;
     background-position: 0px 0px;
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button.btn_italic {
     background-position: -18px 0px;
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button.btn_underline {
     background-position: -36px 0px;
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button.btn_clearformat {
     background-position: -54px 0px;
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor {
     position: absolute;
     background-color: white;
@@ -75,46 +67,38 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: default;
     z-index: 0;
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_cont_editor {
     position: absolute;
     overflow: hidden;
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_toolbar_def {
     position: relative;
     overflow: hidden;
 }
-
 .dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_toolbar_def div.dhx_toolbar_dhx_skyblue {
     border-top-width: 0px;
     border-left-width: 0px;
     border-right-width: 0px;
 }
-
 div.dhxform_item_template div.dhx_cell_editor div.dhx_cell_toolbar_def div.dhx_toolbar_dhx_skyblue {
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
 }
-
 .dhxwins_vp_dhx_skyblue div.dhx_cell_cont_wins div.dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_stb,
 .dhxwins_vp_dhx_skyblue div.dhx_cell_cont_wins div.dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_toolbar_def div.dhx_toolbar_dhx_skyblue {
     border-left: 1px solid #a4bed4;
     border-right: 1px solid #a4bed4;
     border-top: 1px solid #a4bed4;
 }
-
 .dhxwins_vp_dhx_skyblue div.dhx_cell_cont_wins div.dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_cont_editor {
     border-left: 1px solid #a4bed4;
     border-right: 1px solid #a4bed4;
     border-bottom: 1px solid #a4bed4;
 }
-
 .dhxwins_vp_dhx_skyblue div.dhx_cell_cont_wins div.dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_toolbar_def {
     padding: 0px;
 }
-
 .dhxeditor_skin_detect {
     position: absolute;
     left: 0px;

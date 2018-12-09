@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Message</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
 </head>
 <body>
@@ -22,8 +22,8 @@
         expire: -1
     })
 </script>
-<input type='button' value='message' onclick='dhtmlx.message("You have pressed the button!")'>
-<input type='button' value='styled message'
-       onclick='dhtmlx.message({ type:"error", text:"You have pressed the <br> CRITICAL button!" })'>
+<input onclick='dhtmlx.message("You have pressed the button!")' type='button' value='message'>
+<input onclick='dhtmlx.message({ type:"error", text:"You have pressed the <br> CRITICAL button!" })' type='button'
+       value='styled message'>
 </body>
 </html>

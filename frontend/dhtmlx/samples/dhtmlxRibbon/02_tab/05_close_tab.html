@@ -2,15 +2,16 @@
 <html>
 <head>
     <title>Close (remove) tab</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myRibbon;
         var isBusy = false;
         var loadData = {};
+
         function doOnLoad() {
             if (!checkLoadState()) return;
             loadData = {ribbon: false};
@@ -30,6 +31,7 @@
                 myRibbon = null;
             }
         }
+
         function _close(id, activateId) {
             if (isBusy) return;
             isBusy = true;
@@ -41,6 +43,7 @@
             window.onunload();
             window.onload();
         }
+
         function checkLoadState() {
             var s = true;
             for (var a in loadData) s = s && loadData[a];

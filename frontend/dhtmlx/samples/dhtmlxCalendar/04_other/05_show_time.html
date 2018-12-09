@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Show / hide today and time</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere");
             myCalendar.setDate(new Date(2013, 2, 1, 16, 0));
@@ -18,12 +19,12 @@
 </head>
 <body onload="doOnLoad();">
 <div style="margin-bottom:5px;">
-    <input type="button" value="show time" onclick="myCalendar.showTime();">
-    <input type="button" value="hide time" onclick="myCalendar.hideTime();">
+    <input onclick="myCalendar.showTime();" type="button" value="show time">
+    <input onclick="myCalendar.hideTime();" type="button" value="hide time">
 </div>
 <div style="margin-bottom:20px;">
-    <input type="button" value="show today" onclick="myCalendar.showToday();">
-    <input type="button" value="hide today" onclick="myCalendar.hideToday();">
+    <input onclick="myCalendar.showToday();" type="button" value="show today">
+    <input onclick="myCalendar.hideToday();" type="button" value="hide today">
 </div>
 <div id="calendarHere" style="position:relative;height:350px;"></div>
 </body>

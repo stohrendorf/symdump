@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Centring windows</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -65,15 +65,12 @@
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="winVP"></div>
 <div class="controls">
-    Window #1 <input type="button" value="center on viewport" onclick="centerWindow('w1');"><input type="button"
-                                                                                                   value="center on screen"
-                                                                                                   onclick="centerWindowonScreen('w1');"><br>
-    Window #2 <input type="button" value="center on viewport" onclick="centerWindow('w2');"><input type="button"
-                                                                                                   value="center on screen"
-                                                                                                   onclick="centerWindowonScreen('w2');"><br>
-    Window #3 <input type="button" value="center on viewport" onclick="centerWindow('w3');"><input type="button"
-                                                                                                   value="center on screen"
-                                                                                                   onclick="centerWindowonScreen('w3');">
+    Window #1 <input onclick="centerWindow('w1');" type="button" value="center on viewport"><input
+        onclick="centerWindowonScreen('w1');" type="button" value="center on screen"><br>
+    Window #2 <input onclick="centerWindow('w2');" type="button" value="center on viewport"><input
+        onclick="centerWindowonScreen('w2');" type="button" value="center on screen"><br>
+    Window #3 <input onclick="centerWindow('w3');" type="button" value="center on viewport"><input
+        onclick="centerWindowonScreen('w3');" type="button" value="center on screen">
 </div>
 </body>
 </html>

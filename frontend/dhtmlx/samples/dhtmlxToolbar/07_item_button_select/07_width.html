@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>ButtonSelect width</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myToolbar;
         var sel;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -19,15 +20,18 @@
                 onload: updateList
             });
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function setWidth() {
             var id = getId();
             var wdth = Number(document.getElementById("wdth").value);
             myToolbar.setWidth(id, wdth);
         }
+
         function updateList() {
             sel.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -42,8 +46,8 @@
 <div id="toolbarObj"></div>
 <div style="margin-top: 200px;">
     <select id="sel"></select>
-    <input id="wdth" type="text" style="width: 40px;" value="80">
-    <input type="button" value="Set Width" onclick="setWidth();">
+    <input id="wdth" style="width: 40px;" type="text" value="80">
+    <input onclick="setWidth();" type="button" value="Set Width">
 </div>
 </body>
 </html>

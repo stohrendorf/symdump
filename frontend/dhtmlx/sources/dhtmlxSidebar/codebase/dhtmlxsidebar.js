@@ -1,17 +1,17 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXSideBar(conf) {
 
     var that = this;
 
     this.conf = {
-        skin: (conf.skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxsidebar") || "material"),
+        skin: (conf.skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxsidebar") || "material"),
         css: "dhxsidebar",
         width: conf.width || 200,
         scroll_size: 12,
@@ -20,7 +20,7 @@ function dhtmlXSideBar(conf) {
         icons_path: conf.icons_path || "",
         selected: null,
         // single cell mode, added in 4.3
-        single_cell: (typeof(conf.single_cell) == "undefined" ? false : window.dhx4.s2b(conf.single_cell)),
+        single_cell: (typeof (conf.single_cell) == "undefined" ? false : window.dhx4.s2b(conf.single_cell)),
         cell: null,
         // cells header, added in 4.5
         header: window.dhx4.s2b(conf.header),
@@ -78,7 +78,7 @@ function dhtmlXSideBar(conf) {
                 that.hideSide();
             }
         };
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.addEventListener(this.conf.touch_start, this._doOnBodyClick, false);
             window.addEventListener("click", this._doOnBodyClick, false);
             window.addEventListener("keydown", this._doOnEscDown, false);
@@ -117,7 +117,7 @@ function dhtmlXSideBar(conf) {
         t = null;
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.arw.addEventListener(this.conf.touch_start, this._doOnArwClick, false);
         this.arw.addEventListener("click", this._doOnArwClick, false);
     } else {
@@ -146,8 +146,8 @@ function dhtmlXSideBar(conf) {
         }
 
         while (t != null && id == null && e.type != "pointerdown" && e.type != "MSPointerDown") {
-            if (typeof(t.className) != "undefined") {
-                if (t.className.match(/^dhxsidebar_item/) != null && typeof(t._idd) != "undefined") {
+            if (typeof (t.className) != "undefined") {
+                if (t.className.match(/^dhxsidebar_item/) != null && typeof (t._idd) != "undefined") {
                     id = t._idd;
                 } else if (t.className.match(/^dhxsidebar_bubble/) != null) {
                     b = true;
@@ -164,7 +164,7 @@ function dhtmlXSideBar(conf) {
         t = null;
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.side.addEventListener(this.conf.touch_start, this._doOnSideClick, false);
         this.side.addEventListener(this.conf.touch_end, this._doOnSideClick, false);
         this.side.addEventListener("mouseup", this._doOnSideClick, false);
@@ -192,7 +192,7 @@ function dhtmlXSideBar(conf) {
         this.side.firstChild.style.top = top + "px";
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.side.addEventListener("wheel", this._doOnSideScroll, false);
     } else {
         this.side.attachEvent("onmousewheel", this._doOnSideScroll);
@@ -300,7 +300,7 @@ function dhtmlXSideBar(conf) {
         this.conf.unloading = true;
 
         // scroll
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.side.removeEventListener("wheel", this._doOnSideScroll, false);
         } else {
             this.side.detachEvent("onmousewheel", this._doOnSideScroll);
@@ -308,7 +308,7 @@ function dhtmlXSideBar(conf) {
 
         // autohide
         if (this.conf.autohide == true) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 window.removeEventListener("click", this._doOnBodyClick, false);
                 window.removeEventListener("keydown", this._doOnEscDown, false);
             } else {
@@ -318,14 +318,14 @@ function dhtmlXSideBar(conf) {
         }
 
         // sudden unload while side opened
-        if (typeof(this._sideCoverDetach) == "function") this._sideCoverDetach();
+        if (typeof (this._sideCoverDetach) == "function") this._sideCoverDetach();
 
         // remove items and separators
         this.clearAll();
         this.s = this.t = null;
 
         // overflow arrows
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.arw.removeEventListener(this.conf.touch_start, this._doOnArwClick, false);
             this.arw.removeEventListener("click", this._doOnArwClick, false);
         } else {
@@ -335,7 +335,7 @@ function dhtmlXSideBar(conf) {
         this.arw = null;
 
         // side
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.side.removeEventListener(this.conf.touch_start, this._doOnSideClick, false);
             this.side.removeEventListener(this.conf.touch_end, this._doOnSideClick, false);
             this.side.removeEventListener("click", this._doOnSideClick, false);
@@ -400,7 +400,7 @@ dhtmlXSideBar.prototype = new dhtmlXCellTop();
 
 dhtmlXSideBar.prototype._addItem = function (conf) {
 
-    var id = (typeof(conf.id) != "undefined" ? conf.id : window.dhx4.newId());
+    var id = (typeof (conf.id) != "undefined" ? conf.id : window.dhx4.newId());
 
     if (conf.type == "separator") {
         var t = document.createElement("DIV");
@@ -442,7 +442,7 @@ dhtmlXSideBar.prototype._addItem = function (conf) {
     };
 
     // bubbles
-    if (typeof(conf.bubble) != "undefined") {
+    if (typeof (conf.bubble) != "undefined") {
         this._setItemBubble(id, conf.bubble);
     }
 
@@ -477,17 +477,17 @@ dhtmlXSideBar.prototype.items = dhtmlXSideBar.prototype.cells = function (id) {
 
 dhtmlXSideBar.prototype.forEachCell = dhtmlXSideBar.prototype.forEachItem = function (func) {
     if (this.conf.single_cell == true) {
-        if (typeof(func) == "function") {
+        if (typeof (func) == "function") {
             func.apply(window, [this.conf.cell]);
-        } else if (typeof(func) == "string" && typeof(window[func]) == "function") {
+        } else if (typeof (func) == "string" && typeof (window[func]) == "function") {
             window[func].apply(window, [this.conf.cell]);
         }
         return;
     }
     for (var a in this.t) {
-        if (typeof(func) == "function") {
+        if (typeof (func) == "function") {
             func.apply(window, [this.t[a].cell]);
-        } else if (typeof(func) == "string" && typeof(window[func]) == "function") {
+        } else if (typeof (func) == "string" && typeof (window[func]) == "function") {
             window[func].apply(window, [this.t[a].cell]);
         }
     }
@@ -663,7 +663,7 @@ dhtmlXSideBar.prototype._setItemActive = function (id, callEvent) {
         return;
     }
 
-    if (typeof(callEvent) == "undefined") callEvent = false;
+    if (typeof (callEvent) == "undefined") callEvent = false;
 
     if (callEvent == true && this.callEvent("onBeforeSelect", [id, this.conf.selected]) !== true) {
         return;
@@ -837,7 +837,7 @@ window.dhtmlXSideBarCell = function (id, sidebar) {
     };
 
     for (var a in this.conf.sidebar_funcs) {
-        if (typeof(this[a]) != "function") this[a] = this._sidebarCall(this.conf.sidebar_funcs[a]);
+        if (typeof (this[a]) != "function") this[a] = this._sidebarCall(this.conf.sidebar_funcs[a]);
     }
     // init header
     if (this.sidebar.conf.header == true) {
@@ -887,7 +887,7 @@ window.dhtmlXSideBarCell = function (id, sidebar) {
             }
         }
     });
-
+	
 };
 
 dhtmlXSideBarCell.prototype = new dhtmlXCellObject();
@@ -932,7 +932,7 @@ dhtmlXSideBar.prototype._removeItem = function (id, actvId, force) { // force w/
         return;
     }
 
-    if (typeof(actvId) == "undefined") actvId = true;
+    if (typeof (actvId) == "undefined") actvId = true;
 
     var next = this._getNextVisible(id);
     var prev = this._getPrevVisible(id);
@@ -964,7 +964,7 @@ dhtmlXSideBar.prototype._removeItem = function (id, actvId, force) { // force w/
     } else if (force != true) {
         this._checkHeight();
     }
-
+	
 };
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1067,7 +1067,7 @@ dhtmlXSideBar.prototype._setItemBubble = function (id, value) {
 };
 dhtmlXSideBar.prototype._getItemBubble = function (id) {
     if (this.t[id] == null) return null;
-    return (typeof(this.t[id].conf.bubble) == "undefuned" ? null : this.t[id].conf.bubble);
+    return (typeof (this.t[id].conf.bubble) == "undefuned" ? null : this.t[id].conf.bubble);
 };
 
 dhtmlXSideBar.prototype._clearItemBubble = function (id) {
@@ -1089,27 +1089,27 @@ dhtmlXCellObject.prototype.attachSidebar = function (conf) {
     obj.style.overflow = "hidden";
 
     // all but window borderless
-    if (typeof(window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
+    if (typeof (window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
 
     } else {
         // acc, layout, tabbar, sidebar
         if (this.conf.skin == "dhx_skyblue") obj._ofs = {t: -1, r: -1, b: -1, l: -1};
         if (this.conf.skin == "dhx_web") {
-            if (typeof(window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) obj._ofs = {l: 8};
-            if (typeof(window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell) obj._ofs = {t: 2};
-            if (typeof(window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) obj._ofs = {t: 8};
-            if (typeof(window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) obj._ofs = {t: 2};
+            if (typeof (window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) obj._ofs = {l: 8};
+            if (typeof (window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell) obj._ofs = {t: 2};
+            if (typeof (window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) obj._ofs = {t: 8};
+            if (typeof (window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) obj._ofs = {t: 2};
         }
         if (this.conf.skin == "dhx_terrace") {
-            if (typeof(window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) obj._ofs = {l: -1};
-            if (typeof(window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell) obj._ofs = {
+            if (typeof (window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) obj._ofs = {l: -1};
+            if (typeof (window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell) obj._ofs = {
                 t: -1,
                 r: -1,
                 b: -1,
                 l: -1
             };
-            if (typeof(window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) obj._ofs = {t: -1};
-            if (typeof(window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) obj._ofs = {
+            if (typeof (window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) obj._ofs = {t: -1};
+            if (typeof (window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) obj._ofs = {
                 t: -1,
                 r: -1,
                 b: -1,
@@ -1117,19 +1117,19 @@ dhtmlXCellObject.prototype.attachSidebar = function (conf) {
             };
         }
         if (this.conf.skin == "material") {
-            if (typeof(window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) obj._ofs = {
+            if (typeof (window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) obj._ofs = {
                 t: -1,
                 r: -1,
                 b: -1,
                 l: -1
             };
-            if (typeof(window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) obj._ofs = {
+            if (typeof (window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) obj._ofs = {
                 t: -1,
                 r: -1,
                 b: -1,
                 l: -1
             };
-            if (typeof(window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) obj._ofs = {l: -1};
+            if (typeof (window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) obj._ofs = {l: -1};
         }
     }
 

@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Clear all</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myMenu;
         var myMenuBusy = true;
+
         function doOnLoad() {
             myMenu = new dhtmlXMenuObject({
                 parent: "menuObj",
@@ -20,6 +21,7 @@
                 myMenuBusy = false;
             });
         }
+
         function loadXML(v) {
             if (myMenuBusy) return;
             myMenuBusy = true;
@@ -33,7 +35,7 @@
 <div style="height: 250px;">
     <div id="menuObj"></div>
 </div>
-<input type="button" value="xml 1" onclick="loadXML('');">
-<input type="button" value="xml 2" onclick="loadXML('2');">
+<input onclick="loadXML('');" type="button" value="xml 1">
+<input onclick="loadXML('2');" type="button" value="xml 2">
 </body>
 </html>

@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Attach to sidebar</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#sidebarObj {
@@ -36,6 +36,7 @@
                 {id: "video", text: "Video", icon: "video.png"}
             ]
         };
+
         function doOnLoad() {
             mySidebars["main"] = new dhtmlXSideBar({
                 parent: "sidebarObj",
@@ -47,6 +48,7 @@
             mySidebars["main"].attachEvent("onSelect", doOnItemSelect);
             mySidebars["main"].goToNextItem(true); // select 1st item in list and call onSelect event
         }
+
         function doOnItemSelect(id) {
             if (mySidebars[id] == null) {
                 mySidebars[id] = mySidebars["main"].items(id).attachSidebar({

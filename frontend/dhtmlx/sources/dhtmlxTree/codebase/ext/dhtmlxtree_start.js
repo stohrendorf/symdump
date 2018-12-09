@@ -1,13 +1,13 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXTreeFromHTML(obj) {
-    if (typeof(obj) != "object")
+    if (typeof (obj) != "object")
         obj = document.getElementById(obj);
 
     var n = obj;
@@ -21,8 +21,7 @@ function dhtmlXTreeFromHTML(obj) {
                 for (var m = 0; m < cHead.childNodes.length; m++)
                     cont += cHead.childNodes[m].data;
 
-            }
-            else if (obj.childNodes[j].tagName.toLowerCase() == "ul")
+            } else if (obj.childNodes[j].tagName.toLowerCase() == "ul")
                 cont = dhx_li2trees(obj.childNodes[j], [], 0);
             break;
         }
@@ -43,7 +42,7 @@ function dhtmlXTreeFromHTML(obj) {
             t[an].apply(t, atr[a].value.split(","));
         }
 
-    if (typeof(cont) == "object") {
+    if (typeof (cont) == "object") {
         t.XMLloadingWarning = 1;
         for (var i = 0; i < cont.length; i++) {
             var n = t.insertNewItem(cont[i][0], cont[i][3], cont[i][1]);
@@ -52,8 +51,7 @@ function dhtmlXTreeFromHTML(obj) {
         t.XMLloadingWarning = 0;
         t.lastLoadedXMLId = 0;
         t._redrawFrom(t);
-    }
-    else
+    } else
         t.parse("<tree id='0'>" + cont + "</tree>");
     window[id] = t;
 

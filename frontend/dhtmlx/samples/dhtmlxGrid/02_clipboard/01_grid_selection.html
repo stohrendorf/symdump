@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Copy to clipboard</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         .dhtmlxGrid_selection {
@@ -17,6 +17,7 @@
     </style>
     <script>
         var myGrid;
+
         function doOnLoad() {
             myGrid = new dhtmlXGridObject('gridbox');
             myGrid.setImagePath("../../../codebase/imgs/");
@@ -34,6 +35,7 @@
             myGrid.load("../common/grid.xml");
             myGrid.enableBlockSelection();
         }
+
         function onKeyPressed(code, ctrl, shift) {
             if (code == 67 && ctrl) {
                 if (!myGrid._selectionArea) return alert("You need to select a block area in grid first");
@@ -46,10 +48,12 @@
             }
             return true;
         }
+
         function showClipboard() {
             if (window.clipboardData)
                 document.getElementById("ser_1").value = window.clipboardData.getData("Text");
         }
+
         window.onerror = function () {
             alert("Clipboard operations not enabled in your browser.");
             window.open("http://www.febooti.com/support/website-help/website-javascript-copy-clipboard.html", "_blank");
@@ -63,11 +67,11 @@
     You can paste selected rows to eXcell. </p>
 <table width="100%">
     <tr>
-        <td width="400px" valign="top">
+        <td valign="top" width="400px">
             <div id="gridbox" style="width: 767px; height:315px; background-color:white;overflow:hidden"></div>
         </td>
         <td width="400px">
-            <textarea style="font-size:8pt; font-family:Arial; width:400px; height:313px;" id="ser_1"></textarea>
+            <textarea id="ser_1" style="font-size:8pt; font-family:Arial; width:400px; height:313px;"></textarea>
         </td>
     </tr>
     <tr>

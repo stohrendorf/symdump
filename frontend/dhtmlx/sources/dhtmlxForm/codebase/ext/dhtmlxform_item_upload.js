@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXForm.prototype.items.upload = {
 
@@ -15,7 +15,7 @@ dhtmlXForm.prototype.items.upload = {
         item._enabled = true;
         item._checked = true; // required for authoCheck
 
-        item.className = data.position + (typeof(data.className) == "string" ? " " + data.className : "");
+        item.className = data.position + (typeof (data.className) == "string" ? " " + data.className : "");
 
         var k = document.createElement("DIV");
         item.appendChild(k);
@@ -28,10 +28,10 @@ dhtmlXForm.prototype.items.upload = {
         item._uploader.setURL(data.url || "");
         item._uploader.callEvent = item.callEvent;
 
-        if (typeof(data.autoStart) != "undefined") item._uploader.setAutoStart(data.autoStart);
-        if (typeof(data.autoRemove) != "undefined") item._uploader.setAutoRemove(data.autoRemove);
-        if (typeof(data.titleScreen) != "undefined") item._uploader.enableTitleScreen(data.titleScreen);
-        if (typeof(data.titleText) != "undefined") item._uploader.setTitleText(data.titleText);
+        if (typeof (data.autoStart) != "undefined") item._uploader.setAutoStart(data.autoStart);
+        if (typeof (data.autoRemove) != "undefined") item._uploader.setAutoRemove(data.autoRemove);
+        if (typeof (data.titleScreen) != "undefined") item._uploader.enableTitleScreen(data.titleScreen);
+        if (typeof (data.titleText) != "undefined") item._uploader.setTitleText(data.titleText);
 
         if (data.hidden == true) this.hide(item);
         if (data.disabled == true) this.userDisable(item);
@@ -150,21 +150,21 @@ function dhtmlXFileUploader(p, swfPath, swfUrl, mode, swfLogs, slXap, slUrl, slL
 
     var that = this;
 
-    if (typeof(mode) == "string" && typeof(this[mode]) == "function") {
+    if (typeof (mode) == "string" && typeof (this[mode]) == "function") {
         this.engine = mode;
     } else {
         this.engine = "html4";
 
         var k = null;
-        if (typeof(window.FormData) != "undefined" && typeof(window.XMLHttpRequest) != "undefined") {
+        if (typeof (window.FormData) != "undefined" && typeof (window.XMLHttpRequest) != "undefined") {
             k = new XMLHttpRequest();
-            if (typeof(k.upload) == "undefined") k = null;
+            if (typeof (k.upload) == "undefined") k = null;
         }
 
         if (k != null) {
             // IE10, IE11, FF, Chrome, Opera
             this.engine = "html5";
-        } else if (typeof(window.swfobject) != "undefined" || k === false) {
+        } else if (typeof (window.swfobject) != "undefined" || k === false) {
             var k = swfobject.getFlashPlayerVersion();
             if (k.major >= 10) this.engine = "flash";
         } else {
@@ -175,9 +175,9 @@ function dhtmlXFileUploader(p, swfPath, swfUrl, mode, swfLogs, slXap, slUrl, slL
         k = null;
     }
 
-    if (typeof(p) == "string") p = document.getElementById(p);
+    if (typeof (p) == "string") p = document.getElementById(p);
 
-    this._upload_mp = (typeof(multiple) != "undefined" ? multiple == true : true); // multiple file select
+    this._upload_mp = (typeof (multiple) != "undefined" ? multiple == true : true); // multiple file select
     this._upload_dnd = true;
 
 
@@ -407,7 +407,7 @@ function dhtmlXFileUploader(p, swfPath, swfUrl, mode, swfLogs, slXap, slUrl, slL
     this._onUploadSuccess = function (id, serverName, r, extra) {
 
         // flash mode
-        if (typeof(r) != "undefined" && this.engine == "flash") {
+        if (typeof (r) != "undefined" && this.engine == "flash") {
             var t = dhx4.s2j(r.data);
             if (t != null && t.state == true && t.name != null) {
                 serverName = t.name;
@@ -585,7 +585,7 @@ function dhtmlXFileUploader(p, swfPath, swfUrl, mode, swfLogs, slXap, slUrl, slL
     this._checkTitleScreen();
 
     return this;
-
+	
 }
 
 // html5 engine
@@ -697,7 +697,7 @@ dhtmlXFileUploader.prototype.html5.prototype = {
             };
             this._loader.onload = function (e) {
                 var r = dhx4.s2j(this.responseText);
-                if (typeof(r) == "object" && r != null && typeof(r.state) != "undefined" && r.state == true) {
+                if (typeof (r) == "object" && r != null && typeof (r.state) != "undefined" && r.state == true) {
                     that._onUploadSuccess(this.upload._idd, r.name, null, r.extra);
                     r = null;
                 } else {
@@ -801,7 +801,7 @@ dhtmlXFileUploader.prototype.html5.prototype = {
         this._unloadEngine = null;
 
     }
-
+	
 };
 
 // html4 engine
@@ -872,14 +872,14 @@ dhtmlXFileUploader.prototype.html4.prototype = {
         if (this._uploading) {
             var r = dhx4.s2j(this.fr.contentWindow.document.body.innerHTML);
             //this.fr.contentWindow.document.body.innerHTML = "";
-            if (typeof(r) == "object" && r != null) {
-                if (typeof(r.state) != "undefined") {
+            if (typeof (r) == "object" && r != null) {
+                if (typeof (r.state) != "undefined") {
                     if (r.state == "cancelled") {
                         this._onUploadAbort(this.fr._idd);
                         r = null;
                         return;
                     } else if (r.state == true) {
-                        if (typeof(r.size) != "undefined" && !isNaN(r.size)) this._files[this.fr._idd].size = r.size;
+                        if (typeof (r.size) != "undefined" && !isNaN(r.size)) this._files[this.fr._idd].size = r.size;
                         this._onUploadSuccess(this.fr._idd, r.name, null, r.extra);
                         r = null;
                         return;
@@ -964,7 +964,7 @@ dhtmlXFileUploader.prototype.html4.prototype = {
         this._unloadEngine = null;
 
     }
-
+	
 };
 
 
@@ -1089,12 +1089,12 @@ dhtmlXFileUploader.prototype.flash.prototype = {
 
 dhtmlXFileUploader.prototype.sl = function () {
 };
-
+		
 dhtmlXFileUploader.prototype.sl.prototype = {
 
     _initEngine: function () {
 
-        if (typeof(this._sl_v) == "undefined") this._sl_v = this.getSLVersion();
+        if (typeof (this._sl_v) == "undefined") this._sl_v = this.getSLVersion();
 
         if (!window.dhtmlXFileUploaderSLObjects) {
             window.dhtmlXFileUploaderSLObjects = {

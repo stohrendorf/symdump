@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Change items userdata</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myMenu;
         var mid;
+
         function doOnLoad() {
             myMenu = new dhtmlXMenuObject({
                 parent: "menuObj",
@@ -18,12 +19,14 @@
                 onclick: menuClick
             });
         }
+
         function menuClick(id) {
             document.getElementById("item").innerHTML = id + " (" + myMenu.getItemText(id) + ")";
             var ud = myMenu.getUserData(id, "data");
             document.getElementById("item_ud").value = (ud != null ? ud : "");
             mid = id;
         }
+
         function update() {
             var data = document.getElementById("item_new_ud").value;
             myMenu.setUserData(mid, "data", data);
@@ -35,7 +38,7 @@
     <div id="menuObj"></div>
 </div>
 <div>
-    <table border="0" cellspacing="2" cellpadding="2">
+    <table border="0" cellpadding="2" cellspacing="2">
         <tr>
             <td>Select Item</td>
             <td width="10">&nbsp;</td>
@@ -46,7 +49,7 @@
         <tr>
             <td>Current UserData ("data")</td>
             <td>&nbsp;</td>
-            <td><input id="item_ud" type="text" value="" disabled="true"></td>
+            <td><input disabled="true" id="item_ud" type="text" value=""></td>
         </tr>
         <tr>
             <td>UserData Name</td>
@@ -58,7 +61,7 @@
         <tr>
             <td>UserData Value</td>
             <td>&nbsp;</td>
-            <td><input id="item_new_ud" type="text" value=""> <input type="button" value="Update" onclick="update();">
+            <td><input id="item_new_ud" type="text" value=""> <input onclick="update();" type="button" value="Update">
             </td>
         </tr>
     </table>

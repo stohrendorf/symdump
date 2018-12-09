@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Week start day</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere");
             myCalendar.setDate(new Date(2013, 2, 1, 16, 0));
@@ -18,13 +19,13 @@
 </head>
 <body onload="doOnLoad();">
 <div style="margin-bottom: 20px;">
-    <input type="button" value="Mo" onclick="myCalendar.setWeekStartDay(1);">
-    <input type="button" value="Tu" onclick="myCalendar.setWeekStartDay(2);">
-    <input type="button" value="We" onclick="myCalendar.setWeekStartDay(3);">
-    <input type="button" value="Th" onclick="myCalendar.setWeekStartDay(4);">
-    <input type="button" value="Fr" onclick="myCalendar.setWeekStartDay(5);">
-    <input type="button" value="Sa" onclick="myCalendar.setWeekStartDay(6);">
-    <input type="button" value="Su" onclick="myCalendar.setWeekStartDay(7);">
+    <input onclick="myCalendar.setWeekStartDay(1);" type="button" value="Mo">
+    <input onclick="myCalendar.setWeekStartDay(2);" type="button" value="Tu">
+    <input onclick="myCalendar.setWeekStartDay(3);" type="button" value="We">
+    <input onclick="myCalendar.setWeekStartDay(4);" type="button" value="Th">
+    <input onclick="myCalendar.setWeekStartDay(5);" type="button" value="Fr">
+    <input onclick="myCalendar.setWeekStartDay(6);" type="button" value="Sa">
+    <input onclick="myCalendar.setWeekStartDay(7);" type="button" value="Su">
 </div>
 <div id="calendarHere" style="position:relative;height:350px;"></div>
 </body>

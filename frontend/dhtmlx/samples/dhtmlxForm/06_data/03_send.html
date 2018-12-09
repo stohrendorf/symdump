@@ -2,28 +2,29 @@
 <html>
 <head>
     <title>Send</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myForm, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: 100, inputWidth: 120},
                 {
                     type: "fieldset", label: "Welcome", inputWidth: "auto", list: [
-                    {type: "input", label: "Package", name: "Package", value: ""},
-                    {type: "input", label: "Version", name: "Version", value: ""},
-                    {type: "input", label: "Maintainer", name: "Maintainer", value: ""},
-                    {type: "input", label: "Size", name: "Size", value: ""},
-                    {type: "checkbox", label: "Test", name: "Test", value: "abc"},
-                    {type: "button", value: "Load set 1", name: "set1"},
-                    {type: "button", value: "Load set 2", name: "set2"},
-                    {type: "button", value: "Load set 3", name: "set3"},
-                    {type: "button", value: "Send", name: "send"}
-                ]
+                        {type: "input", label: "Package", name: "Package", value: ""},
+                        {type: "input", label: "Version", name: "Version", value: ""},
+                        {type: "input", label: "Maintainer", name: "Maintainer", value: ""},
+                        {type: "input", label: "Size", name: "Size", value: ""},
+                        {type: "checkbox", label: "Test", name: "Test", value: "abc"},
+                        {type: "button", value: "Load set 1", name: "set1"},
+                        {type: "button", value: "Load set 2", name: "set2"},
+                        {type: "button", value: "Load set 3", name: "set3"},
+                        {type: "button", value: "Send", name: "send"}
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);

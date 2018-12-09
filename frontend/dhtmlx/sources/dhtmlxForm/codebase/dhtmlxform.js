@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXForm(parentObj, data, skin) {
 
@@ -53,13 +53,13 @@ function dhtmlXForm(parentObj, data, skin) {
         // update calendar skin
         this.forEachItem(function (id) {
             var t = that.getItemType(id);
-            if (typeof(that.items[t]) != "undefined" && typeof(that.items[t].setSkin) == "function") {
+            if (typeof (that.items[t]) != "undefined" && typeof (that.items[t].setSkin) == "function") {
                 that.doWithItem(id, "setSkin", skin);
             }
         });
     };
 
-    this.skin = (skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhx_form") || "material");
+    this.skin = (skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhx_form") || "material");
 
     this.separator = ",";
     this.live_validate = false;
@@ -70,7 +70,7 @@ function dhtmlXForm(parentObj, data, skin) {
     this._idIndex = {};
     this._indexId = [];
 
-    this.cont = (typeof(parentObj) == "object" ? parentObj : document.getElementById(parentObj));
+    this.cont = (typeof (parentObj) == "object" ? parentObj : document.getElementById(parentObj));
 
     if (!parentObj._isNestedForm) {
 
@@ -92,7 +92,7 @@ function dhtmlXForm(parentObj, data, skin) {
             e = (e || event);
             if (e.keyCode == 13) {
                 var t = (e.target || e.srcElement);
-                if (typeof(t.tagName) != "undefined" && String(t.tagName).toLowerCase() == "textarea" && !e.ctrlKey) return;
+                if (typeof (t.tagName) != "undefined" && String(t.tagName).toLowerCase() == "textarea" && !e.ctrlKey) return;
                 that.callEvent("onEnter", []);
             }
         }
@@ -128,7 +128,7 @@ function dhtmlXForm(parentObj, data, skin) {
         this.base[this.b_index] = document.createElement("DIV");
         this.base[this.b_index].className = "dhxform_base";
 
-        if (typeof(ofsLeft) != "undefined") this.base[this.b_index].style.cssText += " margin-left:" + ofsLeft + "px!important;";
+        if (typeof (ofsLeft) != "undefined") this.base[this.b_index].style.cssText += " margin-left:" + ofsLeft + "px!important;";
 
         // add block
         if (insBeforeBase != null) {
@@ -152,11 +152,11 @@ function dhtmlXForm(parentObj, data, skin) {
 
     this.setSizes = function () {
         /*
-         for (var q=0; q<this.base.length; q++) {
-         this.base.style.height = this.cont.offsetHeight+"px";
-         this.base.style.overflow = "auto";
-         }
-         */
+		for (var q=0; q<this.base.length; q++) {
+			this.base.style.height = this.cont.offsetHeight+"px";
+			this.base.style.overflow = "auto";
+		}
+		*/
     };
 
     this._mergeSettings = function (data) {
@@ -166,7 +166,7 @@ function dhtmlXForm(parentObj, data, skin) {
         for (var a in this.idef) i[a] = this.idef[a];
 
         for (var q = 0; q < data.length; q++) {
-            if (typeof(data[q]) != "undefined" && data[q].type == "settings") {
+            if (typeof (data[q]) != "undefined" && data[q].type == "settings") {
                 for (var a in data[q]) i[a] = data[q][a];
                 u = q;
             }
@@ -200,7 +200,7 @@ function dhtmlXForm(parentObj, data, skin) {
 
         if (!type) type = this._type;
 
-        if (type == "list" && lp != null && this.itemPull[this.idPrefix + lp] != null && typeof(this.itemPull[this.idPrefix + lp]._addSubListNode) == "function") {
+        if (type == "list" && lp != null && this.itemPull[this.idPrefix + lp] != null && typeof (this.itemPull[this.idPrefix + lp]._addSubListNode) == "function") {
             var tr = this.itemPull[this.idPrefix + lp]._addSubListNode();
         } else {
             if (type == "newcolumn") {
@@ -209,7 +209,7 @@ function dhtmlXForm(parentObj, data, skin) {
                 if (this.b_index == null) this._prepare(); // form wasn't inited and item added via dyn funcs
                 var insBeforeBase = this.base[this.b_index];
                 var insBeforeItem = null;
-                if (typeof(pos) != "undefined" && !isNaN(pos) && type != "list") {
+                if (typeof (pos) != "undefined" && !isNaN(pos) && type != "list") {
                     pos = Math.max(parseInt(pos), 0) + 1;
                     for (var w = 0; w < this.cont.childNodes.length; w++) {
                         for (var q = 0; q < this.cont.childNodes[w].childNodes.length; q++) {
@@ -246,14 +246,14 @@ function dhtmlXForm(parentObj, data, skin) {
         tr._idd = id;
         tr._rId = this._rId;
 
-        if (typeof(tr.style) != "undefined") {
+        if (typeof (tr.style) != "undefined") {
             // read from settings if not set
-            if (typeof(data.offsetLeft) == "undefined" && this.idef.offsetLeft > 0) data.offsetLeft = this.idef.offsetLeft;
-            if (typeof(data.offsetTop) == "undefined" && this.idef.offsetTop > 0) data.offsetTop = this.idef.offsetTop;
+            if (typeof (data.offsetLeft) == "undefined" && this.idef.offsetLeft > 0) data.offsetLeft = this.idef.offsetLeft;
+            if (typeof (data.offsetTop) == "undefined" && this.idef.offsetTop > 0) data.offsetTop = this.idef.offsetTop;
             //
             var k = "";
-            if (typeof(data.offsetLeft) != "undefined") k += " padding-left:" + data.offsetLeft + "px!important;";
-            if (typeof(data.offsetTop) != "undefined") k += " padding-top:" + data.offsetTop + "px!important;";
+            if (typeof (data.offsetLeft) != "undefined") k += " padding-left:" + data.offsetLeft + "px!important;";
+            if (typeof (data.offsetTop) != "undefined") k += " padding-top:" + data.offsetTop + "px!important;";
             tr.style.cssText += k;
         }
 
@@ -263,7 +263,7 @@ function dhtmlXForm(parentObj, data, skin) {
 
         if (type == "list") {
 
-            if (typeof(tr._ofsNested) == "undefined") tr._ofsNested = this.idef_const.offsetNested;
+            if (typeof (tr._ofsNested) == "undefined") tr._ofsNested = this.idef_const.offsetNested;
 
             if (sId != null) tr._sId = sId;
 
@@ -302,21 +302,21 @@ function dhtmlXForm(parentObj, data, skin) {
         if (type == "label" && this._ic++ == 0) data._isTopmost = true;
 
         data.position = this.apos_css[(!data.position || !this.apos_css[data.position] ? this.idef.position : data.position)];
-        tr.className = data.position + (typeof(data.className) == "string" ? " " + data.className : "");
+        tr.className = data.position + (typeof (data.className) == "string" ? " " + data.className : "");
 
         if (!data.labelWidth) data.labelWidth = this.idef.labelWidth;
         if (!data.labelHeight) data.labelHeight = this.idef.labelHeight;
 
-        if (typeof(data.wrap) != "undefined") data.wrap = window.dhx4.s2b(data.wrap);
+        if (typeof (data.wrap) != "undefined") data.wrap = window.dhx4.s2b(data.wrap);
 
         data.labelAlign = (this.align_css[data.labelAlign] ? this.align_css[data.labelAlign] : this.align_css[this.idef.labelAlign]);
 
         data.inputWidth = (data.width ? data.width : (data.inputWidth ? data.inputWidth : this.idef.inputWidth));
         if (!data.inputHeight) data.inputHeight = this.idef.inputHeight;
 
-        if (typeof(data.note) != "undefined") {
+        if (typeof (data.note) != "undefined") {
             if (data.note.length != null && data.note[0] != null) data.note = data.note[0]; // probably array from xml conversion
-            if (typeof(data.note.width) == "undefined") data.note.width = this.idef.noteWidth;
+            if (typeof (data.note.width) == "undefined") data.note.width = this.idef.noteWidth;
             if (data.note.width == "auto") data.note.width = data.inputWidth;
         }
 
@@ -334,29 +334,29 @@ function dhtmlXForm(parentObj, data, skin) {
         };
 
         // convert r/o
-        if (typeof(data.readonly) == "string") data.readonly = window.dhx4.s2b(data.readonly);
-        if (typeof(data.autoStart) == "string") data.autoStart = window.dhx4.s2b(data.autoStart);
-        if (typeof(data.autoRemove) == "string") data.autoRemove = window.dhx4.s2b(data.autoRemove);
-        if (typeof(data.titleScreen) == "string") data.titleScreen = window.dhx4.s2b(data.titleScreen);
-        if (typeof(data.info) == "string") data.info = window.dhx4.s2b(data.info);
-        if (typeof(data.hidden) == "string") data.hidden = window.dhx4.s2b(data.hidden);
-        if (typeof(data.checked) == "string") data.checked = window.dhx4.s2b(data.checked);
+        if (typeof (data.readonly) == "string") data.readonly = window.dhx4.s2b(data.readonly);
+        if (typeof (data.autoStart) == "string") data.autoStart = window.dhx4.s2b(data.autoStart);
+        if (typeof (data.autoRemove) == "string") data.autoRemove = window.dhx4.s2b(data.autoRemove);
+        if (typeof (data.titleScreen) == "string") data.titleScreen = window.dhx4.s2b(data.titleScreen);
+        if (typeof (data.info) == "string") data.info = window.dhx4.s2b(data.info);
+        if (typeof (data.hidden) == "string") data.hidden = window.dhx4.s2b(data.hidden);
+        if (typeof (data.checked) == "string") data.checked = window.dhx4.s2b(data.checked);
 
         // userdata
-        if (typeof(data.userdata) != "undefined") {
+        if (typeof (data.userdata) != "undefined") {
             for (var a in data.userdata) this.getForm().setUserData(id, a, data.userdata[a]);
         }
 
         // validate
         if (data.validate) {
-            if (typeof(data.validate != "undefined") && (typeof(data.validate) == "function" || typeof(window[data.validate]) == "function")) {
+            if (typeof (data.validate != "undefined") && (typeof (data.validate) == "function" || typeof (window[data.validate]) == "function")) {
                 tr._validate = [data.validate];
             } else {
                 tr._validate = String(data.validate).split(this.separator);
             }
         }
-        if (typeof(data.required) != "undefined") {
-            if (typeof(data.required) == "string") data.required = window.dhx4.s2b(data.required);
+        if (typeof (data.required) != "undefined") {
+            if (typeof (data.required) == "string") data.required = window.dhx4.s2b(data.required);
             tr._required = (data.required == true);
         }
         if (tr._required) {
@@ -379,10 +379,10 @@ function dhtmlXForm(parentObj, data, skin) {
 
     this._initObj = function (data, url) {
 
-        if (typeof(data.data) != "undefined") {
+        if (typeof (data.data) != "undefined") {
             // data loading
             var id = null;
-            if (typeof(url) != "undefined") {
+            if (typeof (url) != "undefined") {
                 id = url.match(/(\?|\&)id\=([a-z0-9_\-]*)/i);
                 if (id != null && id[0] != null) id = id[0].split("=")[1];
             }
@@ -405,7 +405,7 @@ function dhtmlXForm(parentObj, data, skin) {
             // position - allow only predefined, this.apos_css
             // labelAlign - allow only predefined, this.align_css
             // input/label top/left/width/height - numeric or auto
-            if (typeof(data[q]) != "undefined" && data[q].type == "settings") for (var a in data[q]) this.idef[a] = data[q][a];
+            if (typeof (data[q]) != "undefined" && data[q].type == "settings") for (var a in data[q]) this.idef[a] = data[q][a];
         }
 
         for (var q = 0; q < data.length; q++) this._prepareItem(data[q]);
@@ -464,7 +464,7 @@ function dhtmlXForm(parentObj, data, skin) {
 
     this._xmlToObject = function (xml, rootLevel) {
 
-        if (typeof(rootLevel) == "undefined") rootLevel = true;
+        if (typeof (rootLevel) == "undefined") rootLevel = true;
 
         if (rootLevel) {
 
@@ -485,14 +485,14 @@ function dhtmlXForm(parentObj, data, skin) {
 
             for (var q = 0; q < xmlStruct.childNodes.length; q++) {
 
-                if (typeof(xmlStruct.childNodes[q].tagName) != "undefined") {
+                if (typeof (xmlStruct.childNodes[q].tagName) != "undefined") {
 
                     var tg = xmlStruct.childNodes[q].tagName;
 
                     if (this._xmlSubItems[tg] != null) {
 
                         var node = this._xmlSubItems[tg];
-                        if (typeof(data[node]) == "undefined") data[node] = [];
+                        if (typeof (data[node]) == "undefined") data[node] = [];
 
                         var xn = xmlStruct.childNodes[q];
 
@@ -531,7 +531,7 @@ function dhtmlXForm(parentObj, data, skin) {
         if (xmlData != null) {
             data = {data: {}};
             for (var q = 0; q < xmlData.childNodes.length; q++) {
-                if (typeof(xmlData.childNodes[q].tagName) != "undefined") {
+                if (typeof (xmlData.childNodes[q].tagName) != "undefined") {
                     var name = xmlData.childNodes[q].tagName;
                     var value = (xmlData.childNodes[q].firstChild != null ? xmlData.childNodes[q].firstChild.nodeValue : "");
                     data.data[name] = value;
@@ -551,7 +551,7 @@ function dhtmlXForm(parentObj, data, skin) {
         if (this._locked === true) {
             enabled = false;
         } else {
-            if (typeof(enabled) == "undefined") enabled = true;
+            if (typeof (enabled) == "undefined") enabled = true;
         }
         for (var a in this.itemPull) {
             var isEnabled = (enabled && (this.itemPull[a]._udis !== true));
@@ -563,14 +563,14 @@ function dhtmlXForm(parentObj, data, skin) {
             }
 
             // nested forms
-            var pEnabled = (isEnabled && (typeof(this.itemPull[a]._checked) == "boolean" ? this.itemPull[a]._checked : true));
+            var pEnabled = (isEnabled && (typeof (this.itemPull[a]._checked) == "boolean" ? this.itemPull[a]._checked : true));
             if (this.itemPull[a]._list) {
                 for (var q = 0; q < this.itemPull[a]._list.length; q++) {
                     var f = true;
                     if (this.itemPull[a]._list[q]._subSelect == true) {
                         f = false;
                         var v = this.getItemValue(this.itemPull[a]._idd);
-                        if (!(typeof(v) == "object" && typeof(v.length) == "number")) v = [v];
+                        if (!(typeof (v) == "object" && typeof (v.length) == "number")) v = [v];
                         for (var w = 0; w < v.length; w++) f = (v[w] == this.itemPull[a]._list[q]._subSelectId) || f;
                         this.itemPull[a]._listObj[q][f ? "show" : "hide"](this.itemPull[a]._listBase[q]);
                     }
@@ -588,7 +588,7 @@ function dhtmlXForm(parentObj, data, skin) {
         // radio
         //console.log(method)
 
-        if (typeof(id) == "object") {
+        if (typeof (id) == "object") {
             var group = id[0];
             var value = id[1];
             var item = null;
@@ -799,7 +799,7 @@ function dhtmlXForm(parentObj, data, skin) {
     // datasending call validation inside
     this._updateValues = function () {
         for (var a in this.itemPull) {
-            if (this.objPull[a] && typeof(this.objPull[a].updateValue) == "function") {
+            if (this.objPull[a] && typeof (this.objPull[a].updateValue) == "function") {
                 this.objPull[a].updateValue(this.itemPull[a]);
             }
             if (this.itemPull[a]._list) {
@@ -831,7 +831,7 @@ function dhtmlXForm(parentObj, data, skin) {
         var item = this._getItemByName(name);
         if (!item) return;
         if (item._vcss != null) this._resetValidateCss(item);
-        item._vcss = (typeof(custom) == "string" ? custom : "validate_" + (state === true ? "ok" : "error"));
+        item._vcss = (typeof (custom) == "string" ? custom : "validate_" + (state === true ? "ok" : "error"));
         item.className += " " + item._vcss;
     };
     this.resetValidateCss = function (name) {
@@ -859,7 +859,7 @@ function dhtmlXForm(parentObj, data, skin) {
 
         this._validateLoop(function (name, value) {
             var k = that.doWithItem(name, "_validate");
-            if (typeof(k) != "boolean") k = true;
+            if (typeof (k) != "boolean") k = true;
             completed = k && completed;
         }, true);
 
@@ -869,7 +869,7 @@ function dhtmlXForm(parentObj, data, skin) {
     };
 
     this.validateItem = function (name, value) {
-        if (typeof(value) != "undefined") name = [name, value];
+        if (typeof (value) != "undefined") name = [name, value];
         return this.doWithItem(name, "_validate");
     };
 
@@ -1005,7 +1005,7 @@ function dhtmlXForm(parentObj, data, skin) {
 
         this.items[a].t = a;
 
-        if (typeof(this.items[a]._index) == "undefined") {
+        if (typeof (this.items[a]._index) == "undefined") {
             this.items[a]._index = true;
         }
 
@@ -1066,7 +1066,7 @@ function dhtmlXForm(parentObj, data, skin) {
 
                 if (item._type == "ch" || item._type == "ra") {
                     var val = (this.isChecked(item) ? this.getValue(item) : 0);
-                    if (item._type == "ra" && typeof(val) == "undefined") val = 0;
+                    if (item._type == "ra" && typeof (val) == "undefined") val = 0;
                 } else {
                     var val = this.getValue(item);
                 }
@@ -1082,13 +1082,13 @@ function dhtmlXForm(parentObj, data, skin) {
                     } else {
                         var f = dhtmlxValidation[v];
 
-                        if (item._type == "container" && typeof(f) == "function") f = function () {
+                        if (item._type == "container" && typeof (f) == "function") f = function () {
                             return true;
                         };
 
-                        if (typeof(f) != "function" && typeof(item._validate[q]) == "function") f = item._validate[q];
-                        if (typeof(f) != "function" && typeof(window[item._validate[q]]) == "function") f = window[item._validate[q]];
-                        r = ((typeof(f) == "function" ? f(val, item._idd) : new RegExp(item._validate[q]).test(val)) && r);
+                        if (typeof (f) != "function" && typeof (item._validate[q]) == "function") f = item._validate[q];
+                        if (typeof (f) != "function" && typeof (window[item._validate[q]]) == "function") f = window[item._validate[q]];
+                        r = ((typeof (f) == "function" ? f(val, item._idd) : new RegExp(item._validate[q]).test(val)) && r);
                         f = null;
                     }
                 }
@@ -1142,25 +1142,25 @@ function dhtmlXForm(parentObj, data, skin) {
 
     // copy init data to prevent init obj extension
     this._isObj = function (k) {
-        return (k != null && typeof(k) == "object" && typeof(k.length) == "undefined");
+        return (k != null && typeof (k) == "object" && typeof (k.length) == "undefined");
     };
     this._copyObj = function (r) {
         if (this._isObj(r)) {
             var t = {};
             for (var a in r) {
-                if (typeof(r[a]) == "object" && r[a] != null) t[a] = this._copyObj(r[a]); else t[a] = r[a];
+                if (typeof (r[a]) == "object" && r[a] != null) t[a] = this._copyObj(r[a]); else t[a] = r[a];
             }
         } else {
             var t = [];
             for (var a = 0; a < r.length; a++) {
-                if (typeof(r[a]) == "object" && r[a] != null) t[a] = this._copyObj(r[a]); else t[a] = r[a];
+                if (typeof (r[a]) == "object" && r[a] != null) t[a] = this._copyObj(r[a]); else t[a] = r[a];
             }
         }
         return t;
     };
     //
 
-    if (data != null && typeof(data) == "object") {
+    if (data != null && typeof (data) == "object") {
         this._initObj(this._copyObj(data));
     }
     if (this._parentForm) {
@@ -1174,6 +1174,7 @@ function dhtmlXForm(parentObj, data, skin) {
     return this;
 
 }
+
 dhtmlXForm.prototype.getInput = function (id) {
     return this.doWithItem(id, "getInput");
 };
@@ -1195,7 +1196,7 @@ dhtmlXForm.prototype.items.checkbox = {
         item._type = "ch";
         item._enabled = true;
         item._checked = false;
-        item._value = (typeof(data.value) == "undefined" ? null : String(data.value));
+        item._value = (typeof (data.value) == "undefined" ? null : String(data.value));
         item._ro = (data.readonly == true);
 
         if (data._autoInputWidth !== false) data.inputWidth = 14;
@@ -1261,7 +1262,7 @@ dhtmlXForm.prototype.items.checkbox = {
             item.appendChild(t);
         }
 
-        if (typeof(data.tooltip) != "undefined") t.title = data.tooltip;
+        if (typeof (data.tooltip) != "undefined") t.title = data.tooltip;
 
         t.innerHTML = "<div class='dhxform_label_nav_link' " +
             "onfocus='if(this.parentNode.parentNode._updateImgNode)this.parentNode.parentNode._updateImgNode(this.parentNode.parentNode,true);this.parentNode.parentNode._doOnFocus(this.parentNode.parentNode);' " +
@@ -1297,7 +1298,7 @@ dhtmlXForm.prototype.items.checkbox = {
         t._idd = item._idd;
         t.id = data.uid;
 
-        if (typeof(type) == "string") t.type = type;
+        if (typeof (type) == "string") t.type = type;
 
         if (el == "INPUT" || el == "TEXTAREA") {
             t.onkeyup = function (e) {
@@ -1337,7 +1338,7 @@ dhtmlXForm.prototype.items.checkbox = {
             }
             if (!isNaN(data.inputHeight)) u += "height:" + parseInt(data.inputHeight) + "px;";
         }
-        if (typeof(data.style) == "string") u += data.style;
+        if (typeof (data.style) == "string") u += data.style;
         t.style.cssText = u;
 
         if (data.maxLength) t.setAttribute("maxLength", data.maxLength);
@@ -1345,18 +1346,18 @@ dhtmlXForm.prototype.items.checkbox = {
 
         var i = (dhtmlXForm.prototype.items[this.t] != null ? dhtmlXForm.prototype.items[this.t]._dimFix == true : false);
         if (dimFix && ({
-                input: 1,
-                password: 1,
-                select: 1,
-                multiselect: 1,
-                calendar: 1,
-                colorpicker: 1
-            }[this.t] == 1 || i)) {
+            input: 1,
+            password: 1,
+            select: 1,
+            multiselect: 1,
+            calendar: 1,
+            colorpicker: 1
+        }[this.t] == 1 || i)) {
             if (dhtmlXForm.prototype.items[this.t]._dim == null) dhtmlXForm.prototype.items[this.t]._dim = item.getForm()._checkDim(p, t);
             t.style.width = parseInt(t.style.width) - dhtmlXForm.prototype.items[this.t]._dim + "px";
         }
 
-        if (typeof(data.note) == "object") {
+        if (typeof (data.note) == "object") {
             var note = document.createElement("DIV");
             note.className = "dhxform_note";
             note.style.width = (isNaN(data.note.width) ? t.offsetWidth : parseInt(data.note.width)) + "px";
@@ -1432,7 +1433,7 @@ dhtmlXForm.prototype.items.checkbox = {
             e = e || event;
             if (e.preventDefault) e.preventDefault();
             var t = (e.target || e.srcElement); // need to skip "note" if exists
-            if (!this.parentNode._enabled || this.parentNode._ro || (typeof(t.className) != "undefined" && t.className == "dhxform_note")) {
+            if (!this.parentNode._enabled || this.parentNode._ro || (typeof (t.className) != "undefined" && t.className == "dhxform_note")) {
                 e.cancelBubble = true;
                 if (e.preventDefault) e.preventDefault(); else e.returnValue = false;
                 return false;
@@ -1451,7 +1452,7 @@ dhtmlXForm.prototype.items.checkbox = {
             }
             // check if "info" clicked (checkbox/radio only)
             var t = e.target || e.srcElement;
-            if (typeof(t.className) != "undefined" && t.className == "dhxform_info") {
+            if (typeof (t.className) != "undefined" && t.className == "dhxform_info") {
                 this.parentNode.parentNode.callEvent("onInfo", [this.parentNode.parentNode._idd, e]);
                 e.cancelBubble = true;
                 if (e.preventDefault) e.preventDefault(); else e.returnValue = false;
@@ -1538,7 +1539,7 @@ dhtmlXForm.prototype.items.checkbox = {
 
     getValue: function (item, mode) {
         if (mode == "realvalue") return item._value;
-        return ((typeof(item._value) == "undefined" || item._value == null) ? (item._checked ? 1 : 0) : item._value);
+        return ((typeof (item._value) == "undefined" || item._value == null) ? (item._checked ? 1 : 0) : item._value);
     },
 
     setReadonly: function (item, state) {
@@ -1552,7 +1553,7 @@ dhtmlXForm.prototype.items.checkbox = {
     setFocus: function (item) {
         item.childNodes[item._ll ? 0 : 1].childNodes[0].focus();
     }
-
+	
 };
 
 /* radio */
@@ -1786,7 +1787,7 @@ dhtmlXForm.prototype.items.select = {
         this.doLoadOpts(item, data);
         if (data.connector != null) this.doLoadOptsConnector(item, data.connector);
 
-        if (typeof(data.value) != "undefined" && data.value != null) {
+        if (typeof (data.value) != "undefined" && data.value != null) {
             this.setValue(item, data.value);
         }
 
@@ -1837,11 +1838,11 @@ dhtmlXForm.prototype.items.select = {
         //
         if (data.wrap == true) j.style.whiteSpace = "normal";
 
-        if (typeof(data.tooltip) != "undefined") j.title = data.tooltip;
+        if (typeof (data.tooltip) != "undefined") j.title = data.tooltip;
 
         item.appendChild(j);
 
-        if (typeof(data.label) == "undefined" || data.label == null || data.label.length == 0) j.style.display = "none";
+        if (typeof (data.label) == "undefined" || data.label == null || data.label.length == 0) j.style.display = "none";
 
         if (!isNaN(data.labelWidth)) j.style.width = parseInt(data.labelWidth) + "px";
         if (!isNaN(data.labelHeight)) j.style.height = parseInt(data.labelHeight) + "px";
@@ -1853,7 +1854,7 @@ dhtmlXForm.prototype.items.select = {
             j.onclick = function (e) {
                 e = e || event;
                 var t = e.target || e.srcElement;
-                if (typeof(t.className) != "undefined" && t.className == "dhxform_info") {
+                if (typeof (t.className) != "undefined" && t.className == "dhxform_info") {
                     this.parentNode.callEvent("onInfo", [this.parentNode._idd, e]);
                     e.cancelBubble = true;
                     if (e.preventDefault) e.preventDefault(); else e.returnValue = false;
@@ -1916,25 +1917,25 @@ dhtmlXForm.prototype.items.select = {
         var k = false;
         for (var q = 0; q < opts.length; q++) {
             var t0 = opts[q].text || opts[q].label;
-            if (!t0 || typeof(t0) == "undefined") t0 = "";
+            if (!t0 || typeof (t0) == "undefined") t0 = "";
             var opt = new Option(t0, opts[q].value);
-            if (typeof(opts[q].img_src) == "string") opt.setAttribute("img_src", opts[q].img_src);
+            if (typeof (opts[q].img_src) == "string") opt.setAttribute("img_src", opts[q].img_src);
             t.options.add(opt);
             // selected
-            if (typeof(opts[q].selected) != "undefined" && window.dhx4.s2b(opts[q].selected) == true) {
+            if (typeof (opts[q].selected) != "undefined" && window.dhx4.s2b(opts[q].selected) == true) {
                 opt.selected = true;
                 item._value = opts[q].value;
                 k = true;
             }
             // cehcked (combo only)
-            if (typeof(opts[q].checked) != "undefined" && window.dhx4.s2b(opts[q].checked) == true) {
+            if (typeof (opts[q].checked) != "undefined" && window.dhx4.s2b(opts[q].checked) == true) {
                 opt.setAttribute("checked", "1");
             }
             // images (combo only)
-            if (typeof(opts[q].img) != "undefined") opt.setAttribute("img", opts[q].img);
-            if (typeof(opts[q].img_dis) != "undefined") opt.setAttribute("img_dis", opts[q].img_dis);
+            if (typeof (opts[q].img) != "undefined") opt.setAttribute("img", opts[q].img);
+            if (typeof (opts[q].img_dis) != "undefined") opt.setAttribute("img_dis", opts[q].img_dis);
             // cehcked (combo only)
-            if (typeof(opts[q].css) != "undefined") opt.setAttribute("css", opts[q].css);
+            if (typeof (opts[q].css) != "undefined") opt.setAttribute("css", opts[q].css);
         }
         // if "selected" option was not specified, check selected in control
         if (!k && t.selectedIndex >= 0) item._value = t.options[t.selectedIndex].value;
@@ -1967,7 +1968,7 @@ dhtmlXForm.prototype.items.select = {
 
                 var opts = [];
                 for (var q = 0; q < root.childNodes.length; q++) {
-                    if (typeof(root.childNodes[q].tagName) != "undefined" && String(root.childNodes[q].tagName).toLowerCase() == "item") {
+                    if (typeof (root.childNodes[q].tagName) != "undefined" && String(root.childNodes[q].tagName).toLowerCase() == "item") {
                         var option = root.childNodes[q];
                         opts.push({
                             label: option.getAttribute("label"),
@@ -2171,8 +2172,8 @@ dhtmlXForm.prototype.items.multiselect = {
     setValue: function (item, val) {
 
         var k = {};
-        if (typeof(val) == "string") val = val.split(",");
-        if (typeof(val) != "object") val = [val];
+        if (typeof (val) == "string") val = val.split(",");
+        if (typeof (val) != "object") val = [val];
         for (var q = 0; q < val.length; q++) k[val[q]] = true;
 
         var opts = this.getOptions(item);
@@ -2213,16 +2214,16 @@ dhtmlXForm.prototype.items.input = {
 
         if (ta) item.childNodes[item._ll ? 1 : 0].childNodes[0].rows = Number(data.rows) + (window.dhx4.isIE6 ? 1 : 0);
 
-        if (typeof(data.numberFormat) != "undefined") {
+        if (typeof (data.numberFormat) != "undefined") {
             var a, b = null, c = null;
-            if (typeof(data.numberFormat) != "string") {
+            if (typeof (data.numberFormat) != "string") {
                 a = data.numberFormat[0];
                 b = data.numberFormat[1] || null;
                 c = data.numberFormat[2] || null;
             } else {
                 a = data.numberFormat;
-                if (typeof(data.groupSep) == "string") b = data.groupSep;
-                if (typeof(data.decSep) == "string") c = data.decSep;
+                if (typeof (data.groupSep) == "string") b = data.groupSep;
+                if (typeof (data.decSep) == "string") c = data.decSep;
             }
             this.setNumberFormat(item, a, b, c, false);
         }
@@ -2237,11 +2238,11 @@ dhtmlXForm.prototype.items.input = {
 
         var node = item.childNodes[item._ll ? 1 : 0].childNodes[0];
 
-        if (typeof(node.tagName) != "undefined" && {
-                "input": 1,
-                "textarea": 1,
-                "select": 1
-            }[node.tagName.toLowerCase()] == 1) {
+        if (typeof (node.tagName) != "undefined" && {
+            "input": 1,
+            "textarea": 1,
+            "select": 1
+        }[node.tagName.toLowerCase()] == 1) {
 
             var that = this;
             node.onfocus = function () {
@@ -2295,7 +2296,7 @@ dhtmlXForm.prototype.items.input = {
     setValue: function (item, value) {
 
         // str only
-        item._value = (typeof(value) != "undefined" && value != null ? value : "");
+        item._value = (typeof (value) != "undefined" && value != null ? value : "");
 
         var v = (String(item._value) || "");
         var k = item.childNodes[item._ll ? 1 : 0].childNodes[0];
@@ -2317,7 +2318,7 @@ dhtmlXForm.prototype.items.input = {
         if (f._formLS && f._formLS[item._idd] != null) this.updateValue(item);
         f = null;
         // str only
-        return (typeof(item._value) != "undefined" && item._value != null ? item._value : "");
+        return (typeof (item._value) != "undefined" && item._value != null ? item._value : "");
     },
 
     setReadonly: function (item, state) {
@@ -2340,7 +2341,7 @@ dhtmlXForm.prototype.items.input = {
 
     setNumberFormat: function (item, format, g_sep, d_sep, refresh) {
 
-        if (typeof(refresh) != "boolean") refresh = true;
+        if (typeof (refresh) != "boolean") refresh = true;
 
         if (format == "") {
             item._df = null;
@@ -2348,7 +2349,7 @@ dhtmlXForm.prototype.items.input = {
             return true;
         }
 
-        if (typeof(format) != "string") return;
+        if (typeof (format) != "string") return;
 
         var fmt = window.dhx4.template._parseFmt(format, g_sep, d_sep);
         if (fmt == false) return false; else item._df = fmt;
@@ -2591,7 +2592,7 @@ dhtmlXForm.prototype.items.button = {
         if (data.hidden == true) this.hide(item);
         if (data.disabled == true) this.userDisable(item);
 
-        if (typeof(data.tooltip) != "undefined") item.firstChild.title = data.tooltip;
+        if (typeof (data.tooltip) != "undefined") item.firstChild.title = data.tooltip;
 
         // item onselectstart also needed once
         // will reconstructed!
@@ -2880,7 +2881,7 @@ dhtmlXForm.prototype.items.fieldset = {
 
         item._type = "fs";
 
-        if (typeof(parseInt(data.inputWidth)) == "number") {
+        if (typeof (parseInt(data.inputWidth)) == "number") {
             // if (window.dhx4.isFF||window.dhx4.isOpera) data.inputWidth -= 12;
             // chrome-11/ie9 - ok
         }
@@ -2890,7 +2891,7 @@ dhtmlXForm.prototype.items.fieldset = {
         item._enabled = true;
         item._checked = true; // required for authoCheck
 
-        item.className = "fs_" + data.position + (typeof(data.className) == "string" ? " " + data.className : "");
+        item.className = "fs_" + data.position + (typeof (data.className) == "string" ? " " + data.className : "");
 
         var f = document.createElement("FIELDSET");
         f.className = "dhxform_fs";
@@ -2995,14 +2996,14 @@ dhtmlXForm.prototype.items.block = {
         item._enabled = true;
         item._checked = true; // required for authoCheck
 
-        item.className = "block_" + data.position + (typeof(data.className) == "string" ? " " + data.className : "");
+        item.className = "block_" + data.position + (typeof (data.className) == "string" ? " " + data.className : "");
 
         var b = document.createElement("DIV");
         b.className = "dhxform_obj_" + item.getForm().skin + " dhxform_block";
         b.style.fontSize = item.getForm().cont.style.fontSize;
         if (data.style) b.style.cssText = data.style;
 
-        if (typeof(data.id) != "undefined") b.id = data.id;
+        if (typeof (data.id) != "undefined") b.id = data.id;
 
         item.appendChild(b);
 
@@ -3017,7 +3018,7 @@ dhtmlXForm.prototype.items.block = {
         item._addSubListNode = function () {
             var t = document.createElement("DIV");
             t._inBlcok = true;
-            if (typeof(this._ofsNested) != "undefined") t._ofsNested = this._ofsNested;
+            if (typeof (this._ofsNested) != "undefined") t._ofsNested = this._ofsNested;
             this.childNodes[0].appendChild(t);
             return t;
         };
@@ -3055,9 +3056,9 @@ dhtmlXForm.prototype.items.template = {
         item._enabled = true;
 
         if (data.format != null) {
-            if (typeof(data.format) == "function") {
+            if (typeof (data.format) == "function") {
                 item.format = data.format;
-            } else if (typeof(data.format) == "string" && typeof(window[data.format]) == "function") {
+            } else if (typeof (data.format) == "string" && typeof (window[data.format]) == "function") {
                 item.format = window[data.format];
             }
         }
@@ -3155,7 +3156,7 @@ dhtmlXForm.prototype._ulToObject = function (ulData, a) {
 };
 
 dhtmlXForm.prototype.setUserData = function (id, name, value, rValue) {
-    if (typeof(rValue) != "undefined") { // radiobutton: name,value,ud_name,ud_value
+    if (typeof (rValue) != "undefined") { // radiobutton: name,value,ud_name,ud_value
         var k = this.doWithItem([id, name], "_getId");
         if (k != null) {
             id = k;
@@ -3169,14 +3170,14 @@ dhtmlXForm.prototype.setUserData = function (id, name, value, rValue) {
 };
 
 dhtmlXForm.prototype.getUserData = function (id, name, rValue) {
-    if (typeof(rValue) != "undefined") { // radiobutton: name,value,ud_name
+    if (typeof (rValue) != "undefined") { // radiobutton: name,value,ud_name
         var k = this.doWithItem([id, name], "_getId");
         if (k != null) {
             id = k;
             name = rValue;
         }
     }
-    if (this._userdata != null && typeof(this._userdata[id]) != "undefined" && typeof(this._userdata[id][name]) != "undefined") return this._userdata[id][name];
+    if (this._userdata != null && typeof (this._userdata[id]) != "undefined" && typeof (this._userdata[id][name]) != "undefined") return this._userdata[id][name];
     return "";
 };
 
@@ -3190,7 +3191,7 @@ dhtmlXForm.prototype.setRTL = function (state) {
 };
 
 _dhxForm_doClick = function (obj, evType) {
-    if (typeof(evType) == "object") {
+    if (typeof (evType) == "object") {
         var t = evType[1];
         evType = evType[0];
     }
@@ -3255,17 +3256,17 @@ dhtmlXForm.prototype.getFormData = function (p0, only_fields) {
         if (t == "ch") r[i] = (this.isItemChecked(i) ? this.getItemValue(i) : 0);
         if (t == "ra" && !r[this.itemPull[a]._group]) r[this.itemPull[a]._group] = this.getCheckedValue(this.itemPull[a]._group);
         if (t in {
-                se: 1,
-                ta: 1,
-                pw: 1,
-                hd: 1,
-                tp: 1,
-                fl: 1,
-                calendar: 1,
-                combo: 1,
-                editor: 1,
-                colorpicker: 1
-            }) r[i] = this.getItemValue(i, p0);
+            se: 1,
+            ta: 1,
+            pw: 1,
+            hd: 1,
+            tp: 1,
+            fl: 1,
+            calendar: 1,
+            combo: 1,
+            editor: 1,
+            colorpicker: 1
+        }) r[i] = this.getItemValue(i, p0);
         // check for custom cell
         if (this["getFormData_" + t]) r[i] = this["getFormData_" + t](i);
         // merge with files/uploader
@@ -3321,7 +3322,7 @@ dhtmlXForm.prototype.adjustParentSize = function () {
         isWindow = (this.cont.parentNode.parentNode.parentNode._isWindow == true);
         if (isWindow) {
             var winCell = this.cont.parentNode.parentNode;
-            if (typeof(winCell.callEvent) == "function") {
+            if (typeof (winCell.callEvent) == "function") {
                 this.cont.style.display = "none";
                 winCell.callEvent("_setCellSize", [kx + 15, ky + 15]);
                 this.cont.style.display = "";
@@ -3542,17 +3543,17 @@ dhtmlXForm.prototype._checkDim = function (formNode, inpObj) {
             u[q] = null;
             // oninit call
             if (t) {
-                if (typeof(t) == "function") t(); else if (typeof(window[t]) == "function") window[t]();
+                if (typeof (t) == "function") t(); else if (typeof (window[t]) == "function") window[t]();
             }
         }
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("load", dhtmlXForm.prototype._autoload, false);
         } else {
             window.detachEvent("onload", dhtmlXForm.prototype._autoload);
         }
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         window.addEventListener("load", dhtmlXForm.prototype._autoload, false);
     } else {
         window.attachEvent("onload", dhtmlXForm.prototype._autoload);
@@ -3584,6 +3585,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
         return this.dataObj;
 
     };
-
+	
 }
 

@@ -1,14 +1,14 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /*
- Purpose: item edit extension
- */
+Purpose: item edit extension
+*/
 
 
 /**
@@ -83,8 +83,7 @@ dhtmlXTreeObject.prototype._stopEdit = function (a, mode) {
             var editText = true;
             if (!mode) {
                 editText = this.callEvent("onEdit", [2, this._editCell.id, this, this._editCell.span.childNodes[0].value]);
-            }
-            else {
+            } else {
                 editText = false;
                 this.callEvent("onEditCancel", [this._editCell.id, this._editCell._oldValue]);
             }
@@ -192,8 +191,7 @@ dhtmlXTreeObject.prototype._editItem = function (id, tree) {
             if (e.keyCode == 13) {
                 e.cancelBubble = true;
                 self._stopEdit(window.undefined);
-            }
-            else if (e.keyCode == 27) {
+            } else if (e.keyCode == 27) {
                 self._stopEdit(window.undefined, true);
             }
             (e || event).cancelBubble = true;

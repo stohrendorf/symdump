@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 
 
@@ -12,8 +12,8 @@
 
 
 /*
- UI:paging control
- */
+	UI:paging control
+*/
 
 /*DHX:Depend template.js*/
 
@@ -151,14 +151,14 @@ dhtmlx.ui.pager.prototype = {
 
 
 /*
- Behaviour:DataProcessor - translates inner events in dataprocessor calls
-
- @export
- changeId
- setItemStyle
- setUserData
- getUserData
- */
+	Behaviour:DataProcessor - translates inner events in dataprocessor calls
+	
+	@export
+		changeId
+		setItemStyle
+		setUserData
+		getUserData
+*/
 
 /*DHX:Depend compatibility.js*/
 /*DHX:Depend dhtmlx.js*/
@@ -187,8 +187,8 @@ dhtmlx.DataProcessor = {
                 dp.setUpdated(id, false);
                 return true;
             }
-            if (z == "deleted")  return false;
-            if (z == "true_deleted")  return true;
+            if (z == "deleted") return false;
+            if (z == "true_deleted") return true;
 
             dp.setUpdated(id, true, "deleted");
             return false;
@@ -262,18 +262,19 @@ dhtmlx.DataProcessor = {
 })();
 
 
+
 /* DHX DEPEND FROM FILE 'compatibility_drag.js'*/
 
 
 /*
- Compatibility hack for DND
- Allows dnd between dhtmlx.dnd and dhtmlxcommon based dnd
- When dnd items - related events will be correctly triggered. 
- onDrag event must define final moving logic, if it is absent - item will NOT be moved automatically
-
- to activate this functionality , next command need to be called
- dhtmlx.compat("dnd");
- */
+	Compatibility hack for DND
+	Allows dnd between dhtmlx.dnd and dhtmlxcommon based dnd
+	When dnd items - related events will be correctly triggered. 
+	onDrag event must define final moving logic, if it is absent - item will NOT be moved automatically
+	
+	to activate this functionality , next command need to be called
+		dhtmlx.compat("dnd");
+*/
 
 /*DHX:Depend compatibility.js*/
 
@@ -381,11 +382,11 @@ dhtmlx.compat.dnd = function () {
 
 
 /*
- Behavior:DataMove - allows to move and copy elements, heavily relays on DataStore.move
- @export
- copy
- move
- */
+	Behavior:DataMove - allows to move and copy elements, heavily relays on DataStore.move
+	@export
+		copy
+		move
+*/
 dhtmlx.DataMove = {
     _init: function () {
         dhtmlx.assert(this.data, "DataMove :: Component doesn't have DataStore");
@@ -460,9 +461,9 @@ dhtmlx.DataMove = {
         return this.move(id, this.data.dataCount() - 1);
     },
     /*
-     this is a stub for future functionality
-     currently it just makes a copy of data object, which is enough for current situation
-     */
+        this is a stub for future functionality
+        currently it just makes a copy of data object, which is enough for current situation
+    */
     externalData: function (data, id) {
         //FIXME - will not work for multi-level data
         var newdata = dhtmlx.extend({}, data);
@@ -478,20 +479,20 @@ dhtmlx.DataMove = {
 
 
 /*
- Behavior:DND - low-level dnd handling
- @export
- getContext
- addDrop
- addDrag
-
- DND master can define next handlers
- onCreateDrag
- onDragIng
- onDragOut
- onDrag
- onDrop
- all are optional
- */
+	Behavior:DND - low-level dnd handling
+	@export
+		getContext
+		addDrop
+		addDrag
+		
+	DND master can define next handlers
+		onCreateDrag
+		onDragIng
+		onDragOut
+		onDrag
+		onDrop
+	all are optional
+*/
 
 /*DHX:Depend dhtmlx.js*/
 
@@ -499,11 +500,11 @@ dhtmlx.DragControl = {
     //has of known dnd masters
     _drag_masters: dhtmlx.toArray(["dummy"]),
     /*
-     register drop area
-     @param node 			html node or ID
-     @param ctrl 			options dnd master
-     @param master_mode 		true if you have complex drag-area rules
-     */
+        register drop area
+        @param node 			html node or ID
+        @param ctrl 			options dnd master
+        @param master_mode 		true if you have complex drag-area rules
+    */
     addDrop: function (node, ctrl, master_mode) {
         node = dhtmlx.toNode(node);
         node.dhx_drop = this._getCtrl(ctrl);
@@ -522,10 +523,10 @@ dhtmlx.DragControl = {
         return index;
     },
     /*
-     register drag area
-     @param node 	html node or ID
-     @param ctrl 	options dnd master
-     */
+        register drag area
+        @param node 	html node or ID
+        @param ctrl 	options dnd master
+    */
     addDrag: function (node, ctrl) {
         node = dhtmlx.toNode(node);
         node.dhx_drag = this._getCtrl(ctrl);
@@ -696,7 +697,7 @@ dhtmlx.DragControl = {
         if (m.onDrag && m != this) return m.onDrag(s, e);
         dhtmlx.DragControl._drag_context = {source: s, from: s};
         return "<div style='" + s.style.cssText + "'>" + s.innerHTML + "</div>";
-    }
+    }	
 };
 
 
@@ -704,17 +705,17 @@ dhtmlx.DragControl = {
 
 
 /*
- Behavior:DragItem - adds ability to move items by dnd
+	Behavior:DragItem - adds ability to move items by dnd
+	
+	dnd context can have next properties
+		from - source object
+		to - target object
+		source - id of dragged item(s)
+		target - id of drop target, null for drop on empty space
+		start - id from which DND was started
+*/
 
- dnd context can have next properties
- from - source object
- to - target object
- source - id of dragged item(s)
- target - id of drop target, null for drop on empty space
- start - id from which DND was started
- */
-
-/*DHX:Depend dnd.js*/        /*DHX:Depend move.js*/        /*DHX:Depend compatibility_drag.js*/
+/*DHX:Depend dnd.js*/		/*DHX:Depend move.js*/		/*DHX:Depend compatibility_drag.js*/ 	
 /*DHX:Depend dhtmlx.js*/
 
 
@@ -749,11 +750,11 @@ dhtmlx.DragItem = {
         dhtmlx.DragControl.addDrag(obj._obj, obj);
     },
     /*
-     s - source html element
-     t - target html element
-     d - drop-on html element ( can be not equal to the target )
-     e - native html event 
-     */
+        s - source html element
+        t - target html element
+        d - drop-on html element ( can be not equal to the target )
+        e - native html event 
+    */
     //called when drag moved over possible target
     onDragIn: function (s, t, e) {
         var id = this.locate(e) || null;
@@ -830,8 +831,8 @@ dhtmlx.DragItem = {
     }
     //returns dnd context object
     /*getDragContext:function(){
-     return dhtmlx.DragControl._drag_context;
-     }*/
+        return dhtmlx.DragControl._drag_context;
+    }*/
 };
 
 
@@ -839,12 +840,12 @@ dhtmlx.DragItem = {
 
 
 /*
- Behavior:EditAbility - enables item operation for the items
-
- @export
- edit
- stopEdit
- */
+	Behavior:EditAbility - enables item operation for the items
+	
+	@export
+		edit
+		stopEdit
+*/
 dhtmlx.EditAbility = {
     _init: function (id) {
         this._edit_id = null;		//id of active item 
@@ -946,8 +947,7 @@ dhtmlx.EditAbility = {
                 code(obj, bind_elements);
                 if (bind_elements.length && bind_elements[0].select) //focust first html input, if possible
                     bind_elements[0].select();
-            }
-            else 		//input to propery
+            } else 		//input to propery
                 back_code(obj, bind_elements);
         };
     },
@@ -963,15 +963,15 @@ dhtmlx.EditAbility = {
 
 
 /*
- Behavior:SelectionModel - manage selection states
- @export
- select
- unselect
- selectAll
- unselectAll
- isSelected
- getSelected
- */
+	Behavior:SelectionModel - manage selection states
+	@export
+		select
+		unselect
+		selectAll
+		unselectAll
+		isSelected
+		getSelected
+*/
 dhtmlx.SelectionModel = {
     _init: function () {
         //collection of selected IDs
@@ -1112,11 +1112,11 @@ dhtmlx.SelectionModel = {
         return this._selected.find(id) != -1;
     },
     /*
-     returns ID of selected items or array of IDs
-     to make result predictable - as_array can be used, 
-     with such flag command will always return an array 
-     empty array in case when no item was selected
-     */
+        returns ID of selected items or array of IDs
+        to make result predictable - as_array can be used, 
+            with such flag command will always return an array 
+            empty array in case when no item was selected
+    */
     getSelected: function (as_array) {
         switch (this._selected.length) {
             case 0:
@@ -1152,14 +1152,14 @@ dhtmlx.SelectionModel = {
 
 
 /*
- Renders collection of items
- Behavior uses plain strategy which suits only for relative small datasets
-
- @export
- locate
- show
- render
- */
+	Renders collection of items
+	Behavior uses plain strategy which suits only for relative small datasets
+	
+	@export
+		locate
+		show
+		render
+*/
 dhtmlx.RenderStack = {
     _init: function () {
         dhtmlx.assert(this.data, "RenderStack :: Component doesn't have DataStore");
@@ -1179,8 +1179,8 @@ dhtmlx.RenderStack = {
         //if (obj.$template) //custom template
         this.callEvent("onItemRender", [obj]);
         /*
-         $template property of item, can contain a name of custom template
-         */
+            $template property of item, can contain a name of custom template
+        */
         return this.type._item_start(obj, this.type) + (obj.$template ? this.type["template_" + obj.$template] : this.type.template)(obj, this.type) + this.type._item_end;
     },
     //convert item to HTML object (templating)
@@ -1354,14 +1354,14 @@ dhtmlx.RenderStack = {
 
 
 /*
- Renders collection of items
- Always shows y-scroll
- Can be used with huge datasets
-
- @export
- show
- render
- */
+	Renders collection of items
+	Always shows y-scroll
+	Can be used with huge datasets
+	
+	@export
+		show
+		render
+*/
 
 /*DHX:Depend render.js*/
 
@@ -1373,7 +1373,7 @@ dhtmlx.VirtualRenderStack = {
         //in this mode y-scroll is always visible
         //it simplifies calculations a lot
         this._dataobj.style.overflowY = "scroll";
-
+        
         //we need to repaint area each time when view resized or scrolling state is changed
         dhtmlx.event(this._dataobj, "scroll", dhtmlx.bind(this._render_visible_rows, this));
         dhtmlx.event(window, "resize", dhtmlx.bind(function () {
@@ -1432,10 +1432,10 @@ dhtmlx.VirtualRenderStack = {
                     break;
                 default: // "move", "add", "delete"
                     /*
-                     for all above operations, full repainting is necessary
-                     but from practical point of view, we need only one repainting per thread
-                     code below initiates double-thread-rendering trick
-                     */
+                        for all above operations, full repainting is necessary
+                        but from practical point of view, we need only one repainting per thread
+                        code below initiates double-thread-rendering trick
+                    */
                     this._render_delayed();
                     break;
             }
@@ -1468,10 +1468,10 @@ dhtmlx.VirtualRenderStack = {
         return node;
     },
     /*
-     Methods get coordinatest of visible area and checks that all related items are rendered
-     If, during rendering, some not-loaded items was detected - extra data loading is initiated.
-     reset - flag, which forces clearing of previously rendered elements
-     */
+        Methods get coordinatest of visible area and checks that all related items are rendered
+        If, during rendering, some not-loaded items was detected - extra data loading is initiated.
+        reset - flag, which forces clearing of previously rendered elements
+    */
     _render_visible_rows: function (e, reset) {
         this.data._unrendered_area = []; //clear results of previous calls
 
@@ -1484,15 +1484,15 @@ dhtmlx.VirtualRenderStack = {
         }
 
         /*
-         virtual rendering breaks all view on rows, because we know widht of item
-         we can calculate how much items can be placed on single row, and knowledge 
-         of that, allows to calculate count of such rows
-
-         each time after scrolling, code iterate through visible rows and render items 
-         in them, if they are not rendered yet
-
-         both rendered rows and placeholders are registered in _htmlrows collection
-         */
+            virtual rendering breaks all view on rows, because we know widht of item
+            we can calculate how much items can be placed on single row, and knowledge 
+            of that, allows to calculate count of such rows
+            
+            each time after scrolling, code iterate through visible rows and render items 
+            in them, if they are not rendered yet
+            
+            both rendered rows and placeholders are registered in _htmlrows collection
+        */
 
         //position of first visible row
         var t = Math.max(viewport._from, 0);
@@ -1536,13 +1536,13 @@ dhtmlx.VirtualRenderStack = {
             node._filled = true;
 
             /*
-             if new row is at start of placeholder - decrease placeholder's height
-             else if new row takes whole placeholder - remove placeholder from DOM
-             else 
-             we are inserting row in the middle of existing placeholder
-             decrease height of existing one, and add one more, 
-             before the newly added row
-             */
+                if new row is at start of placeholder - decrease placeholder's height
+                else if new row takes whole placeholder - remove placeholder from DOM
+                else 
+                    we are inserting row in the middle of existing placeholder
+                    decrease height of existing one, and add one more, 
+                    before the newly added row
+            */
             if (delta <= 0 && delta2 > 0) {
                 holder_row.style.height = delta2 + "px";
                 this._htmlrows[t + 1] = holder_row;
@@ -1602,12 +1602,13 @@ dhtmlx.VirtualRenderStack = {
 };
 
 
+
 /* DHX INITIAL FILE 'C:\http\legacy/dhtmlxCore/sources//dataview.js'*/
 
 
 /*
- UI:DataView
- */
+	UI:DataView
+*/
 
 /*DHX:Depend dataview.css*/
 /*DHX:Depend types*/
@@ -1617,10 +1618,10 @@ dhtmlx.VirtualRenderStack = {
 /*DHX:Depend compatibility_drag.js*/
 
 /*DHX:Depend datastore.js*/
-/*DHX:Depend load.js*/        /*DHX:Depend virtual_render.js*/        /*DHX:Depend selection.js*/
-/*DHX:Depend mouse.js*/    /*DHX:Depend key.js*/                    /*DHX:Depend edit.js*/
-/*DHX:Depend drag.js*/        /*DHX:Depend dataprocessor_hook.js*/    /*DHX:Depend autotooltip.js*/
-/*DHX:Depend pager.js*/        /*DHX:Depend destructor.js*/            /*DHX:Depend dhtmlx.js*/
+/*DHX:Depend load.js*/ 		/*DHX:Depend virtual_render.js*/ 		/*DHX:Depend selection.js*/
+/*DHX:Depend mouse.js*/ 	/*DHX:Depend key.js*/ 					/*DHX:Depend edit.js*/
+/*DHX:Depend drag.js*/		/*DHX:Depend dataprocessor_hook.js*/ 	/*DHX:Depend autotooltip.js*/
+/*DHX:Depend pager.js*/		/*DHX:Depend destructor.js*/			/*DHX:Depend dhtmlx.js*/
 /*DHX:Depend config.js*/
 
 
@@ -1696,10 +1697,10 @@ dhtmlXDataView.prototype = {
         dhtmlx.BaseBind.legacySync.apply(this, arguments);
     },
     /*
-     Called each time when dragIn or dragOut situation occurs
-     context - drag context object
-     ev - native event
-     */
+        Called each time when dragIn or dragOut situation occurs
+        context - drag context object
+        ev - native event
+    */
     dragMarker: function (context, ev) {
         //get HTML element by item ID
         //can be null - when item is not rendered yet
@@ -1799,7 +1800,7 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
         obj.style.overflow = "hidden";
         this._attachObject(obj);
 
-        if (typeof(conf) == "undefined") conf = {};
+        if (typeof (conf) == "undefined") conf = {};
         obj.id = "DataViewObject_" + new Date().getTime();
         conf.container = obj.id;
         conf.skin = this.conf.skin;
@@ -1819,6 +1820,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         return this.dataObj;
     };
-
+	
 }
 

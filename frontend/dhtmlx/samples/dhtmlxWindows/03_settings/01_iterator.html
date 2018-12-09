@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Iterator</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -25,6 +25,7 @@
     </style>
     <script>
         var dhxWins, w1, w2, w3, nextIndex = 1;
+
         function doOnLoad() {
             dhxWins = new dhtmlXWindows();
             dhxWins.attachViewportTo("winVP");
@@ -38,21 +39,25 @@
             w3 = dhxWins.createWindow("w3", 80, 110, 320, 200);
             w3.setText("dhtmlxWindow #3");
         }
+
         function changeText() {
             dhxWins.forEachWindow(function (win) {
                 win.setText("new text " + nextIndex++);
             });
         }
+
         function enableButton() {
             dhxWins.forEachWindow(function (win) {
                 win.button("minmax").enable();
             });
         }
+
         function disableButton() {
             dhxWins.forEachWindow(function (win) {
                 win.button("minmax").disable();
             });
         }
+
         function doOnUnload() {
             if (dhxWins != null && dhxWins.unload != null) {
                 dhxWins.unload();
@@ -65,8 +70,8 @@
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="winVP"></div>
 <div class="controls">
-    <input type="button" value="change text" onclick="changeText();">
-    <input type="button" value="enable minmax button" onclick="enableButton();">
-    <input type="button" value="disable minmax button" onclick="disableButton();">
+    <input onclick="changeText();" type="button" value="change text">
+    <input onclick="enableButton();" type="button" value="enable minmax button">
+    <input onclick="disableButton();" type="button" value="disable minmax button">
 </div>
 </body>

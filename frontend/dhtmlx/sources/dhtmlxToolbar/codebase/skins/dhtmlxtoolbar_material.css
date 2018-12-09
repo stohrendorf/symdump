@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         transform: rotate(360deg);
     }
 }
-
 @keyframes dhx_loader_dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -31,7 +30,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         stroke-dashoffset: -124px;
     }
 }
-
 .dhx_toolbar_material {
     background-color: #fafafa;
     position: relative;
@@ -43,20 +41,16 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhx_toolbar_material.dhx_toolbar_shadow {
     border-width: 0px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
-
 .dhx_toolbar_material div.dhxtoolbar_float_left {
     float: left;
 }
-
 .dhx_toolbar_material div.dhxtoolbar_float_right {
     float: right;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn,
 .dhx_toolbar_material div.dhx_toolbar_arw {
     position: relative;
@@ -74,17 +68,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_dis,
 .dhx_toolbar_material div.dhx_toolbar_arw.dhxtoolbar_btn_dis {
     color: #a6a6a6;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_dis i,
 .dhx_toolbar_material div.dhx_toolbar_arw.dhxtoolbar_btn_dis i {
     color: #c0c0c0;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_dis div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_dis div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_dis div.dhxtoolbar_sl_bg_r,
@@ -94,7 +85,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-color: #dfdfdf;
     background-color: #fafafa;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_dis div.dhxtoolbar_sl_pen,
 .dhx_toolbar_material div.dhx_toolbar_arw.dhxtoolbar_btn_dis div.dhxtoolbar_sl_pen {
     background-color: #dfdfdf;
@@ -102,31 +92,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     width: 10px;
     height: 10px;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_over,
 .dhx_toolbar_material div.dhx_toolbar_arw.dhxtoolbar_btn_over {
     background-color: #ebebeb;
     border-color: #ebebeb;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_pres,
 .dhx_toolbar_material div.dhx_toolbar_arw.dhxtoolbar_btn_pres {
     background-color: #dcdcdc;
     border-color: #d2d2d2;
     box-shadow: 0 0 4px rgba(127, 127, 127, 0.2) inset;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn {
     padding: 0px 5px;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn.dhxtoolbar_btn_pres_dis {
     background-color: #ececec;
     border-color: #dfdfdf;
     color: #a6a6a6;
     box-shadow: 0 0 4px rgba(127, 127, 127, 0.2) inset;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn img {
     float: left;
     margin-right: 2px;
@@ -139,7 +124,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn i {
     float: left;
     margin: 0px 2px;
@@ -153,7 +137,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn div.dhxtoolbar_text {
     float: left;
     position: relative;
@@ -170,7 +153,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn input.dhxtoolbar_input {
     position: relative;
     border: 1px solid #dfdfdf;
@@ -184,26 +166,21 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_btn input.dhxtoolbar_input:disabled {
     color: #a6a6a6;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_arw {
     padding: 0px 6px;
     margin-left: -1px;
     z-index: 1;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_arw.dhxtoolbar_btn_over {
     border-left-color: #e3e3e3;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_arw.dhxtoolbar_btn_pres {
     border-left-color: #cbcbcb;
     box-shadow: 0 0 3px rgba(127, 127, 127, 0.18) inset;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_arw div.arwimg {
     position: relative;
     width: 7px;
@@ -211,11 +188,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-position: center center;
     background-repeat: no-repeat;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_arw.dhxtoolbar_btn_dis div.arwimg {
     background-image: url("../imgs/dhxtoolbar_material/dhxtoolbar_arrow_dis.gif");
 }
-
 .dhx_toolbar_material div.dhx_toolbar_sep {
     float: left;
     position: relative;
@@ -232,7 +207,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_material div.dhx_toolbar_text {
     float: left;
     position: relative;
@@ -245,7 +219,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_material div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_material div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_material div.dhxtoolbar_sl_bg_r {
@@ -259,17 +232,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-style: solid;
     overflow: hidden;
 }
-
 .dhx_toolbar_material div.dhxtoolbar_sl_bg_l {
     margin-left: 4px;
     border-left-width: 1px;
 }
-
 .dhx_toolbar_material div.dhxtoolbar_sl_bg_r {
     margin-right: 4px;
     border-right-width: 1px;
 }
-
 .dhx_toolbar_material div.dhxtoolbar_sl_pen,
 .dhx_toolbar_material div.dhxtoolbar_sl_pen.dhxtoolbar_over {
     position: absolute;
@@ -288,187 +258,154 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_18 {
     height: 32px;
     line-height: 32px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhx_toolbar_btn,
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhx_toolbar_arw,
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhx_toolbar_text {
     height: 32px;
     line-height: 32px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhx_toolbar_btn img {
     margin-top: 7px;
     width: 18px;
     height: 18px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhx_toolbar_btn i {
     width: 18px;
     height: 32px;
     line-height: 31px;
     font-size: 17px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhx_toolbar_btn div.dhxtoolbar_text {
     height: 32px;
     line-height: 32px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhx_toolbar_sep {
     height: 26px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhxtoolbar_sl_bg_r {
     margin-top: 16px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhxtoolbar_sl_pen,
 .dhx_toolbar_material.dhxtoolbar_icons_18 div.dhxtoolbar_sl_pen.dhxtoolbar_over {
     top: 11px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_24 {
     height: 42px;
     line-height: 42px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhx_toolbar_btn,
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhx_toolbar_arw,
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhx_toolbar_text {
     height: 42px;
     line-height: 42px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhx_toolbar_btn img {
     margin-top: 9px;
     width: 24px;
     height: 24px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhx_toolbar_btn i {
     width: 24px;
     height: 42px;
     line-height: 41px;
     font-size: 22px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhx_toolbar_btn div.dhxtoolbar_text {
     height: 42px;
     line-height: 42px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhx_toolbar_sep {
     height: 36px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhxtoolbar_sl_bg_r {
     margin-top: 21px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhxtoolbar_sl_pen,
 .dhx_toolbar_material.dhxtoolbar_icons_24 div.dhxtoolbar_sl_pen.dhxtoolbar_over {
     top: 16px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_32 {
     height: 52px;
     line-height: 52px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhx_toolbar_btn,
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhx_toolbar_arw,
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhx_toolbar_text {
     height: 52px;
     line-height: 52px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhx_toolbar_btn img {
     margin-top: 10px;
     width: 32px;
     height: 32px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhx_toolbar_btn i {
     width: 32px;
     height: 52px;
     line-height: 51px;
     font-size: 27px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhx_toolbar_btn div.dhxtoolbar_text {
     height: 52px;
     line-height: 52px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhx_toolbar_sep {
     height: 46px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhxtoolbar_sl_bg_r {
     margin-top: 26px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhxtoolbar_sl_pen,
 .dhx_toolbar_material.dhxtoolbar_icons_32 div.dhxtoolbar_sl_pen.dhxtoolbar_over {
     top: 21px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_48 {
     height: 62px;
     line-height: 62px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhx_toolbar_btn,
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhx_toolbar_arw,
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhx_toolbar_text {
     height: 62px;
     line-height: 62px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhx_toolbar_btn img {
     margin-top: 7px;
     width: 48px;
     height: 48px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhx_toolbar_btn i {
     width: 48px;
     height: 62px;
     line-height: 61px;
     font-size: 32px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhx_toolbar_btn div.dhxtoolbar_text {
     height: 62px;
     line-height: 62px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhx_toolbar_sep {
     height: 56px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhxtoolbar_sl_bg_r {
     margin-top: 31px;
 }
-
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhxtoolbar_sl_pen,
 .dhx_toolbar_material.dhxtoolbar_icons_48 div.dhxtoolbar_sl_pen.dhxtoolbar_over {
     top: 26px;
 }
-
 div.dhx_toolbar_poly_material {
     position: absolute;
     padding: 5px 0px;
@@ -487,12 +424,10 @@ div.dhx_toolbar_poly_material {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhx_toolbar_poly_material.dhx_toolbar_shadow {
     border-width: 0px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
-
 div.dhx_toolbar_poly_material td {
     line-height: normal;
     padding: 0px;
@@ -500,18 +435,15 @@ div.dhx_toolbar_poly_material td {
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 div.dhx_toolbar_poly_material td.td_btn_img {
     width: 18px;
     text-align: center;
 }
-
 div.dhx_toolbar_poly_material td.td_btn_img img.btn_sel_img {
     margin: 4px 6px 0px 6px;
     width: 18px;
     height: 18px;
 }
-
 div.dhx_toolbar_poly_material td.td_btn_img i {
     width: 18px;
     height: 30px;
@@ -521,7 +453,6 @@ div.dhx_toolbar_poly_material td.td_btn_img i {
     text-align: center;
     color: #5a5a5a;
 }
-
 div.dhx_toolbar_poly_material td.td_btn_txt div.btn_sel_text {
     position: relative;
     height: 30px;
@@ -529,21 +460,17 @@ div.dhx_toolbar_poly_material td.td_btn_txt div.btn_sel_text {
     padding: 0px 22px 0px 1px;
     overflow: hidden;
 }
-
 div.dhx_toolbar_poly_material .tr_btn_over td,
 div.dhx_toolbar_poly_material .tr_btn_selected td {
     background-color: #ebebeb;
 }
-
 div.dhx_toolbar_poly_material .tr_btn_disabled td,
 div.dhx_toolbar_poly_material .tr_btn_disabled td i {
     color: #a6a6a6;
 }
-
 div.dhx_toolbar_poly_material tr.tr_sep td {
     padding: 5px 3px;
 }
-
 div.dhx_toolbar_poly_material tr.tr_sep td div.btn_sep {
     position: relative;
     font-size: 1px;
@@ -552,7 +479,6 @@ div.dhx_toolbar_poly_material tr.tr_sep td div.btn_sep {
     width: 100%;
     border-top: 1px solid #dfdfdf;
 }
-
 div.dhx_toolbar_slider_label_material {
     position: absolute;
     background-color: #fafafa;
@@ -571,7 +497,6 @@ div.dhx_toolbar_slider_label_material {
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxtoolbar_skin_detect {
     position: absolute;
     left: 0px;
@@ -583,7 +508,6 @@ div.dhx_toolbar_slider_label_material {
     height: 10px;
     overflow: hidden;
 }
-
 .dhxtoolbar_maxopen_test {
     position: absolute;
     width: 200px;
@@ -595,11 +519,9 @@ div.dhx_toolbar_slider_label_material {
     border: 1px solid white;
     visibility: hidden;
 }
-
 .dhxtoolbar_maxopen_test2 {
     height: 200px;
 }
-
 .dhxacc_base_material div.dhx_cell_acc div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging,
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging,
 .dhxtabbar_base_material div.dhx_cell_tabbar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging,
@@ -607,7 +529,6 @@ div.dhx_toolbar_slider_label_material {
 .dhxsidebar_base_material div.dhx_cell_sidebar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging {
     height: 33px;
 }
-
 .dhxacc_base_material div.dhx_cell_acc div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging .dhx_toolbar_material,
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging .dhx_toolbar_material,
 .dhxtabbar_base_material div.dhx_cell_tabbar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging .dhx_toolbar_material,
@@ -616,11 +537,9 @@ div.dhx_toolbar_slider_label_material {
     box-shadow: none;
     border-width: 0px 1px 1px 1px;
 }
-
 .dhxwins_vp_material div.dhx_cell_wins div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging {
     height: 32px;
 }
-
 .dhxwins_vp_material div.dhx_cell_wins div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging .dhx_toolbar_material {
     border-width: 0px 1px 1px 0px;
 }

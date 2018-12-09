@@ -2,15 +2,16 @@
 <html>
 <head>
     <title>Attached to layout</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_awesome/css/font-awesome.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/fonts/font_awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myLayout, myGrid, myToolbar;
         var loadData = {};
+
         function doOnLoad() {
             myLayout = new dhtmlXLayoutObject("parentId", "2U");
             myLayout.cells("a").hideHeader();
@@ -26,6 +27,7 @@
             loadToolbar(18);
 
         }
+
         function loadToolbar(a) {
             if (!checkLoadState()) return;
             loadData.toolbar = false;
@@ -34,6 +36,7 @@
             myToolbar.setIconsPath("../common/icon_size/material/" + a + "/");
             myToolbar.loadStruct("../common/dhxtoolbar_button2.xml");
         }
+
         function checkLoadState() {
             var s = true;
             for (var a in loadData) s = s && loadData[a];
@@ -43,10 +46,10 @@
 </head>
 <body onload="doOnLoad();">
 <div style="padding-bottom: 10px;">
-    <input type="button" value="18" onclick="loadToolbar(18);">
-    <input type="button" value="24" onclick="loadToolbar(24);">
-    <input type="button" value="32" onclick="loadToolbar(32);">
-    <input type="button" value="48" onclick="loadToolbar(48);">
+    <input onclick="loadToolbar(18);" type="button" value="18">
+    <input onclick="loadToolbar(24);" type="button" value="24">
+    <input onclick="loadToolbar(32);" type="button" value="32">
+    <input onclick="loadToolbar(48);" type="button" value="48">
 </div>
 <div id="parentId" style="position: relative; width: 600px; height: 400px;"></div>
 </table>

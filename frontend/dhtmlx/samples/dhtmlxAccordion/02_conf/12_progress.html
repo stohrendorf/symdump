@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Progress control</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -28,6 +28,7 @@
     </style>
     <script>
         var myAcc;
+
         function doOnLoad() {
             myAcc = new dhtmlXAccordion({
                 parent: "accObj",
@@ -64,13 +65,13 @@
 <table border="0" style="margin-top:15px;">
     <tr>
         <td>Cell a1 (First item)</td>
-        <td><input type="button" value="progress on" onclick="myAcc.cells('a1').progressOn();"></td>
-        <td><input type="button" value="progress off" onclick="myAcc.cells('a1').progressOff();"></td>
+        <td><input onclick="myAcc.cells('a1').progressOn();" type="button" value="progress on"></td>
+        <td><input onclick="myAcc.cells('a1').progressOff();" type="button" value="progress off"></td>
     </tr>
     <tr>
         <td>Cell a2 (Second item)</td>
-        <td><input type="button" value="progress on" onclick="myAcc.cells('a2').progressOn();"></td>
-        <td><input type="button" value="progress off" onclick="myAcc.cells('a2').progressOff();"></td>
+        <td><input onclick="myAcc.cells('a2').progressOn();" type="button" value="progress on"></td>
+        <td><input onclick="myAcc.cells('a2').progressOff();" type="button" value="progress off"></td>
     </tr>
 </table>
 </body>

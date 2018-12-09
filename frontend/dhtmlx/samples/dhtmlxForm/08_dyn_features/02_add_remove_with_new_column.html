@@ -2,53 +2,54 @@
 <html>
 <head>
     <title>Add/remove items with new column</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myForm, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: "auto", inputWidth: "auto"},
                 {
                     type: "label", label: "Query Options", list: [
-                    {type: "settings", position: "label-right"},
-                    {type: "checkbox", name: "ch_where", value: 1, label: "WHERE"},
-                    {type: "checkbox", name: "ch_order", value: 1, label: "ORDER BY"}
-                ]
+                        {type: "settings", position: "label-right"},
+                        {type: "checkbox", name: "ch_where", value: 1, label: "WHERE"},
+                        {type: "checkbox", name: "ch_order", value: 1, label: "ORDER BY"}
+                    ]
                 },
                 {
                     type: "label", label: "Query Builder", name: "query", offsetTop: 20, list: [
-                    {type: "settings", offsetLeft: 5},
-                    {
-                        type: "select",
-                        label: "SELECT",
-                        inputWidth: 100,
-                        userdata: {output: true, order: 10, before: "SELECT ", after: " "},
-                        options: [
-                            {value: "*", text: "*", selected: true},
-                            {value: "userId", text: "userId"},
-                            {value: "userName", text: "userName"}
-                        ]
-                    },
-                    {type: "newcolumn"},
-                    {
-                        type: "select",
-                        label: "FROM",
-                        inputWidth: 70,
-                        userdata: {output: true, order: 20, before: "FROM ", after: "\n"},
-                        options: [
-                            {value: "users", text: "users", selected: true}
-                        ]
-                    }
-                ]
+                        {type: "settings", offsetLeft: 5},
+                        {
+                            type: "select",
+                            label: "SELECT",
+                            inputWidth: 100,
+                            userdata: {output: true, order: 10, before: "SELECT ", after: " "},
+                            options: [
+                                {value: "*", text: "*", selected: true},
+                                {value: "userId", text: "userId"},
+                                {value: "userName", text: "userName"}
+                            ]
+                        },
+                        {type: "newcolumn"},
+                        {
+                            type: "select",
+                            label: "FROM",
+                            inputWidth: 70,
+                            userdata: {output: true, order: 20, before: "FROM ", after: "\n"},
+                            options: [
+                                {value: "users", text: "users", selected: true}
+                            ]
+                        }
+                    ]
                 },
                 {
                     type: "label", label: "Query String", offsetTop: 20, list: [
-                    {type: "input", name: "query_string", label: "", inputWidth: 300, rows: 4}
-                ]
+                        {type: "input", name: "query_string", label: "", inputWidth: 300, rows: 4}
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);
@@ -69,6 +70,7 @@
             });
             updateQueryString();
         }
+
         function updateQueryString() {
             var out = [];
             var t = myForm.getFormData();
@@ -83,6 +85,7 @@
             for (var q = 0; q < out.length; q++) out[q] = out[q][1];
             myForm.setItemValue("query_string", out.join(""));
         }
+
         // formData for additional items
         var itemData = {
             "ch_where": [
@@ -131,9 +134,9 @@
                 },
                 {
                     type: "select", label: " ", inputWidth: 65, userdata: {output: true, order: 41}, options: [
-                    {value: "ASC", text: "ASC", selected: true},
-                    {value: "DESC", text: "DESC"}
-                ]
+                        {value: "ASC", text: "ASC", selected: true},
+                        {value: "DESC", text: "DESC"}
+                    ]
                 }
             ]
         };

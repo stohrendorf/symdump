@@ -18,7 +18,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     z-index: 1000;
     padding: 0px 0px;
 }
-
 .dhtmlx-info {
     color: #333;
     border-radius: 4px;
@@ -38,7 +37,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-transition: all .5s ease;
     transition: all .5s ease;
 }
-
 .dhtmlx-info.hidden {
     height: 0px;
     padding-bottom: 0px;
@@ -48,14 +46,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin-bottom: 0px;
     overflow: hidden;
 }
-
 .dhtmlx-error {
     border: 1px solid #f17373;
     box-shadow: inset 0px 0px 1px 1px #f59696;
     background: #f17373;
     color: #fff;
 }
-
 .dhtmlx_modal_box {
     overflow: hidden;
     display: inline-block;
@@ -71,7 +67,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border: 1px solid #ddd;
     border-radius: 6px;
 }
-
 .dhtmlx_popup_title {
     padding: 10px 0;
     font-size: 13px;
@@ -83,7 +78,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     text-shadow: none;
     height: auto;
 }
-
 .dhtmlx-info,
 .dhtmlx_popup_title,
 .dhtmlx_popup_button {
@@ -95,7 +89,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -moz-user-select: -moz-none;
     cursor: pointer;
 }
-
 .dhtmlx_popup_text {
     font-size: 13px;
     font-family: Arial;
@@ -106,7 +99,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-width: 0px;
     margin: 0px;
 }
-
 .dhtmlx_popup_button div,
 .dhtmlx_popup_button div:active {
     line-height: 28px;
@@ -114,13 +106,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: inherit;
     border: none;
 }
-
 .dhtmlx_popup_controls {
     font-family: Arial;
     font-weight: bold;
     padding: 10px 10px 15px 10px !important;
 }
-
 .dhtmlx_popup_button {
     font-size: 14px;
     font-family: Arial;
@@ -133,7 +123,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin: 0 5px;
     border-radius: 4px;
 }
-
 div.dhx_modal_cover {
     background: #000;
     cursor: default;
@@ -148,65 +137,54 @@ div.dhx_modal_cover {
     border: none;
     zoom: 1;
 }
-
 .dhtmlx_popup_button {
     color: #222;
     border: 1px solid #cecece;
     box-shadow: 0px 0px 1px #111;
 }
-
 .dhtmlx_popup_button:active,
 .dhtmlx_popup_button:focus {
     background: #eee;
 }
-
 .dhtmlx_popup_button:first-child {
     background: #22A1BC;
     color: white;
     border: 1px solid #22A1BC;
     box-shadow: none;
 }
-
 .dhtmlx-alert-error,
 .dhtmlx-confirm-error {
     border: 1px solid #f17373;
 }
-
 .dhtmlx-alert-error .dhtmlx_popup_title,
 .dhtmlx-confirm-error .dhtmlx_popup_title {
     color: #ffffff;
     background: #f17373;
 }
-
 .dhtmlx-alert-warning,
 .dhtmlx-confirm-warning {
     border: 1px solid #E6951A;
 }
-
 .dhtmlx-alert-warning .dhtmlx_popup_title,
 .dhtmlx-confirm-warning .dhtmlx_popup_title {
     color: #ffffff;
     background: #E6951A;
 }
-
 .dhtmlx-alert .dhtmlx_popup_title,
 .dhtmlx-confirm .dhtmlx_popup_title {
     color: #444;
     background: #f5f5f5;
 }
-
 .dhtmlx-alert .dhtmlx_popup_controls,
 .dhtmlx-confirm .dhtmlx_popup_controls {
     border: 1px solid #eee;
     border-width: 0 1px 1px 1px;
 }
-
 .dhtmlx-alert .dhtmlx_popup_text,
 .dhtmlx-confirm .dhtmlx_popup_text {
     border: 1px solid #eee;
     border-width: 0px;
 }
-
 .dhtmlx-error div,
 .dhtmlx-info div {
     padding: 0px;

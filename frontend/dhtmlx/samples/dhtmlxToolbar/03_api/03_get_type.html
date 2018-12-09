@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Get item type</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var sel;
         var myToolbar;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -22,6 +23,7 @@
                 });
             });
         }
+
         function getType() {
             var id = sel.options[sel.selectedIndex].value;
             alert(myToolbar.getType(id));
@@ -32,6 +34,6 @@
 <div style="height: 150px;">
     <div id="toolbarObj"></div>
 </div>
-<select id="sel"></select> <input type="button" value="Get Type" onclick="getType();">
+<select id="sel"></select> <input onclick="getType();" type="button" value="Get Type">
 </body>
 </html>

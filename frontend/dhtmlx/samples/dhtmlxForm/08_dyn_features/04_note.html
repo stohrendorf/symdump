@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Note</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myForm, formData, sel;
+
         function doOnLoad() {
             sel = byId("formName");
             formData = [
@@ -35,12 +36,15 @@
                 sel.options.add(new Option(myForm.getItemLabel(id), id));
             });
         }
+
         function byId(id) {
             return document.getElementById(id);
         }
+
         function setNote() {
             myForm.setNote(sel.options[sel.selectedIndex].value, {text: byId("formNote").value});
         }
+
         function clearNote() {
             myForm.clearNote(sel.options[sel.selectedIndex].value);
         }
@@ -49,9 +53,9 @@
 <body onload="doOnLoad();">
 <div>
     <select id="formName"></select>
-    <input type="text" id="formNote" value="leave blank if you plan to use account as gift for someone">
-    <input type="button" onclick="setNote();" value="set">
-    <input type="button" onclick="clearNote();" value="clear">
+    <input id="formNote" type="text" value="leave blank if you plan to use account as gift for someone">
+    <input onclick="setNote();" type="button" value="set">
+    <input onclick="clearNote();" type="button" value="clear">
 </div>
 <div id="myForm" style="height:500px;margin-top: 50px;"></div>
 </body>

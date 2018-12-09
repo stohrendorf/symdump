@@ -1,13 +1,13 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXGridFromTable(obj, init) {
-    if (typeof(obj) != 'object')
+    if (typeof (obj) != 'object')
         obj = document.getElementById(obj);
     var w = document.createElement("DIV");
     w.setAttribute("width", obj.getAttribute("gridWidth") || (obj.offsetWidth ? (obj.offsetWidth + "px") : 0) || (window.getComputedStyle ? window.getComputedStyle(obj, null)["width"] : (obj.currentStyle ? obj.currentStyle["width"] : 0)));
@@ -91,6 +91,7 @@ function dhtmlXGridFromTable(obj, init) {
     return windowf;
 
 }
+
 dhtmlXGridObject.prototype._process_html = function (xml) {
     if (xml.tagName && xml.tagName == "TABLE") return this._process_inner_html(xml, 0);
     var temp = document.createElement("DIV");
@@ -144,7 +145,7 @@ dhtmlXGridObject.prototype._process_html_row = function (r, xml) {
     for (j < cellsCol.length; j < r.childNodes.length; j++)
         r.childNodes[j]._attrs = {};
 
-
+        
     //back to common code
     this._fillRow(r, (this._c_order ? this._swapColumns(strAr) : strAr));
     return r;

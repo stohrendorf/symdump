@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Control over tabs</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myTabbar;
+
         function doOnLoad() {
             myTabbar = new dhtmlXTabBar("my_tabbar");
             myTabbar.addTab("a1", "Tab 1-1", null, null, true);
@@ -27,9 +28,9 @@
 For active tab:
 <br>
 
-<input type="button" value="Set tab label"
-       onclick="var id=myTabbar.getActiveTab();if(id!=null)myTabbar.cells(id).setText(document.getElementById('new_label').value);">
-<input type="text" value="new label" id="new_label">
+<input onclick="var id=myTabbar.getActiveTab();if(id!=null)myTabbar.cells(id).setText(document.getElementById('new_label').value);"
+       type="button" value="Set tab label">
+<input id="new_label" type="text" value="new label">
 
 <br><br>
 
@@ -43,8 +44,8 @@ For selected tab:
     <option value="a4">a4</option>
     <option value="a5">a5</option>
 </select>
-<input type="button" value="Disable tab" onclick="myTabbar.tabs(document.getElementById('sel_1').value).disable(true);">
-<input type="button" value="Enable tab" onclick="myTabbar.tabs(document.getElementById('sel_1').value).enable();">
+<input onclick="myTabbar.tabs(document.getElementById('sel_1').value).disable(true);" type="button" value="Disable tab">
+<input onclick="myTabbar.tabs(document.getElementById('sel_1').value).enable();" type="button" value="Enable tab">
 
 <br><br>
 
@@ -55,8 +56,8 @@ For selected tab:
     <option value="a4">a4</option>
     <option value="a5">a5</option>
 </select>
-<input type="button" value="Hide tab" onclick="myTabbar.tabs(document.getElementById('sel_2').value).hide(true);">
-<input type="button" value="Show tab" onclick="myTabbar.tabs(document.getElementById('sel_2').value).show();">
+<input onclick="myTabbar.tabs(document.getElementById('sel_2').value).hide(true);" type="button" value="Hide tab">
+<input onclick="myTabbar.tabs(document.getElementById('sel_2').value).show();" type="button" value="Show tab">
 </body>
 </html>
 

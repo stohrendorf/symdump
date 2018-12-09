@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Images mode</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCombo, myCombo2, myCombo3;
+
         function doOnLoad() {
             myCombo = new dhtmlXCombo("combo_zone", "combo", null, "image");
             myCombo.setImagePath("../common/flags/");
@@ -24,6 +25,7 @@
             //
             myCombo3 = dhtmlXComboFromSelect("mySelect");
         }
+
         function enableCombo(combo, mode) {
             combo.enable(mode);
         }
@@ -46,10 +48,10 @@
 <a href="javascript:void(0);" onclick="enableCombo(myCombo2,false);">disable</a>
 <br><br>
 <h3>From select</h3>
-<select id="mySelect" style="width:230px;" mode="image" imagePath="../common/flags2/" defaultImage="flag_green.png"
-        defaultImageDis="flag_gray.png">
-    <option value="finland" img_src="../flags/finland.png" img_src_dis="../flags/dis/finland.png">Finland</option>
-    <option value="germany" img_src="../flags/germany.png" img_src_dis="../flags/dis/germany.png">Germany</option>
+<select defaultImage="flag_green.png" defaultImageDis="flag_gray.png" id="mySelect" imagePath="../common/flags2/"
+        mode="image" style="width:230px;">
+    <option img_src="../flags/finland.png" img_src_dis="../flags/dis/finland.png" value="finland">Finland</option>
+    <option img_src="../flags/germany.png" img_src_dis="../flags/dis/germany.png" value="germany">Germany</option>
     <option value="britain">Great Britain</option>
     <option value="hungary">Hungary</option>
 </select>

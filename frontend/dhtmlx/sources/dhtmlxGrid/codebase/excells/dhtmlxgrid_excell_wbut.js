@@ -1,24 +1,24 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 
 /*
- Textfield with Button eXcell v.1.0  for dhtmlxGrid
- (c)DHTMLX LTD. 2005
+Textfield with Button eXcell v.1.0  for dhtmlxGrid
+(c)DHTMLX LTD. 2005
 
 
- The corresponding  cell value in XML should be
+The corresponding  cell value in XML should be
 
- Samples:
+Samples:
 
- <cell>IN637237-23</cell>
- <cell>158</cell>
- */
+<cell>IN637237-23</cell>
+<cell>158</cell>
+*/
 
 
 function eXcell_wbut(cell) {

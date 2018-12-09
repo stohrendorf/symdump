@@ -5,7 +5,6 @@
 #box2 div.gridbox .xhdr {
     background-Color: white;
 }
-
 #box2 div.gridbox table.hdr td {
     font-family: arial;
     font-size: 12px;
@@ -17,7 +16,6 @@
     margin: 0px;
     font-weight: bold;
 }
-
 #box2 div.gridbox table.obj td {
     border: 1px solid;
     border-width: 1px 0px 1px 0px;
@@ -26,7 +24,6 @@
     font-family: arial;
     font-size: 9px;
 }
-
 #box2 div.gridbox .objbox {
     background-color: white;
 }
@@ -34,7 +31,6 @@
 #box2 div.gridbox table.obj td span.space, div.gridbox table.obj td img.space {
     width: 18px;
 }
-
 #box2 div.gridbox table.obj tr.rowselected td.cellselected, div.gridbox table.obj td.cellselected {
     background-color: white;
     color: red;

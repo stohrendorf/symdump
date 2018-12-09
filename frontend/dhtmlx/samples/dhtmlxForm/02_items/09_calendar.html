@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>dhtmlxCalendar</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         td.p2 {
@@ -14,6 +14,7 @@
     </style>
     <script>
         var myForm, myForm2, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: 120, inputWidth: 140},
@@ -22,10 +23,10 @@
                 {type: "password", label: "Password", value: "123"},
                 {
                     type: "select", label: "Session", options: [
-                    {value: "1", text: "Administration"},
-                    {value: "2", text: "Design"},
-                    {value: "3", text: "Manage Articles"}
-                ]
+                        {value: "1", text: "Administration"},
+                        {value: "2", text: "Design"},
+                        {value: "3", text: "Manage Articles"}
+                    ]
                 },
                 {
                     type: "calendar",
@@ -50,6 +51,7 @@
             myForm2 = new dhtmlXForm("myForm2");
             myForm2.loadStruct("../common/dhxform_calendar.xml");
         }
+
         function doOnUnload() {
             myForm.unload();
             myForm2.unload();
@@ -64,7 +66,7 @@
         <td valign="top">
             <div id="myForm" style="height:330px;"></div>
         </td>
-        <td valign="top" class="p2">
+        <td class="p2" valign="top">
             <div id="myForm2" style="height:330px;"></div>
         </td>
     </tr>

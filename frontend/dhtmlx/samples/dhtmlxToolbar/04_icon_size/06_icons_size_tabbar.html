@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Icons size in tabbar</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
 
@@ -45,6 +45,7 @@
             myToolbar.loadStruct("../common/" + tbXML);
             tbIconSize = size;
         }
+
         function setXML(xml) {
             if (tbXML == xml) return;
             if (!checkLoadState()) return;
@@ -53,6 +54,7 @@
             myToolbar.clearAll();
             myToolbar.loadStruct("../common/" + tbXML);
         }
+
         function checkLoadState() {
             var s = true;
             for (var a in loadData) s = s && loadData[a];
@@ -62,13 +64,13 @@
 </head>
 <body onload="doOnLoad();">
 <div style="padding-bottom: 10px;">
-    <input type="button" value="18" onclick="loadToolbar(18);">
-    <input type="button" value="24" onclick="loadToolbar(24);">
-    <input type="button" value="32" onclick="loadToolbar(32);">
-    <input type="button" value="48" onclick="loadToolbar(48);">
+    <input onclick="loadToolbar(18);" type="button" value="18">
+    <input onclick="loadToolbar(24);" type="button" value="24">
+    <input onclick="loadToolbar(32);" type="button" value="32">
+    <input onclick="loadToolbar(48);" type="button" value="48">
     &nbsp;&nbsp;&nbsp;
-    <input type="button" value="with labels" onclick="setXML('dhxtoolbar_button.xml');">
-    <input type="button" value="without labels" onclick="setXML('dhxtoolbar_button2.xml');">
+    <input onclick="setXML('dhxtoolbar_button.xml');" type="button" value="with labels">
+    <input onclick="setXML('dhxtoolbar_button2.xml');" type="button" value="without labels">
 </div>
 <div id="my_tabbar" style="width:395px; height:390px;"></div>
 </body>

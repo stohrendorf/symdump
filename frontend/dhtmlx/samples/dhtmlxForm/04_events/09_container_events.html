@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Container events</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
 
     <style>
@@ -77,15 +77,16 @@
     </style>
     <script>
         var myForm, formData, grid, logObj;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", labelWidth: 130, inputWidth: 170},
                 {
                     type: "checkbox", label: "Enable / Disable", checked: true, position: "label-right", list: [
-                    {type: "input", label: "Full Name", value: "Kaapori Lumikaastra"},
-                    {type: "input", label: "Email", value: "kaapori.lumi@gmail.com"},
-                    {type: "container", name: "myGrid", label: "Select Product", inputWidth: 330, inputHeight: 200}
-                ]
+                        {type: "input", label: "Full Name", value: "Kaapori Lumikaastra"},
+                        {type: "input", label: "Email", value: "kaapori.lumi@gmail.com"},
+                        {type: "container", name: "myGrid", label: "Select Product", inputWidth: 330, inputHeight: 200}
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);
@@ -131,6 +132,7 @@
             logObj.innerHTML += t;
             logObj.scrollTop = logObj.scrollHeight;
         }
+
         function clearLog() {
             if (!logObj) logObj = document.getElementById("simpleLog");
             logObj.innerHTML = "";

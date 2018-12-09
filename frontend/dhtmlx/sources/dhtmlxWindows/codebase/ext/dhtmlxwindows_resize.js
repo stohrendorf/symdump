@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXWindowsCell.prototype._initResize = function () {
 
@@ -14,7 +14,7 @@ dhtmlXWindowsCell.prototype._initResize = function () {
     this.conf.resize = {
         b_width: 6,
         c_type: (n.indexOf("MSIE 10.0") > 0 || n.indexOf("MSIE 9.0") > 0 || n.indexOf("MSIE 8.0") > 0 || n.indexOf("MSIE 7.0") > 0 || n.indexOf("MSIE 6.0") > 0),
-        btn_left: ((window.dhx4.isIE6 || window.dhx4.isIE7 || window.dhx4.isIE8) && typeof(window.addEventListener) == "undefined" ? 1 : 0)
+        btn_left: ((window.dhx4.isIE6 || window.dhx4.isIE7 || window.dhx4.isIE8) && typeof (window.addEventListener) == "undefined" ? 1 : 0)
     };
 
     this._rOnCellMouseMove = function (e) {
@@ -72,7 +72,7 @@ dhtmlXWindowsCell.prototype._initResize = function () {
     this._rOnCellMouseDown = function (e) {
 
         e = e || event;
-        if (typeof(e.button) != "undefined" && e.button != that.conf.resize.btn_left) return;
+        if (typeof (e.button) != "undefined" && e.button != that.conf.resize.btn_left) return;
 
         if (that.conf.resize.mode == false) return;
         if (that.conf.progress == true) return; // if progress is on - deny
@@ -94,7 +94,7 @@ dhtmlXWindowsCell.prototype._initResize = function () {
         r.max_h = w.conf.max_h || +Infinity;
 
         // if layout attached - check custom min w/h
-        if (w.cell.dataType == "layout" && w.cell.dataObj != null && typeof(w.cell.dataObj._getWindowMinDimension) == "function") {
+        if (w.cell.dataType == "layout" && w.cell.dataObj != null && typeof (w.cell.dataObj._getWindowMinDimension) == "function") {
             var t = w.cell.dataObj._getWindowMinDimension(w.cell);
             r.min_w = Math.max(t.w, r.min_w);
             r.min_h = Math.max(t.h, r.min_h);
@@ -108,7 +108,7 @@ dhtmlXWindowsCell.prototype._initResize = function () {
         r.y = e.clientY;
 
         // start resize
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.addEventListener("mousemove", that._rOnWinMouseMove, false);
             window.addEventListener("mouseup", that._rOnWinMouseUp, false);
             window.addEventListener("selectstart", that._rOnSelectStart, false);
@@ -229,7 +229,7 @@ dhtmlXWindowsCell.prototype._initResize = function () {
             r.objFR = null;
         }
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("mousemove", that._rOnWinMouseMove, false);
             window.removeEventListener("mouseup", that._rOnWinMouseUp, false);
             window.removeEventListener("selectstart", that._rOnSelectStart, false);
@@ -303,7 +303,7 @@ dhtmlXWindowsCell.prototype._initResize = function () {
         r = null;
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.wins.w[this._idd].brd.addEventListener("mousemove", this._rOnCellMouseMove, false);
         this.wins.w[this._idd].brd.addEventListener("mousedown", this._rOnCellMouseDown, false);
         this.wins.w[this._idd].brd.addEventListener("contextmenu", this._rOnCellContextMenu, false);
@@ -315,7 +315,7 @@ dhtmlXWindowsCell.prototype._initResize = function () {
 
     this._unloadResize = function () {
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.wins.w[this._idd].brd.removeEventListener("mousemove", this._rOnCellMouseMove, false);
             this.wins.w[this._idd].brd.removeEventListener("mousedown", this._rOnCellMouseDown, false);
             this.wins.w[this._idd].brd.removeEventListener("contextmenu", this._rOnCellContextMenu, false);

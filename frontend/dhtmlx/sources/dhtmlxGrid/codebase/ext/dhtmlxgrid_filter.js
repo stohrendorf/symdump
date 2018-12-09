@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 //please beware that function started from _in_header_ must not be obfuscated
 
@@ -32,7 +32,7 @@ dhtmlXGridObject.prototype.filterBy = function (column, value, preserve) {
     if (!this.rowsBuffer.length) return;
     var d = true;
     this.dma(true);
-    if (typeof(column) == "object")
+    if (typeof (column) == "object")
         for (var j = 0; j < value.length; j++)
             this._filterA(column[j], value[j]);
     else
@@ -45,7 +45,7 @@ dhtmlXGridObject.prototype.filterBy = function (column, value, preserve) {
 dhtmlXGridObject.prototype._filterA = function (column, value) {
     if (value == "") return;
     var d = true;
-    if (typeof(value) == "function") d = false;
+    if (typeof (value) == "function") d = false;
     else value = (value || "").toString().toLowerCase();
     if (!this.rowsBuffer.length) return;
 
@@ -102,11 +102,9 @@ dhtmlXGridObject.prototype.collectValues = function (column) {
             if (vals) {
                 if (vals.get && vals.get(d)) {
                     d = vals.get(d);
-                }
-                else if (vals.getOption && vals.getOption(d)) {
+                } else if (vals.getOption && vals.getOption(d)) {
                     d = vals.getOption(d).text;
-                }
-                else if (vals.getItemText) {
+                } else if (vals.getItemText) {
                     var text = vals.getItemText(d);
                     var t = this._sub_trees[column][1] = this._sub_trees[column][1] || {};
                     t[text] = d;
@@ -152,8 +150,7 @@ dhtmlXGridObject.prototype.filterByAll = function () {
             if (vals.values) {
                 ind = vals.values._dhx_find(val);
                 val = (ind == -1) ? val : vals.keys[ind];
-            }
-            else if (vals.getOptionByLabel) {
+            } else if (vals.getOptionByLabel) {
                 val = (vals.getOptionByLabel(val) ? vals.getOptionByLabel(val).value : val);
             } else
                 val = vals[val];
@@ -182,7 +179,7 @@ dhtmlXGridObject.prototype.filterByAll = function () {
  */
 dhtmlXGridObject.prototype.makeFilter = function (id, column, preserve) {
     if (!this.filters) this.filters = [];
-    if (typeof(id) != "object")
+    if (typeof (id) != "object")
         id = document.getElementById(id);
     if (!id) return;
     var self = this;
@@ -200,12 +197,11 @@ dhtmlXGridObject.prototype.makeFilter = function (id, column, preserve) {
 
         this.attachEvent("onEditCell", function (stage, a, ind) {
             this._build_m_order();
-            if (stage == 2 && this.filters && ( this._m_order ? (ind == this._m_order[column]) : (ind == column) ))
+            if (stage == 2 && this.filters && (this._m_order ? (ind == this._m_order[column]) : (ind == column)))
                 this._loadSelectOptins(id, column);
             return true;
         });
-    }
-    else if (id.tagName == 'INPUT') {
+    } else if (id.tagName == 'INPUT') {
         this.filters.push([id, column]);
         id.old_value = id.value = '';
         id.onkeydown = function () {
@@ -217,8 +213,7 @@ dhtmlXGridObject.prototype.makeFilter = function (id, column, preserve) {
                 }
             }, 500);
         };
-    }
-    else if (id.tagName == 'DIV') {
+    } else if (id.tagName == 'DIV') {
         this.filters.push([id, column]);
         id.style.padding = "0px";
         id.style.margin = "0px";
@@ -259,8 +254,8 @@ dhtmlXGridObject.prototype.makeFilter = function (id, column, preserve) {
  */
 dhtmlXGridObject.prototype.findCell = function (value, c_ind, count, compare) {
     var compare = compare || (function (master, check) {
-            return check.toString().toLowerCase().indexOf(master) != -1;
-        });
+        return check.toString().toLowerCase().indexOf(master) != -1;
+    });
     if (compare === true)
         compare = function (master, check) {
             return check.toString().toLowerCase() == master;
@@ -305,7 +300,7 @@ dhtmlXGridObject.prototype.findCell = function (value, c_ind, count, compare) {
  *   @topic: 0
  */
 dhtmlXGridObject.prototype.makeSearch = function (id, column, strict) {
-    if (typeof(id) != "object")
+    if (typeof (id) != "object")
         id = document.getElementById(id);
     if (!id) return;
     var self = this;
@@ -389,9 +384,9 @@ dhtmlXGridObject.prototype._filters_ready = function (fl, code) {
             this.filters = [];
     });
     /*
-     if (window.dhtmlXCombo)
-     this.attachEvent("onScroll",dhtmlXCombo.prototype.closeAll);
-     */
+    if (window.dhtmlXCombo)
+        this.attachEvent("onScroll",dhtmlXCombo.prototype.closeAll);
+    */
     this.attachEvent("onSetSizes", this._filters_resize_combo);
     this.attachEvent("onResize", this._filters_resize_combo);
 
@@ -669,7 +664,7 @@ dhtmlXGridObject.prototype._stat_in_header = function (t, calck, i, c) {
         this.attachEvent("onXLE", f),
         this.attachEvent("onFilterEnd", f),
         this.attachEvent("onEditCell", function (stage, id, ind) {
-            if (stage == 2 && ( ind == i || ( i && i[ind]) )) f.call(this);
+            if (stage == 2 && (ind == i || (i && i[ind]))) f.call(this);
             return true;
         })]);
     t.innerHTML = "";

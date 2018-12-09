@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Unloading windows</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -25,6 +25,7 @@
     </style>
     <script>
         var dhxWins, w1, w2, w3;
+
         function doOnLoad() {
 
             if (dhxWins == null) {
@@ -57,7 +58,7 @@
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="winVP"></div>
 <div class="controls">
-    <input type="button" value="init" onclick="doOnLoad();">
-    <input type="button" value="unload" onclick="doOnUnload();"><br>
+    <input onclick="doOnLoad();" type="button" value="init">
+    <input onclick="doOnUnload();" type="button" value="unload"><br>
 </div>
 </body>

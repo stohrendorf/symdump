@@ -2,16 +2,17 @@
 <html>
 <head>
     <title>Skins</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/web/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/terrace/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/skyblue/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/web/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/terrace/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/skyblue/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere");
             myCalendar.setSkin("material");
@@ -25,10 +26,10 @@
 </head>
 <body onload="doOnLoad();">
 <div style="margin-bottom: 20px;">
-    <input type="button" value="dhx_skyblue" onclick="myCalendar.setSkin('dhx_skyblue');">
-    <input type="button" value="dhx_web" onclick="myCalendar.setSkin('dhx_web');">
-    <input type="button" value="dhx_terrace" onclick="myCalendar.setSkin('dhx_terrace');">
-    <input type="button" value="material" onclick="myCalendar.setSkin('material');">
+    <input onclick="myCalendar.setSkin('dhx_skyblue');" type="button" value="dhx_skyblue">
+    <input onclick="myCalendar.setSkin('dhx_web');" type="button" value="dhx_web">
+    <input onclick="myCalendar.setSkin('dhx_terrace');" type="button" value="dhx_terrace">
+    <input onclick="myCalendar.setSkin('material');" type="button" value="material">
 </div>
 <div id="calendarHere" style="position:relative;height:320px;"></div>
 </body>

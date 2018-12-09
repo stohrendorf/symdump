@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Select items</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
-    <link rel="stylesheet" type="text/css" href="../common/demo_style.css"/>
+    <link href="../common/demo_style.css" rel="stylesheet" type="text/css"/>
     <script>
         var myList;
+
         function doOnLoad() {
             myList = new dhtmlXList({
                 container: "data_container",
@@ -23,12 +24,12 @@
 <body onload="doOnLoad();">
 <h1>Select items</h1>
 <p>Use Shift+click or Ctrl+click to select several items</p>
-<div id="data_container" class="list_demo_samples"></div>
+<div class="list_demo_samples" id="data_container"></div>
 <br>
-<input type="button" value="select first item" onclick="myList.select(myList.first())">
-<input type="button" value="select last item" onclick="myList.select(myList.last())">
-<input type="button" value="select all" onclick="myList.select()"><br><br>
-<input type="button" value="show first item" onclick="myList.show(myList.first())">
-<input type="button" value="show last item" onclick="myList.show(myList.last())">
+<input onclick="myList.select(myList.first())" type="button" value="select first item">
+<input onclick="myList.select(myList.last())" type="button" value="select last item">
+<input onclick="myList.select()" type="button" value="select all"><br><br>
+<input onclick="myList.show(myList.first())" type="button" value="show first item">
+<input onclick="myList.show(myList.last())" type="button" value="show last item">
 </body>
 </html>

@@ -2,11 +2,11 @@
 <html>
 <head>
     <title>Font awesome</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_awesome/css/font-awesome.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/fonts/font_awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         table.my_table {
@@ -19,6 +19,7 @@
     </style>
     <script>
         var myRibbon;
+
         function doOnLoad() {
             myRibbon = new dhtmlXRibbon({
                 parent: "ribbonObj",
@@ -26,63 +27,65 @@
                 items: [
                     {
                         type: "block", text: "Project", list: [
-                        {
-                            id: "create",
-                            type: "button",
-                            text: "Create",
-                            img: "fa fa-file-o",
-                            imgdis: "fa fa-file-o",
-                            isbig: true
-                        },
-                        {
-                            id: "open",
-                            type: "button",
-                            text: "Open Project",
-                            img: "fa fa-folder-open-o",
-                            imgdis: "fa fa-folder-open-o"
-                        },
-                        {id: "print", type: "button", text: "Print", img: "fa fa-print", imgdis: "fa fa-print"},
-                        {id: "save", type: "button", text: "Save As...", img: "fa fa-save", imgdis: "fa fa-save"}
-                    ]
+                            {
+                                id: "create",
+                                type: "button",
+                                text: "Create",
+                                img: "fa fa-file-o",
+                                imgdis: "fa fa-file-o",
+                                isbig: true
+                            },
+                            {
+                                id: "open",
+                                type: "button",
+                                text: "Open Project",
+                                img: "fa fa-folder-open-o",
+                                imgdis: "fa fa-folder-open-o"
+                            },
+                            {id: "print", type: "button", text: "Print", img: "fa fa-print", imgdis: "fa fa-print"},
+                            {id: "save", type: "button", text: "Save As...", img: "fa fa-save", imgdis: "fa fa-save"}
+                        ]
                     },
                     {
                         type: "block", text: "Edit", list: [
-                        {
-                            id: "cut",
-                            type: "button",
-                            text: "Cut",
-                            img: "fa fa-scissors",
-                            imgdis: "fa fa-scissors",
-                            isbig: true
-                        },
-                        {
-                            id: "copy",
-                            type: "button",
-                            text: "Copy",
-                            img: "fa fa-files-o",
-                            imgdis: "fa fa-files-o",
-                            isbig: true
-                        },
-                        {
-                            id: "paste",
-                            type: "button",
-                            text: "Paste",
-                            img: "fa fa-clipboard",
-                            imgdis: "fa fa-clipboard",
-                            isbig: true
-                        }
-                    ]
+                            {
+                                id: "cut",
+                                type: "button",
+                                text: "Cut",
+                                img: "fa fa-scissors",
+                                imgdis: "fa fa-scissors",
+                                isbig: true
+                            },
+                            {
+                                id: "copy",
+                                type: "button",
+                                text: "Copy",
+                                img: "fa fa-files-o",
+                                imgdis: "fa fa-files-o",
+                                isbig: true
+                            },
+                            {
+                                id: "paste",
+                                type: "button",
+                                text: "Paste",
+                                img: "fa fa-clipboard",
+                                imgdis: "fa fa-clipboard",
+                                isbig: true
+                            }
+                        ]
                     }
                 ]
 
             });
         }
+
         function doOnUnload() {
             if (myRibbon && myRibbon.unload) {
                 myRibbon.unload();
                 myRibbon = null;
             }
         }
+
         function setImage(id, img, imgdis) {
             myRibbon.setItemImage(id, img);
             myRibbon.setItemImageDis(id, imgdis);
@@ -92,29 +95,29 @@
 </head>
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="ribbonObj"></div>
-<table cellspacing="1" cellpadding="1" class="my_table">
+<table cellpadding="1" cellspacing="1" class="my_table">
     <tr>
         <td>Open</td>
         <td>
-            <input type="button" onclick="setImage('open', 'fa fa-file-o', 'fa fa-file-o');" value="open">
-            <input type="button" onclick="setImage('open', 'fa fa-print', 'fa fa-print');" value="print">
-            <input type="button" onclick="setImage('open', 'fa fa-save', 'fa fa-save');" value="save">
+            <input onclick="setImage('open', 'fa fa-file-o', 'fa fa-file-o');" type="button" value="open">
+            <input onclick="setImage('open', 'fa fa-print', 'fa fa-print');" type="button" value="print">
+            <input onclick="setImage('open', 'fa fa-save', 'fa fa-save');" type="button" value="save">
         </td>
         <td>
-            <input type="button" onclick="myRibbon.enable('open');" value="enable">
-            <input type="button" onclick="myRibbon.disable('open');" value="disable">
+            <input onclick="myRibbon.enable('open');" type="button" value="enable">
+            <input onclick="myRibbon.disable('open');" type="button" value="disable">
         </td>
     </tr>
     <tr>
         <td>Cut</td>
         <td>
-            <input type="button" onclick="setImage('cut', 'fa fa-scissors', 'fa fa-scissors');" value="cut">
-            <input type="button" onclick="setImage('cut', 'fa fa-files-o', 'fa fa-files-o');" value="copy">
-            <input type="button" onclick="setImage('cut', 'fa fa-clipboard', 'fa fa-clipboard');" value="paste">
+            <input onclick="setImage('cut', 'fa fa-scissors', 'fa fa-scissors');" type="button" value="cut">
+            <input onclick="setImage('cut', 'fa fa-files-o', 'fa fa-files-o');" type="button" value="copy">
+            <input onclick="setImage('cut', 'fa fa-clipboard', 'fa fa-clipboard');" type="button" value="paste">
         </td>
         <td>
-            <input type="button" onclick="myRibbon.enable('cut');" value="enable">
-            <input type="button" onclick="myRibbon.disable('cut');" value="disable">
+            <input onclick="myRibbon.enable('cut');" type="button" value="enable">
+            <input onclick="myRibbon.disable('cut');" type="button" value="disable">
         </td>
     </tr>
 </table>

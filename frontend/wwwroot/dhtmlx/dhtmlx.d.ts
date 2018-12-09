@@ -54,13 +54,20 @@ declare namespace dhx {
 }
 
 type dhtmlxAjaxEventName = 'onAjaxError' | 'onLoadXMLError';
+
 interface dhtmlxAjax {
     del(url: string, params: string, callback: ICallable): void;
+
     get(url: string, callback: ICallable): void;
+
     getSync(url: string): any;
+
     post(url: string, params: string, callback: ICallable): void;
+
     postSync(url: string, params: string): any;
+
     put(url: string, params: string, callback: ICallable): void;
+
     query(method: string, url: string, data: string, async: boolean, callback: ICallable, headers: any): void;
 }
 
@@ -174,6 +181,7 @@ declare class DataStore {
     update(): void;
 
 }
+
 type dhtmlXAccordionEventName =
     'onActive'
     | 'onBeforeActive'
@@ -186,6 +194,8 @@ type dhtmlXAccordionEventName =
     | 'onXLS';
 
 declare class dhtmlXAccordion {
+    dhxWins: dhtmlXWindows;
+
     addItem(id: string | number, text: string, open: boolean, height: number, icon: string): void;
 
     attachEvent(name: dhtmlXAccordionEventName, handler: ICallable): number;
@@ -303,9 +313,8 @@ declare class dhtmlXAccordion {
     showToolbar(): void;
 
     unload(): void;
-
-    dhxWins: dhtmlXWindows;
 }
+
 type dhtmlXCalendarObjectEventName =
     'onArrowClick'
     | 'onBeforeChange'
@@ -321,6 +330,9 @@ type dhtmlXCalendarObjectEventName =
     | 'onTimeChange';
 
 declare class dhtmlXCalendarObject {
+    lang: string;
+    langData: any;
+
     attachEvent(name: dhtmlXCalendarObjectEventName, handler: ICallable): number;
 
     attachObj(input: any): number;
@@ -406,10 +418,8 @@ declare class dhtmlXCalendarObject {
     showWeekNumbers(): void;
 
     unload(): void;
-
-    lang: string;
-    langData: any;
 }
+
 type dhtmlXCarouselEventName = 'onContentLoaded' | 'onSelect';
 
 declare class dhtmlXCarousel {
@@ -613,6 +623,7 @@ declare class dhtmlXCell {
     unloadView(name: string): void;
 
 }
+
 type dhtmlXChartEventName =
     'onAfterAdd'
     | 'onAfterDelete'
@@ -633,6 +644,8 @@ type dhtmlXChartEventName =
     | 'onXLS';
 
 declare class dhtmlXChart {
+    $view: Node;
+
     add(obj: any): void;
 
     addSeries(obj: any, view: string, value: string, color: string, label: string): void;
@@ -692,12 +705,13 @@ declare class dhtmlXChart {
     ungroup(): void;
 
     update(id: string, data: any): void;
-
-    $view: Node;
 }
+
 type dhtmlXColorPickerEventName = 'onCancel' | 'onChange' | 'onHide' | 'onSaveColor' | 'onSelect' | 'onShow';
 
 declare class dhtmlXColorPicker {
+    dhtmlxColorPickerLangModules: boolean;
+
     attachEvent(name: dhtmlXColorPickerEventName, handler: ICallable): number;
 
     close(): void;
@@ -743,9 +757,8 @@ declare class dhtmlXColorPicker {
     showMemory(): void;
 
     unload(): void;
-
-    dhtmlxColorPickerLangModules: boolean;
 }
+
 type dhtmlXComboEventName =
     'onBeforeCheck'
     | 'onBlur'
@@ -762,6 +775,12 @@ type dhtmlXComboEventName =
     | 'onXLS';
 
 declare class dhtmlXCombo {
+    DOMParent: boolean;
+    DOMelem: boolean;
+    DOMelem_button: boolean;
+    DOMelem_input: boolean;
+    DOMlist: boolean;
+
     addOption(options: any): void;
 
     allowFreeText(state: boolean): void;
@@ -899,13 +918,8 @@ declare class dhtmlXCombo {
     unload(): void;
 
     updateOption(oldvalue: string, avalue: string, atext: string, accs: string): void;
-
-    DOMParent: boolean;
-    DOMelem: boolean;
-    DOMelem_button: boolean;
-    DOMelem_input: boolean;
-    DOMlist: boolean;
 }
+
 type dhtmlXDataViewEventName =
     'onAfterAdd'
     | 'onAfterDelete'
@@ -938,6 +952,8 @@ type dhtmlXDataViewEventName =
     | 'onXLS';
 
 declare class dhtmlXDataView {
+    $view: Node;
+
     add(obj: any, index: number): void;
 
     attachEvent(name: dhtmlXDataViewEventName, handler: ICallable): number;
@@ -1023,9 +1039,8 @@ declare class dhtmlXDataView {
     unselectAll(): void;
 
     update(id: string, data: any): void;
-
-    $view: Node;
 }
+
 type dhtmlXEditorEventName = 'onAccess' | 'onContentSet' | 'onFocusChanged' | 'onToolbarClick';
 
 declare class dhtmlXEditor {
@@ -1078,6 +1093,7 @@ declare class dhtmlXEditor {
     setContentHTML(url: string): void;
 
 }
+
 type dhtmlXFileUploaderEventName =
     'onBeforeClear'
     | 'onBeforeFileAdd'
@@ -1114,6 +1130,7 @@ declare class dhtmlXFileUploader {
     upload(): void;
 
 }
+
 type dhtmlXFormEventName =
     'onAfterReset'
     | 'onAfterSave'
@@ -1318,6 +1335,7 @@ declare class dhtmlXForm {
     validateItem(name: string): void;
 
 }
+
 type dhtmlXGridObjectEventName =
     'onAfterCMove'
     | 'onAfterRowDeleted'
@@ -1396,6 +1414,9 @@ type dhtmlXGridObjectEventName =
     | 'onXLS';
 
 declare class dhtmlXGridObject {
+    csvParser: any;
+    editor: any;
+
     addRow(new_id: string | number, text: string | number, ind: string | number): void;
 
     addRowFromClipboard(): void;
@@ -1907,10 +1928,8 @@ declare class dhtmlXGridObject {
     updateRowFromClipboard(rowId: any): void;
 
     validateCell(id: any, index: number, rule: ICallable): void;
-
-    csvParser: any;
-    editor: any;
 }
+
 type dhtmlXLayoutObjectEventName =
     'onCollapse'
     | 'onContentLoaded'
@@ -1923,6 +1942,9 @@ type dhtmlXLayoutObjectEventName =
     | 'onUndock';
 
 declare class dhtmlXLayoutObject {
+    dhxWins: dhtmlXWindows;
+    items: any[];
+
     constructor(config: any);
 
     attachEvent(name: dhtmlXLayoutObjectEventName, handler: ICallable): number;
@@ -2024,10 +2046,8 @@ declare class dhtmlXLayoutObject {
     unDockWindow(): void;
 
     unload(): void;
-
-    dhxWins: dhtmlXWindows;
-    items: any[];
 }
+
 type dhtmlXListEventName =
     'onAfterAdd'
     | 'onAfterDelete'
@@ -2060,6 +2080,8 @@ type dhtmlXListEventName =
     | 'onXLS';
 
 declare class dhtmlXList {
+    $view: Node;
+
     add(obj: any, index: number): void;
 
     attachEvent(name: dhtmlXListEventName, handler: ICallable): number;
@@ -2145,9 +2167,8 @@ declare class dhtmlXList {
     unselectAll(): void;
 
     update(id: string, data: any): void;
-
-    $view: Node;
 }
+
 type dhtmlXMenuObjectEventName =
     'onAfterContextMenu'
     | 'onBeforeContextMenu'
@@ -2299,9 +2320,12 @@ declare class dhtmlXMenuObject {
     unload(): void;
 
 }
+
 type dhtmlXPopupEventName = 'onBeforeHide' | 'onClick' | 'onContentClick' | 'onHide' | 'onShow';
 
 declare class dhtmlXPopup {
+    separator: any;
+
     attachAccordion(width: number, height: number, conf: any): dhtmlXAccordion;
 
     attachCalendar(): dhtmlXCalendarObject;
@@ -2353,9 +2377,8 @@ declare class dhtmlXPopup {
     show(id: any): void;
 
     unload(): void;
-
-    separator: any;
 }
+
 type dhtmlXRibbonEventName =
     'onCheck'
     | 'onClick'
@@ -2435,9 +2458,12 @@ declare class dhtmlXRibbon {
     unload(): void;
 
 }
+
 type dhtmlXSideBarEventName = 'onBeforeSelect' | 'onBubbleClick' | 'onContentLoaded' | 'onSelect' | 'onXLE' | 'onXLS';
 
 declare class dhtmlXSideBar {
+    templates: any;
+
     addItem(itemConf: any): void;
 
     attachEvent(name: dhtmlXSideBarEventName, handler: ICallable): number;
@@ -2533,9 +2559,8 @@ declare class dhtmlXSideBar {
     showToolbar(): void;
 
     unload(): void;
-
-    templates: any;
 }
+
 type dhtmlXSliderEventName = 'onChange' | 'onMouseDown' | 'onMouseUp' | 'onSlideEnd';
 
 declare class dhtmlXSlider {
@@ -2592,6 +2617,7 @@ declare class dhtmlXSlider {
     unload(): void;
 
 }
+
 type dhtmlXTabBarEventName =
     'onContentLoaded'
     | 'onSelect'
@@ -2769,6 +2795,7 @@ declare class dhtmlXTabBar {
     unload(): void;
 
 }
+
 type dhtmlXToolbarObjectEventName =
     'onBeforeStateChange'
     | 'onButtonSelectHide'
@@ -2946,6 +2973,7 @@ declare class dhtmlXToolbarObject {
     unload(): void;
 
 }
+
 type dhtmlXTreeObjectEventName =
     'onAllOpenDynamic'
     | 'onBeforeCheck'
@@ -3262,6 +3290,7 @@ declare class dhtmlXTreeObject {
     updateItem(itemId: any[], name: any[], im0: any[], im1: any[], im2: any[], checked: any[]): void;
 
 }
+
 type dhtmlXTreeGridEventName =
     'onAfterCMove'
     | 'onAfterRowDeleted'
@@ -3342,6 +3371,10 @@ type dhtmlXTreeGridEventName =
     | 'onXLS';
 
 declare class dhtmlXTreeGrid {
+    csvParser: any;
+    editor: any;
+    kidsXmlFile: string;
+
     addRow(new_id: string | number, text: any[], ind: number, parent_id: string | number, img: string, child: boolean): void;
 
     addRowAfter(new_id: string | number, text: any[], sibl_id: string | number, img: string, child: boolean): void;
@@ -3913,11 +3946,8 @@ declare class dhtmlXTreeGrid {
     updateRowFromClipboard(rowId: any): void;
 
     validateCell(id: any, index: number, rule: ICallable): void;
-
-    csvParser: any;
-    editor: any;
-    kidsXmlFile: string;
 }
+
 type dhtmlXTreeViewObjectEventName =
     'onAddItem'
     | 'onBeforeCheck'
@@ -4014,6 +4044,7 @@ declare class dhtmlXTreeViewObject {
     unselectItem(id: string | number): void;
 
 }
+
 type dhtmlXVaultObjectEventName =
     'onBeforeClear'
     | 'onBeforeFileAdd'
@@ -4028,6 +4059,9 @@ type dhtmlXVaultObjectEventName =
     | 'onUploadFile';
 
 declare class dhtmlXVaultObject {
+    icons: boolean;
+    strings: boolean;
+
     addDraggableNode(nodeId: any, fileData: any): void;
 
     addFileRecord(fileData: any, status: string): void;
@@ -4103,10 +4137,8 @@ declare class dhtmlXVaultObject {
     unload(): void;
 
     upload(): void;
-
-    icons: boolean;
-    strings: boolean;
 }
+
 type dhtmlXWindowsEventName =
     'onBeforeMoveStart'
     | 'onBeforeResizeStart'
@@ -4169,6 +4201,7 @@ declare class dhtmlXWindows {
     window(id: string): dhtmlXWindowsCell;
 
 }
+
 type dhtmlXWindowsButtonEventName = 'onClick';
 
 declare class dhtmlXWindowsButton {
@@ -4197,6 +4230,7 @@ declare class dhtmlXWindowsButton {
     show(): void;
 
 }
+
 type dhtmlXWindowsCellEventName =
     'onBeforeMoveStart'
     | 'onBeforeResizeStart'

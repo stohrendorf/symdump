@@ -14,7 +14,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
 .dhxeditor_dhx_terrace {
     position: relative;
 }
-
 .dhxeditor_dhx_terrace iframe.dhxeditor_mainiframe {
     position: absolute;
     overflow: hidden;
@@ -23,7 +22,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     width: 100%;
     height: 100%;
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_stb {
     position: relative;
     height: 34px;
@@ -31,7 +29,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0px 5px;
     border-bottom: 1px solid #cccccc;
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button {
     float: left;
     position: relative;
@@ -43,24 +40,19 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: pointer;
     background-image: url("../imgs/dhxeditor_terrace/buttons.gif");
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button.btn_bold {
     margin-left: 12px;
     background-position: 0px 0px;
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button.btn_italic {
     background-position: -18px 0px;
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button.btn_underline {
     background-position: -36px 0px;
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_stb div.dhx_cell_stb_button.btn_clearformat {
     background-position: -54px 0px;
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor {
     position: absolute;
     background-color: white;
@@ -70,36 +62,30 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: default;
     z-index: 0;
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_cont_editor {
     position: absolute;
     overflow: hidden;
 }
-
 .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_toolbar_def {
     position: relative;
     overflow: hidden;
     padding: 5px;
     border-bottom: 1px solid #cccccc;
 }
-
 .dhxwins_vp_dhx_terrace div.dhx_cell_cont_wins .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_stb {
     border-left: 1px solid #cccccc;
     border-right: 1px solid #cccccc;
     border-top: 1px solid #cccccc;
 }
-
 .dhxwins_vp_dhx_terrace div.dhx_cell_cont_wins .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_cont_editor {
     border-left: 1px solid #cccccc;
     border-right: 1px solid #cccccc;
     border-bottom: 1px solid #cccccc;
 }
-
 .dhxwins_vp_dhx_terrace div.dhx_cell_cont_wins .dhxeditor_dhx_terrace div.dhx_cell_editor div.dhx_cell_toolbar_def {
     padding: 0px;
     border-top: 1px solid #cccccc;
 }
-
 .dhxeditor_skin_detect {
     position: absolute;
     left: 0px;

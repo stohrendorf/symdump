@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Context menu zones</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myContextMenu;
         var sel;
+
         function doOnLoad() {
             myContextMenu = new dhtmlXMenuObject({
                 icons_path: "../common/imgs/",
@@ -18,16 +19,20 @@
             });
             sel = document.getElementById("sel");
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function addZone() {
             myContextMenu.addContextZone(getId());
         }
+
         function removeZone() {
             myContextMenu.removeContextZone(getId());
         }
+
         function checkZone() {
             alert(myContextMenu.isContextZone(getId()));
         }
@@ -54,9 +59,9 @@
         <option value="contextZone_B">zone B</option>
         <option value="contextZone_C">zone C</option>
     </select>
-    <input type="button" value="Add Context Zone" onclick="addZone();">
-    <input type="button" value="Remove Context Zone" onclick="removeZone();">
-    <input type="button" value="Is Context Zone?" onclick="checkZone();">
+    <input onclick="addZone();" type="button" value="Add Context Zone">
+    <input onclick="removeZone();" type="button" value="Remove Context Zone">
+    <input onclick="checkZone();" type="button" value="Is Context Zone?">
 </div>
 </body>
 </html>

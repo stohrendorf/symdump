@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     position: relative;
     cursor: default;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont {
     position: absolute;
     left: 0px;
@@ -25,17 +24,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 100%;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area.dhxcarousel_area_flip {
     perspective: 900px;
     -webkit-perspective: 900;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel {
     position: absolute;
     background-color: #ffffff;
@@ -46,7 +42,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     z-index: 0;
     -webkit-transform-style: preserve-3d;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cover {
     position: absolute;
     left: 0px;
@@ -68,18 +63,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cont_carousel {
     position: absolute;
     border: 1px solid #a4bed4;
     overflow: hidden;
     z-index: 0;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cont_carousel.dhx_cell_cont_no_borders {
     border-width: 0px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_def {
     position: relative;
     overflow: hidden;
@@ -87,39 +79,31 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-color: #a4bed4;
     border-style: solid;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_def div.dhtmlxMenu_dhx_skyblue_Middle {
     padding: 0px 2px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_no_borders {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_no_borders div.dhtmlxMenu_dhx_skyblue_Middle {
     padding: 0px 2px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_toolbar_def {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_toolbar_def div.dhx_toolbar_dhx_skyblue {
     border-top-width: 0px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhxrb_with_tabbar.dhxtabbar_base_dhx_skyblue {
     margin-top: -1px;
     width: auto;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhtmlxribbon_dhx_skyblue.dhxrb_without_tabbar {
     border-top-width: 0px;
     width: auto;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_statusbar_def {
     position: absolute;
     bottom: 0px;
@@ -129,7 +113,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-size: 11px;
     color: black;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text {
     position: relative;
     padding: 0px 4px;
@@ -141,7 +124,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     white-space: nowrap;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_bar {
     position: absolute;
     left: 0px;
@@ -153,7 +135,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0.75;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=75);
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_img {
     position: absolute;
     left: 0px;
@@ -165,22 +146,18 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: progress;
     z-index: 6;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_def {
     border-top-width: 1px;
     border-bottom-width: 0px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_toolbar_def div.dhx_toolbar_dhx_skyblue {
     border-top-width: 1px;
     border-bottom-width: 0px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhtmlxribbon_dhx_skyblue.dhxrb_without_tabbar {
     border-top-width: 1px;
     border-bottom-width: 0px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls {
     position: absolute;
     width: 100%;
@@ -196,7 +173,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn {
     position: absolute;
     bottom: 0px;
@@ -221,7 +197,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background: -webkit-linear-gradient(#e2efff, #d3e7ff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev:hover,
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next:hover {
     background-color: #f1f7ff;
@@ -229,7 +204,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background: -webkit-linear-gradient(#f1f7ff, #e2efff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#f1f7ff, endColorStr=#e2efff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev:active,
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next:active {
     background-color: #d2e7fe;
@@ -238,26 +212,22 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#d2e7fe, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
     box-shadow: 0 0 5px rgba(127, 127, 127, 0.15) inset;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev,
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis {
     left: 0px;
     border-right-width: 1px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next,
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     right: 0px;
     border-left-width: 1px;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis,
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     color: #999999;
     background: #f2f2f2;
     z-index: 1;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars {
     position: absolute;
     top: 9px;
@@ -271,7 +241,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar {
     float: left;
     position: relative;
@@ -290,11 +259,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar div.dhx_carousel_barcore {
     display: none;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar.dhx_carousel_baractv div.dhx_carousel_barcore {
     position: absolute;
     display: block;
@@ -316,7 +283,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_progress {
     position: absolute;
     left: 0px;
@@ -328,7 +294,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0.55;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=55);
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_progress_img {
     position: absolute;
     left: 0px;
@@ -340,36 +305,29 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-repeat: no-repeat;
     z-index: 4;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_hdr {
     position: relative;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_ftr {
     position: absolute;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_menu {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_toolbar {
     position: relative;
     background-color: #ebebeb;
     padding-bottom: 4px;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_ribbon {
     padding-bottom: 4px;
     position: relative;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_ribbon div.dhtmlxribbon_dhx_skyblue.dhxrb_without_tabbar {
     width: auto;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_statusbar {
     position: absolute;
     bottom: 0px;
@@ -377,7 +335,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-color: #ebebeb;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_skyblue div.dhxcelltop_statusbar div.dhxcont_statusbar {
     position: relative;
     margin-top: 4px;
@@ -388,13 +345,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-size: 11px;
     color: black;
 }
-
 div.dhx_popup_dhx_skyblue td.dhx_popup_td div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls,
 .dhxwins_vp_dhx_skyblue div.dhxwin_active div.dhx_cell_wins div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls,
 .dhxwins_vp_dhx_skyblue div.dhxwin_inactive div.dhx_cell_wins div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls {
     border-bottom: 1px solid #a4bed4;
 }
-
 div.dhx_popup_dhx_skyblue td.dhx_popup_td div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev,
 div.dhx_popup_dhx_skyblue td.dhx_popup_td div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis,
 .dhxwins_vp_dhx_skyblue div.dhxwin_active div.dhx_cell_wins div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev,
@@ -403,7 +358,6 @@ div.dhx_popup_dhx_skyblue td.dhx_popup_td div.dhxcarousel_base_dhx_skyblue div.d
 .dhxwins_vp_dhx_skyblue div.dhxwin_inactive div.dhx_cell_wins div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis {
     border-left-width: 1px;
 }
-
 div.dhx_popup_dhx_skyblue td.dhx_popup_td div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next,
 div.dhx_popup_dhx_skyblue td.dhx_popup_td div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis,
 .dhxwins_vp_dhx_skyblue div.dhxwin_active div.dhx_cell_wins div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next,
@@ -412,7 +366,6 @@ div.dhx_popup_dhx_skyblue td.dhx_popup_td div.dhxcarousel_base_dhx_skyblue div.d
 .dhxwins_vp_dhx_skyblue div.dhxwin_inactive div.dhx_cell_wins div.dhxcarousel_base_dhx_skyblue div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     border-right-width: 1px;
 }
-
 .dhxcarousel_skin_detect {
     position: absolute;
     left: 0px;

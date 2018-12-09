@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Iterator</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myToolbar;
+
         function doOnLoad() {
             myToolbar = new dhtmlXToolbarObject({
                 parent: "toolbarObj",
@@ -16,11 +17,13 @@
                 xml: "../common/dhxtoolbar.xml"
             });
         }
+
         function en() {
             myToolbar.forEachItem(function (id) {
                 myToolbar.enableItem(id);
             });
         }
+
         function dis() {
             myToolbar.forEachItem(function (id) {
                 myToolbar.disableItem(id);
@@ -32,7 +35,7 @@
 <div style="height: 150px;">
     <div id="toolbarObj"></div>
 </div>
-<input type="button" value="Enable All" onclick="en();">
-<input type="button" value="Disable All" onclick="dis();">
+<input onclick="en();" type="button" value="Enable All">
+<input onclick="dis();" type="button" value="Disable All">
 </body>
 </html>

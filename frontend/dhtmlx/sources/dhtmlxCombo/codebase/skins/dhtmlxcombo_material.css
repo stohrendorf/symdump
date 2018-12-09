@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         transform: rotate(360deg);
     }
 }
-
 @keyframes dhx_loader_dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -31,7 +30,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         stroke-dashoffset: -124px;
     }
 }
-
 div.dhxcombo_material {
     position: relative;
     border-bottom: 1px solid #dfdfdf;
@@ -43,12 +41,10 @@ div.dhxcombo_material {
     height: 29px;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 div.dhxcombo_material.dhxcombo_actv {
     padding-bottom: 0px;
     border-bottom: 2px solid #3399cc;
 }
-
 div.dhxcombo_material input.dhxcombo_input {
     position: absolute;
     left: 4px;
@@ -68,11 +64,9 @@ div.dhxcombo_material input.dhxcombo_input {
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 div.dhxcombo_material input.dhxcombo_input::-ms-clear {
     display: none;
 }
-
 div.dhxcombo_material div.dhxcombo_select_button {
     position: absolute;
     width: 21px;
@@ -89,7 +83,6 @@ div.dhxcombo_material div.dhxcombo_select_button {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombo_material div.dhxcombo_select_button div.dhxcombo_select_img {
     position: relative;
     width: 100%;
@@ -98,7 +91,6 @@ div.dhxcombo_material div.dhxcombo_select_button div.dhxcombo_select_img {
     background-repeat: no-repeat;
     background-position: center center;
 }
-
 div.dhxcombo_material div.dhxcombo_top_image {
     position: absolute;
     left: 0px;
@@ -114,7 +106,6 @@ div.dhxcombo_material div.dhxcombo_top_image {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombo_material div.dhxcombo_top_image div.dhxcombo_image {
     position: absolute;
     top: 6px;
@@ -132,7 +123,6 @@ div.dhxcombo_material div.dhxcombo_top_image div.dhxcombo_image {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_material {
     position: absolute;
     border: 1px solid #dfdfdf;
@@ -148,7 +138,6 @@ div.dhxcombolist_material {
     user-select: none;
     box-shadow: 0 0 10px rgba(127, 127, 127, 0.2);
 }
-
 div.dhxcombolist_material div.dhxcombo_option {
     position: relative;
     font: inherit;
@@ -161,11 +150,9 @@ div.dhxcombolist_material div.dhxcombo_option {
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 div.dhxcombolist_material div.dhxcombo_option.dhxcombo_option_selected {
     background-color: #ebebeb;
 }
-
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_option_text {
     position: relative;
     padding: 0px 4px;
@@ -178,7 +165,6 @@ div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_option_text {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_option_text_chbx {
     position: relative;
     padding: 0px 4px;
@@ -191,7 +177,6 @@ div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_option_text_image {
     position: relative;
     padding: 0px 4px 0px 4px;
@@ -204,7 +189,6 @@ div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_image,
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_checkbox {
     position: absolute;
@@ -223,59 +207,49 @@ div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_checkbox {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_image.dhxcombo_chbx_1,
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_checkbox.dhxcombo_chbx_1 {
     background-position: 0px 7px;
 }
-
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_image.dhxcombo_chbx_0,
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_checkbox.dhxcombo_chbx_0 {
     background-position: -18px 7px;
 }
-
 div.dhxcombolist_material div.dhxcombo_option div.dhxcombo_image {
     top: 7px;
     margin: 0px 0px 0px 6px;
     width: 18px;
     height: 18px;
 }
-
 div.dhxcombo_material.dhxcombo_disabled input.dhxcombo_input {
     color: #a6a6a6;
 }
-
 div.dhxcombo_material.dhxcombo_disabled div.dhxcombo_select_button div.dhxcombo_select_img {
     background-image: url("../imgs/dhxcombo_material/dhxcombo_arrow_down_dis.gif");
     cursor: default;
 }
-
 .dhxgrid_combo_icon {
     position: absolute;
     z-index: 1;
     top: 0px;
     right: 0px;
 }
-
 div.dhxcombo_in_grid_parent {
     position: relative;
     height: 100%;
     top: 0px;
 }
-
 div.dhxcombo_in_grid_parent div.dhxcombo_material {
     position: absolute;
     top: 0px;
     left: -1px;
 }
-
 div.dhxcombolist_material.dhxcombolist_hdr {
     border-bottom-width: 0px;
     height: 36px;
     line-height: 36px;
     box-shadow: none;
 }
-
 div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext {
     position: relative;
     padding: 0px;
@@ -290,7 +264,6 @@ div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell,
 div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_first {
     float: left;
@@ -302,12 +275,10 @@ div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdr
     padding: 0px;
     margin: 0px;
 }
-
 div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_first,
 div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell:first-child {
     border-left-width: 0px;
 }
-
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option {
     height: 32px;
     line-height: 32px;
@@ -317,11 +288,9 @@ div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option {
     border-bottom: 1px solid #dfdfdf;
     background-color: white;
 }
-
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_option_text {
     padding: 0px;
 }
-
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell,
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_first {
     float: left;
@@ -332,23 +301,19 @@ div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option div.dhxco
     padding: 0px;
     margin: 0px;
 }
-
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_first,
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell:first-child {
     border-left-width: 0px;
 }
-
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option.dhxcombo_option_selected {
     z-index: 1;
     background-color: #ebebeb;
     border-top-color: #dfdfdf;
     border-bottom-color: #dfdfdf;
 }
-
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option.dhxcombo_option_selected div.dhxcombo_cell {
     border-left-color: #dfdfdf;
 }
-
 div.dhxcombolist_material.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_text,
 div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_text {
     position: relative;
@@ -359,7 +324,6 @@ div.dhxcombolist_material.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdr
     width: auto;
     min-height: 32px;
 }
-
 .dhxcombo_skin_detect {
     position: absolute;
     left: 0px;

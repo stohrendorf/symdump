@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Checkbox Howto</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myForm, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-right"},
@@ -32,6 +33,7 @@
             ];
             myForm = new dhtmlXForm("myForm", formData);
         }
+
         function setFormData(value) {
             myForm.setFormData({
                 t1: value,
@@ -41,6 +43,7 @@
                 t5: value
             });
         }
+
         function getFormData() {
             var t = myForm.getFormData();
             var p = "";
@@ -52,24 +55,24 @@
 <body onload="doOnLoad();">
 <div id="myForm"></div>
 <div style="clear: both; padding-top: 50px; padding-bottom: 20px;">
-    <input type="button" value="setFormData(true)" onclick="setFormData(true);">
-    <input type="button" value="setFormData('true')" onclick="setFormData('true');">
-    <input type="button" value="setFormData(1)" onclick="setFormData(1);">
-    <input type="button" value="setFormData('1')" onclick="setFormData('1');">
+    <input onclick="setFormData(true);" type="button" value="setFormData(true)">
+    <input onclick="setFormData('true');" type="button" value="setFormData('true')">
+    <input onclick="setFormData(1);" type="button" value="setFormData(1)">
+    <input onclick="setFormData('1');" type="button" value="setFormData('1')">
     <br><br>
-    <input type="button" value="setFormData(false)" onclick="setFormData(false);">
-    <input type="button" value="setFormData('false')" onclick="setFormData('false');">
-    <input type="button" value="setFormData(0)" onclick="setFormData(0);">
-    <input type="button" value="setFormData('0')" onclick="setFormData('0');">
+    <input onclick="setFormData(false);" type="button" value="setFormData(false)">
+    <input onclick="setFormData('false');" type="button" value="setFormData('false')">
+    <input onclick="setFormData(0);" type="button" value="setFormData(0)">
+    <input onclick="setFormData('0');" type="button" value="setFormData('0')">
     <br><br>
-    <input type="button" value="setFormData('')" onclick="setFormData('');">
-    <input type="button" value="setFormData('green')" onclick="setFormData('green');">
-    <input type="button" value="setFormData('red')" onclick="setFormData('red');">
+    <input onclick="setFormData('');" type="button" value="setFormData('')">
+    <input onclick="setFormData('green');" type="button" value="setFormData('green')">
+    <input onclick="setFormData('red');" type="button" value="setFormData('red')">
 </div>
 <div style="clear: both; padding-top: 20px; border-top: 1px solid #cecece;">
-    <input type="button" value="getFormData()" onclick="getFormData();">
+    <input onclick="getFormData();" type="button" value="getFormData()">
     <br><br>
-    <textarea id="res" cols="50" rows="5"></textarea>
+    <textarea cols="50" id="res" rows="5"></textarea>
 </div>
 </body>
 </html>

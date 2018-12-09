@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /**
  *     @desc: enables block selection mode in grid
@@ -78,7 +78,7 @@ dhtmlXGridObject.prototype._OnSelectionStart = function (event, obj) {
     if (event.button == 2) return;
     var src = event.srcElement || event.target;
     if (this.editor) {
-        if (src.tagName && (src.tagName == "INPUT" || src.tagName == "TEXTAREA"))   return;
+        if (src.tagName && (src.tagName == "INPUT" || src.tagName == "TEXTAREA")) return;
         this.editStop();
     }
 
@@ -186,29 +186,29 @@ dhtmlXGridObject.prototype._OnSelectionMove = function (event) {
     }
 
     /*
-     //window.status = pos[0]+'+'+pos[1];
-     var prevX = this._selectionObj.startX;
-     var prevY = this._selectionObj.startY;
-     var diffX = X - prevX;
-     var diffY = Y - prevY;
+//window.status = pos[0]+'+'+pos[1];
+var prevX = this._selectionObj.startX;
+var prevY = this._selectionObj.startY;
+var diffX = X - prevX;
+var diffY = Y - prevY;
 
-     if (diffX < 0) {
-     this._selectionObj.style.left = this._selectionObj.startX + diffX + 1+"px";
-     diffX = 0 - diffX;
-     } else {
-     this._selectionObj.style.left = this._selectionObj.startX - 3+"px";
-     }
-     if (diffY < 0) {
-     this._selectionObj.style.top = this._selectionObj.startY + diffY + 1+"px";
-     diffY = 0 - diffY;
-     } else {
-     this._selectionObj.style.top = this._selectionObj.startY - 3+"px";
-     }
-     this._selectionObj.style.width = (diffX>4?diffX-4:0) + 'px';
-     this._selectionObj.style.height = (diffY>4?diffY-4:0) + 'px';
+if (diffX < 0) {
+    this._selectionObj.style.left = this._selectionObj.startX + diffX + 1+"px";
+    diffX = 0 - diffX;
+} else {
+    this._selectionObj.style.left = this._selectionObj.startX - 3+"px";
+}
+if (diffY < 0) {
+    this._selectionObj.style.top = this._selectionObj.startY + diffY + 1+"px";
+    diffY = 0 - diffY;
+} else {
+    this._selectionObj.style.top = this._selectionObj.startY - 3+"px";
+}
+this._selectionObj.style.width = (diffX>4?diffX-4:0) + 'px';
+this._selectionObj.style.height = (diffY>4?diffY-4:0) + 'px';
 
 
-     /* AUTO SCROLL */
+/* AUTO SCROLL */
     var BottomRightX = this.objBox.scrollLeft + this.objBox.clientWidth;
     var BottomRightY = this.objBox.scrollTop + this.objBox.clientHeight;
     var TopLeftX = this.objBox.scrollLeft;

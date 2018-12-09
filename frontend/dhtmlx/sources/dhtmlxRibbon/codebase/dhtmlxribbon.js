@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXRibbon(struct) {
 
@@ -24,14 +24,14 @@ function dhtmlXRibbon(struct) {
     this._tabbar = null;
     this.childIds = [];
 
-    if (typeof(struct) == "string") {
+    if (typeof (struct) == "string") {
         cont = struct;
 
     } else if (struct && struct.tagName) {
         cont = struct;
 
     } else if (struct && struct.parent) {
-        if (struct.parent.tagName || typeof(struct.parent) == "string") {
+        if (struct.parent.tagName || typeof (struct.parent) == "string") {
             cont = struct.parent;
         }
     }
@@ -47,7 +47,7 @@ function dhtmlXRibbon(struct) {
             return;
         }
 
-        if (that.items[item.type] && typeof(that.items[item.type].mouseover) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].mouseover) == "function") {
             if (that.items[item.type].mouseover(item, that, e) != true) {
                 return false;
             }
@@ -68,7 +68,7 @@ function dhtmlXRibbon(struct) {
             return;
         }
 
-        if (that.items[item.type] && typeof(that.items[item.type].mouseout) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].mouseout) == "function") {
             if (that.items[item.type].mouseout(item, that, e) != true) {
                 return false;
             }
@@ -96,7 +96,7 @@ function dhtmlXRibbon(struct) {
 
         that.callEvent("_showPopup", [item.id]);
 
-        if (that.items[item.type] && typeof(that.items[item.type].mousedown) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].mousedown) == "function") {
             if (that.items[item.type].mousedown(item, that, e) != true) {
                 return false;
             }
@@ -117,7 +117,7 @@ function dhtmlXRibbon(struct) {
             return;
         }
 
-        if (that.items[item.type] && typeof(that.items[item.type].mouseup) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].mouseup) == "function") {
             if (that.items[item.type].mouseup(item, that, e) != true) {
                 return false;
             }
@@ -138,7 +138,7 @@ function dhtmlXRibbon(struct) {
             return;
         }
 
-        if (that.items[item.type] && typeof(that.items[item.type].click) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].click) == "function") {
             that.items[item.type].click(item, that, e);
         }
     };
@@ -155,7 +155,7 @@ function dhtmlXRibbon(struct) {
 
         that.callEvent("_showPopup", [item.id]);
 
-        if (that.items[item.type] && typeof(that.items[item.type].focus) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].focus) == "function") {
             that.items[item.type].focus(item, that, e);
         }
     };
@@ -170,7 +170,7 @@ function dhtmlXRibbon(struct) {
             return;
         }
 
-        if (that.items[item.type] && typeof(that.items[item.type].blur) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].blur) == "function") {
             that.items[item.type].blur(item, that, e);
         }
     };
@@ -185,7 +185,7 @@ function dhtmlXRibbon(struct) {
             return;
         }
 
-        if (that.items[item.type] && typeof(that.items[item.type].change) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].change) == "function") {
             that.items[item.type].change(item, that, e);
         }
     };
@@ -200,7 +200,7 @@ function dhtmlXRibbon(struct) {
             return;
         }
 
-        if (that.items[item.type] && typeof(that.items[item.type].keydown) == "function") {
+        if (that.items[item.type] && typeof (that.items[item.type].keydown) == "function") {
             that.items[item.type].keydown(item, that, e);
         }
     };
@@ -262,7 +262,7 @@ function dhtmlXRibbon(struct) {
         });
     };
 
-    if (typeof(cont) == "string") {
+    if (typeof (cont) == "string") {
         this._base = document.getElementById(cont);
     } else if (cont && cont.tagName) {
         this._base = cont;
@@ -276,9 +276,9 @@ function dhtmlXRibbon(struct) {
         }
     }
 
-    _skin = dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || dhx4.skinDetect("dhtmlxribbon") || "material";
+    _skin = dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || dhx4.skinDetect("dhtmlxribbon") || "material";
 
-    if (typeof(struct) == "object" && struct.skin) {
+    if (typeof (struct) == "object" && struct.skin) {
         _skin = struct.skin;
     }
 
@@ -343,7 +343,7 @@ function dhtmlXRibbon(struct) {
 }
 
 dhtmlXRibbon.prototype.setSizes = function () {
-    if (this._tabbar != null && typeof(this.setSizes) == "function") {
+    if (this._tabbar != null && typeof (this.setSizes) == "function") {
         this._tabbar.setSizes();
     }
 };
@@ -520,7 +520,7 @@ dhtmlXRibbon.prototype._appendBlocks = function (blocks, cont, tab) {
 
     l = blocks.length;
     for (i = 0; i < l; i++) {
-        if (typeof(blocks[i]) == "object" && blocks[i].type == "block") {
+        if (typeof (blocks[i]) == "object" && blocks[i].type == "block") {
             _block = this._addBlock(blocks[i], cont);
 
             if (blocks[i].list && (blocks[i].list instanceof Array)) {
@@ -643,7 +643,7 @@ dhtmlXRibbon.prototype._addItem = function (blockId, nextToId, itemId, data) {
         block.childIds.push(item.id);
         base._dhx_ribbonId = item.id;
 
-        if (itemData.onclick && (typeof(itemData.onclick) == "function")) {
+        if (itemData.onclick && (typeof (itemData.onclick) == "function")) {
             this._eventHandlers[item.id] = this._eventHandlers[item.id] || {};
             this._eventHandlers[item.id]["onclick"] = itemData.onclick;
         }
@@ -655,7 +655,7 @@ dhtmlXRibbon.prototype._addItem = function (blockId, nextToId, itemId, data) {
             that._callHandler.apply(that, arguments);
         };
 
-        if (this.items[itemData.type] && typeof(this.items[itemData.type].callAfterInit) == "function") {
+        if (this.items[itemData.type] && typeof (this.items[itemData.type].callAfterInit) == "function") {
             this.items[itemData.type].callAfterInit.apply(this, [item]);
         }
     }
@@ -709,7 +709,7 @@ dhtmlXRibbon.prototype.items.button = {
 
         cont.innerHTML = img + "<div class='dhxrb_label_button'>" + item.conf.text + "</div>";
 
-        if (typeof(this.afterRender) == "function") {
+        if (typeof (this.afterRender) == "function") {
             this.afterRender(item);
         }
 
@@ -1005,7 +1005,7 @@ dhtmlXRibbon.prototype.items.buttonSelect = {
 
     _attachEventToWindow: function () {
         if (this._isAttachedEventInWindow == false) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 document.body.addEventListener("mousedown", this._hideAllMenus, false);
             } else {
                 document.body.attachEvent("onmousedown", this._hideAllMenus);
@@ -1015,7 +1015,7 @@ dhtmlXRibbon.prototype.items.buttonSelect = {
     },
 
     _detachEventFromWindow: function () {
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             document.body.removeEventListener("mousedown", this._hideAllMenus, false);
         } else {
             document.body.detachEvent("onmousedown", this._hideAllMenus);
@@ -1300,7 +1300,7 @@ dhtmlXRibbon.prototype.items.input = {
 
         cont.innerHTML = "<input type='text' class='dhxrb_input'><div class='dhxrb_label_button'>" + item.conf.text + "</div>";
 
-        if (typeof(this.afterRender) == "function") {
+        if (typeof (this.afterRender) == "function") {
             this.afterRender(item);
         }
 
@@ -1435,7 +1435,7 @@ dhtmlXRibbon.prototype.items.checkbox = {
 
         cont.innerHTML = "<div class='dhxrb_checkbox'></div><div class='dhxrb_label_checkbox'>" + item.conf.text + "</div>";
 
-        if (typeof(this.afterRender) == "function") {
+        if (typeof (this.afterRender) == "function") {
             this.afterRender(item);
         }
 
@@ -1546,7 +1546,7 @@ dhtmlXRibbon.prototype.items.text = {
 
         cont.innerHTML = "<div class='dhxrb_item_text'>" + item.conf.text + "</div>";
 
-        if (typeof(this.afterRender) == "function") {
+        if (typeof (this.afterRender) == "function") {
             this.afterRender(item);
         }
 
@@ -1626,7 +1626,7 @@ dhtmlXRibbon.prototype.items.buttonCombo = {
             delete item.conf.data;
         }
 
-        if (typeof(this.afterRender) == "function") {
+        if (typeof (this.afterRender) == "function") {
             this.afterRender(item);
         }
 
@@ -1746,7 +1746,7 @@ dhtmlXRibbon.prototype.items.slider = {
 
         item.slider = new dhtmlXSlider(sliderConf);
 
-        if (typeof(this.afterRender) == "function") {
+        if (typeof (this.afterRender) == "function") {
             this.afterRender(item);
         }
 
@@ -1863,7 +1863,7 @@ dhtmlXRibbon.prototype._addNewLevel = function (block) {
 };
 
 dhtmlXRibbon.prototype._attachEventForItem = function (cont) {
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         cont.addEventListener("mouseover", this._doOnHighlight0, false);
         cont.addEventListener("mouseout", this._doOffHighlight0, false);
         cont.addEventListener("mousedown", this._doOnHighlight1, false);
@@ -1879,7 +1879,7 @@ dhtmlXRibbon.prototype._attachEventForItem = function (cont) {
 };
 
 dhtmlXRibbon.prototype._detachEventFromItem = function (cont) {
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         cont.removeEventListener("mouseover", this._doOnHighlight0, false);
         cont.removeEventListener("mouseout", this._doOffHighlight0, false);
         cont.removeEventListener("mousedown", this._doOnHighlight1, false);
@@ -1895,7 +1895,7 @@ dhtmlXRibbon.prototype._detachEventFromItem = function (cont) {
 };
 
 dhtmlXRibbon.prototype._attachEventsToInput = function (cont) {
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         cont.addEventListener("focus", this._doOnFocus, false);
         cont.addEventListener("blur", this._doOnBlur, false);
         cont.addEventListener("change", this._doOnChange, false);
@@ -1909,7 +1909,7 @@ dhtmlXRibbon.prototype._attachEventsToInput = function (cont) {
 };
 
 dhtmlXRibbon.prototype._detachEventsFromInput = function (cont) {
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         cont.removeEventListener("focus", this._doOnFocus, false);
         cont.removeEventListener("blur", this._doOnBlur, false);
         cont.removeEventListener("change", this._doOnChange, false);
@@ -2004,7 +2004,7 @@ dhtmlXRibbon.prototype._removeItem = function (item) {
         parent.childIds.splice(ind, 1);
     }
 
-    if (this.items[item.type] && (typeof(this.items[item.type].remove) == "function")) {
+    if (this.items[item.type] && (typeof (this.items[item.type].remove) == "function")) {
         this.items[item.type].remove(item, this);
     }
 };
@@ -2032,7 +2032,7 @@ dhtmlXRibbon.prototype._removeGroup = function (item) {
         parent.childIds.splice(ind, 1);
     }
 
-    if (this.items[item.type] && (typeof(this.items[item.type].remove) == "function")) {
+    if (this.items[item.type] && (typeof (this.items[item.type].remove) == "function")) {
         this.items[item.type].remove(item);
     }
 };
@@ -2100,7 +2100,7 @@ dhtmlXRibbon.prototype._setSkinForItems = function (value) {
 
         item.conf.skin = value;
 
-        if (dhtmlXRibbon.prototype.items[item.type] && typeof(dhtmlXRibbon.prototype.items[item.type].setSkin) == "function") {
+        if (dhtmlXRibbon.prototype.items[item.type] && typeof (dhtmlXRibbon.prototype.items[item.type].setSkin) == "function") {
             dhtmlXRibbon.prototype.items[item.type].setSkin(item, value);
         }
 
@@ -2129,7 +2129,7 @@ dhtmlXRibbon.prototype._setBlockText = function (item, text) {
 dhtmlXRibbon.prototype.hide = function (id) {
     var item = this._items[id];
 
-    if (this.items[item.type] && (typeof(this.items[item.type].hide) == "function")) {
+    if (this.items[item.type] && (typeof (this.items[item.type].hide) == "function")) {
         if (this.items[item.type].hide(item) != true) {
             return;
         }
@@ -2142,7 +2142,7 @@ dhtmlXRibbon.prototype.hide = function (id) {
     }
 
     var parent = this._items[item.parentId];
-    if (parent && this.items[parent.type] && (typeof(this.items[parent.type].hideChild) == "function")) {
+    if (parent && this.items[parent.type] && (typeof (this.items[parent.type].hideChild) == "function")) {
         this.items[parent.type].hideChild(parent, item);
     }
 };
@@ -2150,7 +2150,7 @@ dhtmlXRibbon.prototype.hide = function (id) {
 dhtmlXRibbon.prototype.show = function (id) {
     var item = this._items[id];
 
-    if (this.items[item.type] && (typeof(this.items[item.type].show) == "function")) {
+    if (this.items[item.type] && (typeof (this.items[item.type].show) == "function")) {
         if (this.items[item.type].show(item) != true) {
             return;
         }
@@ -2163,7 +2163,7 @@ dhtmlXRibbon.prototype.show = function (id) {
     }
 
     var parent = this._items[item.parentId];
-    if (parent && this.items[parent.type] && (typeof(this.items[parent.type].showChild) == "function")) {
+    if (parent && this.items[parent.type] && (typeof (this.items[parent.type].showChild) == "function")) {
         this.items[parent.type].showChild(parent, item);
     }
 };
@@ -2172,7 +2172,7 @@ dhtmlXRibbon.prototype.check = function (id, callEvent) {
     callEvent = dhx4.s2b(callEvent);
     var item = this._items[id];
 
-    if (item && !item.conf.checked && typeof(this.items[item.type].check) == "function") {
+    if (item && !item.conf.checked && typeof (this.items[item.type].check) == "function") {
         this.items[item.type].check(item);
         if (callEvent) this.callEvent("onCheck", [item.id, item.conf.checked]);
     }
@@ -2182,7 +2182,7 @@ dhtmlXRibbon.prototype.uncheck = function (id, callEvent) {
     callEvent = dhx4.s2b(callEvent);
     var item = this._items[id];
 
-    if (item && item.conf.checked && typeof(this.items[item.type].uncheck) == "function") {
+    if (item && item.conf.checked && typeof (this.items[item.type].uncheck) == "function") {
         this.items[item.type].uncheck(item);
         if (callEvent) this.callEvent("onCheck", [item.id, item.conf.checked]);
     }
@@ -2190,7 +2190,7 @@ dhtmlXRibbon.prototype.uncheck = function (id, callEvent) {
 
 dhtmlXRibbon.prototype.isChecked = function (id) {
     var item = this._items[id];
-    if (item && typeof(this.items[item.type].isChecked) == "function") {
+    if (item && typeof (this.items[item.type].isChecked) == "function") {
         return this.items[item.type].isChecked(item);
     }
 };
@@ -2198,7 +2198,7 @@ dhtmlXRibbon.prototype.isChecked = function (id) {
 dhtmlXRibbon.prototype.disable = function (id, activetab) {
     var item = this._items[id];
 
-    if (this.items[item.type] && (typeof(this.items[item.type].disable) == "function")) {
+    if (this.items[item.type] && (typeof (this.items[item.type].disable) == "function")) {
         if (this.items[item.type].disable(item) != true) return;
     }
 
@@ -2228,7 +2228,7 @@ dhtmlXRibbon.prototype.disable = function (id, activetab) {
 dhtmlXRibbon.prototype.enable = function (id, activetab) {
     var item = this._items[id];
 
-    if (this.items[item.type] && (typeof(this.items[item.type].enable) == "function")) {
+    if (this.items[item.type] && (typeof (this.items[item.type].enable) == "function")) {
         if (this.items[item.type].enable(item) != true) {
             return;
         }
@@ -2252,7 +2252,7 @@ dhtmlXRibbon.prototype.enable = function (id, activetab) {
 dhtmlXRibbon.prototype.isEnabled = function (id) {
     var item = this._items[id];
 
-    if (this.items[item.type] && typeof(this.items[item.type].isEnabled) == "function") {
+    if (this.items[item.type] && typeof (this.items[item.type].isEnabled) == "function") {
         return this.items[item.type].isEnabled(item);
     }
 
@@ -2266,7 +2266,7 @@ dhtmlXRibbon.prototype.isEnabled = function (id) {
 dhtmlXRibbon.prototype.isVisible = function (id) {
     var item = this._items[id];
 
-    if (this.items[item.type] && (typeof(this.items[item.type].isVisible) == "function")) {
+    if (this.items[item.type] && (typeof (this.items[item.type].isVisible) == "function")) {
         return this.items[item.type].isVisible(item);
     }
 
@@ -2282,7 +2282,7 @@ dhtmlXRibbon.prototype.setItemState = function (id, value, callEvent) {
     callEvent = dhx4.s2b(callEvent);
     var item = this._items[id];
 
-    if (item && (typeof(this.items[item.type].setState) == "function")) {
+    if (item && (typeof (this.items[item.type].setState) == "function")) {
         switch (item.type) {
             case "buttonSegment":
                 this.items[item.type].setState(item, this, callEvent);
@@ -2295,7 +2295,7 @@ dhtmlXRibbon.prototype.setItemState = function (id, value, callEvent) {
 
 dhtmlXRibbon.prototype.getItemState = function (id) {
     var item = this._items[id];
-    if (item && (typeof(this.items[item.type].getState) == "function")) {
+    if (item && (typeof (this.items[item.type].getState) == "function")) {
         switch (item.type) {
             case "buttonTwoState":
             case "buttonSegment":
@@ -2332,7 +2332,7 @@ dhtmlXRibbon.prototype.removeItem = function (id) {
 };
 
 dhtmlXRibbon.prototype.setSkin = function (skin) {
-    skin = (typeof(skin) == "string") ? skin.toLowerCase() : "";
+    skin = (typeof (skin) == "string") ? skin.toLowerCase() : "";
 
     if (this._skinCollection[skin] != true) {
         return;
@@ -2389,7 +2389,7 @@ dhtmlXRibbon.prototype.getItemType = function (id) {
 dhtmlXRibbon.prototype.getValue = function (id) {
     var item = this._items[id], answer = undefined;
 
-    if (item && this.items[item.type] && typeof(this.items[item.type].getValue) == "function") {
+    if (item && this.items[item.type] && typeof (this.items[item.type].getValue) == "function") {
         answer = this.items[item.type].getValue(item);
     }
 
@@ -2401,7 +2401,7 @@ dhtmlXRibbon.prototype.setValue = function (id, value, callEvent) {
     var item = this._items[id];
     callEvent = (callEvent === false ? false : true);
 
-    if (item && this.items[item.type] && typeof(this.items[item.type].setValue) == "function") {
+    if (item && this.items[item.type] && typeof (this.items[item.type].setValue) == "function") {
         this.items[item.type].setValue(item, value, callEvent);
     }
 };
@@ -2418,7 +2418,7 @@ dhtmlXRibbon.prototype.getItemText = function (id) {
     } else if (item.type == "block") {
         return this.items.button.getText(item);
 
-    } else if (this.items[item.type] && typeof(this.items[item.type].getText) == "function") {
+    } else if (this.items[item.type] && typeof (this.items[item.type].getText) == "function") {
         return this.items[item.type].getText(item);
 
     } else {
@@ -2437,7 +2437,7 @@ dhtmlXRibbon.prototype.setItemText = function (id, text) {
     } else if (item.type == "block") {
         this._setBlockText(item, text);
 
-    } else if (this.items[item.type] && typeof(this.items[item.type].setText) == "function") {
+    } else if (this.items[item.type] && typeof (this.items[item.type].setText) == "function") {
         this.items[item.type].setText(item, text);
     }
 };
@@ -2457,14 +2457,14 @@ dhtmlXRibbon.prototype.getItemOptionText = function (id, optId) {
 dhtmlXRibbon.prototype.setItemImage = function (id, img) {
     var item = this._items[id];
 
-    if (item != null && this.items[item.type] != null && typeof(this.items[item.type].setImage) == "function") {
+    if (item != null && this.items[item.type] != null && typeof (this.items[item.type].setImage) == "function") {
         this.items[item.type].setImage(item, img);
     }
 };
 dhtmlXRibbon.prototype.setItemImageDis = function (id, imgdis) {
     var item = this._items[id];
 
-    if (item != null && this.items[item.type] != null && typeof(this.items[item.type].setImageDis) == "function") {
+    if (item != null && this.items[item.type] != null && typeof (this.items[item.type].setImageDis) == "function") {
         this.items[item.type].setImageDis(item, imgdis);
     }
 };
@@ -2486,7 +2486,7 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
     dhtmlXCellObject.prototype._createNode_ribbon = function (obj, type, htmlString, append, node) {
 
-        if (typeof(node) != "undefined") {
+        if (typeof (node) != "undefined") {
             obj = node;
         } else {
             obj = document.createElement("DIV");
@@ -2508,8 +2508,8 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         this.callEvent("_onBeforeContentAttach", ["ribbon"]);
 
-        if (typeof(conf) == "undefined") conf = {};
-        if (typeof(conf.skin) == "undefined") conf.skin = this.conf.skin;
+        if (typeof (conf) == "undefined") conf = {};
+        if (typeof (conf.skin) == "undefined") conf.skin = this.conf.skin;
 
         conf.parent = this._attachObject("ribbon").firstChild;
 
@@ -2535,7 +2535,7 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         if (this.dataNodes.ribbon == null) return;
 
-        if (typeof(this.dataNodes.ribbon.unload) == "function") this.dataNodes.ribbon.unload();
+        if (typeof (this.dataNodes.ribbon.unload) == "function") this.dataNodes.ribbon.unload();
         this.dataNodes.ribbon = null;
         delete this.dataNodes.ribbon;
 
@@ -2554,6 +2554,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
     dhtmlXCellObject.prototype.getAttachedRibbon = function () {
         return this.dataNodes.ribbon;
     };
-
+	
 }
 

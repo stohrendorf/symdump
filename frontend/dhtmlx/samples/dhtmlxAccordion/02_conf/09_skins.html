@@ -2,13 +2,13 @@
 <html>
 <head>
     <title>Skins</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/web/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/terrace/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/skyblue/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/web/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/terrace/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/skyblue/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -32,6 +32,7 @@
     </style>
     <script>
         var myAcc;
+
         function doOnLoad() {
             myAcc = new dhtmlXAccordion({
                 parent: "accObj",
@@ -47,6 +48,7 @@
             myAcc.cells("a2").attachObject("a2");
             myAcc.cells("a3").attachObject("a3");
         }
+
         function changeSkin(skin) {
             myAcc.setSkin(skin);
         }
@@ -82,12 +84,12 @@
     </div>
 </div>
 <br>
-<input type="button" onclick="changeSkin('dhx_skyblue');" value="skyblue">
-<input type="button" onclick="changeSkin('dhx_web');" value="web">
-<input type="button" onclick="changeSkin('dhx_terrace');" value="terrace">
-<input type="button" onclick="changeSkin('material');" value="material">
+<input onclick="changeSkin('dhx_skyblue');" type="button" value="skyblue">
+<input onclick="changeSkin('dhx_web');" type="button" value="web">
+<input onclick="changeSkin('dhx_terrace');" type="button" value="terrace">
+<input onclick="changeSkin('material');" type="button" value="material">
 <br><br>
-<input type="button" value="progress on" onclick="myAcc.cells('a1').progressOn();">
-<input type="button" value="progress off" onclick="myAcc.cells('a1').progressOff();">
+<input onclick="myAcc.cells('a1').progressOn();" type="button" value="progress on">
+<input onclick="myAcc.cells('a1').progressOff();" type="button" value="progress off">
 </body>
 </html>

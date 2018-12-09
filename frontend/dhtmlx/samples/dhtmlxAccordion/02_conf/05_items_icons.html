@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Icons Manipulation</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -19,6 +19,7 @@
         var sel1;
         var sel2;
         var myAcc;
+
         function doOnLoad() {
             myAcc = new dhtmlXAccordion({
                 parent: "accObj",
@@ -35,17 +36,21 @@
                 sel1.options.add(new Option(cell.getText(), cell.getId()));
             });
         }
+
         function getId() {
             var id = sel1.options[sel1.selectedIndex].value;
             return id;
         }
+
         function getIcon() {
             var icon = sel2.options[sel2.selectedIndex].value;
             return icon;
         }
+
         function setIcon() {
             myAcc.cells(getId()).setIcon(getIcon());
         }
+
         function clearIcon() {
             myAcc.cells(getId()).clearIcon();
         }
@@ -61,8 +66,8 @@
     <option value="flag_blue.png">flag blue</option>
     <option value="flag_magenta.png">flag magenta</option>
 </select>
-    <input type="button" value="Set Icon" onclick="setIcon();">
-    <input type="button" value="Clear Icon" onclick="clearIcon();">
+    <input onclick="setIcon();" type="button" value="Set Icon">
+    <input onclick="clearIcon();" type="button" value="Clear Icon">
 </div>
 </body>
 </html>

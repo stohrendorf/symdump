@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>ButtonTwoState pressed state</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var sel;
         var myToolbar;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -19,18 +20,22 @@
                 onload: updateList
             });
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function pressUnPress() {
             var id = getId();
             myToolbar.setItemState(id, !myToolbar.getItemState(id));
         }
+
         function getState() {
             var id = getId();
             alert(myToolbar.getItemState(id));
         }
+
         function updateList() {
             sel.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -45,8 +50,8 @@
 <div id="toolbarObj"></div>
 <div style="margin-top: 20px;">
     <select id="sel"></select>
-    <input type="button" value="Press/Release" onclick="pressUnPress();">
-    <input type="button" value="Get State" onclick="getState();">
+    <input onclick="pressUnPress();" type="button" value="Press/Release">
+    <input onclick="getState();" type="button" value="Get State">
 </div>
 
 

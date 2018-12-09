@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /**
  *   @desc: enable smart rendering mode
@@ -21,7 +21,7 @@ dhtmlXGridObject.prototype.enableSmartRendering = function (mode, buffer, reserv
     this._srnd = dhx4.s2b(mode);
     this._srdh = this._srdh || 20;
     this._dpref = buffer || 0;
-
+	
 };
 /**
  *   @desc: allows to pre-render rows during scrolling, make scrolling more smooth, but with small drop in overall perfomance

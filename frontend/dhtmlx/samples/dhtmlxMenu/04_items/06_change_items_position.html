@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Change items position</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myMenu;
         var mid;
+
         function doOnLoad() {
             myMenu = new dhtmlXMenuObject({
                 parent: "menuObj",
@@ -18,11 +19,13 @@
                 onclick: menuClick
             });
         }
+
         function menuClick(id) {
             document.getElementById("item").innerHTML = id + " (" + myMenu.getItemText(id) + ")";
             document.getElementById("item_pos").innerHTML = myMenu.getItemPosition(id);
             mid = id;
         }
+
         function update() {
             var pos = Number(document.getElementById("item_new_pos").value);
             if (isNaN(pos)) {
@@ -37,7 +40,7 @@
     <div id="menuObj"></div>
 </div>
 <div>
-    <table border="0" cellspacing="0" cellpadding="0">
+    <table border="0" cellpadding="0" cellspacing="0">
         <tr>
             <td>Select Item</td>
             <td width="10">&nbsp;</td>
@@ -55,8 +58,9 @@
         <tr>
             <td>New Item Position</td>
             <td>&nbsp;</td>
-            <td><input id="item_new_pos" type="text" value="1" style="width: 30px;"> <input type="button" value="Update"
-                                                                                            onclick="update();"></td>
+            <td><input id="item_new_pos" style="width: 30px;" type="text" value="1"> <input onclick="update();"
+                                                                                            type="button"
+                                                                                            value="Update"></td>
         </tr>
     </table>
 </div>

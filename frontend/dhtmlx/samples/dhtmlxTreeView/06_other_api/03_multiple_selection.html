@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Multiple selection</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.sample_info_here {
@@ -64,6 +64,7 @@
     </style>
     <script>
         var myTreeView, logIndex = 0;
+
         function doOnLoad() {
             myTreeView = new dhtmlXTreeView({
                 parent: "tree_here",
@@ -74,18 +75,22 @@
             });
             enable();
         }
+
         function enable() {
             myTreeView.enableMultiselect(true);
             writeLog("multiple selection enabled");
         }
+
         function disable() {
             myTreeView.enableMultiselect(false);
             writeLog("multiple selection disabled");
         }
+
         function writeLog(text) {
             document.getElementById("logs_here").innerHTML += "<br>" + "[" + (++logIndex) + "] " + text;
             document.getElementById("logs_here").scrollTop = document.getElementById("logs_here").scrollHeight;
         }
+
         function clearLog() {
             document.getElementById("logs_here").innerHTML = "<u>logs</u>";
         }
@@ -97,12 +102,12 @@
 </div>
 <div id="tree_here"></div>
 <div class="controls">
-    multiple selection: <input type="button" value="enable" onclick="enable();"> <input type="button" value="disable"
-                                                                                        onclick="disable();">
+    multiple selection: <input onclick="enable();" type="button" value="enable"> <input onclick="disable();"
+                                                                                        type="button" value="disable">
 </div>
 <div id="logs_here"><u>logs</u></div>
 <div class="controls">
-    with logs: <input type="button" value="clear" onclick="clearLog();">
+    with logs: <input onclick="clearLog();" type="button" value="clear">
 </div>
 </body>
 </html>

@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Template</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.simple_bold,
@@ -23,6 +23,7 @@
     </style>
     <script>
         var myForm, formData, t = false;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: 100},
@@ -32,16 +33,19 @@
             ];
             myForm = new dhtmlXForm("myForm", formData);
         }
+
         function format_a(name, value) {
             if (name == "product") return "<div class='simple_bold'>" + value + "</div>";
             if (name == "link") return "<div class='simple_link'><a href='http://" + value + "' target='blank'>" + value + "</a></div>";
         }
+
         function format_b(name, value) {
             // to access form instance from format function
             // you cann use the following method:
             // var form = this.getForm();
             return "<div class='simple_link'><a href='javascript:void(0);' onclick='custom_func();'>" + value + "</a></div>";
         }
+
         function custom_func() {
             t = !t;
             myForm.forEachItem(function (name) {

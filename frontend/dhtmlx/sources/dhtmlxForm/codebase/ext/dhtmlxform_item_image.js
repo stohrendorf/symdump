@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXForm.prototype.items.image = {
 
@@ -16,7 +16,7 @@ dhtmlXForm.prototype.items.image = {
         item._enabled = true;
 
         item._fr_name = "dhxform_image_" + window.dhx4.newId();
-        item._url = (typeof(data.url) == "undefined" || data.url == null ? "" : data.url);
+        item._url = (typeof (data.url) == "undefined" || data.url == null ? "" : data.url);
 
         if (data.inputWidth == "auto") data.inputWidth = 120;
         if (data.inputHeight == "auto") data.inputHeight = data.inputWidth;
@@ -28,8 +28,8 @@ dhtmlXForm.prototype.items.image = {
         var t = item.childNodes[item._ll ? 1 : 0].childNodes[0];
         t.style.height = parseInt(t.style.height) - dhtmlXForm.prototype.items[this.t]._dim + "px";
 
-        var w = (typeof(data.imageWidth) != "undefined" ? parseInt(data.imageWidth) : data.inputWidth);
-        var h = (typeof(data.imageHeight) != "undefined" ? parseInt(data.imageHeight) : data.inputHeight);
+        var w = (typeof (data.imageWidth) != "undefined" ? parseInt(data.imageWidth) : data.inputWidth);
+        var h = (typeof (data.imageHeight) != "undefined" ? parseInt(data.imageHeight) : data.inputHeight);
         if (h == "auto") h = w;
 
         item._dim = {mw: data.inputWidth - this._dim, mh: data.inputHeight - this._dim, w: w, h: h};
@@ -140,7 +140,7 @@ dhtmlXForm.prototype.items.image = {
             var fr = item.childNodes[item._ll ? 1 : 0].childNodes[0].lastChild.previousSibling; // iframe
             var r = dhx4.s2j(fr.contentWindow.document.body.innerHTML);
 
-            if (typeof(r) == "object" && r != null && r.state == true && r.itemId == item._idd) {
+            if (typeof (r) == "object" && r != null && r.state == true && r.itemId == item._idd) {
                 this.setValue(item, r.itemValue, true);
                 item.getForm().callEvent("onImageUploadSuccess", [r.itemId, r.itemValue, r.extra])
             } else {

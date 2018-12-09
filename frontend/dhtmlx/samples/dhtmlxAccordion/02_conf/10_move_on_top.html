@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Move On Top</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -29,6 +29,7 @@
     </style>
     <script>
         var myAcc;
+
         function doOnLoad() {
             myAcc = new dhtmlXAccordion({
                 parent: "accObj",
@@ -74,8 +75,8 @@
     </div>
 </div>
 <br><br>
-<input type="button" value="move on top a1" onclick="myAcc.cells('a1').moveOnTop();">
-<input type="button" value="move on top a2" onclick="myAcc.cells('a2').moveOnTop();">
-<input type="button" value="move on top a3" onclick="myAcc.cells('a3').moveOnTop();">
+<input onclick="myAcc.cells('a1').moveOnTop();" type="button" value="move on top a1">
+<input onclick="myAcc.cells('a2').moveOnTop();" type="button" value="move on top a2">
+<input onclick="myAcc.cells('a3').moveOnTop();" type="button" value="move on top a3">
 </body>
 </html>

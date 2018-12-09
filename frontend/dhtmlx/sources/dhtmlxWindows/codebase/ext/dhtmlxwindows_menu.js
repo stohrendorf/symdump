@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 // global context menu
 dhtmlXWindows.prototype.attachContextMenu = function (conf) {
@@ -197,7 +197,7 @@ dhtmlXWindows.prototype._renderContextMenu = function (mode, wId, bId, conf) {
 
         this.attachEvent("_winMouseDown", this._showContextMenu);
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.addEventListener("mousedown", this._hideContextMenu, false);
             window.addEventListener("keydown", this._hideContextMenu, false);
         } else {
@@ -211,7 +211,7 @@ dhtmlXWindows.prototype._renderContextMenu = function (mode, wId, bId, conf) {
             this._detachContextMenu("icon", null, null);
             this.cm = null;
 
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 window.removeEventListener("mousedown", this._hideContextMenu, false);
                 window.removeEventListener("keydown", this._hideContextMenu, false);
             } else {

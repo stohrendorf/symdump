@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /**
  *     @desc: enable/disable drag-and-drop
@@ -16,8 +16,7 @@ dhtmlXGridObject.prototype.enableDragAndDrop = function (mode) {
     if (mode == "temporary_disabled") {
         this.dADTempOff = false;
         mode = true;
-    }
-    else
+    } else
         this.dADTempOff = true;
 
     this.dragAndDropOff = dhx4.s2b(mode);
@@ -377,18 +376,18 @@ dhtmlXGridObject.prototype._drag = function (sourceHtmlObject, dhtmlObject, targ
 
     if (c.tobj._realfake) c.tobj = c.tobj._fake;
     if (c.sobj._realfake) c.sobj = c.sobj._fake;
-
+    
     c.tobj._clearMove();
 
     if (r2 && r2.treeNod && r2.treeNod._nonTrivialRow)
         r2.treeNod._nonTrivialRow(this, c.tid, c.dropmode, r2);
     else {
         c.tobj.dragContext = c;
-        if (!c.tobj.callEvent("onDrag", [c.slist(), c.tid, c.sobj, c.tobj, c.sExtra, c.tExtra]))  return c.tobj.dragContext = null;
+        if (!c.tobj.callEvent("onDrag", [c.slist(), c.tid, c.sobj, c.tobj, c.sExtra, c.tExtra])) return c.tobj.dragContext = null;
 
         //all ready, start mantras
         var result = [];
-        if (typeof(c.sid) == "object") {
+        if (typeof (c.sid) == "object") {
             var nc = c.copy();
             for (var i = 0; i < c.sid.length; i++) {
                 if (!nc.set("alfa", (!i)).set("sid", c.sid[i][(c.source == "tree" ? "id" : "idd")]).valid()) continue;
@@ -398,8 +397,7 @@ dhtmlXGridObject.prototype._drag = function (sourceHtmlObject, dhtmlObject, targ
                 nc.set("dropmode", "sibling").set("tid", nc.nid);
             }
             nc.close();
-        }
-        else
+        } else
             c.tobj._dragRoutine(c);
 
         //finish math if any awaiting
@@ -444,11 +442,9 @@ dhtmlXGridObject.prototype._dragRoutine = function (c) {
         else if (c.alfa && this._sbmod && this._h2.get[c.tid].childs.length) {
             this.openItem(c.tid);
             new_row = c.uid().tobj.addRowBefore(c.nid, c.data(), this._h2.get[c.tid].childs[0].id, c.img(), c.childs());
-        }
-        else
+        } else
             new_row = c.uid().tobj.addRowAfter(c.nid, c.data(), c.tid, c.img(), c.childs());
-    }
-    else
+    } else
         new_row = c.uid().tobj.addRow(c.nid, c.data(), c.ind(), c.pid(), c.img(), c.childs());
 
     new_row._attrs = c.attrs();
@@ -465,8 +461,7 @@ dhtmlXGridObject.prototype._dragRoutine = function (c) {
             }
             nc.close();
         }
-    }
-    else {
+    } else {
         c.tobj._copyUserData(c);
         this.callEvent("onRowAdded", [c.nid]);
 
@@ -562,8 +557,7 @@ dhtmlXGridObject.prototype._dragIn = function (htmlObject, shtmlObject, x, y) {
             self = null;
         }, 1000);
         this._autoOpenId = htmlObject.parentNode.idd;
-    }
-    else if (this._autoOpenTimer) window.clearTimeout(this._autoOpenTimer);
+    } else if (this._autoOpenTimer) window.clearTimeout(this._autoOpenTimer);
 
     return htmlObject;
 };
@@ -610,9 +604,8 @@ dhtmlXGridObject.prototype._setMove = function (htmlObject, x, y, skip) {
         if ((Math.abs(z) - htmlObject.offsetHeight / 6) > 0) {
             this.dadmodec = 1;
             //sibbling zone
-            if (z < 0) this.dadmodefix = -1; else   this.dadmodefix = 1;
-        }
-        else this.dadmodec = 0;
+            if (z < 0) this.dadmodefix = -1; else this.dadmodefix = 1;
+        } else this.dadmodec = 0;
     }
     else
         this.dadmodec = this.dadmode;
@@ -622,8 +615,7 @@ dhtmlXGridObject.prototype._setMove = function (htmlObject, x, y, skip) {
         if (!this._sdrgc) this._createSdrgc();
         this._sdrgc.style.display = "block";
         this._sdrgc.style.top = a1 - a2 + parseInt(this.objBox.scrollTop) + ((this.dadmodefix >= 0) ? htmlObject.offsetHeight : 0) + "px";
-    }
-    else {
+    } else {
         this._llSelD = htmlObject;
         if (htmlObject.parentNode.tagName == "TR")
             for (var i = 0; i < htmlObject.parentNode.childNodes.length; i++) {

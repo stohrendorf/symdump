@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXColorPicker(base) {
 
@@ -52,7 +52,7 @@ function dhtmlXColorPicker(base) {
 
     this._initMoveSelection = function (e) {
         e = e || event;
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             that._controllerNodes.colorArea.addEventListener("mousemove", that._setMoveSelection, false);
             document.body.addEventListener("mouseup", that._cleanMoveSelection, false);
         } else {
@@ -65,7 +65,7 @@ function dhtmlXColorPicker(base) {
     };
 
     this._cleanMoveSelection = function () {
-        if (typeof(window.removeEventListener) == "function") {
+        if (typeof (window.removeEventListener) == "function") {
             that._controllerNodes.colorArea.removeEventListener("mousemove", that._setMoveSelection, false);
             document.body.removeEventListener("mouseup", that._cleanMoveSelection, false);
         } else {
@@ -93,7 +93,7 @@ function dhtmlXColorPicker(base) {
 
     this._initMoveContrast = function (e) {
         e = e || event;
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             document.body.addEventListener("mousemove", that._setMoveContrast, false);
             document.body.addEventListener("mouseup", that._cleanMoveContrast, false);
         } else {
@@ -105,7 +105,7 @@ function dhtmlXColorPicker(base) {
     };
 
     this._cleanMoveContrast = function () {
-        if (typeof(window.removeEventListener) == "function") {
+        if (typeof (window.removeEventListener) == "function") {
             document.body.removeEventListener("mousemove", that._setMoveContrast, false);
             document.body.removeEventListener("mouseup", that._cleanMoveContrast, false);
         } else {
@@ -312,7 +312,7 @@ function dhtmlXColorPicker(base) {
         } else if (base == undefined) {
             return null;
 
-        } else if (typeof(base) == "string") {
+        } else if (typeof (base) == "string") {
             return "string";
 
         } else if (base.tagName && base.tagName.toLowerCase() == "input") {
@@ -324,7 +324,7 @@ function dhtmlXColorPicker(base) {
         } else if (base.tagName) {
             return "container";
 
-        } else if (typeof(base) == "object") {
+        } else if (typeof (base) == "object") {
             return "object";
 
         } else return undefined;
@@ -333,7 +333,7 @@ function dhtmlXColorPicker(base) {
     this._initByObject = function (conf) {
         if (conf.parent && conf.parent.tagName) {
             that.base = conf.parent;
-        } else if (typeof(conf.parent) == "string") {
+        } else if (typeof (conf.parent) == "string") {
             that.base = document.getElementById(conf.parent);
         } else {
             that.base = document.createElement("div");
@@ -343,7 +343,7 @@ function dhtmlXColorPicker(base) {
         if (conf.color) {
             that.conf.selectedColor = conf.color;
         }
-        if (typeof(conf.closeable) != "undefined") {
+        if (typeof (conf.closeable) != "undefined") {
             this.conf.closeable = dhx4.s2b(conf.closeable);
         }
         if (conf.custom_colors) {
@@ -374,7 +374,7 @@ function dhtmlXColorPicker(base) {
             that._addNode(conf.input, conf.target_color, conf.target_value);
         }
 
-        var skin = conf.skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxcolorpicker") || "material";
+        var skin = conf.skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxcolorpicker") || "material";
         that.setSkin(skin);
 
         // deprecated
@@ -411,7 +411,7 @@ function dhtmlXColorPicker(base) {
             delete this.base._dhx_remove;
         }
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this._controllerNodes.colorArea.removeEventListener("mousedown", this._initMoveSelection, false);
             this._controllerNodes.colorArea.removeEventListener("dblclick", this._doOnSelectColor, false);
             this._controllerNodes.contrastArea.removeEventListener("mousedown", this._initMoveContrast, false);
@@ -595,7 +595,7 @@ function dhtmlXColorPicker(base) {
         btnCancel: this._globalNode.firstChild.childNodes[3].childNodes[1]
     };
 
-    if (typeof(this._tempInitCC) == "function") {
+    if (typeof (this._tempInitCC) == "function") {
         this._tempInitCC();
     }
     if (typeof(window.addEventListener) == "function") {
@@ -646,7 +646,7 @@ function dhtmlXColorPicker(base) {
         this.hide();
     }
 
-    if (typeof(this._cpInitFRM) == "function") {
+    if (typeof (this._cpInitFRM) == "function") {
         this._cpInitFRM();
     }
 }
@@ -660,7 +660,7 @@ dhtmlXColorPicker.prototype.linkTo = function (colorValue, element, value) {
     colorValue = colorValue || null;
     value = value || null;
 
-    if (typeof(element) == "string") {
+    if (typeof (element) == "string") {
         element = document.getElementById(element);
     }
 
@@ -703,7 +703,7 @@ dhtmlXColorPicker.prototype._findNodesByArray = function (data) {
     var i, l, temp, answer = [];
     l = data.length;
     for (i = 0; i < l; i++) {
-        if (typeof(data[i]) == "string") {
+        if (typeof (data[i]) == "string") {
             temp = document.getElementById(data[i]);
         } else {
             temp = data[i];
@@ -717,17 +717,17 @@ dhtmlXColorPicker.prototype._findNodesByArray = function (data) {
 
 dhtmlXColorPicker.prototype._addNode = function (node, valueColor, value) {
     var _node, _newCont, _valueColor, object;
-    if (typeof(node) == "string") {
+    if (typeof (node) == "string") {
         _node = document.getElementById(node);
     } else {
         _node = node;
     }
 
-    if (typeof(valueColor) == "string") {
+    if (typeof (valueColor) == "string") {
         valueColor = document.getElementById(valueColor);
     }
 
-    if (typeof(value) == "string") {
+    if (typeof (value) == "string") {
         value = document.getElementById(value);
     }
 
@@ -770,7 +770,7 @@ dhtmlXColorPicker.prototype._addNode = function (node, valueColor, value) {
 dhtmlXColorPicker.prototype.getNode = function (base) {
     var element = null, node = null;
 
-    if (typeof(base) == "string") {
+    if (typeof (base) == "string") {
         element = document.getElementById(base);
     } else {
         element = base;
@@ -836,7 +836,7 @@ dhtmlXColorPicker.prototype.initMemoryColors = function () {
 
     var button = this._controllerNodes.memory_block.childNodes[0].firstChild;
     this._labelNodes.btnAddColor = this._controllerNodes.memory_block.childNodes[0].firstChild.firstChild;
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         button.addEventListener("click", this.saveColor, false);
     } else {
         button.attachEvent("onclick", this.saveColor);
@@ -860,7 +860,7 @@ dhtmlXColorPicker.prototype._parseColor = function (value) {
             g: parseInt(value[1]),
             b: parseInt(value[2])
         };
-    } else if (typeof(value) == "string") {
+    } else if (typeof (value) == "string") {
         value = value.replace(/\s/g, "");
         if (/^rgb\((\d{1,3})\,(\d{1,3})\,(\d{1,3})\)$/i.test(value)) {
             var temp = value.match(/^rgb\((\d{1,3})\,(\d{1,3})\,(\d{1,3})\)$/i);
@@ -922,14 +922,14 @@ dhtmlXColorPicker.prototype.getSelectedColor = function () {
 };
 
 dhtmlXColorPicker.prototype._attachEventsToNode = function (object) {
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         object.node.addEventListener("click", this._doOnClickByNode, false);
     } else {
         object.node.attachEvent("onclick", this._doOnClickByNode);
     }
 
     if (object.valueCont && object.valueCont.tagName.toLowerCase() == "input") {
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             object.valueCont.addEventListener("focus", this._doOnFocusByInput, false);
             object.valueCont.addEventListener("blur", this._doOnBlurByInput, false);
         } else {
@@ -940,14 +940,14 @@ dhtmlXColorPicker.prototype._attachEventsToNode = function (object) {
 };
 
 dhtmlXColorPicker.prototype._detachEventsFromNode = function (object) {
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         object.node.removeEventListener("click", this._doOnClickByNode, false);
     } else {
         object.node.detachEvent("onclick", this._doOnClickByNode);
     }
 
     if (object.valueCont && object.valueCont.tagName.toLowerCase() == "input") {
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             object.valueCont.removeEventListener("focus", this._doOnFocusByInput, false);
             object.valueCont.removeEventListener("blur", this._doOnBlurByInput, false);
         } else {
@@ -994,7 +994,7 @@ dhtmlXColorPicker.prototype.show = function (node) {
         this._refreshPosition();
         this.base.style.visibility = "visible";
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             document.body.addEventListener("mousedown", this._doOnClickByBody, false);
         } else {
             document.body.attachEvent("onmousedown", this._doOnClickByBody);
@@ -1043,8 +1043,8 @@ dhtmlXColorPicker.prototype.setPosition = function (x, y) {
 dhtmlXColorPicker.prototype._initListenerInput = function () {
     var that = this;
     this._inputListenerId = this._inputListenerId || setInterval(function () {
-            that._refreshValueByInput();
-        }, 70);
+        that._refreshValueByInput();
+    }, 70);
 };
 
 dhtmlXColorPicker.prototype._removeListenerInput = function () {
@@ -1155,7 +1155,7 @@ dhtmlXColorPicker.prototype.hide = function () {
         if (this.base.parentNode) {
             this.base.parentNode.removeChild(this.base);
             dhx4.zim.clear(this.conf.cp_id);
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 document.body.removeEventListener("mousedown", this._doOnClickByBody, false);
             } else {
                 document.body.detachEvent("onmousedown", this._doOnClickByBody);
@@ -1205,7 +1205,7 @@ dhtmlXColorPicker.prototype.i18n = {
 
 dhtmlXColorPicker.prototype.loadUserLanguage = function (ln) {
     // deprecated
-    if (typeof(this._mergeLangModules) == "function") {
+    if (typeof (this._mergeLangModules) == "function") {
         this._mergeLangModules();
     }
     //
@@ -1468,7 +1468,7 @@ dhtmlXColorPicker.prototype.setCustomColors = function () {
             this.memory.setValue(value, null, false);
 
 
-        } else if (typeof(arguments[i]) == "string") {
+        } else if (typeof (arguments[i]) == "string") {
             colors = arguments[i].match(/^rgb\((\d{1,3})\,(\d{1,3})\,(\d{1,3})\)$/i);
             if (colors instanceof Array) {
                 value = this._rgb2value(colors[1], colors[2], colors[3]);
@@ -1593,7 +1593,7 @@ dhtmlXColorPicker.prototype.destructMemory = function () {
 
     var button = this._controllerNodes.memory_block.childNodes[0].firstChild;
     this._labelNodes.btnAddColor = null;
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         button.removeEventListener("click", this.saveColor, false);
     } else {
         button.detachEvent("onclick", this.saveColor);
@@ -1626,7 +1626,7 @@ dhtmlXColorPicker.prototype.Memory = function (base) {
         selected = contr;
         contr.domElement.className += " dhxcp_memory_el_select";
 
-        if (typeof(that.onSelect) == "function") {
+        if (typeof (that.onSelect) == "function") {
             that.onSelect(contr);
         }
     };
@@ -1642,7 +1642,7 @@ dhtmlXColorPicker.prototype.Memory = function (base) {
 
         el.dhxpc_memory = data;
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             el.addEventListener("click", that.select, false);
         } else {
             el.attachEvent("onclick", that.select);
@@ -1700,7 +1700,7 @@ dhtmlXColorPicker.prototype.Memory = function (base) {
 
         this.setActiveNext();
 
-        if ((callEvent != false) && (typeof(this.onSave) == "function")) this.onSave(value);
+        if ((callEvent != false) && (typeof (this.onSave) == "function")) this.onSave(value);
     };
 
     this.clean = function () {
@@ -1733,7 +1733,7 @@ dhtmlXColorPicker.prototype.Memory = function (base) {
         var i, l;
         l = this.controllers.length;
         for (i = 0; i < l; i++) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 this.controllers[i].domElement.removeEventListener("click", this.select, false);
             } else {
                 this.controllers[i].domElement.detachEvent("onclick", this.select);

@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     position: relative;
     cursor: default;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont {
     position: absolute;
     left: 0px;
@@ -25,17 +24,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 100%;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area.dhxcarousel_area_flip {
     perspective: 900px;
     -webkit-perspective: 900;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel {
     position: absolute;
     background-color: white;
@@ -46,7 +42,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     z-index: 0;
     -webkit-transform-style: preserve-3d;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cover {
     position: absolute;
     left: 0px;
@@ -68,7 +63,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cont_carousel {
     position: absolute;
     border: 1px solid #c7c7c7;
@@ -77,11 +71,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0px;
     z-index: 0;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cont_carousel.dhx_cell_cont_no_borders {
     border-width: 0px;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_bar {
     position: absolute;
     left: 0px;
@@ -93,7 +85,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0.75;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=75);
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_img {
     position: absolute;
     left: 0px;
@@ -105,31 +96,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-repeat: no-repeat;
     z-index: 2;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_def,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_no_borders {
     position: relative;
     overflow: hidden;
     padding: 0px 0px 1px 0px;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhtmlxMenu_dhx_web_Middle {
     padding: 0px 2px;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_toolbar_def,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_toolbar_no_borders {
     position: relative;
     overflow: hidden;
     padding: 0px 0px 1px 0px;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_no_borders {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhxrb_with_tabbar.dhxtabbar_base_dhx_web,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_no_borders div.dhxrb_with_tabbar.dhxtabbar_base_dhx_web {
     border-width: 0px;
@@ -137,7 +123,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin-left: -4px;
     margin-top: -4px;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhtmlxribbon_dhx_web.dhxrb_without_tabbar,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_no_borders div.dhtmlxribbon_dhx_web.dhxrb_without_tabbar {
     border-width: 0px;
@@ -145,7 +130,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin-top: -4px;
     width: auto;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_statusbar_def {
     position: absolute;
     bottom: 0px;
@@ -155,7 +139,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: #000000;
     background-color: #f4f4f4;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text {
     position: relative;
     padding: 0px 4px;
@@ -167,7 +150,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     white-space: nowrap;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls {
     position: absolute;
     width: 100%;
@@ -180,7 +162,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-color: #f4f4f4;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn {
     position: absolute;
     bottom: 0px;
@@ -202,35 +183,29 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev:hover,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next:hover {
     background-color: #c3e1f6;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev:active,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next:active {
     background-color: #acd7f3;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis {
     left: 0px;
     border-right-width: 1px;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     right: 0px;
     border-left-width: 1px;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis,
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     color: #cecece;
     z-index: 1;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars {
     position: absolute;
     top: 11px;
@@ -244,7 +219,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar {
     float: left;
     position: relative;
@@ -263,11 +237,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar div.dhx_carousel_barcore {
     display: none;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar.dhx_carousel_baractv div.dhx_carousel_barcore {
     position: absolute;
     display: block;
@@ -289,15 +261,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_hdr {
     position: relative;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_ftr {
     position: absolute;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_progress {
     position: absolute;
     left: 0px;
@@ -309,7 +278,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0.55;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=55);
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_progress_img {
     position: absolute;
     left: 0px;
@@ -321,35 +289,29 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-repeat: no-repeat;
     z-index: 4;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_menu {
     position: relative;
     overflow: hidden;
     border-bottom: 9px solid #ffffff;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_toolbar {
     position: relative;
     background-color: #ffffff;
     padding-bottom: 9px;
     overflow: hidden;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_ribbon {
     position: relative;
     border-bottom: 9px solid #ffffff;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_ribbon div.dhtmlxribbon_dhx_web.dhxrb_without_tabbar {
     width: auto;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_statusbar {
     position: absolute;
     overflow: hidden;
     background-color: #ffffff;
 }
-
 .dhxcarousel_base_dhx_web div.dhxcelltop_statusbar div.dhxcont_statusbar {
     position: relative;
     background-color: #f4f4f4;
@@ -360,25 +322,20 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-size: 12px;
     color: #000000;
 }
-
 div.dhx_popup_dhx_web div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_dhx_web {
     background-color: #f4f4f4;
 }
-
 div.dhx_popup_dhx_web div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls {
     border-bottom: 1px solid white;
 }
-
 div.dhx_popup_dhx_web div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev,
 div.dhx_popup_dhx_web div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis {
     border-left-width: 1px;
 }
-
 div.dhx_popup_dhx_web div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next,
 div.dhx_popup_dhx_web div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_dhx_web div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     border-right-width: 1px;
 }
-
 .dhxcarousel_skin_detect {
     position: absolute;
     left: 0px;

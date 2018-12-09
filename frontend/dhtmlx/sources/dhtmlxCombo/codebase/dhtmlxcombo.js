@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
 
@@ -15,7 +15,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
     var that = this;
     var apiObj = null;
     var skin = null;
-    if (typeof(parentId) == "object" && !parentId.tagName) {
+    if (typeof (parentId) == "object" && !parentId.tagName) {
         apiObj = parentId;
         parentId = apiObj.parent;
         width = apiObj.width;
@@ -24,7 +24,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         skin = apiObj.skin;
     }
 
-    this.cont = (typeof(parentId) == "string" ? document.getElementById(parentId) : parentId);
+    this.cont = (typeof (parentId) == "string" ? document.getElementById(parentId) : parentId);
 
     this.conf = {
         skin: null,
@@ -32,7 +32,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         combo_width: (parseInt(width) || this.cont.offsetWidth || 120) - (dhx4.isFF || dhx4.isIE || dhx4.isChrome || dhx4.isOpera ? 2 : 0),
         combo_image: false,
         combo_focus: false,
-        opts_type: (typeof(optionType) == "string" && typeof(this.modes[optionType]) != "undefined" ? optionType : "option"),
+        opts_type: (typeof (optionType) == "string" && typeof (this.modes[optionType]) != "undefined" ? optionType : "option"),
         opts_count: 8, // count of visible items
         opts_count_min: 3, // min count of visible items (when near screen edge)
         opts_width: null,
@@ -42,7 +42,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         allow_empty_value: true, // allow empty value in combo (when free_text not allowed)
         free_text_empty: false, // when free text not allowed and incorrect value entered restore last selected value or reset to empty
         enabled: true,
-        btn_left: ((window.dhx4.isIE6 || window.dhx4.isIE7 || window.dhx4.isIE8) && typeof(window.addEventListener) == "undefined" ? 1 : 0), // 1 for IE8-
+        btn_left: ((window.dhx4.isIE6 || window.dhx4.isIE7 || window.dhx4.isIE8) && typeof (window.addEventListener) == "undefined" ? 1 : 0), // 1 for IE8-
         // search in r/o mode
         ro_mode: false,
         ro_text: "",
@@ -132,14 +132,14 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
             that._subloadRequest();
         }
     };
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.list.addEventListener("scroll", this._doOnListScroll, false);
     } else {
         this.list.attachEvent("onscroll", this._doOnListScroll);
     }
 
     // apply skin
-    this.setSkin(skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxcombo") || "material");
+    this.setSkin(skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxcombo") || "material");
 
     this._updateTopImage = function (id) {
 
@@ -314,7 +314,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
 
     // data loading
     this._initObj = function (data) {
-        if (typeof(data.template) != "undefined") this.setTemplate(data.template);
+        if (typeof (data.template) != "undefined") this.setTemplate(data.template);
         if (data.add != true && this.conf.f_loading != true) this.clearAll(false);
         this.addOption(data.options);
     };
@@ -322,25 +322,25 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
     this._xmlToObj = function (data, selectToObj, selectedIndex) {
 
         /*
-         xml format:
-         <complete add="true">
-         <template>
-         <input>...</input>
-         <option>...</option>
-         <header>false</header> <!-- do not render header for multi-column mode, in 4.5.1 -->
-         <columns>
-         <column width="..." css="option css optional">
-         <header>text in header</header>
-         <option>template for text in option cell</option>
-         </column>
-         </columns>
-         </template>
-         <option value="xx" selected="1" img_src="icon_url" checked="1" css="some text">option text</option>
-         </complete>
-
-         img_src - also add the 4th parameter to combobox constructor - "image"
-         checked - checkbox state, for combo with "checkbox" type, 0 by default
-         */
+        xml format:
+        <complete add="true">
+            <template>
+                <input>...</input>
+                <option>...</option>
+                <header>false</header> <!-- do not render header for multi-column mode, in 4.5.1 -->
+                <columns>
+                    <column width="..." css="option css optional">
+                        <header>text in header</header>
+                        <option>template for text in option cell</option>
+                    </column>
+                </columns>
+            </template>
+            <option value="xx" selected="1" img_src="icon_url" checked="1" css="some text">option text</option>
+        </complete>
+        
+        img_src - also add the 4th parameter to combobox constructor - "image"
+        checked - checkbox state, for combo with "checkbox" type, 0 by default
+        */
 
         var t = {add: false, options: []};
 
@@ -350,7 +350,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
             if (window.dhx4.s2b(root[0].getAttribute("add")) == true) t.add = true;
             var nodes = root[0].childNodes;
             for (var q = 0; q < nodes.length; q++) {
-                if (typeof(nodes[q].tagName) != "undefined") {
+                if (typeof (nodes[q].tagName) != "undefined") {
 
                     // template
                     if (String(nodes[q].tagName).toLowerCase() == "template") {
@@ -365,7 +365,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
 
                                 // default values
                                 var k = n.tagName;
-                                if (typeof(this.conf.template[k]) != "undefined") {
+                                if (typeof (this.conf.template[k]) != "undefined") {
                                     template[k] = window.dhx4._xmlNodeValue(n);
                                 }
 
@@ -470,7 +470,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         e = e || event;
         var t = e.target || e.srcElement;
         while (t != null && t != this) {
-            if (typeof(t._optId) != "undefined") {
+            if (typeof (t._optId) != "undefined") {
                 if (that.conf.tm_hover) window.clearTimeout(that.conf.tm_hover);
                 that._setSelected(t._optId, false, false, true);
             }
@@ -494,9 +494,9 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         if (e.button != that.conf.btn_left) return;
         var t = e.target || e.srcElement;
         while (t != null && t != this) {
-            if (typeof(t._optId) != "undefined") {
+            if (typeof (t._optId) != "undefined") {
                 var r = true;
-                if (typeof(that.t[t._optId].obj.optionClick) == "function" && that.t[t._optId].obj.optionClick(t, e, that) !== true) r = false;
+                if (typeof (that.t[t._optId].obj.optionClick) == "function" && that.t[t._optId].obj.optionClick(t, e, that) !== true) r = false;
                 if (r) {
                     that._setSelected(t._optId, null, true);
                     that._confirmSelect("click");
@@ -541,7 +541,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
             var p = t;
             while (p != this && p != null) {
                 if (p == this.lastChild) {
-                    if (typeof(that.modes[that.conf.opts_type].topImageClick) == "function") {
+                    if (typeof (that.modes[that.conf.opts_type].topImageClick) == "function") {
                         var t_id = (that.conf.last_hover || that.conf.last_selected);
                         var t_item = (t_id != null ? that.t[t_id].item : null);
                         if (that.modes[that.conf.opts_type].topImageClick(t_item, that) !== true) {
@@ -767,7 +767,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
     ];
     for (var q = 0; q < this.conf.evs_nodes.length; q++) {
         for (var a in this.conf.evs_nodes[q].evs) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 this.conf.evs_nodes[q].node.addEventListener(a, this[this.conf.evs_nodes[q].evs[a]], false);
             } else {
                 this.conf.evs_nodes[q].node.attachEvent("on" + a, this[this.conf.evs_nodes[q].evs[a]]);
@@ -785,7 +785,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         // detach dom events
         for (var q = 0; q < this.conf.evs_nodes.length; q++) {
             for (var a in this.conf.evs_nodes[q].evs) {
-                if (typeof(window.addEventListener) == "function") {
+                if (typeof (window.addEventListener) == "function") {
                     this.conf.evs_nodes[q].node.removeEventListener(a, this[this.conf.evs_nodes[q].evs[a]], false);
                 } else {
                     this.conf.evs_nodes[q].node.detachEvent("on" + a, this[this.conf.evs_nodes[q].evs[a]]);
@@ -814,7 +814,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         }
         this.conf = null;
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.list.removeEventListener("scroll", this._doOnListScroll, false);
         } else {
             this.list.detachEvent("onscroll", this._doOnListScroll);
@@ -827,7 +827,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         this.modes = null;
 
         for (var a in this) {
-            if (typeof(this[a]) == "function") this[a] = null;
+            if (typeof (this[a]) == "function") this[a] = null;
         }
 
         that = null;
@@ -846,7 +846,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
     if (apiObj != null) {
         // filter
         if (apiObj.filter != null) {
-            if (typeof(apiObj.filter) == "string") {
+            if (typeof (apiObj.filter) == "string") {
                 this.enableFilteringMode(true, apiObj.filter, window.dhx4.s2b(apiObj.filter_cache), window.dhx4.s2b(apiObj.filter_sub_load));
             } else {
                 this.enableFilteringMode(true);
@@ -859,7 +859,7 @@ function dhtmlXCombo(parentId, formName, width, optionType, tabIndex) {
         if (apiObj.items || apiObj.options) this.addOption(apiObj.items || apiObj.options);
         if (apiObj.xml || apiObj.json) this.load(apiObj.xml || apiObj.json);
         // misc
-        if (typeof(apiObj.readonly) != "undefined") this.readonly(apiObj.readonly);
+        if (typeof (apiObj.readonly) != "undefined") this.readonly(apiObj.readonly);
         //
         apiObj = null;
     }
@@ -871,7 +871,7 @@ function dhtmlXComboFromSelect(selectId) {
 
     // <select mode="checkbox">
 
-    if (typeof(selectId) == "string") selectId = document.getElementById(selectId);
+    if (typeof (selectId) == "string") selectId = document.getElementById(selectId);
 
     // collect params
     var comboWidth = selectId.offsetWidth;
@@ -925,13 +925,13 @@ dhtmlXCombo.prototype.readonly = function (mode) { // enable/disable readonly mo
 };
 
 dhtmlXCombo.prototype.setPlaceholder = function (text) { // new in 4.0, limited support
-    if (typeof(text) == "undefined" || text == null) text = "";
+    if (typeof (text) == "undefined" || text == null) text = "";
     this.base.firstChild.setAttribute("placeholder", String(text));
 };
 
 dhtmlXCombo.prototype.setTemplate = function (tpl) {
     for (var a in tpl) {
-        if (typeof(this.conf.template[a]) != "undefined") {
+        if (typeof (this.conf.template[a]) != "undefined") {
             if (a == "header") {
                 this.conf.template[a] = window.dhx4.s2b(tpl[a]);
             } else {
@@ -1112,7 +1112,7 @@ dhtmlXCombo.prototype.confirmValue = function () {
 /* enable/disable */
 dhtmlXCombo.prototype.enable = function (mode) {
 
-    mode = (typeof(mode) == "undefined" ? true : window.dhx4.s2b(mode));
+    mode = (typeof (mode) == "undefined" ? true : window.dhx4.s2b(mode));
     if (this.conf.enabled == mode) return;
 
     this.conf.enabled = mode;
@@ -1131,7 +1131,7 @@ dhtmlXCombo.prototype.enable = function (mode) {
 };
 
 dhtmlXCombo.prototype.disable = function (mode) {
-    mode = (typeof(mode) == "undefined" ? true : window.dhx4.s2b(mode));
+    mode = (typeof (mode) == "undefined" ? true : window.dhx4.s2b(mode));
     this.enable(!mode);
 };
 
@@ -1141,12 +1141,12 @@ dhtmlXCombo.prototype.isEnabled = function () {
 
 /* visibility */
 dhtmlXCombo.prototype.show = function (mode) {
-    if (typeof(mode) == "undefined") mode = true; else mode = window.dhx4.s2b(mode);
+    if (typeof (mode) == "undefined") mode = true; else mode = window.dhx4.s2b(mode);
     this.base.style.display = (mode == true ? "" : "none");
 };
 
 dhtmlXCombo.prototype.hide = function (mode) {
-    if (typeof(mode) == "undefined") mode = true;
+    if (typeof (mode) == "undefined") mode = true;
     this.show(!mode);
 };
 
@@ -1157,11 +1157,11 @@ dhtmlXCombo.prototype.isVisible = function () {
 
 /* filtering */
 dhtmlXCombo.prototype.setFilterHandler = function (f) {
-    if (typeof(f) == "function") {
+    if (typeof (f) == "function") {
         this.conf.f_func = f;
         this.conf.f_mode = true;
         this.conf.f_dyn = this.conf.f_cache = this.conf.f_url = null;
-    } else if (typeof(f) == "string" && typeof(window[f]) == "function") {
+    } else if (typeof (f) == "string" && typeof (window[f]) == "function") {
         this.conf.f_func = window[f];
         this.conf.f_mode = true;
         this.conf.f_dyn = this.conf.f_cache = this.conf.f_url = null;
@@ -1194,7 +1194,7 @@ dhtmlXCombo.prototype.filter = function (handler, showList) { // new in 4.0
         var k = handler.apply(window, [this._getOption(this.list.childNodes[q]._optId, q)]);
         this.list.childNodes[q].style.display = (k === true ? "" : "none");
     }
-    if (typeof(showList) == "undefined" || showList == true) {
+    if (typeof (showList) == "undefined" || showList == true) {
         this._showList(true);
     }
 };
@@ -1214,8 +1214,8 @@ dhtmlXCombo.prototype.sort = function (mode) { // new in 4.0
             var r = (mode == "asc" ? 1 : -1);
             return (a > b ? r : -1 * r);
         });
-    } else if (typeof(mode) == "function" || typeof(window[mode]) == "function") {
-        if (typeof(window[mode]) == "function") mode = window[mode];
+    } else if (typeof (mode) == "function" || typeof (window[mode]) == "function") {
+        if (typeof (window[mode]) == "function") mode = window[mode];
         r.sort(function (a, b) {
             return mode.apply(window, [a[1], b[1]]);
         });
@@ -1226,17 +1226,17 @@ dhtmlXCombo.prototype.sort = function (mode) { // new in 4.0
 };
 
 dhtmlXCombo.prototype.enableAutocomplete = function (mode) { // autocomplete for f_mode:start, enabled by default
-    if (typeof(mode) == "undefined") mode = true; else mode = window.dhx4.s2b(mode);
+    if (typeof (mode) == "undefined") mode = true; else mode = window.dhx4.s2b(mode);
     this.conf.f_ac = mode;
 };
 dhtmlXCombo.prototype.disableAutocomplete = function (mode) {
-    if (typeof(mode) == "undefined") mode = true; else mode = window.dhx4.s2b(mode);
+    if (typeof (mode) == "undefined") mode = true; else mode = window.dhx4.s2b(mode);
     this.enableAutocomplete(!mode);
 };
 
 dhtmlXCombo.prototype.allowFreeText = function (mode, resetToEmpty) { // new in 4.0
-    this.conf.allow_free_text = (typeof(mode) == "undefined" ? true : window.dhx4.s2b(mode));
-    this.conf.free_text_empty = (typeof(resetToEmpty) == "undefined" ? false : window.dhx4.s2b(resetToEmpty)); // 4.5.1
+    this.conf.allow_free_text = (typeof (mode) == "undefined" ? true : window.dhx4.s2b(mode));
+    this.conf.free_text_empty = (typeof (resetToEmpty) == "undefined" ? false : window.dhx4.s2b(resetToEmpty)); // 4.5.1
 };
 
 dhtmlXCombo.prototype._checkForMatch = function (forceClear) {
@@ -1422,7 +1422,7 @@ dhtmlXCombo.prototype._scrollToItem = function (id) {
         // on bottom
         this.list.scrollTop = y2 - this.list.clientHeight + (this.hdr != null && this.conf.template.header == true ? -this.conf.sp[this.conf.skin].scr_ofs : 0);
     }
-
+	
 };
 
 /* in-list selection/highlighting */
@@ -1459,7 +1459,7 @@ dhtmlXCombo.prototype._setSelected = function (id, scrollToItem, updateImg, mous
         if (scrollToItem) this._scrollToItem(id);
 
     }
-
+	
 };
 
 // auto-subload
@@ -1501,18 +1501,18 @@ dhtmlXCombo.prototype.addOption = function (value, text, css, img, selected) {
     // selected added in 4.0
 
     /*
-
-     single option, 4 params
-     z.addOption(value, text, css, img_src);
-     value, text, css (css string attached to the option, optional), img_src (path to the option icon image, just for "image" combo type)
-
-     several options, array of array (in this case you can't use 4th parameter img_src - improve?)
-     z.addOption([["a","option A", "color:red;"],[],[],...]);
-
-     several options, as an array of objects (you can use 4 parameters)
-     z.addOption([{value: "a", text: "option A", img_src: "../images/blue.gif", css:"color:red;"},{},{}...]);
-
-     */
+    
+    single option, 4 params
+    z.addOption(value, text, css, img_src);
+    value, text, css (css string attached to the option, optional), img_src (path to the option icon image, just for "image" combo type)
+    
+    several options, array of array (in this case you can't use 4th parameter img_src - improve?)
+    z.addOption([["a","option A", "color:red;"],[],[],...]);
+    
+    several options, as an array of objects (you can use 4 parameters)
+    z.addOption([{value: "a", text: "option A", img_src: "../images/blue.gif", css:"color:red;"},{},{}...]);
+    
+    */
 
     var toSelect = null;
 
@@ -1524,7 +1524,7 @@ dhtmlXCombo.prototype.addOption = function (value, text, css, img, selected) {
     } else {
         // array with opts
         for (var q = 0; q < value.length; q++) {
-            if (typeof(value[q]) == "undefined") continue;
+            if (typeof (value[q]) == "undefined") continue;
             if (value[q] instanceof Array) {
                 id = this._renderOption({value: value[q][0], text: value[q][1], css: value[q][2], img: value[q][3]});
                 if (toSelect == null && window.dhx4.s2b(value[q][4]) == true) toSelect = id;
@@ -1564,7 +1564,7 @@ dhtmlXCombo.prototype.deleteOption = function (value) { // deletes option by val
 
 dhtmlXCombo.prototype.clearAll = function (hideList) { // remove all options
 
-    hideList = (typeof(hideList) == "undefined" ? true : window.dhx4.s2b(hideList));
+    hideList = (typeof (hideList) == "undefined" ? true : window.dhx4.s2b(hideList));
     for (var a in this.t) this._removeOption(a);
 
     // props
@@ -1586,11 +1586,11 @@ dhtmlXCombo.prototype._renderOption = function (data) {
     item._tpl = this.conf.template;
 
     // wrapper for img_src/img_src_dis
-    if (typeof(data.img) == "undefined" && typeof(data.img_src) != "undefined") {
+    if (typeof (data.img) == "undefined" && typeof (data.img_src) != "undefined") {
         data.img = data.img_src;
         delete data.img_src;
     }
-    if (typeof(data.img_dis) == "undefined" && typeof(data.img_src_dis) != "undefined") {
+    if (typeof (data.img_dis) == "undefined" && typeof (data.img_src_dis) != "undefined") {
         data.img_dis = data.img_src_dis;
         delete data.img_src_dis;
     }
@@ -1643,7 +1643,7 @@ dhtmlXCombo.prototype._removeOption = function (id) {
 dhtmlXCombo.prototype._confirmSelect = function (mode, hideList) {
 
     var wasChanged = false;
-    if (typeof(hideList) == "undefined") hideList = true;
+    if (typeof (hideList) == "undefined") hideList = true;
 
     if (this.conf.f_server_tm) window.clearTimeout(this.conf.f_server_tm);
 
@@ -1708,7 +1708,7 @@ dhtmlXCombo.prototype._cancelSelect = function (freeTextReset) {
     if (this.conf.f_mode != false) {
         this._filterOpts(true);
     }
-
+	
 };
 
 
@@ -1718,7 +1718,7 @@ dhtmlXCombo.prototype._getOption = function (id, index) {
     if (!this.t[id]) return null;
 
     // autodetect index if any
-    if (typeof(index) == "undefined") index = -1;
+    if (typeof (index) == "undefined") index = -1;
     if (index < 0) {
         for (var q = 0; q < this.list.childNodes.length; q++) {
             if (index < 0 && this.list.childNodes[q]._optId == id) index = q;
@@ -1737,10 +1737,10 @@ dhtmlXCombo.prototype._getOption = function (id, index) {
     };
 
     // extra data if any, for example "checked" for checkbox
-    if (typeof(this.t[id].obj.getExtraData) == "function") {
+    if (typeof (this.t[id].obj.getExtraData) == "function") {
         var k = this.t[id].obj.getExtraData(this.t[id].item);
         for (var a in k) {
-            if (typeof(t[a]) == "undefined") t[a] = k[a];
+            if (typeof (t[a]) == "undefined") t[a] = k[a];
         }
     }
 
@@ -1866,7 +1866,7 @@ dhtmlXCombo.prototype._mcAttachHeader = function (text) {
 
         this.list.parentNode.insertBefore(this.hdr, this.list);
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.hdr.addEventListener("mousedown", this._doOnListMouseDown, false);
         } else {
             this.hdr.attachEvent("onmousedown", this._doOnListMouseDown);
@@ -1888,7 +1888,7 @@ dhtmlXCombo.prototype._mcDetachHeader = function () {
 
     if (this.hdr != null) {
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.hdr.removeEventListener("mousedown", this._doOnListMouseDown, false);
         } else {
             this.hdr.detachEvent("onmousedown", this._doOnListMouseDown);
@@ -1900,7 +1900,7 @@ dhtmlXCombo.prototype._mcDetachHeader = function () {
 
     this.conf.col_w = null;
     this.conf.item_h = null;
-
+	
 };
 
 
@@ -1914,7 +1914,7 @@ dhtmlXCombo.prototype.doWithItem = function (index, method, param1, param2) { //
     // get option inner id
     var id = (index >= 0 && index < this.list.childNodes.length ? this.list.childNodes[index]._optId : null);
     if (id == null) return null; // opt no found
-    if (typeof(this.t[id].obj[method]) != "function") return null; // function not found
+    if (typeof (this.t[id].obj[method]) != "function") return null; // function not found
 
     // generate params
     var params = [this.t[id].item];
@@ -1922,12 +1922,12 @@ dhtmlXCombo.prototype.doWithItem = function (index, method, param1, param2) { //
 
     // call method
     return this.t[id].obj[method].apply(this.t[id].obj, params);
-
+	
 };
 
 function dhtmlXComboExtend(to, from) {
     for (var a in dhtmlXCombo.prototype.modes[from]) {
-        if (typeof(dhtmlXCombo.prototype.modes[to][a]) == "undefined") {
+        if (typeof (dhtmlXCombo.prototype.modes[to][a]) == "undefined") {
             dhtmlXCombo.prototype.modes[to][a] = dhtmlXCombo.prototype.modes[from][a];
         }
     }
@@ -1970,13 +1970,13 @@ dhtmlXCombo.prototype.modes.option = {
 
     setText: function (item, text, skip) {
         item._conf.text = text;
-        var t = (typeof(text) == "object" ? window.dhx4.template(item._tpl.option, this.replaceHtml(item._conf.text, skip), true) : window.dhx4.trim(this.replaceHtml(item._conf.text, skip) || ""));
+        var t = (typeof (text) == "object" ? window.dhx4.template(item._tpl.option, this.replaceHtml(item._conf.text, skip), true) : window.dhx4.trim(this.replaceHtml(item._conf.text, skip) || ""));
         item.lastChild.innerHTML = (t.length == 0 ? "&nbsp;" : t);
     },
 
     getText: function (item, asStringInput, asStringOption) {
-        if (window.dhx4.s2b(asStringInput) && typeof(item._conf.text) == "object") return window.dhx4.template(item._tpl.input, item._conf.text, true);
-        if (window.dhx4.s2b(asStringOption) && typeof(item._conf.text) == "object") return window.dhx4.template(item._tpl.option, item._conf.text, true);
+        if (window.dhx4.s2b(asStringInput) && typeof (item._conf.text) == "object") return window.dhx4.template(item._tpl.input, item._conf.text, true);
+        if (window.dhx4.s2b(asStringOption) && typeof (item._conf.text) == "object") return window.dhx4.template(item._tpl.option, item._conf.text, true);
         return item._conf.text;
     },
 
@@ -2004,8 +2004,8 @@ dhtmlXCombo.prototype.modes.option = {
 
     replaceHtml: function (text, skip) {
         if (this.html == true) return text;
-        if (typeof(skip) == "undefined" || skip == null) skip = {};
-        if (typeof(text) == "object") {
+        if (typeof (skip) == "undefined" || skip == null) skip = {};
+        if (typeof (text) == "object") {
             var t = {};
             for (var a in text) {
                 t[a] = (skip[a] == true ? text[a] : this.replaceHtml(text[a]));
@@ -2027,7 +2027,7 @@ dhtmlXCombo.prototype.modes.option = {
         }
         return t;
     }
-
+	
 };
 
 /****************************************************************************************************************************************************************************************************************/
@@ -2126,7 +2126,7 @@ dhtmlXCombo.prototype.modes.checkbox = {
         // for checkbox - perform default action
         return true;
     }
-
+	
 };
 
 dhtmlXComboExtend("checkbox", "option");
@@ -2223,7 +2223,7 @@ dhtmlXCombo.prototype.modes.image = {
         if (item != null && item._conf[a] != null) return "<div class='" + this.image_css + "' style='background-image:url(" + item._conf[a] + ");'></div>";
         return "";
     }
-
+	
 };
 
 dhtmlXComboExtend("image", "option");

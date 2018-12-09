@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>onClick from init</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#logs_here {
@@ -25,34 +25,34 @@
             items: [
                 {
                     type: 'block', text: 'Buttons', mode: 'cols', list: [
-                    {
-                        id: "new", type: 'button', text: 'New', isbig: true, img: "48/new.gif",
-                        onclick: function (id) {
-                            setNoteToLog({
-                                eventNme: "onClick",
-                                arg: [id]
-                            });
+                        {
+                            id: "new", type: 'button', text: 'New', isbig: true, img: "48/new.gif",
+                            onclick: function (id) {
+                                setNoteToLog({
+                                    eventNme: "onClick",
+                                    arg: [id]
+                                });
+                            }
+                        },
+                        {
+                            id: "copy", type: 'button', text: 'copy', img: "18/copy.gif",
+                            onclick: function (id) {
+                                setNoteToLog({
+                                    eventNme: "onClick",
+                                    arg: [id]
+                                });
+                            }
+                        },
+                        {
+                            id: "cut", type: 'buttonTwoState', text: 'cut', img: "18/cut.gif",
+                            onclick: function (id, state) {
+                                setNoteToLog({
+                                    eventNme: "onClick",
+                                    arg: [id, state]
+                                });
+                            }
                         }
-                    },
-                    {
-                        id: "copy", type: 'button', text: 'copy', img: "18/copy.gif",
-                        onclick: function (id) {
-                            setNoteToLog({
-                                eventNme: "onClick",
-                                arg: [id]
-                            });
-                        }
-                    },
-                    {
-                        id: "cut", type: 'buttonTwoState', text: 'cut', img: "18/cut.gif",
-                        onclick: function (id, state) {
-                            setNoteToLog({
-                                eventNme: "onClick",
-                                arg: [id, state]
-                            });
-                        }
-                    }
-                ]
+                    ]
                 }
             ]
         };

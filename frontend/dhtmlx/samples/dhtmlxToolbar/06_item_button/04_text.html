@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Button text</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myToolbar;
         var sel;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -19,16 +20,20 @@
                 onload: updateList
             });
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function setText(text) {
             myToolbar.setItemText(getId(), document.getElementById("txt").value);
         }
+
         function getText() {
             alert(myToolbar.getItemText(getId()));
         }
+
         function updateList() {
             sel.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -43,8 +48,8 @@
 <div id="toolbarObj"></div>
 <div style="margin-top: 20px;">
     <select id="sel"></select>
-    <input type="button" value="Get Text" onclick="getText();">
-    <input type="button" value="Set Text" onclick="setText();">
+    <input onclick="getText();" type="button" value="Get Text">
+    <input onclick="setText();" type="button" value="Set Text">
     <input id="txt" type="text" value="New Text">
 </div>
 </body>

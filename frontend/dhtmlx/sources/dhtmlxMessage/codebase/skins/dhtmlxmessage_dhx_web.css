@@ -18,7 +18,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     z-index: 1000;
     padding: 0px 0px;
 }
-
 .dhtmlx-info {
     color: #444;
     min-width: 120px;
@@ -34,7 +33,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-transition: all .5s ease;
     transition: all .5s ease;
 }
-
 .dhtmlx-info div {
     padding: 9px 9px 9px 15px;
     margin: 1px;
@@ -44,7 +42,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-transition: all .5s ease;
     transition: all .5s ease;
 }
-
 .dhtmlx-info.hidden {
     box-shadow: none;
     border-top: none;
@@ -53,7 +50,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin-bottom: 0px;
     overflow: hidden;
 }
-
 .dhtmlx-info.hidden div {
     height: 0px;
     border-top: none;
@@ -62,18 +58,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding-top: 0px;
     overflow: hidden;
 }
-
 .dhtmlx-error {
     border: 1px solid #bcbcbc;
     color: #fff;
 }
-
 .dhtmlx-error div {
     padding: 9px 9px 9px 18px;
     margin: 1px;
     background-color: #f17373;
 }
-
 .dhtmlx_modal_box {
     overflow: hidden;
     display: inline-block;
@@ -88,7 +81,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     box-shadow: 0px 0px 5px #AAAAAA;
     border: 1px solid white;
 }
-
 .dhtmlx_popup_title {
     padding: 6px 0;
     font-size: 14px;
@@ -97,7 +89,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     line-height: 16px;
     font-family: Tahoma;
 }
-
 .dhtmlx-info,
 .dhtmlx_popup_title,
 .dhtmlx_popup_button {
@@ -109,7 +100,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -moz-user-select: -moz-none;
     cursor: pointer;
 }
-
 .dhtmlx_popup_text {
     font-size: 13px;
     font-family: Tahoma;
@@ -118,13 +108,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 20px 10px 10px 10px !important;
     overflow: hidden;
 }
-
 .dhtmlx_popup_controls {
     font-family: Tahoma;
     font-weight: bold;
     padding: 10px 10px 17px 10px !important;
 }
-
 .dhtmlx_popup_button {
     font-size: 14px;
     font-family: Tahoma;
@@ -135,11 +123,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     display: inline-block;
     margin: 0 5px;
 }
-
 .dhtmlx_popup_button div {
     line-height: 24px;
 }
-
 div.dhx_modal_cover {
     background-color: #000;
     cursor: default;
@@ -154,43 +140,36 @@ div.dhx_modal_cover {
     border: none;
     zoom: 1;
 }
-
 .dhtmlx_popup_button {
     color: #222;
     border: 1px solid #cecece;
     box-shadow: 0px 0px 1px #111;
 }
-
 .dhtmlx_popup_button:active,
 .dhtmlx_popup_button:focus {
     background: #eee;
 }
-
 .dhtmlx_popup_button:first-child {
     background: #3da0e3;
     color: #ffffff;
     border: 1px solid #3da0e3;
     box-shadow: none;
 }
-
 .dhtmlx-alert-error .dhtmlx_popup_title,
 .dhtmlx-confirm-error .dhtmlx_popup_title {
     color: #ffffff;
     background: #f17373;
 }
-
 .dhtmlx-alert-error .dhtmlx_popup_button:first-child,
 .dhtmlx-confirm-error .dhtmlx_popup_button:first-child {
     background: #f17373;
     border: 1px solid #f17373;
 }
-
 .dhtmlx-alert-warning .dhtmlx_popup_title,
 .dhtmlx-confirm-warning .dhtmlx_popup_title {
     color: #ffffff;
     background: #E6951A;
 }
-
 .dhtmlx-alert .dhtmlx_popup_title,
 .dhtmlx-confirm .dhtmlx_popup_title {
     color: #ffffff;

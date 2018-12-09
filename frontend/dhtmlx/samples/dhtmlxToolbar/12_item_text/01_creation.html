@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Text creation</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myToolbar;
         var sel;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -19,6 +20,7 @@
                 onload: updateList
             });
         }
+
         function add() {
             var id = String(new Date().getTime());
             var pos = Number(document.getElementById("txt1").value);
@@ -26,6 +28,7 @@
             myToolbar.addText(id, pos, text);
             updateList();
         }
+
         function removeItem() {
             if (sel.options.length == 0) {
                 return;
@@ -33,6 +36,7 @@
             myToolbar.removeItem(sel.options[sel.selectedIndex].value);
             updateList();
         }
+
         function updateList() {
             sel.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -46,11 +50,11 @@
 <body onload="doOnLoad()">
 <div id="toolbarObj"></div>
 <div style="margin-top: 20px;">
-    <table cellspacing="0" cellpadding="2" border="0">
+    <table border="0" cellpadding="2" cellspacing="0">
         <tr>
             <td style="padding-right: 5px;">Position</td>
             <td>
-                <input id="txt1" type="text" value="1" style="width: 30px;">
+                <input id="txt1" style="width: 30px;" type="text" value="1">
             </td>
         </tr>
         <tr>
@@ -62,15 +66,15 @@
         <tr>
             <td style="padding-right: 5px;">Add?</td>
             <td>
-                <input type="button" value="Add" onclick="add();">
+                <input onclick="add();" type="button" value="Add">
             </td>
         </tr>
     </table>
-    <table cellspacing="0" cellpadding="2" border="0" style="margin-top: 10px;">
+    <table border="0" cellpadding="2" cellspacing="0" style="margin-top: 10px;">
         <tr>
             <td style="padding-right: 5px;"><select id="sel"></select></td>
             <td>
-                <input type="button" value="Remove" onclick="removeItem();">
+                <input onclick="removeItem();" type="button" value="Remove">
             </td>
         </tr>
     </table>

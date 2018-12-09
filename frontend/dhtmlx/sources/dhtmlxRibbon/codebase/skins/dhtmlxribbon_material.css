@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         transform: rotate(360deg);
     }
 }
-
 @keyframes dhx_loader_dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -31,31 +30,25 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         stroke-dashoffset: -124px;
     }
 }
-
 .dhtmlxribbon_material {
     overflow: hidden;
     width: 100%;
 }
-
 .dhtmlxribbon_material.dhxrb_without_tabbar {
     background-color: #fafafa;
     border: 1px solid #dfdfdf;
 }
-
 .dhtmlxribbon_material .dhxrb_background_area {
     height: 126px;
     background-color: #fafafa;
     margin: 1px;
 }
-
 .dhtmlxribbon_material .dhxrb_with_tabbar {
     height: 171px;
 }
-
 .dhtmlxribbon_material div.dhx_cell_tabbar {
     background-color: #fafafa;
 }
-
 .dhtmlxribbon_material .dhxrb_g_area {
     height: 124px;
     float: left;
@@ -63,7 +56,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     position: relative;
 }
-
 .dhtmlxribbon_material .dhxrb_block_base {
     margin: 3px 0px 3px 3px;
     float: left;
@@ -73,7 +65,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     position: relative;
 }
-
 .dhtmlxribbon_material .dhxrb_block_base .dhxrb_block_items {
     height: 95px;
     float: left;
@@ -87,7 +78,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     *height: auto;
     *line-height: 1em;
 }
-
 .dhtmlxribbon_material .dhxrb_block_base .dhxrb_block_label {
     text-align: center;
     clear: left;
@@ -99,7 +89,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_big_button {
     margin: 1px 3px;
     float: left;
@@ -112,13 +101,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_big_button .dhxrb_image {
     width: 48px;
     height: 48px;
     border: none;
 }
-
 .dhtmlxribbon_material .dhxrb_big_button i {
     position: relative;
     display: block;
@@ -132,7 +119,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: default;
     text-align: center;
 }
-
 .dhtmlxribbon_material .dhxrb_big_button .dhxrb_label_button {
     margin: 0px auto;
     cursor: default;
@@ -141,22 +127,18 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_big_button .dhxrb_invisible {
     visibility: hidden;
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_block {
     float: left;
     margin: 0px 3px;
     overflow: hidden;
     position: relative;
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_block .dhxrb_invisible {
     display: none;
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_button {
     height: 25px;
     margin: 1px 0px;
@@ -169,7 +151,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_in_row {
     height: 22px;
     margin: 1px 0px;
@@ -182,26 +163,21 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_group .dhxrb_buttoncombo_cont {
     height: 20px;
 }
-
 .dhtmlxribbon_material .dhxrb_buttoncombo_cont {
     height: 24px;
     padding: 0px 2px !important;
 }
-
 .dhtmlxribbon_material .dhxrb_buttoncombo {
     float: left;
 }
-
 .dhtmlxribbon_material .dhxrb_in_row .dhxrb_slider,
 .dhtmlxribbon_material .dhxrb_3rows_button .dhxrb_slider {
     float: left;
     margin-right: 5px;
 }
-
 .dhtmlxribbon_material .dhxrb_in_row center,
 .dhtmlxribbon_material .dhxrb_in_group center,
 .dhtmlxribbon_material .dhxrb_3rows_button center {
@@ -209,25 +185,21 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin: 0px;
     padding: 0px;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group .dhxrb_slider {
     float: left;
     margin-right: 5px;
 }
-
 .dhtmlxribbon_material .dhxrb_big_button .dhxrb_slider {
     width: 16px;
     margin: 2px 0px;
     height: 50px;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group {
     height: 23px;
     float: left;
     padding: 1px 4px;
     border: 1px solid #ebebeb;
 }
-
 .dhtmlxribbon_material .dhxrb_input {
     float: left;
     border: 1px solid #dfdfdf;
@@ -239,16 +211,13 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_input:disabled {
     color: #a6a6a6;
 }
-
 .dhtmlxribbon_material div.dhxcombo_material {
     height: 24px;
     line-height: 24px;
 }
-
 .dhtmlxribbon_material div.dhxcombo_material input.dhxcombo_input {
     float: left;
     height: 24px;
@@ -259,31 +228,25 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group .dhxrb_input {
     height: 16px;
     padding: 1px 1px;
     line-height: 16px;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group div.dhxcombo_material {
     height: 20px;
     line-height: 20px;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group div.dhxcombo_material input.dhxcombo_input {
     height: 20px;
     line-height: 20px;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group div.dhxcombo_material div.dhxcombo_select_button {
     top: 0px;
 }
-
 .dhtmlxribbon_material div.dhxcombo_material div.dhxcombo_select_button {
     top: 2px;
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_button .dhxrb_image,
 .dhtmlxribbon_material .dhxrb_in_row .dhxrb_image,
 .dhtmlxribbon_material .dhxrb_in_group .dhxrb_image {
@@ -292,7 +255,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 18px;
     float: left;
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_button i,
 .dhtmlxribbon_material .dhxrb_in_row i,
 .dhtmlxribbon_material .dhxrb_in_group i {
@@ -307,11 +269,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: default;
     text-align: center;
 }
-
 .dhtmlxribbon_material .dhxrb_item_disable i {
     color: #a6a6a6;
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_button .dhxrb_label_button,
 .dhtmlxribbon_material .dhxrb_in_row .dhxrb_label_button,
 .dhtmlxribbon_material .dhxrb_in_group .dhxrb_label_button {
@@ -321,18 +281,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_button .dhxrb_label_button,
 .dhtmlxribbon_material .dhxrb_in_row .dhxrb_label_button {
     margin: 1px 0px 1px 6px;
     line-height: 22px;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group .dhxrb_label_button {
     margin: 1px;
     line-height: 22px;
 }
-
 .dhtmlxribbon_material .dhxrb_label_checkbox {
     float: left;
     margin: 0px 4px;
@@ -342,16 +299,13 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_group .dhxrb_label_checkbox {
     line-height: 19px;
 }
-
 .dhtmlxribbon_material .dhxrb_disable_text_style,
 .dhtmlxribbon_material .dhxrb_item_disable .dhxrb_label_checkbox {
     color: #a6a6a6 !important;
 }
-
 .dhtmlxribbon_material .dhxrb_highlight0 {
     background-color: #ebebeb;
     border-color: #ebebeb;
@@ -362,7 +316,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxribbon_material .dhxrb_highlight1 {
     background-color: #dcdcdc;
     border-color: #d2d2d2;
@@ -374,16 +327,13 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxribbon_material .dhxrb_item_hide {
     display: none !important;
 }
-
 .dhtmlxribbon_material .dhxrb_block_rows {
     float: left;
     margin: 0px 3px;
 }
-
 .dhtmlxribbon_material .dhxrb_block_row {
     float: left;
     clear: left;
@@ -391,18 +341,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     position: relative;
 }
-
 .dhtmlxribbon_material .dhxrb_arrow {
     padding: 0px 5px;
     margin-left: 2px;
     background: url("../imgs/dhxribbon_material/dhxribbon_arrow.gif") no-repeat 50%;
 }
-
 .dhtmlxribbon_material .dhxrb_item_disable .dhxrb_arrow {
     opacity: 0.4;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=40);
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_block .dhxrb_group {
     border: 1px solid #dcdcdc;
     background-color: #ebebeb;
@@ -413,7 +360,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     position: relative;
 }
-
 .dhtmlxribbon_material .dhxrb_block_row .dhxrb_group {
     border: 1px solid #dfdfdf;
     background-color: #fafafa;
@@ -423,11 +369,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     position: relative;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group .dhxrb_label_hide {
     display: none;
 }
-
 .dhtmlxribbon_material .dhxrb_separator_groupp {
     height: 27px;
     width: 0;
@@ -435,7 +379,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     float: left;
 }
-
 .dhtmlxribbon_material .dhxrb_checkbox {
     border: 1px solid #dfdfdf;
     background-color: white;
@@ -445,11 +388,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin-top: 4px;
     overflow: hidden;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group .dhxrb_checkbox {
     margin-top: 3px;
 }
-
 .dhtmlxribbon_material .dhxrb_checked .dhxrb_checkbox {
     background-image: url("../imgs/dhxribbon_material/dhxribbon_checked.gif");
     background-repeat: no-repeat;
@@ -458,31 +399,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
 .dhtmlxribbon_material .dhxrb_checked.dhxrb_item_disable > .dhxrb_checkbox {
     background-image: url("../imgs/dhxribbon_material/dhxribbon_checked_dis.gif");
 }
-
 .dhtmlxribbon_material .dhxrb_item_disable .dhxrb_checkbox {
     background-color: #fafafa;
 }
-
 .dhtmlxribbon_material .dhxrb_item_text {
     font-size: 14px;
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_in_group .dhxrb_item_text {
     height: 20px;
     line-height: 19px;
     *float: left;
     *clear: left;
 }
-
 .dhtmlxribbon_material .dhxrb_3rows_button .dhxrb_item_text,
 .dhtmlxribbon_material .dhxrb_in_row .dhxrb_item_text {
     font-size: 14px;
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_material .dhxrb_big_button .dhxrb_item_text {
     line-height: 82px;
     height: 82px;
@@ -492,7 +428,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhtmlxribbon_skin_detect {
     position: absolute;
     left: 0px;

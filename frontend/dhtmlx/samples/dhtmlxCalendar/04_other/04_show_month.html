@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Show month</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         #calendar,
@@ -25,6 +25,7 @@
     </style>
     <script>
         var myCalendar, myCalendar2;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("cal_1");
             myCalendar2 = new dhtmlXCalendarObject("cal_2");
@@ -34,14 +35,14 @@
 </head>
 <body onload="doOnLoad();">
 <div style="position:relative;height:350px;">
-    <table border="0" cellspacing="10" cellpadding="1" class="main_tbl_calendar">
+    <table border="0" cellpadding="1" cellspacing="10" class="main_tbl_calendar">
         <tr>
             <td>Show today month (default)</td>
             <td>Show Jan 2011</td>
         </tr>
         <tr>
-            <td><input type="text" id="cal_1"></td>
-            <td><input type="text" id="cal_2"></td>
+            <td><input id="cal_1" type="text"></td>
+            <td><input id="cal_2" type="text"></td>
         </tr>
     </table>
 </div>

@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Checkboxes mode</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCombo, myCombo2;
+
         function doOnLoad() {
             myCombo = new dhtmlXCombo("combo_zone", "combo", 230, "checkbox");
             myCombo.load("../common/data2.json");
@@ -24,15 +25,15 @@
 <div id="combo_zone"></div>
 <br><br>
 <h3>Init from select</h3>
-<select id="mySelect" style="width:230px;" mode="checkbox">
+<select id="mySelect" mode="checkbox" style="width:230px;">
     <option value="the_adventures_of_tom_sawyer">The Adventures of Tom Sawyer</option>
     <option value="the_dead_zone">The Dead Zone</option>
     <option value="the_first_men_in_the_moon">The First Men in the Moon</option>
     <option value="the_girl_who_loved_tom_gordon">The Girl Who Loved Tom Gordon</option>
     <option value="the_green_mile">The Green Mile</option>
-    <option value="the_invisible_man" selected="1">The Invisible Man</option>
-    <option value="the_island_of_doctor_moreau" checked="1">The Island of Doctor Moreau</option>
-    <option value="the_prince_and_the_pauper" checked="1">The Prince and the Pauper</option>
+    <option selected="1" value="the_invisible_man">The Invisible Man</option>
+    <option checked="1" value="the_island_of_doctor_moreau">The Island of Doctor Moreau</option>
+    <option checked="1" value="the_prince_and_the_pauper">The Prince and the Pauper</option>
     <option value="the_running_man">The Running Man</option>
     <option value="the_talisman">The Talisman</option>
     <option value="the_time_machine">The Time Machine</option>

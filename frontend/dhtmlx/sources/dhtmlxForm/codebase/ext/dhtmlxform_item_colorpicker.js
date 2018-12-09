@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXForm.prototype.items.colorpicker = {
 
@@ -33,11 +33,11 @@ dhtmlXForm.prototype.items.colorpicker = {
         this.colorpicker[item._idd]._nodes[0].valueColor = null; // disable input's bg change
         this.colorpicker[item._idd].base.className += " dhtmlxcp_in_form";
 
-        if (typeof(data.customColors) != "undefined") {
+        if (typeof (data.customColors) != "undefined") {
             this.colorpicker[item._idd].setCustomColors(data.customColors);
         }
 
-        if (typeof(data.cpPosition) == "string") {
+        if (typeof (data.cpPosition) == "string") {
             this.colorpicker[item._idd].setPosition(data.cpPosition);
         }
 
@@ -96,7 +96,7 @@ dhtmlXForm.prototype.items.colorpicker = {
     setSkin: function (item, skin) {
         this.colorpicker[item._idd].setSkin(skin);
     }
-
+	
 };
 
 

@@ -2,19 +2,21 @@
 <html>
 <head>
     <title>Dynamical icon/text/style changing</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
-    <link rel="stylesheet" type="text/css" href="../common/demo_style.css"/>
+    <link href="../common/demo_style.css" rel="stylesheet" type="text/css"/>
     <script>
         var myTree;
+
         function doOnLoad() {
             myTree = new dhtmlXTreeObject("treeboxbox_tree", "100%", "100%", 0);
             myTree.setImagePath("../../../skins/web/imgs/dhxtree_web/");
             myTree.load("../common/tree.xml");
         }
+
         function setColor(color1, color2) {
             myTree.setItemColor(myTree.getSelectedItemId(), color1, color2);
         }
@@ -29,63 +31,63 @@
 <table>
     <tr>
         <td valign="top">
-            <div id="treeboxbox_tree" class="tree_demo_samples"></div>
+            <div class="tree_demo_samples" id="treeboxbox_tree"></div>
         </td>
         <td rowspan="2" style="padding-left:25px" valign="top">
             <a href="javascript:void(0);"
                onClick="var d=new Date(); myTree.setItemText(myTree.getSelectedItemId(),document.getElementById('ed1').value);">Set
                 new item label</a>&nbsp;
-            <input type="text" value="New label" id="ed1"><br><br>
+            <input id="ed1" type="text" value="New label"><br><br>
             To change item's color - click on one of next colors:
             <table>
                 <tr>
                     <td>
-                        <div style="cursor:pointer; width:20px; height:20px; background-color:#ff0000;"
-                             onClick="setColor('#ff0000','#ff0000')">&nbsp;
+                        <div onClick="setColor('#ff0000','#ff0000')"
+                             style="cursor:pointer; width:20px; height:20px; background-color:#ff0000;">&nbsp;
                         </div>
                     </td>
                     <td>
-                        <div style="cursor:pointer;width:20px; height:20px; background-color:#ffa500;"
-                             onClick="setColor('#ffa500','#ffa500')">&nbsp;
+                        <div onClick="setColor('#ffa500','#ffa500')"
+                             style="cursor:pointer;width:20px; height:20px; background-color:#ffa500;">&nbsp;
                         </div>
                     </td>
                     <td>
-                        <div style="cursor:pointer;width:20px; height:20px; background-color:#ffff00;"
-                             onClick="setColor('#ffff00','#ffff00')">&nbsp;
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="cursor:pointer;width:20px; height:20px; background-color:#008000;"
-                             onClick="setColor('#008000','#adff2f')">&nbsp;
-                        </div>
-                    </td>
-                    <td>
-                        <div style="cursor:pointer; width:20px; height:20px; background-color:#00ff7f;"
-                             onClick="setColor('#00ff7f','#adff2f')">&nbsp;
-                        </div>
-                    </td>
-                    <td>
-                        <div style="cursor:pointer; width:20px; height:20px; background-color:#adff2f;"
-                             onClick="setColor('#adff2f')">&nbsp;
+                        <div onClick="setColor('#ffff00','#ffff00')"
+                             style="cursor:pointer;width:20px; height:20px; background-color:#ffff00;">&nbsp;
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div style="cursor:pointer; width:20px; height:20px; background-color:#0000ff;"
-                             onClick="setColor('#0000ff','#87ceeb')">&nbsp;
+                        <div onClick="setColor('#008000','#adff2f')"
+                             style="cursor:pointer;width:20px; height:20px; background-color:#008000;">&nbsp;
                         </div>
                     </td>
                     <td>
-                        <div style="cursor:pointer; width:20px; height:20px; background-color:#9932cc;"
-                             onClick="setColor('#9932cc','#9932cc')">&nbsp;
+                        <div onClick="setColor('#00ff7f','#adff2f')"
+                             style="cursor:pointer; width:20px; height:20px; background-color:#00ff7f;">&nbsp;
                         </div>
                     </td>
                     <td>
-                        <div style="cursor:pointer; width:20px; height:20px; background-color:#87ceeb;"
-                             onClick="setColor('#87ceeb','#87ceeb')">&nbsp;
+                        <div onClick="setColor('#adff2f')"
+                             style="cursor:pointer; width:20px; height:20px; background-color:#adff2f;">&nbsp;
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div onClick="setColor('#0000ff','#87ceeb')"
+                             style="cursor:pointer; width:20px; height:20px; background-color:#0000ff;">&nbsp;
+                        </div>
+                    </td>
+                    <td>
+                        <div onClick="setColor('#9932cc','#9932cc')"
+                             style="cursor:pointer; width:20px; height:20px; background-color:#9932cc;">&nbsp;
+                        </div>
+                    </td>
+                    <td>
+                        <div onClick="setColor('#87ceeb','#87ceeb')"
+                             style="cursor:pointer; width:20px; height:20px; background-color:#87ceeb;">&nbsp;
                         </div>
                     </td>
                 </tr>

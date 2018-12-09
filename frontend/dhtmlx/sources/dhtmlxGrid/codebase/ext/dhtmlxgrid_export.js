@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXGridObject.prototype.toPDF = function (url, mode, header, footer, rows, target) {
     var save_sel = {
@@ -30,7 +30,7 @@ dhtmlXGridObject.prototype.toPDF = function (url, mode, header, footer, rows, ta
     var full_color = mode == "full_color";
     var grid = this;
     grid._asCDATA = true;
-    if (typeof(target) === 'undefined')
+    if (typeof (target) === 'undefined')
         this.target = " target=\"_blank\"";
     else
         this.target = target;
@@ -41,6 +41,7 @@ dhtmlXGridObject.prototype.toPDF = function (url, mode, header, footer, rows, ta
     eXcell_ra.prototype.getContent = function () {
         return this.getValue();
     };
+
     function xml_top(profile) {
         var spans = [];
         for (var i = 1; i < grid.hdr.rows.length; i++) {
@@ -65,18 +66,18 @@ dhtmlXGridObject.prototype.toPDF = function (url, mode, header, footer, rows, ta
             var row = grid.hdr.rows[i];
             var cxml = "";
             for (var j = 0; j < grid._cCount; j++) {
-                if ((grid._srClmn && !grid._srClmn[j]) || (grid._hrrar[j] && ( !grid._fake || j >= grid._fake.hdrLabels.length))) {
+                if ((grid._srClmn && !grid._srClmn[j]) || (grid._hrrar[j] && (!grid._fake || j >= grid._fake.hdrLabels.length))) {
                     empty_cols++;
                     continue;
                 }
                 var s = spans[i][j];
-                var rspan = (( s[0] && s[0] > 1 ) ? ' colspan="' + s[0] + '" ' : "");
+                var rspan = ((s[0] && s[0] > 1) ? ' colspan="' + s[0] + '" ' : "");
                 if (s[1] && s[1] > 1) {
                     rspan += ' rowspan="' + s[1] + '" ';
                     empty_cols = -1;
                 }
-
-
+                        
+                
                 var val = "";
                 //split mode
                 var frow = row;
@@ -103,7 +104,6 @@ dhtmlXGridObject.prototype.toPDF = function (url, mode, header, footer, rows, ta
         xml += xml_footer();
         return xml;
     }
-
     function xml_body() {
         var xml = [];
         if (rows)
@@ -123,7 +123,7 @@ dhtmlXGridObject.prototype.toPDF = function (url, mode, header, footer, rows, ta
             var row = grid.ftr.rows[i];
             for (var j = 0; j < grid._cCount; j++) {
                 if (grid._srClmn && !grid._srClmn[j]) continue;
-                if (grid._hrrar[j] && ( !grid._fake || j >= grid._fake.hdrLabels.length)) continue;
+                if (grid._hrrar[j] && (!grid._fake || j >= grid._fake.hdrLabels.length)) continue;
                 for (var k = 0; k < row.cells.length; k++) {
                     var val = "";
                     var span = "";
@@ -158,7 +158,7 @@ dhtmlXGridObject.prototype.toPDF = function (url, mode, header, footer, rows, ta
         var level = grid.isTreeGrid() ? ' level="' + grid.getLevel(r.idd) + '"' : '';
         var xml = "<row" + level + ">";
         for (var i = 0; i < grid._cCount; i++) {
-            if (((!grid._srClmn) || (grid._srClmn[i])) && (!grid._hrrar[i] || ( grid._fake && i < grid._fake.hdrLabels.length))) {
+            if (((!grid._srClmn) || (grid._srClmn[i])) && (!grid._hrrar[i] || (grid._fake && i < grid._fake.hdrLabels.length))) {
                 var cell = grid.cells(r.idd, i);
                 if (full_color) {
                     var text_color = get_style(cell.cell, "color");
@@ -208,7 +208,7 @@ dhtmlXGridObject.prototype.toPDF = function (url, mode, header, footer, rows, ta
 };
 dhtmlXGridObject.prototype._serialiseExportConfig = function (spans) {
     function xmlentities(str) {
-        if (typeof(str) !== 'string') return str;
+        if (typeof (str) !== 'string') return str;
         str = str.replace(/&/g, "&amp;");
         str = str.replace(/"/g, "&quot;");
         str = str.replace(/'/g, "&apos;");
@@ -221,14 +221,14 @@ dhtmlXGridObject.prototype._serialiseExportConfig = function (spans) {
 
     for (var i = 0; i < this.hdr.rows[0].cells.length; i++) {
         if (this._srClmn && !this._srClmn[i]) continue;
-        if (this._hrrar[i] && ( !this._fake || i >= this._fake.hdrLabels.length)) continue;
+        if (this._hrrar[i] && (!this._fake || i >= this._fake.hdrLabels.length)) continue;
         var sort = this.fldSort[i];
         if (sort == "cus") {
             sort = this._customSorts[i].toString();
             sort = sort.replace(/function[\ ]*/, "").replace(/\([^\f]*/, "");
         }
         var s = spans[1][i];
-        var rpans = (( s[1] && s[1] > 1 ) ? ' rowspan="' + s[1] + '" ' : "") + (( s[0] && s[0] > 1 ) ? ' colspan="' + s[0] + '" ' : "");
+        var rpans = ((s[1] && s[1] > 1) ? ' rowspan="' + s[1] + '" ' : "") + ((s[0] && s[0] > 1) ? ' colspan="' + s[0] + '" ' : "");
         out += "<column " + rpans + " width='" + this.getColWidth(i) + "' align='" + this.cellAlign[i] + "' type='" + this.cellType[i] + "' hidden='" + ((this.isColumnHidden && this.isColumnHidden(i)) ? 'true' : 'false')
             + "' sort='" + (sort || "na") + "' color='" + (this.columnColor[i] || "") + "'"
             + (this.columnIds[i]
@@ -241,7 +241,7 @@ dhtmlXGridObject.prototype._serialiseExportConfig = function (spans) {
         var z = this.combos[i] ? this.getCombo(i) : null;
 
         if (z)
-            for (var j = 0; j < z.keys.length; j++)out += "<option value='" + xmlentities(z.keys[j]) + "'><![CDATA[" + z.values[j] + "]]></option>";
+            for (var j = 0; j < z.keys.length; j++) out += "<option value='" + xmlentities(z.keys[j]) + "'><![CDATA[" + z.values[j] + "]]></option>";
         out += "</column>";
     }
     return out += "</head>";

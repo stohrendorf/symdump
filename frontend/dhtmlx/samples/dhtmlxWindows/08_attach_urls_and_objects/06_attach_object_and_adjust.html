@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Attach object and adjust</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#winVP {
@@ -27,6 +27,7 @@
     </style>
     <script>
         var dhxWins, w1;
+
         function doOnLoad() {
             dhxWins = new dhtmlXWindows();
             dhxWins.attachViewportTo("winVP");
@@ -62,7 +63,7 @@
 <div id="winVP"></div>
 
 <div style="margin: 10px;">
-    <div style="width: 300px; height: 200px; border: 1px dashed #c0c0c0;" id="objParent">
+    <div id="objParent" style="width: 300px; height: 200px; border: 1px dashed #c0c0c0;">
         <div id="objId">
             <div style="margin: 5px 8px;">
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
@@ -74,7 +75,7 @@
         </div>
     </div>
     <br>
-    <input type="button" value="attach" onclick="doAttach();">
-    <input type="button" value="detach" onclick="doDetach();">
+    <input onclick="doAttach();" type="button" value="attach">
+    <input onclick="doDetach();" type="button" value="detach">
 </div>
 </body>

@@ -2,12 +2,12 @@
 <html>
 <head>
     <title>Drag-and-drop between List and Tree</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
-    <link rel="stylesheet" type="text/css" href="../common/demo_style.css"/>
+    <link href="../common/demo_style.css" rel="stylesheet" type="text/css"/>
     <style type="text/css">
         body {
             -webkit-user-select: none;
@@ -18,6 +18,7 @@
     <script>
         dhtmlx.compat("dnd");
         var myList, myTree;
+
         function doOnLoad() {
             myList = new dhtmlXList({
                 container: "data_container1",
@@ -61,7 +62,7 @@
 </head>
 <body onload="doOnLoad();">
 <h1>Drag-and-drop between List and Tree</h1>
-<table border="0" cellspacing="5" cellpadding="5">
+<table border="0" cellpadding="5" cellspacing="5">
     <tr>
         <td>
             <div id="data_container1"

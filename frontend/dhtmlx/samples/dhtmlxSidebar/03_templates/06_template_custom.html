@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Custom template</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#sidebarObj {
@@ -73,12 +73,15 @@
             c: {total: 65.7, free: 31.4},
             d: {total: 400, free: 153}
         };
+
         function disk_text(a) {
             return dhx4.template("#free# Gb free of #total# Gb", disks[a]);
         }
+
         function disk_width(a) {
             return Math.floor(disks[a].free * 100 / disks[a].total);
         }
+
         function doOnLoad() {
             mySidebar = new dhtmlXSideBar({
                 parent: "sidebarObj",
@@ -135,6 +138,7 @@
                 ]
             });
         }
+
         dhtmlXSideBar.prototype.templates.two_lines = "<img class='dhxsidebar_item_icon' src='#icons_path##icon#' border='0'>" +
             "<div class='dhxsidebar_item_text #enable_progress#'>" +
             "<div>#text#</div>" +

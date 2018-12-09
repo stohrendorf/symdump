@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Attach to form</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
 
@@ -25,7 +25,7 @@
             myPop.attachHTML("Please enter something<br>Second line<br>One more line here");
 
             myForm.attachEvent("onFocus", function (id, value) {
-                if (typeof(value) != "undefined") id = [id, value]; // for radiobutton
+                if (typeof (value) != "undefined") id = [id, value]; // for radiobutton
                 myPop.show(id);
             });
             myForm.attachEvent("onBlur", function (id, value) {

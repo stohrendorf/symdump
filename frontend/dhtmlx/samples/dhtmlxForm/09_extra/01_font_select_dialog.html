@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Font select dialog</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#vp {
@@ -24,120 +24,126 @@
     <script>
         var myForm, formData;
         var dhxWins, w1;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-top", labelWidth: "auto", inputWidth: 135, blockOffset: 12},
                 {
                     type: "block", inputWidth: "auto", list: [
-                    {type: "settings", offsetTop: 8},
-                    {type: "input", label: "Font:"},
-                    {type: "newcolumn"},
-                    {type: "input", label: "Font Style:", offsetLeft: 5},
-                    {type: "newcolumn"},
-                    {type: "input", label: "Size:", offsetLeft: 5, labelWidth: 78, inputWidth: 70}
-                ]
+                        {type: "settings", offsetTop: 8},
+                        {type: "input", label: "Font:"},
+                        {type: "newcolumn"},
+                        {type: "input", label: "Font Style:", offsetLeft: 5},
+                        {type: "newcolumn"},
+                        {type: "input", label: "Size:", offsetLeft: 5, labelWidth: 78, inputWidth: 70}
+                    ]
                 },
                 {
                     type: "block", inputWidth: "auto", list: [
-                    {type: "settings", offsetTop: 2},
-                    {
-                        type: "select", name: "sel_font", label: "", options: [
-                        {value: "Arial", text: "Arial"},
-                        {value: "Arial Black", text: "Arial Black"},
-                        {value: "Calibri", text: "Calibri"},
-                        {value: "Comic Sans MS", text: "Comic Sans MS"},
-                        {value: "Consolas", text: "Consolas"},
-                        {value: "Courier New", text: "Courier New"},
-                        {value: "Georgia", text: "Georgia"},
-                        {value: "Impact", text: "Impact"},
-                        {value: "Lucida Console", text: "Lucida Console"},
-                        {value: "Lucida Sans Unicode", text: "Lucida Sans Unicode"},
-                        {value: "Microsoft Sans Serif", text: "Microsoft Sans Serif"},
-                        {value: "Segoe Print", text: "Segoe Print"},
-                        {value: "Segoe Script", text: "Segoe Script"},
-                        {value: "Segoe UI", text: "Segoe UI"},
-                        {value: "Symbol", text: "Symbol"},
-                        {value: "Tahoma", text: "Tahoma"},
-                        {value: "Times New Roman", text: "Times New Roman"},
-                        {value: "Trebuchet MS", text: "Trebuchet MS"},
-                        {value: "Verdana", text: "Verdana"}
-                    ]
-                    },
-                    {type: "newcolumn"},
-                    {
-                        type: "select", name: "sel_type", label: "", offsetLeft: 5, options: [
-                        {value: "regular", text: "Regular"},
-                        {value: "italic", text: "Italic"},
-                        {value: "bold", text: "Bold"},
-                        {value: "bold italic", text: "Bold Italic"}
-                    ]
-                    },
-                    {type: "newcolumn"},
-                    {
-                        type: "select", name: "sel_size", label: "", offsetLeft: 5, inputWidth: 70, options: [
-                        {value: "8", text: "8"},
-                        {value: "9", text: "9"},
-                        {value: "10", text: "10"},
-                        {value: "11", text: "11"},
-                        {value: "12", text: "12"},
-                        {value: "14", text: "14"},
-                        {value: "16", text: "16"},
-                        {value: "18", text: "18"},
-                        {value: "20", text: "20"}
-                    ]
-                    }
-                ]
-                },
-                {
-                    type: "block", inputWidth: "auto", list: [
-
-                    {
-                        type: "fieldset", label: "Effects", inputWidth: 148, offsetTop: 5, list: [
-                        {type: "checkbox", label: "Strikeout", position: "label-right"},
-                        {type: "checkbox", label: "Underline", position: "label-right"},
+                        {type: "settings", offsetTop: 2},
                         {
-                            type: "select",
-                            label: "Color:",
-                            position: "label-left",
-                            inputWidth: 76,
-                            offsetTop: 5,
-                            options: [
-                                {value: "black", text: "Black"}
+                            type: "select", name: "sel_font", label: "", options: [
+                                {value: "Arial", text: "Arial"},
+                                {value: "Arial Black", text: "Arial Black"},
+                                {value: "Calibri", text: "Calibri"},
+                                {value: "Comic Sans MS", text: "Comic Sans MS"},
+                                {value: "Consolas", text: "Consolas"},
+                                {value: "Courier New", text: "Courier New"},
+                                {value: "Georgia", text: "Georgia"},
+                                {value: "Impact", text: "Impact"},
+                                {value: "Lucida Console", text: "Lucida Console"},
+                                {value: "Lucida Sans Unicode", text: "Lucida Sans Unicode"},
+                                {value: "Microsoft Sans Serif", text: "Microsoft Sans Serif"},
+                                {value: "Segoe Print", text: "Segoe Print"},
+                                {value: "Segoe Script", text: "Segoe Script"},
+                                {value: "Segoe UI", text: "Segoe UI"},
+                                {value: "Symbol", text: "Symbol"},
+                                {value: "Tahoma", text: "Tahoma"},
+                                {value: "Times New Roman", text: "Times New Roman"},
+                                {value: "Trebuchet MS", text: "Trebuchet MS"},
+                                {value: "Verdana", text: "Verdana"}
                             ]
-                        }
-                    ]
-                    },
-                    {type: "newcolumn"},
-                    {
-                        type: "block", inputWidth: "auto", blockOffset: 0, list: [
-                        {
-                            type: "fieldset", inputWidth: 198, label: "Sample", offsetTop: 5, offsetLeft: 5, list: [
-                            {type: "container", name: "sample", inputWidth: "auto", inputHeight: 48}
-                        ]
                         },
+                        {type: "newcolumn"},
                         {
-                            type: "select",
-                            label: "Script:",
-                            position: "label-top",
-                            inputWidth: 198,
-                            offsetTop: 5,
-                            offsetLeft: 5,
-                            options: [
-                                {value: "western", text: "Western"}
+                            type: "select", name: "sel_type", label: "", offsetLeft: 5, options: [
+                                {value: "regular", text: "Regular"},
+                                {value: "italic", text: "Italic"},
+                                {value: "bold", text: "Bold"},
+                                {value: "bold italic", text: "Bold Italic"}
+                            ]
+                        },
+                        {type: "newcolumn"},
+                        {
+                            type: "select", name: "sel_size", label: "", offsetLeft: 5, inputWidth: 70, options: [
+                                {value: "8", text: "8"},
+                                {value: "9", text: "9"},
+                                {value: "10", text: "10"},
+                                {value: "11", text: "11"},
+                                {value: "12", text: "12"},
+                                {value: "14", text: "14"},
+                                {value: "16", text: "16"},
+                                {value: "18", text: "18"},
+                                {value: "20", text: "20"}
                             ]
                         }
                     ]
-                    }
-
-                ]
                 },
                 {
                     type: "block", inputWidth: "auto", list: [
-                    {type: "settings", offsetTop: 10},
-                    {type: "button", value: "Confirm", offsetLeft: 100},
-                    {type: "newcolumn"},
-                    {type: "button", value: "Cancel"}
-                ]
+
+                        {
+                            type: "fieldset", label: "Effects", inputWidth: 148, offsetTop: 5, list: [
+                                {type: "checkbox", label: "Strikeout", position: "label-right"},
+                                {type: "checkbox", label: "Underline", position: "label-right"},
+                                {
+                                    type: "select",
+                                    label: "Color:",
+                                    position: "label-left",
+                                    inputWidth: 76,
+                                    offsetTop: 5,
+                                    options: [
+                                        {value: "black", text: "Black"}
+                                    ]
+                                }
+                            ]
+                        },
+                        {type: "newcolumn"},
+                        {
+                            type: "block", inputWidth: "auto", blockOffset: 0, list: [
+                                {
+                                    type: "fieldset",
+                                    inputWidth: 198,
+                                    label: "Sample",
+                                    offsetTop: 5,
+                                    offsetLeft: 5,
+                                    list: [
+                                        {type: "container", name: "sample", inputWidth: "auto", inputHeight: 48}
+                                    ]
+                                },
+                                {
+                                    type: "select",
+                                    label: "Script:",
+                                    position: "label-top",
+                                    inputWidth: 198,
+                                    offsetTop: 5,
+                                    offsetLeft: 5,
+                                    options: [
+                                        {value: "western", text: "Western"}
+                                    ]
+                                }
+                            ]
+                        }
+
+                    ]
+                },
+                {
+                    type: "block", inputWidth: "auto", list: [
+                        {type: "settings", offsetTop: 10},
+                        {type: "button", value: "Confirm", offsetLeft: 100},
+                        {type: "newcolumn"},
+                        {type: "button", value: "Cancel"}
+                    ]
                 }
 
             ];

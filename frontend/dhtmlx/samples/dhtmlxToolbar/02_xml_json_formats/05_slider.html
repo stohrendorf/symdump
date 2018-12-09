@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>xml/json formats for slider</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         table.my_table td {
@@ -29,6 +29,7 @@
     <script>
         var myToolbarXML;
         var myToolbarJSON;
+
         function doOnLoad() {
             myToolbarXML = new dhtmlXToolbarObject({
                 parent: "toolbarObjXML",
@@ -47,6 +48,7 @@
                 }
             });
         }
+
         function logUserData(tbName, tbInst) {
             var userData = {
                 my_data_name: tbInst.getUserData("net_limit", "my_data_name"),
@@ -57,7 +59,7 @@
     </script>
 </head>
 <body onload="doOnLoad();">
-<table border="0" cellspacing="0" cellpadding="0" class="my_table" width="100%">
+<table border="0" cellpadding="0" cellspacing="0" class="my_table" width="100%">
     <tr>
         <td width="50%">from xml</td>
         <td width="50%">from json</td>

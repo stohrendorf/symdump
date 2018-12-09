@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Uploader status</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script src="../../../codebase/ext/swfobject.js"></script>
     <style>
@@ -19,31 +19,35 @@
     </style>
     <script>
         var myForm, formData, logObj;
+
         function doOnLoad() {
             formData = [
                 {
                     type: "fieldset", label: "Uploader", list: [
-                    {
-                        type: "upload",
-                        name: "myFiles",
-                        inputWidth: 330,
-                        url: "php/dhtmlxform_item_upload.php",
-                        swfPath: "uploader.swf",
-                        swfUrl: "php/dhtmlxform_item_upload.php"
-                    }
-                ]
+                        {
+                            type: "upload",
+                            name: "myFiles",
+                            inputWidth: 330,
+                            url: "php/dhtmlxform_item_upload.php",
+                            swfPath: "uploader.swf",
+                            swfUrl: "php/dhtmlxform_item_upload.php"
+                        }
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);
         }
+
         function getStatus() {
             var s = myForm.getUploaderStatus("myFiles");
             logEvent(s);
         }
+
         function logEvent(t) {
             if (!logObj) logObj = document.getElementById("simpleLog");
             logObj.innerHTML += t + "<br>";
         }
+
         function clearLog() {
             if (!logObj) logObj = document.getElementById("simpleLog");
             logObj.innerHTML = "";
@@ -58,7 +62,7 @@
         </td>
     </tr>
     <tr>
-        <td><br><input type="button" value="Get Status" onclick="getStatus();"></td>
+        <td><br><input onclick="getStatus();" type="button" value="Get Status"></td>
     </tr>
     <tr>
         <td><br><b>Log (<a href="javascript:void(0);" onclick="clearLog();">clear</a>)</b></td>

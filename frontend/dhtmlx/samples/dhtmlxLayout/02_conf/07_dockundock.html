@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Dock/undock cells</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#layoutObj {
@@ -28,6 +28,7 @@
         var myLayout;
         var sel;
         var myGrid, myMenu, myToolbar;
+
         function doOnLoad() {
 
             myLayout = new dhtmlXLayoutObject({
@@ -52,14 +53,17 @@
             myGrid.setImagePath("../../../codebase/imgs/");
             myGrid.load("../common/grid.xml");
         }
+
         function getId() {
             var sel = document.getElementById("sel");
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function dockCell() {
             myLayout.cells(getId()).dock();
         }
+
         function undockCell() {
             myLayout.cells(getId()).undock(550, 20, 400, 300);
         }
@@ -71,8 +75,8 @@
 </div>
 <div style="margin-left: 10px; margin-top:20px;">
     Item: <select id="sel"></select>
-    <input type="button" value="dock" onclick="dockCell();">
-    <input type="button" value="undock" onclick="undockCell();">
+    <input onclick="dockCell();" type="button" value="dock">
+    <input onclick="undockCell();" type="button" value="undock">
 </div>
 </body>
 </html>

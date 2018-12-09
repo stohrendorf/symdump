@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXCalendarObject(inps, skin) {
 
@@ -12,24 +12,24 @@ function dhtmlXCalendarObject(inps, skin) {
     this.i = {};
 
     var p = null;
-    if (typeof(inps) == "string") {
+    if (typeof (inps) == "string") {
         var t0 = document.getElementById(inps);
     } else {
         var t0 = inps;
     }
-    if (t0 && typeof(t0) == "object" && t0.tagName && String(t0.tagName).toLowerCase() != "input") p = t0;
+    if (t0 && typeof (t0) == "object" && t0.tagName && String(t0.tagName).toLowerCase() != "input") p = t0;
     t0 = null;
 
     // single param
-    if (typeof(inps) != "object" || !inps.length) inps = [inps];
+    if (typeof (inps) != "object" || !inps.length) inps = [inps];
     for (var q = 0; q < inps.length; q++) {
-        if (typeof(inps[q]) == "string") inps[q] = (document.getElementById(inps[q]) || null);
+        if (typeof (inps[q]) == "string") inps[q] = (document.getElementById(inps[q]) || null);
         if (inps[q] != null && inps[q].tagName && String(inps[q].tagName).toLowerCase() == "input") {
             this.i[window.dhx4.newId()] = {input: inps[q]};
         } else {
             if (!(inps[q] instanceof Array) && inps[q] instanceof Object && (inps[q].input != null || inps[q].button != null)) {
-                if (inps[q].input != null && typeof(inps[q].input) == "string") inps[q].input = document.getElementById(inps[q].input);
-                if (inps[q].button != null && typeof(inps[q].button) == "string") inps[q].button = document.getElementById(inps[q].button);
+                if (inps[q].input != null && typeof (inps[q].input) == "string") inps[q].input = document.getElementById(inps[q].input);
+                if (inps[q].button != null && typeof (inps[q].button) == "string") inps[q].button = document.getElementById(inps[q].button);
                 this.i[window.dhx4.newId()] = inps[q];
             }
         }
@@ -37,7 +37,7 @@ function dhtmlXCalendarObject(inps, skin) {
     }
 
     this.conf = {
-        skin: (skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhtmlxcalendar") || "material"),
+        skin: (skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhtmlxcalendar") || "material"),
         zi: window.dhx4.newId(),
         touch: !window.dhx4.isIE,
         time: true,
@@ -67,9 +67,9 @@ function dhtmlXCalendarObject(inps, skin) {
 
     this.setParent = function (p) {
         if (this._hasParent) {
-            if (typeof(p) == "object") {
+            if (typeof (p) == "object") {
                 p.appendChild(this.base);
-            } else if (typeof(p) == "string") {
+            } else if (typeof (p) == "string") {
                 document.getElementById(p).appendChild(this.base);
             }
         }
@@ -439,7 +439,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
     this.setDate = function (d) {
         window.dhx4.temp_calendar = {tz: null};
-        this._nullDate = (typeof(d) == "undefined" || d === "" || !d);
+        this._nullDate = (typeof (d) == "undefined" || d === "" || !d);
 
         if (!(d instanceof Date)) {
             d = this._strToDate(String(d || ""));
@@ -517,7 +517,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
                     var label_css = "dhtmlxcalendar_label";
                     if (this._tipData[time] != null) {
-                        if (this._tipData[time].usePopup && typeof(window.dhtmlXPopup) == "function") {
+                        if (this._tipData[time].usePopup && typeof (window.dhtmlXPopup) == "function") {
                             this.contDates.childNodes[q].childNodes[w].removeAttribute("title");
                             this._initTooltipPopup();
                         } else {
@@ -1116,7 +1116,7 @@ function dhtmlXCalendarObject(inps, skin) {
     /* month selector */
 
     this._updateActiveMonth = function () {
-        if (typeof(this._msActive) != "undefined" && typeof(this._msCells[this._msActive]) != "undefined") this._msCells[this._msActive].className = "dhtmlxcalendar_selector_cell";
+        if (typeof (this._msActive) != "undefined" && typeof (this._msCells[this._msActive]) != "undefined") this._msCells[this._msActive].className = "dhtmlxcalendar_selector_cell";
         this._msActive = this._activeMonth.getMonth();
         this._msCells[this._msActive].className = "dhtmlxcalendar_selector_cell dhtmlxcalendar_selector_cell_active";
     };
@@ -1156,7 +1156,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
     // update hours in selector
     this._updateActiveHours = function () {
-        if (typeof(this._hsActive) != "undefined" && typeof(this._hsCells[this._hsActive]) != "undefined") this._hsCells[this._hsActive].className = "dhtmlxcalendar_selector_cell";
+        if (typeof (this._hsActive) != "undefined" && typeof (this._hsCells[this._hsActive]) != "undefined") this._hsCells[this._hsActive].className = "dhtmlxcalendar_selector_cell";
         this._hsActive = this._activeDate.getHours();
         this._hsCells[this._hsActive].className = "dhtmlxcalendar_selector_cell dhtmlxcalendar_selector_cell_active";
     };
@@ -1170,13 +1170,13 @@ function dhtmlXCalendarObject(inps, skin) {
 
     // update minutes in selector
     this._updateActiveMinutes = function () {
-        if (this._rsActive != null && typeof(this._rsActive) != "undefined" && typeof(this._rsCells[this._rsActive]) != "undefined") this._rsCells[this._rsActive].className = "dhtmlxcalendar_selector_cell";
+        if (this._rsActive != null && typeof (this._rsActive) != "undefined" && typeof (this._rsCells[this._rsActive]) != "undefined") this._rsCells[this._rsActive].className = "dhtmlxcalendar_selector_cell";
         if (this._minutesInterval == 1) {
             this._rsActive = (this.getFormatedDate("%i").toString()).charAt(this._selectorMode == 1 ? 0 : 1);
         } else {
             this._rsActive = this._activeDate.getMinutes();
         }
-        if (typeof(this._rsCells[this._rsActive]) != "undefined") this._rsCells[this._rsActive].className = "dhtmlxcalendar_selector_cell dhtmlxcalendar_selector_cell_active";
+        if (typeof (this._rsCells[this._rsActive]) != "undefined") this._rsCells[this._rsActive].className = "dhtmlxcalendar_selector_cell dhtmlxcalendar_selector_cell_active";
     };
 
     // update minutes in calendar
@@ -1290,7 +1290,7 @@ function dhtmlXCalendarObject(inps, skin) {
     };
 
     this.showMonth = function (d) {
-        if (typeof(d) == "string") d = this._strToDate(d);
+        if (typeof (d) == "string") d = this._strToDate(d);
         if (!(d instanceof Date)) return;
         this._drawMonth(d);
     };
@@ -1311,7 +1311,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
     /* week numbers */
     this.getWeekNumber = function (date) {
-        if (typeof(date) == "string") date = this._strToDate(date);
+        if (typeof (date) == "string") date = this._strToDate(date);
         if (!(date instanceof Date)) return "Invalid Date";
 
         var nday = date.getDay();
@@ -1346,9 +1346,9 @@ function dhtmlXCalendarObject(inps, skin) {
         }
 
         // show by real input id, added in 5.0
-        if (typeof(id) == "string") {
+        if (typeof (id) == "string") {
             var i = document.getElementById(id);
-            if (i != null && typeof(i._dhtmlxcalendar_uid) != "undefined" && this.i[i._dhtmlxcalendar_uid] != null) {
+            if (i != null && typeof (i._dhtmlxcalendar_uid) != "undefined" && this.i[i._dhtmlxcalendar_uid] != null) {
                 this._show(i._dhtmlxcalendar_uid);
                 return;
             }
@@ -1356,11 +1356,11 @@ function dhtmlXCalendarObject(inps, skin) {
 
         // if input id not specified show near first found
         // if nothing found - do not show
-        if (typeof(id) == "object" && typeof(id._dhtmlxcalendar_uid) != "undefined" && this.i[id._dhtmlxcalendar_uid] == id) {
+        if (typeof (id) == "object" && typeof (id._dhtmlxcalendar_uid) != "undefined" && this.i[id._dhtmlxcalendar_uid] == id) {
             this._show(id._dhtmlxcalendar_uid);
             return;
         }
-        if (typeof(id) == "undefined") {
+        if (typeof (id) == "undefined") {
             for (var a in this.i) if (!id) id = a;
         }
         if (!id) return;
@@ -1387,11 +1387,11 @@ function dhtmlXCalendarObject(inps, skin) {
             this.pos = x;
         } else {
             this.pos = "int";
-            if (typeof(x) != "undefined" && !isNaN(x)) {
+            if (typeof (x) != "undefined" && !isNaN(x)) {
                 this.base.style.left = x + "px";
                 this._px = x;
             }
-            if (typeof(y) != "undefined" && !isNaN(y)) {
+            if (typeof (y) != "undefined" && !isNaN(y)) {
                 this.base.style.top = y + "px";
                 this._py = y;
             }
@@ -1498,10 +1498,10 @@ function dhtmlXCalendarObject(inps, skin) {
     this._extractDates = function (r) {
         // r = array of dates or comma-separated string list
         // return array with dates
-        if (typeof(r) == "string" || r instanceof Date) r = [r];
+        if (typeof (r) == "string" || r instanceof Date) r = [r];
         var t = [];
         for (var q = 0; q < r.length; q++) {
-            if (typeof(r[q]) == "string") {
+            if (typeof (r[q]) == "string") {
                 var e = r[q].split(",");
                 for (var w = 0; w < e.length; w++) t.push(this._strToDate(e[w]));
             } else if (r[q] instanceof Date) {
@@ -1540,7 +1540,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
             if (this._rangeType == "in" && (time < this._rangeFrom || time > this._rangeTo)) return true;
             if (this._rangeType == "out" && (time >= this._rangeFrom && time <= this._rangeTo)) return true;
-            if (this._rangeType == "from" && time < this._rangeFrom)return true;
+            if (this._rangeType == "from" && time < this._rangeFrom) return true;
             if (this._rangeType == "to" && time > this._rangeTo) return true;
         }
 
@@ -1659,7 +1659,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
             // !! works in replace mode
 
-            if (typeof(d) != "object" && typeof(d.length) == "undefined") d = [d];
+            if (typeof (d) != "object" && typeof (d.length) == "undefined") d = [d];
 
             if (!this._rangeWeekData) this._rangeWeekData = {};
             for (var a in this._rangeWeekData) {
@@ -1678,7 +1678,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
             // !! works in replace mode
 
-            if (typeof(d) != "object" && typeof(d.length) == "undefined") d = [d];
+            if (typeof (d) != "object" && typeof (d.length) == "undefined") d = [d];
 
             if (!this._rangeMonthData) this._rangeMonthData = {};
             for (var a in this._rangeMonthData) {
@@ -1798,7 +1798,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
     this.getCellDimension = function (dateX) {
 
-        if (typeof(dateX) == "string") dateX = this._strToDate(dateX);
+        if (typeof (dateX) == "string") dateX = this._strToDate(dateX);
         if (!(dateX instanceof Date)) return null;
 
         var t = new Date(dateX.getFullYear(), dateX.getMonth(), dateX.getDate(), 0, 0, 0, 0).getTime();
@@ -1893,7 +1893,7 @@ function dhtmlXCalendarObject(inps, skin) {
         if (that && that.unload) that.unload();
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         document.body.addEventListener("click", that._doOnClick, false);
         window.addEventListener("keydown", that._doOnKeyDown, false);
         window.addEventListener("unload", that._doOnUnload, false);
@@ -1906,17 +1906,17 @@ function dhtmlXCalendarObject(inps, skin) {
 
     this.attachObj = function (obj) {
         var a = window.dhx4.newId();
-        if (typeof(obj) == "string") {
+        if (typeof (obj) == "string") {
             // id
             this.i[a] = {input: document.getElementById(obj)};
-        } else if (typeof(obj.tagName) != "undefined") {
+        } else if (typeof (obj.tagName) != "undefined") {
             // input dom obj
             this.i[a] = {input: obj};
-        } else if (typeof(obj) == "object" && (obj.input != null || obj.button != null)) {
+        } else if (typeof (obj) == "object" && (obj.input != null || obj.button != null)) {
             // object
             this.i[a] = {};
-            if (obj.input != null) this.i[a].input = (typeof(obj.input) == "string" ? document.getElementById(obj.input) : obj.input);
-            if (obj.button != null) this.i[a].button = (typeof(obj.button) == "string" ? document.getElementById(obj.button) : obj.button);
+            if (obj.input != null) this.i[a].input = (typeof (obj.input) == "string" ? document.getElementById(obj.input) : obj.input);
+            if (obj.button != null) this.i[a].button = (typeof (obj.button) == "string" ? document.getElementById(obj.button) : obj.button);
         }
         this._attachEventsToObject(a);
         return a;
@@ -1927,16 +1927,16 @@ function dhtmlXCalendarObject(inps, skin) {
         if (this.i[obj] != null) {
             // direct id
             a = obj;
-        } else if (typeof(obj) == "string") {
+        } else if (typeof (obj) == "string") {
             // id
             obj = document.getElementById(obj);
             a = obj._dhtmlxcalendar_uid;
-        } else if (typeof(obj.tagName) != "undefined") {
+        } else if (typeof (obj.tagName) != "undefined") {
             // input dom element
             a = obj._dhtmlxcalendar_uid;
-        } else if (typeof(obj) == "object" && (obj.input != null || obj.button != null)) {
-            if (a == null && obj.input != null) a = (typeof(obj.input) == "string" ? document.getElementById(obj.input) : obj.input)._dhtmlxcalendar_uid;
-            if (a == null && obj.button != null) a = (typeof(obj.button) == "string" ? document.getElementById(obj.button) : obj.button)._dhtmlxcalendar_uid;
+        } else if (typeof (obj) == "object" && (obj.input != null || obj.button != null)) {
+            if (a == null && obj.input != null) a = (typeof (obj.input) == "string" ? document.getElementById(obj.input) : obj.input)._dhtmlxcalendar_uid;
+            if (a == null && obj.button != null) a = (typeof (obj.button) == "string" ? document.getElementById(obj.button) : obj.button)._dhtmlxcalendar_uid;
         }
         if (a != null && this.i[a] != null) {
             this._detachEventsFromObject(a);
@@ -1955,7 +1955,7 @@ function dhtmlXCalendarObject(inps, skin) {
     this._attachEventsToObject = function (a) {
         if (this.i[a].button != null) {
             this.i[a].button._dhtmlxcalendar_uid = a;
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 this.i[a].button.addEventListener("click", that._doOnBtnClick, false);
                 if (this.conf.touch == true) this.i[a].button.addEventListener("touchstart", that._doOnBtnClick, false);
             } else {
@@ -1963,7 +1963,7 @@ function dhtmlXCalendarObject(inps, skin) {
             }
         } else if (this.i[a].input != null) {
             this.i[a].input._dhtmlxcalendar_uid = a;
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 this.i[a].input.addEventListener("click", that._doOnInpClick, false);
                 this.i[a].input.addEventListener("keyup", that._doOnInpKeyUp, false);
                 if (this.conf.touch == true) this.i[a].input.addEventListener("touchstart", that._doOnInpClick, false);
@@ -1976,7 +1976,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
     this._detachEventsFromObject = function (a) {
         if (this.i[a].button != null) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 this.i[a].button.removeEventListener("click", that._doOnBtnClick, false);
                 if (this.conf.touch == true) this.i[a].button.removeEventListener("touchstart", that._doOnBtnClick, false);
 
@@ -1984,7 +1984,7 @@ function dhtmlXCalendarObject(inps, skin) {
                 this.i[a].button.detachEvent("onclick", that._doOnBtnClick);
             }
         } else if (this.i[a].input != null) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 this.i[a].input.removeEventListener("click", that._doOnInpClick, false);
                 this.i[a].input.removeEventListener("keyup", that._doOnInpKeyUp, false);
                 if (this.conf.touch == true) this.i[a].input.removeEventListener("touchstart", that._doOnInpClick, false);
@@ -2003,7 +2003,7 @@ function dhtmlXCalendarObject(inps, skin) {
     // listener
     this.enableListener = function (t) {
         if (!t) return;
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             t.addEventListener("focus", that._listenerEvFocus, false);
             t.addEventListener("blur", that._listenerEvBlur, false);
         } else {
@@ -2017,7 +2017,7 @@ function dhtmlXCalendarObject(inps, skin) {
         if (!t) return;
         t._f0 = false;
         if (this._tmListener) window.clearTimeout(this._tmListener);
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             t.removeEventListener("focus", that._listenerEvFocus, false);
             t.removeEventListener("blur", that._listenerEvBlur, false);
         } else {
@@ -2029,7 +2029,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
     this._startListener = function (t) {
         if (this._tmListener) window.clearTimeout(this._tmListener);
-        if (typeof(t._v1) == "undefined") t._v1 = t.value;
+        if (typeof (t._v1) == "undefined") t._v1 = t.value;
         if (t._v1 != t.value) {
             this._updateFromInput(t);
             t._v1 = t.value;
@@ -2092,7 +2092,7 @@ function dhtmlXCalendarObject(inps, skin) {
 
         /* main events */
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             document.body.removeEventListener("click", that._doOnClick, false);
             window.removeEventListener("keydown", that._doOnKeyDown, false);
             window.removeEventListener("unload", that._doOnUnload, false);

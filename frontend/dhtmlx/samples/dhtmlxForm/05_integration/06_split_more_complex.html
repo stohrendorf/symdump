@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Complex split</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         #layoutObj {
@@ -16,78 +16,80 @@
     </style>
     <script>
         var dhxLayout, dhxTabbar, myForm, formData;
+
         function zero(s) {
             if (s.length == 1) s = "0" + s;
             return s;
         }
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: 145, inputWidth: 170},
                 {
                     type: "block", inputWidth: "auto", id: "form_cell_a", list: [
-                    {type: "input", label: "Name", value: "James Brown", offsetTop: 14},
-                    {
-                        type: "select", label: "Sex", value: "male", options: [
-                        {text: "Male", value: "male"},
-                        {text: "Female", value: "female"}
+                        {type: "input", label: "Name", value: "James Brown", offsetTop: 14},
+                        {
+                            type: "select", label: "Sex", value: "male", options: [
+                                {text: "Male", value: "male"},
+                                {text: "Female", value: "female"}
+                            ]
+                        },
+                        {
+                            type: "calendar",
+                            name: "dob",
+                            label: "Date of Birth",
+                            value: "19-10-1991",
+                            dateFormat: "%d-%m-%Y"
+                        },
+                        {type: "input", label: "E-mail Address", value: "james.brown@mail.com"}
                     ]
-                    },
-                    {
-                        type: "calendar",
-                        name: "dob",
-                        label: "Date of Birth",
-                        value: "19-10-1991",
-                        dateFormat: "%d-%m-%Y"
-                    },
-                    {type: "input", label: "E-mail Address", value: "james.brown@mail.com"}
-                ]
                 },
                 {
                     type: "block", inputWidth: "auto", id: "form_tab1", list: [
-                    {type: "input", label: "Login", value: "james_br", offsetTop: 14},
-                    {type: "password", label: "Password", value: "12345"},
-                    {
-                        type: "select", label: "Account type", value: "user", options: [
-                        {text: "Admin", value: "admin"},
-                        {text: "Organiser", value: "org"},
-                        {text: "User", value: "user"}
+                        {type: "input", label: "Login", value: "james_br", offsetTop: 14},
+                        {type: "password", label: "Password", value: "12345"},
+                        {
+                            type: "select", label: "Account type", value: "user", options: [
+                                {text: "Admin", value: "admin"},
+                                {text: "Organiser", value: "org"},
+                                {text: "User", value: "user"}
+                            ]
+                        },
+                        {type: "checkbox", label: "Allow OAuth login", checked: true}
                     ]
-                    },
-                    {type: "checkbox", label: "Allow OAuth login", checked: true}
-                ]
                 },
                 {
                     type: "block", inputWidth: "auto", id: "form_tab2", list: [
-                    {type: "input", label: "Street address", value: "22 Acacia Avenue", offsetTop: 14},
-                    {type: "input", label: "City", value: "Oslo"},
-                    {type: "input", label: "Country", value: "Norway"},
-                    {type: "input", label: "Phone", value: "+47 12 34 56 78"},
-                ]
+                        {type: "input", label: "Street address", value: "22 Acacia Avenue", offsetTop: 14},
+                        {type: "input", label: "City", value: "Oslo"},
+                        {type: "input", label: "Country", value: "Norway"},
+                        {type: "input", label: "Phone", value: "+47 12 34 56 78"},
+                    ]
                 },
                 {
                     type: "block", inputWidth: "auto", id: "form_tab3", list: [
-                    {type: "settings", position: "label-right", labelWidth: "auto"},
-                    {
-                        type: "checkbox", label: "Send e-mail notifications", checked: true, offsetTop: 14, list: [
-                        {type: "checkbox", label: "News, events and advertisement", checked: true},
-                        {type: "checkbox", label: "Account info updates", checked: true},
-                        {type: "checkbox", label: "My posts/My threads updates", checked: true}
+                        {type: "settings", position: "label-right", labelWidth: "auto"},
+                        {
+                            type: "checkbox", label: "Send e-mail notifications", checked: true, offsetTop: 14, list: [
+                                {type: "checkbox", label: "News, events and advertisement", checked: true},
+                                {type: "checkbox", label: "Account info updates", checked: true},
+                                {type: "checkbox", label: "My posts/My threads updates", checked: true}
+                            ]
+                        }
                     ]
-                    }
-                ]
                 },
                 {
                     type: "block", inputWidth: "auto", id: "form_cell_c", list: [
-                    {
-                        type: "input",
-                        label: "Last account update",
-                        value: "19-02-2011 19:54",
-                        readonly: true,
-                        offsetTop: 14
-                    },
-                    {type: "input", label: "Updated by", value: "Matt Lazovsky", readonly: true},
-                    {type: "button", value: "Update", offsetTop: 10}
-                ]
+                        {
+                            type: "input",
+                            label: "Last account update",
+                            value: "19-02-2011 19:54",
+                            readonly: true,
+                            offsetTop: 14
+                        },
+                        {type: "input", label: "Updated by", value: "Matt Lazovsky", readonly: true},
+                        {type: "button", value: "Update", offsetTop: 10}
+                    ]
                 }
             ];
             dhxLayout = new dhtmlXLayoutObject("layoutObj", "3E");

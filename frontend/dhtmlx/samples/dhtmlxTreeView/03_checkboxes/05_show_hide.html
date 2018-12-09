@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Checkboxes show / hide</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.sample_info_here {
@@ -50,6 +50,7 @@
     </style>
     <script>
         var myTreeView;
+
         function doOnLoad() {
             myTreeView = new dhtmlXTreeView({
                 parent: "tree_here",
@@ -57,10 +58,12 @@
                 json: "../common/treeview_checkboxes.xml"
             });
         }
+
         function show() {
             var id = myTreeView.getSelectedId();
             if (id != null) myTreeView.showCheckbox(id);
         }
+
         function hide() {
             var id = myTreeView.getSelectedId();
             if (id != null) myTreeView.hideCheckbox(id);
@@ -73,8 +76,8 @@
 </div>
 <div id="tree_here"></div>
 <div class="controls">
-    with selected: <input type="button" value="show" onclick="show();"> <input type="button" value="hide"
-                                                                               onclick="hide();">
+    with selected: <input onclick="show();" type="button" value="show"> <input onclick="hide();" type="button"
+                                                                               value="hide">
 </div>
 </body>
 </html>

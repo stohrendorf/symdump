@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Change templates</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.combo_info {
@@ -23,6 +23,7 @@
     </style>
     <script>
         var myCombo;
+
         function doOnLoad() {
             // from script
             myCombo = new dhtmlXCombo("combo_zone", null, null, "image");
@@ -34,6 +35,7 @@
             myCombo.addOption("3", {country: "Great Britain", capital: "London"}, null, "britain.png");
             myCombo.addOption("4", {country: "Hungary", capital: "Budapest"}, null, "hungary.png");
         }
+
         function setTemplate(index) {
             var t = [
                 {input: "#capital#", option: "#capital# - #country#"},
@@ -48,9 +50,9 @@
 <div id="combo_zone" style="width:230px;"></div>
 <br>
 <div>
-    <div><input type="button" value="set" onclick="setTemplate(0);"> <span class="template_text">{input: "#capital#", option: "#capital# - #country#"}</span>
+    <div><input onclick="setTemplate(0);" type="button" value="set"> <span class="template_text">{input: "#capital#", option: "#capital# - #country#"}</span>
     </div>
-    <div><input type="button" value="set" onclick="setTemplate(1);"> <span class="template_text">{input: "#country#", option: "#country# - #capital#"}</span>
+    <div><input onclick="setTemplate(1);" type="button" value="set"> <span class="template_text">{input: "#country#", option: "#country# - #capital#"}</span>
     </div>
 </div>
 </body>

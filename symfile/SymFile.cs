@@ -51,7 +51,7 @@ namespace symfile
             logger.Info($"Loaded {n} top-level entries");
         }
 
-        public StructLayout FindStructDef(string tag)
+        private StructLayout FindStructDef(string tag)
         {
             if (tag == null)
                 return null;
@@ -59,7 +59,7 @@ namespace symfile
             return !_structs.TryGetValue(tag, out var result) ? null : result;
         }
 
-        public UnionLayout FindUnionDef(string tag)
+        private UnionLayout FindUnionDef(string tag)
         {
             if (tag == null)
                 return null;
@@ -336,19 +336,17 @@ namespace symfile
             return Functions.FirstOrDefault(f => f.Name.Equals(name));
         }
         
-        public string GetSymbolName(uint localAddress, int relative = 0)
+        public string GetSymbolName(uint absoluteAddress)
         {
-            var globalAddress = (uint) (localAddress + relative);
-            
             // first try to find a memory layout which contains this address
-            var typedLabel = Labels.LastOrDefault(kv => kv.Key <= globalAddress).Value.First();
+            var typedLabel = Labels.LastOrDefault(kv => kv.Key <= absoluteAddress).Value.First();
             var memoryLayout = FindTypeDefinitionForLabel(typedLabel.Name);
             if (memoryLayout == null)
-                return !Labels.TryGetValue(globalAddress, out var lbls) ? $"lbl_{globalAddress:X}" : lbls.First().Name;
+                return !Labels.TryGetValue(absoluteAddress, out var lbls) ? $"lbl_{absoluteAddress:X}" : lbls.First().Name;
             
             try
             {
-                var path = memoryLayout.GetAccessPathTo(globalAddress - typedLabel.GlobalAddress);
+                var path = memoryLayout.GetAccessPathTo(absoluteAddress - typedLabel.GlobalAddress);
                 if (path != null)
                     return typedLabel.Name + "." + path;
             }
@@ -357,7 +355,7 @@ namespace symfile
                 // ignored
             }
 
-            return !Labels.TryGetValue(globalAddress, out var lbls2) ? $"lbl_{globalAddress:X}" : lbls2.First().Name;
+            return !Labels.TryGetValue(absoluteAddress, out var lbls2) ? $"lbl_{absoluteAddress:X}" : lbls2.First().Name;
         }
     }
 }

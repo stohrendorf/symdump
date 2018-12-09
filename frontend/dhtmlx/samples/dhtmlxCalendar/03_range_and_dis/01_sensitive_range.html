@@ -2,33 +2,39 @@
 <html>
 <head>
     <title>Sensitive range</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere");
             myCalendar.hideTime();
             myCalendar.show();
             myCalendar.setDate("2011-07-12");
         }
+
         function clearRange() {
             myCalendar.clearSensitiveRange();
         }
+
         function setFrom() {
             myCalendar.setSensitiveRange("2011-07-08", null);
             //myCalendar.setInsensitiveRange(null,"2011-07-07"); // the same
         }
+
         function setTo() {
             myCalendar.setSensitiveRange(null, "2011-07-22");
             //myCalendar.setInsensitiveRange("2011-07-23",null); // the same
         }
+
         function setInInterval() {
             myCalendar.setSensitiveRange("2011-07-08", "2011-07-22");
         }
+
         function setOutInterval() {
             myCalendar.setInsensitiveRange("2011-07-08", "2011-07-22");
         }
@@ -38,23 +44,23 @@
 <div style="margin-bottom: 20px;">
     <table>
         <tr>
-            <td><input type="button" value="apply" onclick="setFrom();"></td>
+            <td><input onclick="setFrom();" type="button" value="apply"></td>
             <td>set calendar sensitive from specified date (2011-07-08)</td>
         </tr>
         <tr>
-            <td><input type="button" value="apply" onclick="setTo();"></td>
+            <td><input onclick="setTo();" type="button" value="apply"></td>
             <td>set calendar sensitive until specified date (2011-07-22)</td>
         </tr>
         <tr>
-            <td><input type="button" value="apply" onclick="setInInterval();"></td>
+            <td><input onclick="setInInterval();" type="button" value="apply"></td>
             <td>set calendar sensitive inside specified dates (from 2011-07-08 - until 2011-07-22)</td>
         </tr>
         <tr>
-            <td><input type="button" value="apply" onclick="setOutInterval();"></td>
+            <td><input onclick="setOutInterval();" type="button" value="apply"></td>
             <td>set calendar sensitive out of specified dates (until 2011-07-08 - from 2011-07-22)</td>
         </tr>
         <tr>
-            <td><input type="button" value="apply" onclick="clearRange();"></td>
+            <td><input onclick="clearRange();" type="button" value="apply"></td>
             <td>clear calendar sensitive data (make all dates sensitive)</td>
         </tr>
     </table>

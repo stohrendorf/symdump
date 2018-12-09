@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /* add item */
 dhtmlXForm.prototype.addItem = function (pId, itemData, pos, insertAfter) {
@@ -192,7 +192,7 @@ dhtmlXForm.prototype._getItemNode = function (id, value) {
 /* set/clear required flag */
 dhtmlXForm.prototype.setRequired = function (id, value, state) {
 
-    if (typeof(state) == "undefined") state = value; else id = [id, value];
+    if (typeof (state) == "undefined") state = value; else id = [id, value];
     var item = this._getItemNode(id);
     if (!item) return;
 
@@ -231,13 +231,13 @@ dhtmlXForm.prototype.setRequired = function (id, value, state) {
 
     this._resetValidateCss(item);
     item = null;
-
+	
 };
 
 /* set/clear note */
 dhtmlXForm.prototype.setNote = function (id, value, note) {
 
-    if (typeof(note) == "undefined") note = value; else id = [id, value];
+    if (typeof (note) == "undefined") note = value; else id = [id, value];
     var item = this._getItemNode(id);
     if (!item) return;
 
@@ -266,7 +266,7 @@ dhtmlXForm.prototype.setNote = function (id, value, note) {
 
 dhtmlXForm.prototype.clearNote = function (id, value) {
 
-    if (typeof(value) != "undefined") id = [id, value];
+    if (typeof (value) != "undefined") id = [id, value];
     var item = this._getItemNode(id);
     if (!item) return;
 
@@ -296,7 +296,7 @@ dhtmlXForm.prototype._getNoteNode = function (item) {
 
 dhtmlXForm.prototype.setValidation = function (id, value, rule) {
 
-    if (typeof(note) == "undefined") rule = value; else id = [id, value];
+    if (typeof (note) == "undefined") rule = value; else id = [id, value];
     var item = this._getItemNode(id);
     if (!item) return;
 
@@ -305,7 +305,7 @@ dhtmlXForm.prototype.setValidation = function (id, value, rule) {
     item._validate = [];
 
     // apply new rules
-    if (typeof(rule) == "function" || typeof(window[rule]) == "function") {
+    if (typeof (rule) == "function" || typeof (window[rule]) == "function") {
         item._validate = [rule];
     } else {
         item._validate = String(rule).split(this.separator);
@@ -324,7 +324,7 @@ dhtmlXForm.prototype.setValidation = function (id, value, rule) {
 
 dhtmlXForm.prototype.clearValidation = function (id, value) {
 
-    if (typeof(value) != "undefined") id = [id, value];
+    if (typeof (value) != "undefined") id = [id, value];
     var item = this._getItemNode(id);
     if (!item) return;
 
@@ -335,7 +335,7 @@ dhtmlXForm.prototype.clearValidation = function (id, value) {
     item._validate = item._required ? ["NotEmpty"] : null;
 
     item = null;
-
+	
 };
 
 /* reload options */
@@ -351,7 +351,7 @@ dhtmlXForm.prototype.reloadOptions = function (name, data) {
         while (opts.length > 0) opts.remove(0);
         opts.length = 0;
         opts = null;
-        if (typeof(data) == "string") {
+        if (typeof (data) == "string") {
             this.doWithItem(name, "doLoadOptsConnector", data);
         } else if (data instanceof Array) {
             this.doWithItem(name, "doLoadOpts", {options: data});
@@ -362,7 +362,7 @@ dhtmlXForm.prototype.reloadOptions = function (name, data) {
         var combo = this.getCombo(name);
         combo.clearAll();
         combo.setComboValue("");
-        if (typeof(data) == "string") {
+        if (typeof (data) == "string") {
             this.doWithItem(name, "doLoadOptsConnector", data);
         } else if (data instanceof Array) {
             var toSelect = null;
@@ -378,7 +378,7 @@ dhtmlXForm.prototype.reloadOptions = function (name, data) {
 
 dhtmlXForm.prototype.setTooltip = function (id, value, tooltip) {
 
-    if (typeof(tooltip) == "undefined") tooltip = value; else id = [id, value];
+    if (typeof (tooltip) == "undefined") tooltip = value; else id = [id, value];
     var item = this._getItemNode(id);
     if (!item) return;
 

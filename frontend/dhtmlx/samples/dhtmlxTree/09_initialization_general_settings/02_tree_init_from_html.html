@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Initialize from HTML</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
 </head>
 <body>
@@ -26,8 +26,8 @@
 <table>
     <tr>
         <td>
-            <div id="treeboxbox_tree" setImagePath="../../../skins/web/imgs/dhxtree_web/" xclass="dhtmlxTree"
-                 style="width:250px; height:175px;">
+            <div id="treeboxbox_tree" setImagePath="../../../skins/web/imgs/dhxtree_web/"
+                 style="width:250px; height:175px;" xclass="dhtmlxTree">
                 <ul>
                     <li>Root
                         <ul>
@@ -44,7 +44,7 @@
             </div>
         </td>
         <td>
-            <div id="treeboxbox_tree" setImagePath="../../../skins/web/imgs/dhxtree_web/" class="dhtmlxTree"
+            <div class="dhtmlxTree" id="treeboxbox_tree" setImagePath="../../../skins/web/imgs/dhxtree_web/"
                  style="width:250px; height:175px;">
                 <ul>
                     <li>Root
@@ -68,14 +68,14 @@
 <div class="h3"><strong>Initialize from inline XML structure</strong></div>
 <div class="txt">It is possible to use standard dhtmlxTree XML structure enclosed in <strong>XMP</strong> tag inside div
     element which is a tree container.<br></div>
-<div id="treeboxbox_tree2" setImagePath="../../../skins/web/imgs/dhxtree_web/" class="dhtmlxTree"
+<div class="dhtmlxTree" id="treeboxbox_tree2" setImagePath="../../../skins/web/imgs/dhxtree_web/"
      style="width:250px; height:175px;">
     <xmp container="true">
-        <item text="Root" open="1" id="11">
-            <item text="Child1" select="1" open="1" id="12">
-                <item text="Child1-1" id="13"/>
+        <item id="11" open="1" text="Root">
+            <item id="12" open="1" select="1" text="Child1">
+                <item id="13" text="Child1-1"/>
             </item>
-            <item text="Child2" id="14"/>
+            <item id="14" text="Child2"/>
             <item id="15" text="Text"/>
         </item>
     </xmp>

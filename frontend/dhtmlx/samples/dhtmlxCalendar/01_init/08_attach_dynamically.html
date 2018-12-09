@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Attach inputs dynamically</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         #calendar,
@@ -27,19 +27,23 @@
     </style>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject();
             myCalendar.setPosition("right");
             var k = {"cal_1": "att_state", "cal_2": "att_state2", "cal_3": "att_state3"};
             for (var a in k) doAttach(a, k[a]);
         }
+
         var attached = {};
+
         function doAttach(id, sp) {
             if (attached[id] != null) return;
             attached[id] = myCalendar.attachObj(id);
             document.getElementById(sp).innerHTML = "attached";
             document.getElementById(sp).style.color = "green";
         }
+
         function doDetach(id, sp) {
             if (attached[id] == null) return;
             myCalendar.detachObj(attached[id]);
@@ -54,27 +58,27 @@
     <table>
         <tr>
             <td>
-                <input type="button" value="attach" onclick="doAttach('cal_1','att_state');">
-                <input type="button" value="detach" onclick="doDetach('cal_1','att_state');">
+                <input onclick="doAttach('cal_1','att_state');" type="button" value="attach">
+                <input onclick="doDetach('cal_1','att_state');" type="button" value="detach">
             </td>
             <td width="100"><span id="att_state"></span></td>
-            <td><input type="text" id="cal_1"></td>
+            <td><input id="cal_1" type="text"></td>
         </tr>
         <tr>
             <td>
-                <input type="button" value="attach" onclick="doAttach('cal_2','att_state2');">
-                <input type="button" value="detach" onclick="doDetach('cal_2','att_state2');">
+                <input onclick="doAttach('cal_2','att_state2');" type="button" value="attach">
+                <input onclick="doDetach('cal_2','att_state2');" type="button" value="detach">
             </td>
             <td><span id="att_state2"></span></td>
-            <td><input type="text" id="cal_2"></td>
+            <td><input id="cal_2" type="text"></td>
         </tr>
         <tr>
             <td>
-                <input type="button" value="attach" onclick="doAttach('cal_3','att_state3');">
-                <input type="button" value="detach" onclick="doDetach('cal_3','att_state3');">
+                <input onclick="doAttach('cal_3','att_state3');" type="button" value="attach">
+                <input onclick="doDetach('cal_3','att_state3');" type="button" value="detach">
             </td>
             <td><span id="att_state3"></span></td>
-            <td><input type="text" id="cal_3"></td>
+            <td><input id="cal_3" type="text"></td>
         </tr>
     </table>
 </div>

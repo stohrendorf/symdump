@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace core.microcode
 {
@@ -38,17 +39,11 @@ namespace core.microcode
         /// Size of this argument.
         /// </summary>
         byte Bits { get; }
-
-        /// <summary>
-        /// Base register used (if any).
-        /// </summary>
-        uint? Register { get; }
     }
 
     public class ConstValue : IMicroArg
     {
         public byte Bits { get; }
-        public uint? Register => null;
 
         public readonly ulong Value;
 
@@ -60,25 +55,25 @@ namespace core.microcode
 
         public override string ToString()
         {
-            return $"0x{Value:X}[{Bits}]";
+            return $"0x{Value:X}<<{Bits}>>";
         }
     }
 
     public class AddressValue : ConstValue
     {
-        public readonly string Name;
+        private readonly string _name;
 
         public AddressValue(ulong value, string name, byte bits) : base(value, bits)
         {
-            Name = name;
+            _name = name;
         }
 
         public override string ToString()
         {
-            if (Name != null)
-                return $"&{Name}[@0x{Value:X}]";
+            if (_name != null)
+                return $"&{_name}[[0x{Value:X}]]";
             else
-                return $"&<unnamed>[@0x{Value:X}]";
+                return $"&<!unnamed!>[[0x{Value:X}]]";
         }
     }
 
@@ -86,7 +81,7 @@ namespace core.microcode
     public class RegisterArg : IMicroArg
     {
         public byte Bits { get; }
-        public uint? Register { get; }
+        public uint Register { get; }
 
         public RegisterArg(uint register, byte bits)
         {
@@ -132,8 +127,8 @@ namespace core.microcode
 
     public class MicroInsn
     {
-        public MicroOpcode Opcode;
-        public IList<IMicroArg> Args;
+        public readonly MicroOpcode Opcode;
+        public readonly IList<IMicroArg> Args;
 
         public MicroInsn(MicroOpcode opcode, params IMicroArg[] args)
         {
@@ -149,93 +144,90 @@ namespace core.microcode
 
     public class CopyInsn : MicroInsn
     {
-        public readonly byte Bits;
+        private readonly byte _bits;
 
         public CopyInsn(IMicroArg dest, IMicroArg src) : base(MicroOpcode.Copy, dest, src)
         {
             if (dest.Bits != src.Bits)
                 throw new ArgumentException($"Parameter bit size mismatch (dest={dest.Bits} vs. src={src.Bits})");
 
-            Bits = dest.Bits;
+            _bits = dest.Bits;
         }
 
         public override string ToString()
         {
-            return base.ToString() + $" [{Bits}]";
+            return base.ToString() + $" <<{_bits}>>";
         }
     }
 
     public class UnsignedCastInsn : MicroInsn
     {
-        public readonly byte FromBits;
-        public readonly byte ToBits;
+        private readonly byte _fromBits;
+        private readonly byte _toBits;
 
         public UnsignedCastInsn(RegisterArg from, RegisterArg to) : base(MicroOpcode.UResize, to, from)
         {
-            FromBits = from.Bits;
-            ToBits = to.Bits;
+            _fromBits = from.Bits;
+            _toBits = to.Bits;
         }
 
         public override string ToString()
         {
-            return base.ToString() + $" [{FromBits} -> {ToBits}]";
+            return base.ToString() + $" <<{_fromBits} -> {_toBits}>>";
         }
     }
 
     public class SignedCastInsn : MicroInsn
     {
-        public readonly byte FromBits;
-        public readonly byte ToBits;
+        private readonly byte _fromBits;
+        private readonly byte _toBits;
 
         public SignedCastInsn(RegisterArg from, RegisterArg to) : base(MicroOpcode.SResize, to, from)
         {
-            FromBits = from.Bits;
-            ToBits = to.Bits;
+            _fromBits = from.Bits;
+            _toBits = to.Bits;
         }
 
         public override string ToString()
         {
-            return base.ToString() + $" [{FromBits} -> {ToBits}]";
+            return base.ToString() + $" <<{_fromBits} -> {_toBits}>>";
         }
     }
 
     public class UnsupportedInsn : MicroInsn
     {
-        public readonly string Mnemonic;
+        private readonly string _mnemonic;
 
         public UnsupportedInsn(string mnemonic, params IMicroArg[] args) : base(MicroOpcode.Nop, args)
         {
-            Mnemonic = mnemonic;
+            _mnemonic = mnemonic;
         }
 
         public override string ToString()
         {
-            return base.ToString() + $" [{Mnemonic}]";
+            return base.ToString() + $" [{_mnemonic}]";
         }
+    }
+
+    public enum JumpType
+    {
+        Call,
+        CallConditional,
+        Jump,
+        JumpConditional,
+        Control
     }
 
     public class MicroAssemblyBlock
     {
         public readonly uint Address;
-        public uint Size = 0;
-        public IList<MicroInsn> Insns = new List<MicroInsn>();
-        public IList<uint> Outs = new List<uint>();
-
-        private static uint _regId = 1000;
+        public readonly IList<MicroInsn> Insns = new List<MicroInsn>();
+        public readonly IDictionary<uint, JumpType> Ins = new Dictionary<uint, JumpType>();
+        public IDictionary<uint, JumpType> Outs = new Dictionary<uint, JumpType>();
 
         public MicroAssemblyBlock(uint address)
         {
             Address = address;
-        }
-
-        public uint GetTmpRegId()
-        {
-            return _regId++;
-        }
-
-        public RegisterArg GetTmpReg(byte bits)
-        {
-            return new RegisterArg(GetTmpRegId(), bits);
         }
 
         public void Add(MicroInsn insn)
@@ -255,7 +247,7 @@ namespace core.microcode
 
         private static bool IsSequence(IReadOnlyList<MicroInsn> insns, int ofs, params MicroOpcode[] types)
         {
-            if (ofs + types.Length >= insns.Count)
+            if (ofs + types.Length > insns.Count)
                 return false;
 
             for (int i = 0; i < types.Length; ++i)
@@ -267,14 +259,119 @@ namespace core.microcode
             return true;
         }
 
+        [NotNull]
+        private static MicroInsn Optimize([NotNull] MicroInsn insn, IDictionary<uint, ConstValue> registerValues)
+        {
+            {
+                for (int i = 1; i < insn.Args.Count; ++i)
+                {
+                    if (insn.Args[i] is RegisterArg regArg && registerValues.TryGetValue(regArg.Register, out var knownArg))
+                    {
+                        insn.Args[i] = knownArg;
+                    }
+                }
+                if (insn.Args[0] is RegisterArg r)
+                {
+                    if (insn.Opcode == MicroOpcode.Copy && insn.Args[1] is ConstValue v)
+                        registerValues[r.Register] = v;
+                    else
+                        registerValues.Remove(r.Register);
+                }
+            }
+            
+            {
+                if (insn.Opcode == MicroOpcode.Add && insn.Args[1] is ConstValue c0 && insn.Args[2] is ConstValue c1)
+                {
+                    return new CopyInsn(insn.Args[0], new ConstValue(c0.Value + c1.Value, insn.Args[0].Bits));
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.Sub && insn.Args[1] is ConstValue c0 && insn.Args[2] is ConstValue c1)
+                {
+                    return new CopyInsn(insn.Args[0], new ConstValue(c0.Value - c1.Value, insn.Args[0].Bits));
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.Or && insn.Args[1] is ConstValue c0 && insn.Args[2] is ConstValue c1)
+                {
+                    return new CopyInsn(insn.Args[0], new ConstValue(c0.Value | c1.Value, insn.Args[0].Bits));
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.XOr && insn.Args[1] is ConstValue c0 && insn.Args[2] is ConstValue c1)
+                {
+                    return new CopyInsn(insn.Args[0], new ConstValue(c0.Value ^ c1.Value, insn.Args[0].Bits));
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.And && insn.Args[1] is ConstValue c0 && insn.Args[2] is ConstValue c1)
+                {
+                    return new CopyInsn(insn.Args[0], new ConstValue(c0.Value & c1.Value, insn.Args[0].Bits));
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.SHL && insn.Args[1] is ConstValue c0 && insn.Args[2] is ConstValue c1)
+                {
+                    return new CopyInsn(insn.Args[0], new ConstValue(c0.Value << (int) c1.Value, insn.Args[0].Bits));
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.SRA && insn.Args[1] is ConstValue c0 && insn.Args[2] is ConstValue c1)
+                {
+                    return new CopyInsn(insn.Args[0],
+                        new ConstValue((ulong) ((long) c0.Value / (1 << (int) c1.Value)), insn.Args[0].Bits));
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.SRL && insn.Args[1] is ConstValue c0 && insn.Args[2] is ConstValue c1)
+                {
+                    return new CopyInsn(insn.Args[0], new ConstValue(c0.Value >> (int) c1.Value, insn.Args[0].Bits));
+                }
+            }
+
+            {
+                if (insn.Opcode == MicroOpcode.Add && insn.Args[2] is ConstValue c1 && c1.Value == 0)
+                {
+                    return new CopyInsn(insn.Args[0], insn.Args[1]);
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.Sub && insn.Args[2] is ConstValue c1 && c1.Value == 0)
+                {
+                    return new CopyInsn(insn.Args[0], insn.Args[1]);
+                }
+            }
+            {
+                if (insn.Opcode == MicroOpcode.Add && insn.Args[1] is ConstValue c1 && c1.Value == 0)
+                {
+                    return new CopyInsn(insn.Args[0], insn.Args[2]);
+                }
+            }
+
+            return insn;
+        }
+
         public void Optimize(IDebugSource debugSource)
+        {
+            while (OptimizeImpl(debugSource))
+            {
+                /* continue */
+            }
+        }
+
+        private bool OptimizeImpl(IDebugSource debugSource)
         {
             var tmp = Insns.Where(i => i.Opcode != MicroOpcode.Nop).ToList();
             Insns.Clear();
+            
+            IDictionary<uint, ConstValue> registerValues = new Dictionary<uint, ConstValue>();
+            bool changed = false;
 
             for (int i = 0; i < tmp.Count; ++i)
             {
-                var insn = tmp[i];
+                var insn = Optimize(tmp[i], registerValues);
+                changed |= !ReferenceEquals(insn, tmp[i]);
+
                 if (i < tmp.Count - 1)
                 {
                     if (IsSequence(tmp, i, MicroOpcode.Copy, MicroOpcode.Copy))
@@ -294,6 +391,7 @@ namespace core.microcode
                                 new AddressValue(addr, debugSource.GetSymbolName((uint) addr), insn.Args[0].Bits)
                             ));
                             ++i;
+                            changed = true;
                             continue;
                         }
                         else if (insn.Args[0] is RegisterArg r0_1 && insn.Args[1] is ConstValue c0_1
@@ -311,6 +409,7 @@ namespace core.microcode
                                 new AddressValue(addr, debugSource.GetSymbolName((uint) addr), next.Args[0].Bits)
                             ));
                             ++i;
+                            changed = true;
                             continue;
                         }
                     }
@@ -328,6 +427,25 @@ namespace core.microcode
                             var val = c0.Value + c1.Value;
                             Add(new CopyInsn(insn.Args[0], new ConstValue(val, 32)));
                             ++i;
+                            changed = true;
+                            continue;
+                        }
+                    }
+                    else if (IsSequence(tmp, i, MicroOpcode.Copy, MicroOpcode.Cmp))
+                    {
+                        var next = tmp[i + 1];
+                        if (insn.Args[0] is RegisterArg r0 && insn.Args[1] is ConstValue c0
+                                                           && next.Args[1] is RegisterArg r1 &&
+                                                           r1.Register == r0.Register)
+                        {
+                            // copy r0, const
+                            // cmp x, r0
+                            // -> copy r0, const
+                            // -> cmp x, const
+                            Add(insn);
+                            Add(new MicroInsn(MicroOpcode.Cmp, r0, c0));
+                            ++i;
+                            changed = true;
                             continue;
                         }
                     }
@@ -335,6 +453,8 @@ namespace core.microcode
 
                 Add(insn);
             }
+
+            return changed;
         }
     }
 }

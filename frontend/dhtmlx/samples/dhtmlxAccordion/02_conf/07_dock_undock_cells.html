@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Dock / undock cells</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -29,6 +29,7 @@
         var sel;
         var myGrid;
         var myMenu;
+
         function doOnLoad() {
 
             myAcc = new dhtmlXAccordion({
@@ -57,13 +58,16 @@
             myGrid.setImagePath("../../../codebase/imgs/");
             myGrid.load("../common/grid.xml");
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function dockCell() {
             myAcc.cells(getId()).dock();
         }
+
         function undockCell() {
             var id = getId();
             myAcc.cells(id).undock(550, 20, 400, 300);
@@ -76,9 +80,8 @@
     <div id="accObj"></div>
 </div>
 <div style="margin: 50px 0px 20px 0px;">
-    Select Item <select id="sel"></select> <input type="button" value="Dock" onclick="dockCell();"> <input type="button"
-                                                                                                           value="Undock"
-                                                                                                           onclick="undockCell();">
+    Select Item <select id="sel"></select> <input onclick="dockCell();" type="button" value="Dock"> <input
+        onclick="undockCell();" type="button" value="Undock">
 </div>
 </body>
 </html>

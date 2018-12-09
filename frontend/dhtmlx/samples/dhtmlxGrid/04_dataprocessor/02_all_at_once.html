@@ -2,13 +2,14 @@
 <html>
 <head>
     <title> Sending all at once</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myGrid, myDataProcessor;
+
         function doOnLoad() {
             // init grid and set its parameters (this part as always)
             myGrid = new dhtmlXGridObject('gridbox');
@@ -36,7 +37,7 @@
       onclick="myGrid.addRow((new Date()).valueOf(),[0,'','','',false,'na',false,''],myGrid.getRowIndex(myGrid.getSelectedId()))">Add
     row</a></p>
 <p><a href="javascript:void(0)" onclick="myGrid.deleteSelectedItem()">Remove Selected Row</a></p>
-<input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();">
+<input name="some_name" onclick="myDataProcessor.sendData();" type="button" value="update">
 </body>
 </html>
 

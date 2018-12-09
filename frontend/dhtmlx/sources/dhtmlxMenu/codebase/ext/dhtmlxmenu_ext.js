@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 // enable/disable
 
@@ -106,7 +106,7 @@ dhtmlXMenuObject.prototype.loadFromHTML = function (objId, clearAfterAdd, onLoad
     var t = this.conf.tags.item;
     this.conf.tags.item = "div";
 
-    var node = (typeof(objId) == "string" ? document.getElementById(objId) : objId);
+    var node = (typeof (objId) == "string" ? document.getElementById(objId) : objId);
     var items = this._xmlToJson(node, this.idPrefix + this.topId);
     this._initObj(items);
 
@@ -116,9 +116,9 @@ dhtmlXMenuObject.prototype.loadFromHTML = function (objId, clearAfterAdd, onLoad
     node = objOd = null;
 
     if (onload != null) {
-        if (typeof(onLoad) == "function") {
+        if (typeof (onLoad) == "function") {
             onLoad();
-        } else if (typeof(window[onLoad]) == "function") {
+        } else if (typeof (window[onLoad]) == "function") {
             window[onLoad]();
         }
     }
@@ -248,9 +248,9 @@ dhtmlXMenuObject.prototype.clearHref = function (itemId) {
     delete this.itemPull[this.idPrefix + itemId]["href_target"];
 };
 /*
- File [id="file"] -> Open [id="open"] -> Last Save [id="lastsave"]
- getCircuit("lastsave") will return Array("file", "open", "lastsave");
- */
+File [id="file"] -> Open [id="open"] -> Last Save [id="lastsave"]
+getCircuit("lastsave") will return Array("file", "open", "lastsave");
+*/
 
 dhtmlXMenuObject.prototype.getCircuit = function (id) {
     var parents = new Array(id);

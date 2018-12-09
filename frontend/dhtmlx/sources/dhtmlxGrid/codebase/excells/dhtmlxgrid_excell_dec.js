@@ -1,25 +1,25 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /*
- Decimal value (10,000.00) eXcell for dhtmlxGrid
- (c)DHTMLX LTD. 2005
+Decimal value (10,000.00) eXcell for dhtmlxGrid
+(c)DHTMLX LTD. 2005
 
 
- The corresponding  cell value in XML should be valid number
+The corresponding  cell value in XML should be valid number
 
- Samples:
- <cell>123.01</cell>
- <cell>1234.09356</cell>
- <cell>12345</cell>
- <cell>0</cell>
- <cell>-100</cell>
- */
+Samples:
+<cell>123.01</cell>
+<cell>1234.09356</cell>
+<cell>12345</cell>
+<cell>0</cell>
+<cell>-100</cell>
+*/
 function eXcell_dec(cell) {
     if (cell) {
         this.cell = cell;

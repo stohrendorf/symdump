@@ -2,13 +2,13 @@
 <html>
 <head>
     <title>Skins</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/web/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/terrace/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/skyblue/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/web/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/terrace/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/skyblue/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -35,6 +35,7 @@
             material: "icons_material"
         };
         var loadData = {};
+
         function doOnLoad(skin) {
 
             if (!checkLoadState()) return;
@@ -89,12 +90,14 @@
             });
 
         }
+
         function doOnUnload() {
             if (dhxWins != null && dhxWins.unload != null) {
                 dhxWins.unload();
                 dhxWins = w1 = w2 = w3 = null;
             }
         }
+
         function checkLoadState() {
             var s = true;
             for (var a in loadData) s = s && loadData[a];
@@ -105,9 +108,9 @@
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="winVP"></div>
 <div class="controls">
-    <input type="button" value="skyblue" onclick="doOnLoad('dhx_skyblue');">
-    <input type="button" value="web" onclick="doOnLoad('dhx_web');">
-    <input type="button" value="terrace" onclick="doOnLoad('dhx_terrace');">
-    <input type="button" value="material" onclick="doOnLoad('material');">
+    <input onclick="doOnLoad('dhx_skyblue');" type="button" value="skyblue">
+    <input onclick="doOnLoad('dhx_web');" type="button" value="web">
+    <input onclick="doOnLoad('dhx_terrace');" type="button" value="terrace">
+    <input onclick="doOnLoad('material');" type="button" value="material">
 </div>
 </body>

@@ -22,7 +22,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 10px;
     overflow: hidden;
 }
-
 .dhx_toolbar_dhx_terrace {
     background-color: #ffffff;
     position: relative;
@@ -35,29 +34,23 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-size: 13px;
     color: #333333;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_btn i {
     font-size: 20px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_btn i {
     font-size: 26px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_btn i {
     font-size: 38px;
 }
-
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_float_left {
     float: left;
     *margin-left: 1px;
 }
-
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_float_right {
     float: right;
     *margin-right: 1px;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn,
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_arw {
     border: 1px solid #cccccc;
@@ -80,34 +73,28 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     *height: 20px;
     overflow: hidden;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn.dhxtoolbar_btn_dis,
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_arw.dhxtoolbar_btn_dis {
     color: #bbbbbb;
     background-color: #fafafa;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn.dhxtoolbar_btn_over,
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_arw.dhxtoolbar_btn_over {
     color: #2e2e2e;
     background-color: #ebebeb;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn.dhxtoolbar_btn_pres,
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_arw.dhxtoolbar_btn_pres {
     color: #2e2e2e;
     background-color: #e6e6e6;
     box-shadow: 0 0 5px #d9d9d9 inset;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn {
     float: left;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn.dhxtoolbar_btn_pres_dis {
     background-color: #e6e6e6;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn img {
     float: left;
     margin: 2px;
@@ -121,7 +108,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn i {
     float: left;
     margin: 2px;
@@ -139,7 +125,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn .dhxtoolbar_input {
     position: relative;
     float: left;
@@ -154,28 +139,23 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     direction: ltr;
     outline: none;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn .dhxtoolbar_input:disabled {
     background-color: #fafafa;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn.dhxtoolbar_btn_dis div.dhxtoolbar_sl_pen {
     border-color: #c2c2c2;
     background-color: #dcdcdc;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn.dhxtoolbar_btn_dis div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn.dhxtoolbar_btn_dis div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn.dhxtoolbar_btn_dis div.dhxtoolbar_sl_bg_r {
     border-color: #c2c2c2;
     background-color: #e1e1e1;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_arw {
     margin-left: -3px;
     z-index: 1;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_arw div.arwimg {
     margin: 2px 0px;
     padding: 0px 3px;
@@ -183,11 +163,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-position: center center;
     background-repeat: no-repeat;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_arw.dhxtoolbar_btn_dis div.arwimg {
     background-image: url("../imgs/dhxtoolbar_terrace/dhxtoolbar_arrow_dis.gif");
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn div.dhxtoolbar_text,
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_arw div.arwimg {
     float: left;
@@ -204,19 +182,16 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_btn div.dhxtoolbar_text {
     padding: 0px;
     margin: 2px 5px;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_sep {
     float: left;
     height: 20px;
     margin: 5px 6px 0px 5px;
     overflow: hidden;
 }
-
 .dhx_toolbar_dhx_terrace div.dhx_toolbar_text {
     float: left;
     vertical-align: middle;
@@ -230,7 +205,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_sl_bg_r {
@@ -246,21 +220,18 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-color: #e8e8e8;
     overflow: hidden;
 }
-
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_sl_bg_l {
     margin-left: 4px;
     border-left: 1px solid #cccccc;
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
 }
-
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_sl_bg_r {
     margin-right: 4px;
     border-right: 1px solid #cccccc;
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
 }
-
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_sl_pen,
 .dhx_toolbar_dhx_terrace div.dhxtoolbar_sl_pen.dhxtoolbar_over {
     position: absolute;
@@ -281,160 +252,129 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 {
     height: 40px !important;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_btn,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_arw {
     height: 28px;
     *height: 26px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_btn img {
     width: 24px;
     height: 24px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_btn i {
     width: 24px;
     height: 24px;
     line-height: 23px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_btn div.dhxtoolbar_text,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_arw div.arwimg {
     height: 24px;
     line-height: 23px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_text {
     padding-top: 6px;
     padding-bottom: 6px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_sep {
     height: 26px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhxtoolbar_sl_bg_r {
     margin-top: 11px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhxtoolbar_sl_pen {
     top: 9px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_24 div.dhx_toolbar_btn .dhxtoolbar_input {
     margin-top: 4px;
     margin-bottom: 4px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 {
     height: 48px !important;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_btn,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_arw {
     height: 36px;
     *height: 34px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_btn img {
     width: 32px;
     height: 32px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_btn i {
     width: 32px;
     height: 32px;
     line-height: 31px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_btn div.dhxtoolbar_text,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_arw div.arwimg {
     height: 32px;
     line-height: 31px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_text {
     padding-top: 10px;
     padding-bottom: 10px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_sep {
     height: 34px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhxtoolbar_sl_bg_r {
     margin-top: 15px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhxtoolbar_sl_pen {
     top: 13px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_32 div.dhx_toolbar_btn .dhxtoolbar_input {
     margin-top: 8px;
     margin-bottom: 8px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 {
     height: 64px !important;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_btn,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_arw {
     height: 52px;
     *height: 50px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_btn img {
     width: 48px;
     height: 48px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_btn i {
     width: 48px;
     height: 48px;
     line-height: 47px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_btn div.dhxtoolbar_text,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_arw div.arwimg {
     height: 48px;
     line-height: 47px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_text {
     padding-top: 18px;
     padding-bottom: 18px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_sep {
     height: 50px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhxtoolbar_sl_bg_l,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhxtoolbar_sl_bg_m,
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhxtoolbar_sl_bg_r {
     margin-top: 23px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhxtoolbar_sl_pen {
     top: 21px;
 }
-
 .dhx_toolbar_dhx_terrace.dhxtoolbar_icons_48 div.dhx_toolbar_btn .dhxtoolbar_input {
     margin-top: 16px;
     margin-bottom: 16px;
 }
-
 div.dhx_toolbar_poly_dhx_terrace {
     position: absolute;
     border: 1px solid #cccccc;
@@ -457,7 +397,6 @@ div.dhx_toolbar_poly_dhx_terrace {
     -webkit-overflow-scrolling: touch;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 div.dhx_toolbar_poly_dhx_terrace td {
     font-family: Arial, Helvetica;
     font-size: 13px;
@@ -465,27 +404,22 @@ div.dhx_toolbar_poly_dhx_terrace td {
     line-height: normal;
     padding: 0px 5px;
 }
-
 div.dhx_toolbar_poly_dhx_terrace .tr_btn_over td,
 div.dhx_toolbar_poly_dhx_terrace .tr_btn_selected td {
     background-color: #fff3a1;
 }
-
 div.dhx_toolbar_poly_dhx_terrace .tr_btn_disabled td {
     color: #bbbbbb;
 }
-
 div.dhx_toolbar_poly_dhx_terrace td.td_btn_img {
     width: 18px;
     text-align: center;
 }
-
 div.dhx_toolbar_poly_dhx_terrace td.td_btn_img img.btn_sel_img {
     margin-top: 2px;
     width: 18px;
     height: 18px;
 }
-
 div.dhx_toolbar_poly_dhx_terrace td.td_btn_img i {
     width: 18px;
     height: 18px;
@@ -494,18 +428,15 @@ div.dhx_toolbar_poly_dhx_terrace td.td_btn_img i {
     color: inherit;
     font-size: 1.1em;
 }
-
 div.dhx_toolbar_poly_dhx_terrace td.td_btn_txt div.btn_sel_text {
     padding: 0px 16px 0px 1px;
     height: 26px;
     line-height: 25px;
     overflow: hidden;
 }
-
 div.dhx_toolbar_poly_dhx_terrace tr.tr_sep td {
     padding: 2px 0px;
 }
-
 div.dhx_toolbar_poly_dhx_terrace div.btn_sep {
     position: relative;
     font-size: 1px;
@@ -514,7 +445,6 @@ div.dhx_toolbar_poly_dhx_terrace div.btn_sep {
     width: 100%;
     border-top: 1px solid #cccccc;
 }
-
 div.dhx_toolbar_slider_label_dhx_terrace {
     position: absolute;
     border: 1px solid #cccccc;
@@ -535,7 +465,6 @@ div.dhx_toolbar_slider_label_dhx_terrace {
     font-size: 13px;
     color: black;
 }
-
 .dhxtoolbar_maxopen_test {
     position: absolute;
     width: 200px;
@@ -547,11 +476,9 @@ div.dhx_toolbar_slider_label_dhx_terrace {
     border: 1px solid #ffffff;
     visibility: hidden;
 }
-
 .dhxtoolbar_maxopen_test2 {
     height: 200px;
 }
-
 .dhxacc_base_dhx_terrace div.dhx_cell_acc div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging,
 .dhxlayout_base_dhx_terrace div.dhx_cell_layout div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging,
 .dhxtabbar_base_dhx_terrace div.dhx_cell_tabbar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging {
@@ -567,7 +494,6 @@ div.dhx_toolbar_slider_label_dhx_terrace {
     background: white;
     z-index: 1;
 }
-
 .dhxwins_vp_dhx_terrace div.dhxwin_active div.dhx_cell_wins div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging,
 .dhxwins_vp_dhx_terrace div.dhxwin_inactive div.dhx_cell_wins div.dhx_cell_statusbar_def div.dhx_cell_statusbar_paging {
     position: relative;

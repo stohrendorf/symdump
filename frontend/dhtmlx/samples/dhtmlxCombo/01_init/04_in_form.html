@@ -2,26 +2,27 @@
 <html>
 <head>
     <title>Integration with form</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
 
         var myForm;
         var myCombo;
+
         function doOnLoad() {
             var formData = [
                 {type: "settings", position: "label-left", labelWidth: 110, inputWidth: 200},
                 {type: "label", label: "Simple init"},
                 {
                     type: "combo", label: "From script", name: "audio", options: [
-                    {text: "AAC", value: "AAC"},
-                    {text: "AC3", value: "AC3", selected: true},
-                    {text: "MP3", value: "MP3"},
-                    {text: "FLAC", value: "FLAC"}
-                ]
+                        {text: "AAC", value: "AAC"},
+                        {text: "AC3", value: "AC3", selected: true},
+                        {text: "MP3", value: "MP3"},
+                        {text: "FLAC", value: "FLAC"}
+                    ]
                 },
                 {type: "combo", label: "From server", name: "consoles", connector: "../common/data_consoles.json"},
                 {type: "combo", label: "After init", name: "b2"},

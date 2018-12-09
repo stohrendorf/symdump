@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Add/delete data on runtime</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
-    <link rel="stylesheet" type="text/css" href="../common/demo_style.css"/>
+    <link href="../common/demo_style.css" rel="stylesheet" type="text/css"/>
     <script>
         var myList;
+
         function doOnLoad() {
             myList = new dhtmlXList({
                 container: "data_container",
@@ -18,6 +19,7 @@
             });
             myList.load("../common/list.xml");
         }
+
         function add_data(argument) {
             myList.add({
                 name: document.getElementById("n_name").value,
@@ -25,6 +27,7 @@
                 city: document.getElementById("c_name").value
             }, 0)
         }
+
         function remove_data() {
             myList.remove(myList.getSelected());
         }
@@ -33,13 +36,13 @@
 <body onload="doOnLoad();">
 <h1>Add/delete data on runtime</h1>
 <form style="width:212px">
-    Name <input type="text" id="n_name" value="John Doe"><br>
-    Address <input type="text" id="a_name" value="15 Long Street"><br>
-    City <input type="text" id="c_name" value="Smalltown"><br>
-    <input type="button" value="Add &rarr;" onclick='add_data()'>
+    Name <input id="n_name" type="text" value="John Doe"><br>
+    Address <input id="a_name" type="text" value="15 Long Street"><br>
+    City <input id="c_name" type="text" value="Smalltown"><br>
+    <input onclick='add_data()' type="button" value="Add &rarr;">
     <hr>
-    <input type="button" value="Remove selected &rarr;" onclick='remove_data()'>
+    <input onclick='remove_data()' type="button" value="Remove selected &rarr;">
 </form>
-<div id="data_container" class="list_demo_samples"></div>
+<div class="list_demo_samples" id="data_container"></div>
 </body>
 </html>

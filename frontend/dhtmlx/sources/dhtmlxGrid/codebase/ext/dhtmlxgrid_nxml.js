@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /**
  *   @desc: load grid from CSV file
@@ -69,7 +69,7 @@ dhtmlXGridObject.prototype.loadCSVString = function (str) {
  *     @edition: Professional
  *   @topic: 0
  */
-dhtmlXGridObject.prototype.serializeToCSV = function (textmode) {
+dhtmlXGridObject.prototype.serializeToCSV = function (textmode) { 
     this.editStop();
     if (this._mathSerialization)
         this._agetm = "getMathValue";
@@ -113,7 +113,7 @@ dhtmlXGridObject.prototype._serializeRowToCVS = function (r, i, start, end) {
         r = this.render_row(i);
         if (this._fake && !this._fake.rowsAr[r.idd]) this._fake.render_row(i);
     }
-
+    
 
     if (!this._csvAID)
         out[out.length] = r.idd;
@@ -143,8 +143,8 @@ dhtmlXGridObject.prototype._serializeRowToCVS = function (r, i, start, end) {
             if (ind >= end) break;
             ind++;
             /*	if (zx.getText)
-             zxVal=zx.getText();
-             else*/
+                    zxVal=zx.getText();
+                else*/
             if (zx.cell)
                 zxVal = zx[this._agetm]();
             else zxVal = "";
@@ -471,8 +471,7 @@ dhtmlXGridObject.prototype.printView = function (before, after) {
                     html += cells[j].outerHTML;
                 }
             html += "</tr>";
-        }
-        else
+        } else
             html += "<tr class='header_row_" + i + "' style='background-color:lightgrey'>" + (this._fake ? this._fake.hdr.rows[i].innerHTML : "") + this.hdr.rows[i].innerHTML + "</tr>";
     }
 

@@ -16,36 +16,29 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     float: left;
     line-height: normal;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_base {
     position: relative;
     float: left;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_base {
     float: right;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_base_nested {
     padding: 0px 0px 0px 0px;
     clear: both;
     *display: inline-block;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_base_nested {
     padding: 0px 0px 0px 0px;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_block {
     clear: both;
 }
-
 .dhxform_obj_dhx_skyblue div.block_dhxform_item_label_left {
     display: block;
     clear: both;
     *clear: none;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_label div.dhxform_label_nav_link,
 .dhxform_obj_dhx_skyblue div.dhxform_label div.dhxform_label_nav_link:visited,
 .dhxform_obj_dhx_skyblue div.dhxform_label div.dhxform_label_nav_link:active,
@@ -57,15 +50,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     white-space: normal;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_label div.dhxform_label_nav_link:focus {
     color: #305f87;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled span.nav_link {
     color: inherit;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_img,
 .dhxform_obj_dhx_skyblue div.dhxform_actv_c,
 .dhxform_obj_dhx_skyblue div.dhxform_actv_r {
@@ -73,7 +63,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 18px;
     font-size: 1px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_img.chbx0,
 .dhxform_obj_dhx_skyblue div.dhxform_img.chbx1,
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_img.chbx0,
@@ -89,55 +78,42 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-image: url("../imgs/dhxform_skyblue/dhxform_chbxrd.gif");
     background-repeat: no-repeat;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_actv_c.chbx0 {
     background-position: -162px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_actv_c.chbx1 {
     background-position: -144px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_actv_r.rdbt0 {
     background-position: -198px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_actv_r.rdbt1 {
     background-position: -180px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_img.chbx0 {
     background-position: -18px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_img.chbx1 {
     background-position: 0px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_img.chbx0 {
     background-position: -54px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_img.chbx1 {
     background-position: -36px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_img.rdbt0 {
     background-position: -90px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_img.rdbt1 {
     background-position: -72px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_img.rdbt0 {
     background-position: -126px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_img.rdbt1 {
     background-position: -108px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_label {
     font-family: inherit;
     font-size: inherit;
@@ -146,59 +122,47 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     white-space: normal;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_label.dhxform_label_align_left {
     text-align: left;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_label.dhxform_label_align_left {
     text-align: right;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_label.dhxform_label_align_center {
     text-align: center;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_label.dhxform_label_align_right {
     text-align: right;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_label.dhxform_label_align_right {
     text-align: left;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_label,
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_label div.dhxform_label_nav_link,
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_label span.dhxform_item_required {
     color: #b2b2b2;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_label span.dhxform_item_required {
     margin-left: 5px;
     margin-right: 0px;
     color: red;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_label span.dhxform_item_required {
     margin-left: 0px;
     margin-right: 5px;
 }
-
 .dhxform_obj_dhx_skyblue input.dhxform_textarea {
     padding: 4px 3px !important;
     margin: 0px;
     font-size: 1em;
 }
-
 .dhxform_obj_dhx_skyblue textarea.dhxform_textarea {
     padding: 4px 3px !important;
 }
-
 .dhxform_obj_dhx_skyblue input.dhxform_textarea::-ms-clear,
 .dhxform_obj_dhx_skyblue textarea.dhxform_textarea::-ms-clear {
     display: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhxform_textarea {
     border: 1px solid #a4bed4;
     font-family: Tahoma, Helvetica;
@@ -206,22 +170,18 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: black;
     resize: none;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled .dhxform_textarea {
     color: #b2b2b2;
     background-color: white;
     border: 1px solid #c2d0dd;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl .dhxform_textarea {
     text-align: right;
     direction: rtl;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_control.dhxform_img_node {
     position: relative;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_control.dhxform_img_node .dhxform_textarea {
     border: 1px solid white;
     background-color: white;
@@ -231,7 +191,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     *line-height: 1px;
     *display: inline;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_control.dhxform_img_node div.dhxform_img,
 .dhxform_obj_dhx_skyblue div.dhxform_control.dhxform_img_node div.dhxform_actv_c,
 .dhxform_obj_dhx_skyblue div.dhxform_control.dhxform_img_node div.dhxform_actv_r {
@@ -241,7 +200,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     position: absolute;
     margin: 0px;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_control.dhxform_img_node div.dhxform_img {
     float: none;
     top: 2px;
@@ -249,7 +207,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     position: absolute;
     margin: 0px;
 }
-
 .dhxform_obj_dhx_skyblue .dhxform_select {
     border: 1px solid #a4bed4;
     background-color: #ffffff;
@@ -259,33 +216,27 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-size: 1em;
     color: black;
 }
-
 .dhxform_obj_dhx_skyblue .dhxform_select option {
     padding-left: 2px;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled .dhxform_select {
     color: #b2b2b2;
     background-color: #ffffff;
     border: 1px solid #c2d0dd;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl select,
 .dhxform_obj_dhx_skyblue.dhxform_rtl option {
     direction: rtl;
 }
-
 .dhxform_obj_dhx_skyblue div.fs_dhxform_item_label_left,
 .dhxform_obj_dhx_skyblue div.fs_dhxform_item_label_right {
     padding: 5px 0px 5px 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.fs_dhxform_item_label_left fieldset.dhxform_fs div.dhxform_base_nested.dhxform_fs_nested,
 .dhxform_obj_dhx_skyblue div.fs_dhxform_item_label_right fieldset.dhxform_fs div.dhxform_base_nested.dhxform_fs_nested {
     margin-right: 19px;
     margin-left: 5px;
 }
-
 .dhxform_obj_dhx_skyblue fieldset.dhxform_fs {
     border: 1px solid #a4bed4;
     margin: 0px;
@@ -293,11 +244,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     clear: left;
     width: 100%;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled fieldset.dhxform_fs {
     border: 1px solid #c2d0dd;
 }
-
 .dhxform_obj_dhx_skyblue fieldset.dhxform_fs legend.fs_legend {
     font-family: Tahoma, Helvetica;
     font-size: inherit;
@@ -307,131 +256,108 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin-left: 5px;
     text-align: left;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl fieldset.dhxform_fs legend.fs_legend {
     text-align: right;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled fieldset.dhxform_fs legend.fs_legend {
     color: #b2b2b2;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_right {
     clear: both;
     padding-top: 6px;
     cursor: default;
     *display: inline-block;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_right div.dhxform_img,
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_right div.dhxform_actv_c,
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_right div.dhxform_actv_r {
     float: left;
     margin: 0px;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_item_label_right div.dhxform_img {
     float: right;
     margin: 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_right div.dhxform_label {
     float: left;
     padding: 2px 0px 2px 0px;
     margin: 2px 0 2px 0px;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_item_label_right div.dhxform_label {
     float: right;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_right div.dhxform_control {
     float: left;
     margin-right: 3px;
     margin-left: 0px;
     *display: inline;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_item_label_right div.dhxform_control {
     float: right;
     margin-right: 0px;
     margin-left: 3px;
     *display: inline;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_left {
     clear: both;
     padding-top: 6px;
     cursor: default;
     *display: inline-block;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_left div.dhxform_img,
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_left div.dhxform_actv_c,
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_left div.dhxform_actv_r {
     float: right;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_item_label_left div.dhxform_img {
     float: left;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_left div.dhxform_label {
     float: left;
     padding: 2px 0px 2px 0px;
     margin: 2px 0px 2px 0px;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_item_label_left div.dhxform_label {
     float: right;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_left div.dhxform_control {
     float: left;
     padding-left: 4px;
     padding-right: 0px;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_item_label_left div.dhxform_control {
     float: right;
     padding-right: 4px;
     padding-left: 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_top {
     clear: both;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_top div.dhxform_label {
     float: none;
     margin-bottom: 5px;
     margin-top: 8px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_label_top div.dhxform_control {
     float: none;
     margin-left: 0px;
     margin-bottom: 5px;
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_item_label_top div.dhxform_control {
     float: none;
     margin-right: 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_absolute {
     position: absolute;
     left: 0px;
     top: 0px;
     cursor: default;
 }
-
 .dhxform_obj_dhx_skyblue div.item_absolute div.dhxform_img,
 .dhxform_obj_dhx_skyblue div.item_absolute div.dhxform_actv_c,
 .dhxform_obj_dhx_skyblue div.item_absolute div.dhxform_actv_r {
     position: absolute;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_absolute div.dhxform_control,
 .dhxform_obj_dhx_skyblue div.dhxform_item_absolute div.dhxform_label,
 .dhxform_obj_dhx_skyblue div.dhxform_item_absolute div.dhxform_control.dhxform_img_node,
@@ -440,7 +366,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
 .dhxform_obj_dhx_skyblue div.block_item_absolute div.dhxform_block {
     position: absolute;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_txt_label2 {
     font-family: Tahoma, Helvetica;
     font-size: inherit;
@@ -450,11 +375,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 5px 0px;
     cursor: default;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_txt_label2 {
     color: #b2b8bc;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_btn {
     font-family: Tahoma, Helvetica;
     font-size: inherit;
@@ -479,18 +402,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 .dhxform_obj_dhx_skyblue.dhxform_rtl div.dhxform_btn {
     float: right;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_btn.dhxform_btn_over {
     background-color: #f1f7ff;
     background: linear-gradient(#f1f7ff, #e2efff);
     background: -webkit-linear-gradient(#f1f7ff, #e2efff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#f1f7ff, endColorStr=#e2efff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_btn.dhxform_btn_pressed {
     background-color: #d2e7fe;
     background: linear-gradient(#d2e7fe, #d3e7ff);
@@ -498,7 +418,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#d2e7fe, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
     box-shadow: 0 0 5px rgba(127, 127, 127, 0.15) inset;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_btn {
     border-color: #cccccc;
     background-color: #f9f9f9;
@@ -507,7 +426,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#f9f9f9, endColorStr=#f1f1f1) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
     box-shadow: 0 0 5px rgba(127, 127, 127, 0.15) inset;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_btn div.dhxform_btn_txt {
     float: left;
     margin: 0px 20px;
@@ -521,20 +439,16 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 1;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_btn div.dhxform_btn_txt.dhxform_btn_txt_autowidth {
     width: 100%;
     margin: 0px;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_btn div.dhxform_btn_txt {
     color: #999999 !important;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_btn:focus {
     outline: 1px dotted #909090;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_btn div.dhxform_btn_filler {
     position: absolute;
     display: inline-block;
@@ -546,7 +460,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_control div.dhxform_note {
     font-family: Tahoma, Helvetica;
     font-size: 0.8em;
@@ -554,11 +467,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding-bottom: 3px;
     white-space: normal;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_control div.dhxform_note {
     color: #b2b2b2;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_label span.dhxform_info {
     font-family: Tahoma, Helvetica;
     font-size: 0.6em;
@@ -569,7 +480,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     vertical-align: middle;
     cursor: pointer;
 }
-
 .dhxform_obj_dhx_skyblue .validate_error .dhxform_label,
 .dhxform_obj_dhx_skyblue .validate_error .dhxform_textarea,
 .dhxform_obj_dhx_skyblue .validate_error .dhxform_select,
@@ -577,32 +487,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
 .dhxform_obj_dhx_skyblue .validate_error div.dhxform_label div.dhxform_label_nav_link:focus {
     color: red;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled .dhx_combo_box.dhx_skyblue {
     border: 1px solid #c2d0dd;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled .dhx_combo_box.dhx_skyblue .dhx_combo_input {
     color: #b2b2b2;
     background-color: #ffffff;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_template.dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_stb {
     border-left: 1px solid #a4bed4;
     border-right: 1px solid #a4bed4;
     border-top: 1px solid #a4bed4;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_template.dhxeditor_dhx_skyblue div.dhx_cell_editor div.dhx_cell_cont_editor {
     border-left: 1px solid #a4bed4;
     border-right: 1px solid #a4bed4;
     border-bottom: 1px solid #a4bed4;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_item_template.dhxeditor_dhx_skyblue div.dhxcont_content_blocker {
     display: none;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_item_template.dhxeditor_dhx_skyblue div.dhxcont_content_blocker {
     display: inline;
     position: absolute;
@@ -614,13 +518,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0.7;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=70);
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader {
     position: relative;
     width: 100%;
     margin-bottom: 4px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls {
     position: relative;
     width: 100%;
@@ -634,7 +536,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_uploader_button {
     position: absolute;
     width: 19px;
@@ -655,38 +556,31 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     z-index: 1;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_uploader_button.button_info {
     display: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_uploader_button.button_browse {
     background-position: 0px 0px;
     right: 108px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_uploader_button.button_upload {
     background-position: -19px 0px;
     right: 79px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_uploader_button.button_cancel {
     background-position: -57px 0px;
     right: 79px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_uploader_button.button_clear {
     background-position: -38px 0px;
     right: 50px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls .dhx_uploader_input {
     position: absolute;
     left: -1000px;
     top: 0px;
     visibility: hidden;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_form_cont {
     position: absolute;
     width: 19px;
@@ -696,14 +590,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: pointer;
     overflow: hidden;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_form_cont form.dhx_file_form {
     position: absolute;
     top: 0px;
     right: 0px;
     cursor: pointer;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls div.dhx_file_form_cont form.dhx_file_form .dhx_file_input {
     opacity: 0;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
@@ -711,7 +603,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     outline: none;
     height: 19px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files {
     position: relative;
     width: 100%;
@@ -719,27 +610,22 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     top: 0px;
     overflow: auto;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file {
     position: relative;
     width: 100%;
     height: 25px;
     overflow: hidden;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file.dhx_file_added,
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file.dhx_file_uploading {
     color: black;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file.dhx_file_uploaded {
     color: #30678a;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file.dhx_file_fail {
     color: #e94a4a;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file_param {
     position: absolute;
     font-family: inherit;
@@ -751,17 +637,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     vertical-align: middle;
     overflow: hidden;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file_param.dhx_file_name {
     left: 20px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file_param.dhx_file_progress {
     right: 50px;
     width: 38px;
     text-align: right;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file_param.dhx_file_delete {
     right: 30px;
     width: 11px;
@@ -776,7 +659,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files div.dhx_file_param.dhx_file_uploading {
     right: 50px;
     width: 38px;
@@ -791,15 +673,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls {
     height: 60px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_files {
     display: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls div.dhx_file_uploader_button.button_info {
     display: inline;
     background-image: none;
@@ -815,7 +694,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: default;
     filter: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls div.dhx_file_uploader_button.button_browse {
     top: 0px;
     width: 54px;
@@ -825,22 +703,18 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-position: 0px -38px;
     background-repeat: no-repeat;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls div.dhx_file_uploader_button.button_upload,
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls div.dhx_file_uploader_button.button_cancel,
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls div.dhx_file_uploader_button.button_clear {
     display: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls div.dhx_file_form_cont {
     width: 54px;
     height: 54px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls div.dhx_file_form_cont form.dhx_file_form .dhx_file_input {
     height: 54px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls.dhx_uploader_dis div.dhx_file_uploader_button.button_info,
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files.dhx_uploader_dis div.dhx_file.dhx_file_added,
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files.dhx_uploader_dis div.dhx_file.dhx_file_uploading,
@@ -848,51 +722,40 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files.dhx_uploader_dis div.dhx_file.dhx_file_fail {
     color: #b2b2b2;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls.dhx_uploader_dis div.dhx_file_uploader_button.button_browse {
     background-position: -54px -38px;
     cursor: default;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls.dhx_uploader_dis div.dhx_file_form_cont {
     display: none;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls.dhx_uploader_dis div.dhx_file_uploader_button {
     cursor: default;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls.dhx_uploader_dis div.dhx_file_uploader_button.button_browse {
     background-position: 0px -19px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls.dhx_uploader_dis div.dhx_file_uploader_button.button_upload {
     background-position: -19px -19px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls.dhx_uploader_dis div.dhx_file_uploader_button.button_cancel {
     background-position: -57px -19px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_controls.dhx_uploader_dis div.dhx_file_uploader_button.button_clear {
     background-position: -38px -19px;
 }
-
 .dhxform_obj_dhx_skyblue .dhx_file_uploader div.dhx_upload_files.dhx_uploader_dis div.dhx_file_param.dhx_file_delete {
     background-position: -87px 0px;
     cursor: default;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_image {
     position: relative;
     overflow: hidden;
     border: 1px solid #a4bed4;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_image img.dhxform_image_img {
     position: absolute;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_image div.dhxform_image_wrap {
     position: absolute;
     background-color: white;
@@ -911,7 +774,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-transition: opacity 0.6s;
     transition: opacity 0.6s;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_image div.dhxform_image_wrap.dhxform_image_in_progress {
     background-image: url("../imgs/dhxform_skyblue/dhxform_image_uploading.gif");
     background-position: center center;
@@ -926,18 +788,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-transition: opacity 0.1s;
     transition: opacity 0.1s;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_image div.dhxform_image_wrap.dhxform_image_in_progress form.dhxform_image_form {
     display: none;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_image div.dhxform_image_wrap form.dhxform_image_form {
     position: absolute;
     top: 0px;
     right: 0px;
     cursor: pointer;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_image div.dhxform_image_wrap form.dhxform_image_form input.dhxform_image_input {
     cursor: pointer;
     outline: none;
@@ -946,33 +805,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_image {
     border-color: #c2d0dd;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_image img.dhxform_image_img {
     opacity: 0.5;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=50);
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_image div.dhxform_image_wrap {
     cursor: default;
 }
-
 .dhxform_obj_dhx_skyblue div.disabled div.dhxform_image form.dhxform_image_form {
     display: none;
 }
-
 .dhtmlx_skin_dhx_skyblue div.dhtmlx_wins_body_inner .dhxform_obj_dhx_skyblue {
     background-color: white;
 }
-
 .dhxform_obj_dhx_skyblue div.dhxform_control .dhx_combo_box.dhx_skyblue .dhx_combo_input,
 .dhx_combo_list.dhx_skyblue_list div {
     font-size: 1em !important;
 }
-
 div.dhx_form_skin_detect {
     position: absolute;
     left: 0px;

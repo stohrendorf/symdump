@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXPopup(conf) {
 
@@ -70,7 +70,7 @@ function dhtmlXPopup(conf) {
         var t = (e.target || e.srcElement);
         var id = null;
         while (t != that.p && t != null) {
-            if (typeof(t._idd) != "undefined" && !t._isSeparator) {
+            if (typeof (t._idd) != "undefined" && !t._isSeparator) {
                 id = t._idd;
                 t = null;
             } else {
@@ -166,7 +166,7 @@ function dhtmlXPopup(conf) {
         var d = window.dhx4.screenDim();
 
         var mode = state || this.mode;
-        if (typeof(state) == "undefined") state = false;
+        if (typeof (state) == "undefined") state = false;
 
         // avail space form each side, negative value = no-space
         var availSpace = {
@@ -322,7 +322,7 @@ function dhtmlXPopup(conf) {
     this.clear = function () {
 
         if (this._nodeObj) {
-            if (window.dhx4.isIE && typeof(window.dhtmlXLayoutObject) == "function" && this._nodeObj instanceof window.dhtmlXLayoutObject) {
+            if (window.dhx4.isIE && typeof (window.dhtmlXLayoutObject) == "function" && this._nodeObj instanceof window.dhtmlXLayoutObject) {
                 this.p.onmousedown = null;
             }
             if (this._nodeObj.unload) {
@@ -375,7 +375,7 @@ function dhtmlXPopup(conf) {
     this.setSkin = function (skin) {
         this.conf.skin = skin;
         this.p.className = "dhx_popup_" + this.conf.skin;
-        if (this._nodeObj != null && typeof(this._nodeObj.setSkin) == "function") this._nodeObj.setSkin(this.conf.skin);
+        if (this._nodeObj != null && typeof (this._nodeObj.setSkin) == "function") this._nodeObj.setSkin(this.conf.skin);
         this._repaint();
     };
 
@@ -390,7 +390,7 @@ function dhtmlXPopup(conf) {
 
             var tr = document.createElement("TR");
             if (data[q] != this.separator) {
-                if (typeof(data[q].id) == "undefined" || data[q].id == null) {
+                if (typeof (data[q].id) == "undefined" || data[q].id == null) {
                     tr._idd = window.dhx4.newId();
                     while (this.itemData[tr._idd] != null) tr._idd = window.dhx4.newId();
                 } else {
@@ -458,7 +458,7 @@ function dhtmlXPopup(conf) {
 
         td = tr = r = null;
 
-        if (typeof(this["_attach_init_" + mode]) == "function") {
+        if (typeof (this["_attach_init_" + mode]) == "function") {
             this["_attach_init_" + mode](data);
             this._enableIEVFix();
         }
@@ -471,7 +471,7 @@ function dhtmlXPopup(conf) {
 
     this.unload = function () {
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("touchstart", this._doOnClick, false);
             window.removeEventListener("click", this._doOnClick, false);
             window.removeEventListener("keyup", this._doOnKeyUp, false);
@@ -563,7 +563,7 @@ function dhtmlXPopup(conf) {
             if (id != null && that._idExists(id)) return;
         }
         // if popup has attached form - skin closing if list clicked (it attached to body)
-        if (typeof(window.dhtmlXForm) == "function" && that._nodeObj instanceof window.dhtmlXForm) {
+        if (typeof (window.dhtmlXForm) == "function" && that._nodeObj instanceof window.dhtmlXForm) {
             var combos = {};
             var p = 0;
             var form = that._nodeObj;
@@ -611,7 +611,7 @@ function dhtmlXPopup(conf) {
         that.unload();
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         window.addEventListener("touchstart", this._doOnClick, false);
         window.addEventListener("click", this._doOnClick, false);
         window.addEventListener("keyup", this._doOnKeyUp, false);
@@ -637,7 +637,7 @@ function dhtmlXPopup(conf) {
 
     this._findGrid = function (obj, grid) {
         var gridFound = false;
-        if (typeof(window.dhtmlXTabBar) == "function" && obj instanceof window.dhtmlXTabBar) {
+        if (typeof (window.dhtmlXTabBar) == "function" && obj instanceof window.dhtmlXTabBar) {
             obj.forEachTab(function (tab) {
                 var nested = tab.getAttachedObject();
                 if (gridFound == false && nested != null) {
@@ -647,7 +647,7 @@ function dhtmlXPopup(conf) {
             });
         }
         // check if attached to form's container
-        if (typeof(window.dhtmlXForm) == "function" && obj instanceof window.dhtmlXForm) {
+        if (typeof (window.dhtmlXForm) == "function" && obj instanceof window.dhtmlXForm) {
             obj.forEachItem(function (id) {
                 if (gridFound != true && obj.getItemType(id) == "container" && grid.entBox == obj.getContainer(id)) {
                     gridFound = true;
@@ -732,7 +732,7 @@ function dhtmlXPopup(conf) {
     };
 
     // auto-init, toolbar mode
-    if (typeof(window.dhtmlXToolbarObject) == "function" && this.conf.toolbar != null && this.conf.toolbar instanceof window.dhtmlXToolbarObject && this.conf.id != null) {
+    if (typeof (window.dhtmlXToolbarObject) == "function" && this.conf.toolbar != null && this.conf.toolbar instanceof window.dhtmlXToolbarObject && this.conf.id != null) {
 
         if (!(this.conf.id instanceof Array)) this.conf.id = [this.conf.id];
 
@@ -750,7 +750,7 @@ function dhtmlXPopup(conf) {
         };
 
         // extension for toolbar, return pos/dim for specified button
-        if (typeof(dhtmlXToolbarObject.prototype._getItemDim) == "undefined") {
+        if (typeof (dhtmlXToolbarObject.prototype._getItemDim) == "undefined") {
 
             dhtmlXToolbarObject.prototype._getItemDim = function (id) {
                 var t = this.objPull[this.idPrefix + id];
@@ -771,7 +771,7 @@ function dhtmlXPopup(conf) {
     }
 
     // auto-init, ribbon mode
-    if (typeof(window.dhtmlXRibbon) == "function" && this.conf.ribbon != null && this.conf.ribbon instanceof window.dhtmlXRibbon && this.conf.id != null) {
+    if (typeof (window.dhtmlXRibbon) == "function" && this.conf.ribbon != null && this.conf.ribbon instanceof window.dhtmlXRibbon && this.conf.id != null) {
 
         if (!(this.conf.id instanceof Array)) this.conf.id = [this.conf.id];
 
@@ -789,7 +789,7 @@ function dhtmlXPopup(conf) {
         };
 
         // extension for toolbar, return pos/dim for specified button
-        if (typeof(dhtmlXRibbon.prototype._getItemDim) == "undefined") {
+        if (typeof (dhtmlXRibbon.prototype._getItemDim) == "undefined") {
 
             dhtmlXRibbon.prototype._getItemDim = function (id) {
                 var t = this._items[id].base;
@@ -810,14 +810,14 @@ function dhtmlXPopup(conf) {
     }
 
     // auto-init, form mode
-    if (typeof(window.dhtmlXForm) == "function" && this.conf.form != null && this.conf.form instanceof window.dhtmlXForm && this.conf.id != null) {
+    if (typeof (window.dhtmlXForm) == "function" && this.conf.form != null && this.conf.form instanceof window.dhtmlXForm && this.conf.id != null) {
 
         if (!(this.conf.id instanceof Array)) this.conf.id = [this.conf.id];
 
         if (!this.conf.mode) this.mode = "right"; // default mode for form
         this.skinParent = this.conf.form.skin;
 
-        if (typeof(dhtmlXForm.prototype._getItemDim) == "undefined") {
+        if (typeof (dhtmlXForm.prototype._getItemDim) == "undefined") {
 
             dhtmlXForm.prototype._getItemDim = function (name, value) {
                 return this.doWithItem(name, "_getDim");
@@ -830,16 +830,16 @@ function dhtmlXPopup(conf) {
                     var t = item;
 
                     if ({
-                            ta: true,
-                            pw: true,
-                            se: true,
-                            tp: true,
-                            fl: true,
-                            calendar: true,
-                            colorpicker: 1,
-                            editor: true,
-                            container: true
-                        }[item._type]) {
+                        ta: true,
+                        pw: true,
+                        se: true,
+                        tp: true,
+                        fl: true,
+                        calendar: true,
+                        colorpicker: 1,
+                        editor: true,
+                        container: true
+                    }[item._type]) {
                         t = item.childNodes[item._ll ? 1 : 0].childNodes[0];
                     }
                     if ({ch: true, ra: true, btn2state: true}[item._type]) {
@@ -877,7 +877,7 @@ function dhtmlXPopup(conf) {
     }
 
     // auto-init, slider mode
-    if (typeof(window.dhtmlXSlider) == "function" && this.conf.slider != null && this.conf.slider instanceof window.dhtmlXSlider) {
+    if (typeof (window.dhtmlXSlider) == "function" && this.conf.slider != null && this.conf.slider instanceof window.dhtmlXSlider) {
 
         if (!this.conf.mode) this.mode = "top"; // default mode for slider
 
@@ -914,7 +914,7 @@ function dhtmlXPopup(conf) {
 
 
     // define skin
-    this.setSkin(this.skinParent || this.conf.skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhx_popup") || "material");
+    this.setSkin(this.skinParent || this.conf.skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhx_popup") || "material");
 
     return this;
 
@@ -924,7 +924,7 @@ dhtmlXPopup.prototype.attachObject = function (obj) {
     return this._attachNode("object", {obj: obj});
 };
 dhtmlXPopup.prototype._attach_init_object = function (data) {
-    this._nodeObj = (typeof(data.obj) == "string" ? document.getElementById(data.obj) : data.obj);
+    this._nodeObj = (typeof (data.obj) == "string" ? document.getElementById(data.obj) : data.obj);
     data.obj = null;
     document.getElementById(this._nodeId).appendChild(this._nodeObj);
     this._nodeObj.style.display = "";
@@ -1039,9 +1039,9 @@ dhtmlXPopup.prototype._attach_init_accordion = function (conf) {
 
 // tabbar
 dhtmlXPopup.prototype.attachTabbar = function (width, height, conf) {
-    if (typeof(conf) == "string") {
+    if (typeof (conf) == "string") {
         conf = {mode: conf}; // 3.6 compat
-    } else if (typeof(conf) != "object" || conf == null) {
+    } else if (typeof (conf) != "object" || conf == null) {
         conf = {};
     }
     return this._attachNode("tabbar", {width: width || 400, height: height || 200, conf: conf});
@@ -1081,7 +1081,7 @@ dhtmlXPopup.prototype._attach_init_editor = function (data) {
 
 // color picker
 dhtmlXPopup.prototype.attachColorPicker = function (conf) {
-    if (typeof(conf) != "object" || conf == null) conf = {};
+    if (typeof (conf) != "object" || conf == null) conf = {};
     return this._attachNode("colorpicker", {conf: conf});
 };
 dhtmlXPopup.prototype._attach_init_colorpicker = function (conf) {
@@ -1127,6 +1127,6 @@ dhtmlXPopup.prototype.setDimension = function (w, h) {
     if (w != null) node.style.width = w + "px";
     if (h != null) node.style.height = h + "px";
     this._repaint();
-    if (this._nodeObj != null && typeof(this._nodeObj.setSizes) == "function") this._nodeObj.setSizes();
+    if (this._nodeObj != null && typeof (this._nodeObj.setSizes) == "function") this._nodeObj.setSizes();
     node = null;
 };

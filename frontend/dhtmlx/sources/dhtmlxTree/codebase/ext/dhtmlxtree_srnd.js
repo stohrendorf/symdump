@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /**
  *    @desc: enables smart rendering mode (usefull for big trees with lots f items on each level)
@@ -152,9 +152,9 @@ dhtmlXTreeObject.prototype._getNextNodeSR = function (item, mode) {
 
 dhtmlXTreeObject.prototype._getItemByPos = function (pos, h, l, i, m, f) {
     /*
-     current implementation can be slow in case of deep hierarchy, in future we can move 
-     counter login in HideShow function, so each top level item will know it real position
-     */
+        current implementation can be slow in case of deep hierarchy, in future we can move 
+        counter login in HideShow function, so each top level item will know it real position
+    */
     if (!i) {
         this._pos_c = pos;
         i = this._idpull[this.rootId];
@@ -228,7 +228,7 @@ dhtmlXTreeObject.prototype._singleTimeSRND = function () {
 
         if (itemId == treeObject.rootId) {
             if (this.treeNod.checkBoxOff) this.htmlNode = this.treeNod._createItem(1, this, mode);
-            else  this.htmlNode = this.treeNod._createItem(0, this, mode);
+            else this.htmlNode = this.treeNod._createItem(0, this, mode);
             this.htmlNode.objBelong = this;
         }
 
@@ -236,11 +236,11 @@ dhtmlXTreeObject.prototype._singleTimeSRND = function () {
     };
 
     /*
-
-     Updates to existing code
-
-
-     */
+    
+    Updates to existing code
+    
+    
+    */
     this.setCheckSR = this.setCheck;
     this.setCheck = function (itemId, state) {
         this._globalIdStorageFind(itemId);
@@ -396,14 +396,13 @@ dhtmlXTreeObject.prototype._singleTimeSRND = function () {
         var Nodes = itemObject.htmlNode.childNodes[0].childNodes;
         var Count = Nodes.length;
         if (Count > 1) {
-            if (( (Nodes[1].style.display != "none") || (mode == 1) ) && (mode != 2)) {
+            if (((Nodes[1].style.display != "none") || (mode == 1)) && (mode != 2)) {
 //nb:solves standard doctype prb in IE
                 this.allTree.childNodes[0].border = "1";
                 this.allTree.childNodes[0].border = "0";
                 var nodestyle = "none";
                 itemObject._open = false;
-            }
-            else {
+            } else {
                 var nodestyle = "";
                 itemObject._open = true;
             }

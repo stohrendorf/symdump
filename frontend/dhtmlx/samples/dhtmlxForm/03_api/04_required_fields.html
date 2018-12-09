@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Required fields</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myForm, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: 130, inputWidth: 160},
@@ -19,12 +20,12 @@
                 {type: "input", label: "Confirm e-mail", value: "", required: true, validate: "myFunc2"},
                 {
                     type: "select", label: "User Type", validate: "myFunc", options: [
-                    {value: 0, text: ""},
-                    {value: 1, text: "User"},
-                    {value: 2, text: "Power User"},
-                    {value: 3, text: "Mega User"},
-                    {value: 4, text: "Administrator"}
-                ]
+                        {value: 0, text: ""},
+                        {value: 1, text: "User"},
+                        {value: 2, text: "Power User"},
+                        {value: 3, text: "Mega User"},
+                        {value: 4, text: "Administrator"}
+                    ]
                 },
                 {type: "button", value: "Submit"}
             ];
@@ -34,9 +35,11 @@
                 myForm.validate();
             });
         }
+
         function myFunc(val) {
             return (val > 0);
         }
+
         function myFunc2(val) {
             return (val == myForm.getItemValue("email"));
         }

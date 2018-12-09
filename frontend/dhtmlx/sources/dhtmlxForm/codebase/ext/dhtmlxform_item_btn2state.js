@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXForm.prototype.items.btn2state = {
     setChecked: function (item, state) {
@@ -26,7 +26,7 @@ dhtmlXForm.prototype.items.btn2state.render = function (item, data) {
     data._autoInputWidth = false;
     this.render2(item, data);
     item._type = "btn2state";
-    item._cssName = (typeof(data.cssName) == "undefined" ? "btn2state" : data.cssName);
+    item._cssName = (typeof (data.cssName) == "undefined" ? "btn2state" : data.cssName);
     item._updateImgNode = function () {
     };
     item._doOnFocus = function () {

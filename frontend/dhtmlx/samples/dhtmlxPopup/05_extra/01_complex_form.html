@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Complex form</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         #myForm {
@@ -72,22 +72,22 @@
                 {type: "label", label: "More Options", offsetTop: 10, offsetLeft: 0},
                 {
                     type: "select", name: "region", label: "Please select region", value: "2", options: [
-                    {value: "1", text: "Europe"},
-                    {value: "2", text: "Asia"},
-                    {value: "3", text: "Africa"},
-                    {value: "4", text: "S. America"},
-                    {value: "5", text: "N. America"}
+                        {value: "1", text: "Europe"},
+                        {value: "2", text: "Asia"},
+                        {value: "3", text: "Africa"},
+                        {value: "4", text: "S. America"},
+                        {value: "5", text: "N. America"}
 
-                ]
+                    ]
                 },
                 {
                     type: "select", name: "lng", label: "Select Language", value: "4", options: [
-                    {value: "1", text: "English"},
-                    {value: "2", text: "German"},
-                    {value: "3", text: "Russian"},
-                    {value: "4", text: "Japanese"},
-                    {value: "5", text: "Chinese"}
-                ]
+                        {value: "1", text: "English"},
+                        {value: "2", text: "German"},
+                        {value: "3", text: "Russian"},
+                        {value: "4", text: "Japanese"},
+                        {value: "5", text: "Chinese"}
+                    ]
                 },
 
                 {type: "label", label: "Messaging", offsetTop: 10, offsetLeft: 0},
@@ -101,10 +101,10 @@
                 {type: "label", label: "Advanced Items", offsetTop: 10, offsetLeft: 0},
                 {
                     type: "combo", name: "combo", value: "2", label: "Skill level", options: [
-                    {value: "1", text: "Admin"},
-                    {value: "2", text: "Power user"},
-                    {value: "3", text: "User"}
-                ]
+                        {value: "1", text: "Admin"},
+                        {value: "2", text: "Power user"},
+                        {value: "3", text: "User"}
+                    ]
                 },
                 {
                     type: "btn2state",
@@ -137,7 +137,7 @@
 
             myForm.attachEvent("onFocus", function (id, value) {
                 itemId = id + value || "";
-                if (typeof(value) != "undefined") id = [id, value]; // for radiobutton
+                if (typeof (value) != "undefined") id = [id, value]; // for radiobutton
                 myPop.show(id);
             });
             myForm.attachEvent("onBlur", function (id, value) {

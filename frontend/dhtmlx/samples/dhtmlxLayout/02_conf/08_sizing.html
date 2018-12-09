@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Cells sizing</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#layoutObj {
@@ -19,6 +19,7 @@
     <script>
         var myLayout;
         var sel;
+
         function doOnLoad() {
             myLayout = new dhtmlXLayoutObject({
                 parent: "layoutObj",
@@ -29,20 +30,25 @@
                 sel.options.add(new Option(item.getId(), item.getId()));
             });
         }
+
         function getInd() {
             var sel = document.getElementById("sel");
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function setWidth() {
             myLayout.cells(getInd()).setWidth(Number(document.getElementById("item_w").value));
         }
+
         function setHeight() {
             myLayout.cells(getInd()).setHeight(Number(document.getElementById("item_h").value));
         }
+
         function getWidth() {
             alert(myLayout.cells(getInd()).getWidth());
         }
+
         function getHeight() {
             alert(myLayout.cells(getInd()).getHeight());
         }
@@ -52,12 +58,12 @@
 <div id="layoutObj"></div>
 <div style="position: relative; margin-top: 40px; margin-left: 10px;">
     Item: <select id="sel"></select>
-    Width: <input id="item_w" type="text" value="200" style="width: 50px;">
-    <input type="button" value="Set Width" onclick="setWidth();">
-    <input type="button" value="Get Width" onclick="getWidth();">
-    Height: <input id="item_h" type="text" value="200" style="width: 50px;">
-    <input type="button" value="Set Height" onclick="setHeight();">
-    <input type="button" value="Get Height" onclick="getHeight();">
+    Width: <input id="item_w" style="width: 50px;" type="text" value="200">
+    <input onclick="setWidth();" type="button" value="Set Width">
+    <input onclick="getWidth();" type="button" value="Get Width">
+    Height: <input id="item_h" style="width: 50px;" type="text" value="200">
+    <input onclick="setHeight();" type="button" value="Set Height">
+    <input onclick="getHeight();" type="button" value="Get Height">
 </div>
 </body>
 </html>

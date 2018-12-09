@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXTabBar(conf, mode) { // skin? data?
 
@@ -14,7 +14,7 @@ function dhtmlXTabBar(conf, mode) { // skin? data?
     var that = this;
 
     this.conf = {
-        skin: (window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxtabbar") || "material"),
+        skin: (window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxtabbar") || "material"),
         css: "dhxtabbar", // css prefix for topcell mtb
         lastActive: null,
         closeButton: false,
@@ -43,18 +43,18 @@ function dhtmlXTabBar(conf, mode) { // skin? data?
     var base;
 
     // check if api init
-    if (conf != null && typeof(conf) == "object" && typeof(conf.tagName) == "undefined") {
+    if (conf != null && typeof (conf) == "object" && typeof (conf.tagName) == "undefined") {
         base = conf.parent;
-        if (typeof(conf.skin) != "undefined") this.conf.skin = conf.skin;
-        if (typeof(conf.mode) != "undefined") this.conf.tabsMode = (conf.mode == "bottom" ? "bottom" : "top");
-        if (typeof(conf.align) != "undefined") this.conf.align = (conf.align == "right" ? "right" : "left");
-        if (typeof(conf.close_button) != "undefined") this.conf.closeButton = window.dhx4.s2b(conf.close_button);
-        if (typeof(conf.content_zone) != "undefined") this.conf.contZone = window.dhx4.s2b(conf.content_zone);
-        if (typeof(conf.xml) != "undefined") this.conf.autoload.xml = conf.xml;
-        if (typeof(conf.json) != "undefined") this.conf.autoload.xml = conf.json; // new in 4.0
-        if (typeof(conf.tabs) != "undefined") this.conf.autoload.tabs = conf.tabs;
-        if (typeof(conf.onload) != "undefined") this.conf.autoload.onload = conf.onload; // new in 4.0
-        if (typeof(conf.arrows_mode) != "undefined") this.conf.autoload.arrows_mode = conf.arrows_mode; // new in 4.1.2
+        if (typeof (conf.skin) != "undefined") this.conf.skin = conf.skin;
+        if (typeof (conf.mode) != "undefined") this.conf.tabsMode = (conf.mode == "bottom" ? "bottom" : "top");
+        if (typeof (conf.align) != "undefined") this.conf.align = (conf.align == "right" ? "right" : "left");
+        if (typeof (conf.close_button) != "undefined") this.conf.closeButton = window.dhx4.s2b(conf.close_button);
+        if (typeof (conf.content_zone) != "undefined") this.conf.contZone = window.dhx4.s2b(conf.content_zone);
+        if (typeof (conf.xml) != "undefined") this.conf.autoload.xml = conf.xml;
+        if (typeof (conf.json) != "undefined") this.conf.autoload.xml = conf.json; // new in 4.0
+        if (typeof (conf.tabs) != "undefined") this.conf.autoload.tabs = conf.tabs;
+        if (typeof (conf.onload) != "undefined") this.conf.autoload.onload = conf.onload; // new in 4.0
+        if (typeof (conf.arrows_mode) != "undefined") this.conf.autoload.arrows_mode = conf.arrows_mode; // new in 4.1.2
         // deprecated from 4.0
         // conf { height, offset, margin, image_path, href_mode, scroll, forced, size_by_content, auto_size }
     } else {
@@ -110,12 +110,12 @@ function dhtmlXTabBar(conf, mode) { // skin? data?
         e = e || event;
         var t = (e.target || e.srcElement);
         while (t != null) {
-            if (typeof(t._tabCloseId) != "undefined") {
+            if (typeof (t._tabCloseId) != "undefined") {
                 if (that._onTabsAreaClick(t._tabCloseId) !== true) return;
                 that.t[t._tabCloseId].conf.remove = true;
                 that._hideTab(t._tabCloseId);
                 t = null;
-            } else if (typeof(t._tabId) != "undefined") {
+            } else if (typeof (t._tabId) != "undefined") {
                 that._doOnClick(t._tabId);
                 t = null;
             }
@@ -145,7 +145,7 @@ function dhtmlXTabBar(conf, mode) { // skin? data?
         // true - show_closeButton
         // false - do not show (ignoring enableTabCloseButton)
         // not set - depending on enableTabCloseButton
-        close = (typeof(close) == "undefined" ? (this.conf.closeButton == true) : window.dhx4.s2b(close));
+        close = (typeof (close) == "undefined" ? (this.conf.closeButton == true) : window.dhx4.s2b(close));
         active = window.dhx4.s2b(active);
 
         var tab = document.createElement("DIV");
@@ -167,7 +167,7 @@ function dhtmlXTabBar(conf, mode) { // skin? data?
 
         // width
         var autowidth = false;
-        if (typeof(width) == "undefined" || width == null || width == "*") {
+        if (typeof (width) == "undefined" || width == null || width == "*") {
             width = this._getLabelWidth(text, close);
             autowidth = true;
         } else {
@@ -740,7 +740,7 @@ function dhtmlXTabBar(conf, mode) { // skin? data?
         if (data.tabs != null) {
             for (var q = 0; q < data.tabs.length; q++) {
                 var t = data.tabs[q];
-                if (typeof(t.id) == "undefined") t.id = window.dhx4.newId();
+                if (typeof (t.id) == "undefined") t.id = window.dhx4.newId();
                 if (!isNaN(parseInt(t.width))) {
                     t.width = parseInt(t.width);
                 } else {
@@ -756,9 +756,9 @@ function dhtmlXTabBar(conf, mode) { // skin? data?
                         this.cells(t.id).attachURL(t.href, viaAjax);
                     }
                 }
-                if (typeof(t.enabled) != "undefined" && window.dhx4.s2b(t.enabled) == false) {
+                if (typeof (t.enabled) != "undefined" && window.dhx4.s2b(t.enabled) == false) {
                     this.tabs(t.id).disable();
-                } else if (typeof(t.disabled) != "undefined" && window.dhx4.s2b(t.disabled) == true) {
+                } else if (typeof (t.disabled) != "undefined" && window.dhx4.s2b(t.disabled) == true) {
                     this.tabs(t.id).disable();
                 }
             }
@@ -875,7 +875,7 @@ dhtmlXTabBar.prototype._setTabActive = function (id, mode) {
 
     if (!this.t[id] || this.t[id].conf.active) return;
 
-    if (typeof(mode) == "undefined") mode = true;
+    if (typeof (mode) == "undefined") mode = true;
     if (mode == true && this.callEvent("onSelect", [id, this.conf.lastActive]) !== true) return;
 
     this.setTabInActive();
@@ -928,6 +928,7 @@ dhtmlXTabBar.prototype.goToPrevTab = function () {
 };
 
 
+
 /* enable/disable */
 dhtmlXTabBar.prototype._enableTab = function (id, mode) {
 
@@ -967,7 +968,7 @@ dhtmlXTabBar.prototype._setTabText = function (id, text, width) {
     if (!this.t[id]) return;
 
     var autowidth = false;
-    if (typeof(width) == "undefined" || width == null) {
+    if (typeof (width) == "undefined" || width == null) {
         width = this._getLabelWidth(text, this.t[id].conf.close);
         autowidth = true;
     }
@@ -997,7 +998,7 @@ dhtmlXTabBar.prototype._removeTab = function (id, activateId, force) { // force 
         return;
     }
 
-    if (typeof(activateId) == "undefined") activateId = true;
+    if (typeof (activateId) == "undefined") activateId = true;
 
     var next = this._getNextVisible(id);
     var prev = this._getPrevVisible(id);
@@ -1133,7 +1134,7 @@ dhtmlXTabBar.prototype._checkArrows = function () {
     }
 
     return adj;
-
+	
 };
 
 // load url on demand, added in 4.2
@@ -1175,7 +1176,7 @@ window.dhtmlXTabBarCell = function (id, tabbar) {
     };
 
     for (var a in this.conf.tabbar_funcs) {
-        if (typeof(this[a]) != "function") this[a] = this._tabbarCall(this.conf.tabbar_funcs[a]);
+        if (typeof (this[a]) != "function") this[a] = this._tabbarCall(this.conf.tabbar_funcs[a]);
     }
     this.attachEvent("_onCellUnload", function () {
         this.tabbar = null;
@@ -1200,7 +1201,7 @@ window.dhtmlXTabBarCell = function (id, tabbar) {
             this._hideBorders();
         }
     });
-
+	
 };
 
 window.dhtmlXTabBarCell.prototype = new dhtmlXCellObject();
@@ -1210,9 +1211,9 @@ dhtmlXCellObject.prototype.attachTabbar = function (conf) {
     this.callEvent("_onBeforeContentAttach", ["tabbar"]);
 
     // 3.6 init - attachTabbar(mode)
-    if (typeof(conf) == "string") {
+    if (typeof (conf) == "string") {
         conf = {mode: conf};
-    } else if (typeof(conf) != "object" || conf == null) {
+    } else if (typeof (conf) != "object" || conf == null) {
         conf = {};
     }
 
@@ -1223,7 +1224,7 @@ dhtmlXCellObject.prototype.attachTabbar = function (conf) {
     obj.style.overflow = "hidden";
 
     // acc, move tabbar 1px-up to hide top borders
-    if (typeof(window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) {
+    if (typeof (window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) {
         if (this.conf.skin == "material") {
             obj._ofs = {t: -1, r: -1, b: -1, l: -1}; // attach tabbar to acc
         } else {
@@ -1231,13 +1232,13 @@ dhtmlXCellObject.prototype.attachTabbar = function (conf) {
         }
     }
 
-    if (typeof(window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) {
+    if (typeof (window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) {
         if (this.conf.skin == "dhx_skyblue") obj._ofs = {t: -1, r: -1, b: -1, l: -1};
         if (this.conf.skin == "material") obj._ofs = {t: 8, r: 8, b: 8, l: 8};
     }
 
     // sidebar, move tabbar 1px-left
-    if (typeof(window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) {
+    if (typeof (window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) {
         obj._ofs = {l: -1};
         if (this.conf.skin == "dhx_web" && this.sidebar.conf.autohide == true) obj._ofs.l = 0;
         if (this.conf.skin == "dhx_terrace") {
@@ -1247,7 +1248,7 @@ dhtmlXCellObject.prototype.attachTabbar = function (conf) {
     }
 
     // carousel
-    if (typeof(window.dhtmlXCarouselCell) == "function" && this instanceof window.dhtmlXCarouselCell) {
+    if (typeof (window.dhtmlXCarouselCell) == "function" && this instanceof window.dhtmlXCarouselCell) {
         this._hideBorders();
     }
 

@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Split form into tabs</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#tabbarObj {
@@ -17,38 +17,39 @@
     <script>
         var myForm, formData;
         var dhxTabbar;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: 145, inputWidth: 150},
                 {
                     type: "block", inputWidth: "auto", list: [
-                    {type: "input", offsetTop: 14, label: "Login", value: "p_rossi"},
-                    {type: "password", label: "Password", value: "123"},
-                    {type: "checkbox", label: "Remember me", checked: true}
-                ]
+                        {type: "input", offsetTop: 14, label: "Login", value: "p_rossi"},
+                        {type: "password", label: "Password", value: "123"},
+                        {type: "checkbox", label: "Remember me", checked: true}
+                    ]
                 },
                 {
                     type: "block", inputWidth: "auto", id: "tab2", list: [
-                    {type: "input", offsetTop: 14, label: "Full Name", value: "Patricia D. Rossi"},
-                    {type: "input", label: "E-mail Address", value: "p_rossi@example.com"},
-                    {type: "input", label: "Login", value: "p_rossi"},
-                    {type: "password", label: "Password", value: "123"},
-                    {type: "password", label: "Confirm Password", value: "123"},
-                    {type: "checkbox", label: "Subscribe on news"}
-                ]
+                        {type: "input", offsetTop: 14, label: "Full Name", value: "Patricia D. Rossi"},
+                        {type: "input", label: "E-mail Address", value: "p_rossi@example.com"},
+                        {type: "input", label: "Login", value: "p_rossi"},
+                        {type: "password", label: "Password", value: "123"},
+                        {type: "password", label: "Confirm Password", value: "123"},
+                        {type: "checkbox", label: "Subscribe on news"}
+                    ]
                 },
                 {
                     type: "block", inputWidth: "auto", id: "tab3", position: "absolute", list: [
-                    {
-                        type: "select", offsetTop: 14, label: "Account type", options: [
-                        {text: "Admin", value: "admin"},
-                        {text: "Organiser", value: "org"},
-                        {text: "Power User", value: "poweruser"},
-                        {text: "User", value: "user"}
+                        {
+                            type: "select", offsetTop: 14, label: "Account type", options: [
+                                {text: "Admin", value: "admin"},
+                                {text: "Organiser", value: "org"},
+                                {text: "Power User", value: "poweruser"},
+                                {text: "User", value: "user"}
+                            ]
+                        },
+                        {type: "checkbox", label: "Show logs window"}
                     ]
-                    },
-                    {type: "checkbox", label: "Show logs window"}
-                ]
                 }
             ];
             dhxTabbar = new dhtmlXTabBar({

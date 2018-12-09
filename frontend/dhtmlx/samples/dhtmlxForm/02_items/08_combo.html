@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>dhtmlxCombo</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         td.p2 {
@@ -14,6 +14,7 @@
     </style>
     <script>
         var myForm, myForm2, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: 140, inputWidth: 160},
@@ -22,40 +23,40 @@
                 {type: "label", label: "Audio settings"},
                 {
                     type: "combo", label: "Format", name: "format", options: [
-                    {text: "AAC", value: "AAC"},
-                    {text: "AC3", value: "AC3", selected: true},
-                    {text: "MP3", value: "MP3"},
-                    {text: "FLAC", value: "FLAC"}
-                ]
+                        {text: "AAC", value: "AAC"},
+                        {text: "AC3", value: "AC3", selected: true},
+                        {text: "MP3", value: "MP3"},
+                        {text: "FLAC", value: "FLAC"}
+                    ]
                 },
                 {
                     type: "combo", label: "Bitrate", name: "a_bitrate", options: [
-                    {text: "128 kbps", value: "128"},
-                    {text: "160 kbps", value: "160"},
-                    {text: "256 kbps", value: "256"},
-                    {text: "320 kbps", value: "320", selected: true},
-                    {text: "448 kbps", value: "448"}
-                ]
+                        {text: "128 kbps", value: "128"},
+                        {text: "160 kbps", value: "160"},
+                        {text: "256 kbps", value: "256"},
+                        {text: "320 kbps", value: "320", selected: true},
+                        {text: "448 kbps", value: "448"}
+                    ]
                 },
                 {
                     type: "combo", label: "Channels", comboType: "checkbox", name: "channels", options: [
-                    {text: "2.0 Stereo", value: "2_0"},
-                    {text: "5.1 Dolby Digital", value: "5_1", selected: true}
-                ]
+                        {text: "2.0 Stereo", value: "2_0"},
+                        {text: "5.1 Dolby Digital", value: "5_1", selected: true}
+                    ]
                 },
                 {type: "label", label: "Video settings"},
                 {
                     type: "combo", label: "Codec", name: "v_codec", options: [
-                    {text: "DivX", value: "DivX"},
-                    {text: "XviD", value: "XviD", selected: true}
-                ]
+                        {text: "DivX", value: "DivX"},
+                        {text: "XviD", value: "XviD", selected: true}
+                    ]
                 },
                 {
                     type: "combo", label: "Bitrate", name: "v_bitrate", options: [
-                    {text: "728 kbps", value: "728"},
-                    {text: "1226 kbps", value: "1226", selected: true},
-                    {text: "2412 kbps", value: "2412"}
-                ]
+                        {text: "728 kbps", value: "728"},
+                        {text: "1226 kbps", value: "1226", selected: true},
+                        {text: "2412 kbps", value: "2412"}
+                    ]
                 },
                 {type: "label", label: "Advanced"},
                 {type: "input", label: "Command line options", rows: 2, value: "-vf crop=618:526:0:14,pp=lb"}
@@ -76,7 +77,7 @@
         <td valign="top">
             <div id="myForm" style="height:400px;"></div>
         </td>
-        <td valign="top" class="p2">
+        <td class="p2" valign="top">
             <div id="myForm2" style="height:400px;"></div>
         </td>
     </tr>

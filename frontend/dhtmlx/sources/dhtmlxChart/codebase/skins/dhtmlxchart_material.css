@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         transform: rotate(360deg);
     }
 }
-
 @keyframes dhx_loader_dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -31,7 +30,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         stroke-dashoffset: -124px;
     }
 }
-
 .dhx_tooltip {
     display: none;
     position: absolute;
@@ -51,7 +49,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhx_chart {
     position: relative;
     font-family: Roboto, Arial, Helvetica;
@@ -60,13 +57,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     z-index: 0;
 }
-
 .dhx_chart canvas {
     position: absolute;
     left: 0;
     top: 0;
 }
-
 .dhx_canvas_text {
     position: absolute;
     text-align: center;
@@ -74,7 +69,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     white-space: nowrap;
     z-index: 1000;
 }
-
 .dhx_map_img {
     width: 100%;
     height: 100%;
@@ -85,7 +79,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
 }
-
 .dhx_axis_item_y {
     position: absolute;
     height: 18px;
@@ -93,11 +86,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin-top: -4px;
     text-align: right;
 }
-
 .dhx_axis_title_x {
     text-align: center;
 }
-
 .dhx_axis_title_y {
     text-align: center;
     height: 18px;
@@ -111,29 +102,24 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-transform: rotate(-90deg);
     transform: rotate(-90deg);
 }
-
 .dhx_ie_filter {
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
     zoom: 1;
     font-family: serif;
 }
-
 .dhx_chart_legend {
     position: absolute;
     z-index: 1000;
 }
-
 .dhx_chart_legend_item {
     height: 18px;
     line-height: 18px;
     padding: 2px;
     cursor: pointer;
 }
-
 .dhx_chart_legend_item.hidden {
     color: #aaa;
 }
-
 .dhx_axis_item_y.dhx_radar {
     color: #404040;
     font-size: 12px;
@@ -142,17 +128,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     line-height: 13px;
     margin-top: 0px;
 }
-
 .dhx_canvas_text.dhx_axis_radar_title {
     margin-top: 0px;
     padding-top: 0px;
 }
-
 .dhx_axis_item_y,
 .dhx_axis_item_x {
     color: #404040;
 }
-
 .dhx_axis_item_x {
     padding-top: 2px;
 }

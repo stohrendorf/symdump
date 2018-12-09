@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Integration with Google Maps</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#maps_here {
@@ -24,12 +24,13 @@
             color: #333;
         }
     </style>
-    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+    <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
     <script>
         var myMenu;
         var GMaps, Marker, Overlay;
         var NY = {lat: 40.719837, lng: -73.992348};
         var mapOfs = {};
+
         function doOnLoad() {
 
             myMenu = new dhtmlXMenuObject({

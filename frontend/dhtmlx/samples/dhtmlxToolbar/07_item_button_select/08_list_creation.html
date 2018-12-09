@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Listed option creation</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var sel;
@@ -13,6 +13,7 @@
         var img;
         var lastImg;
         var myToolbar;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             sel2 = document.getElementById("sel2");
@@ -25,16 +26,19 @@
             img = "text_document.gif";
             lastImg = document.getElementById("text_document");
         }
+
         function getId(selObj) {
             var id = selObj.options[selObj.selectedIndex].value;
             return id;
         }
+
         function changeImage(imgObj) {
             img = imgObj.id;
             imgObj.style.border = "#707070 1px solid";
             lastImg.style.border = "#E0E0E0 1px solid";
             lastImg = imgObj;
         }
+
         function removeItem() {
             if (sel2.options.length == 0) {
                 return;
@@ -43,6 +47,7 @@
             myToolbar.removeListOption(id[0], id[1]);
             updateList();
         }
+
         function add() {
             var itemId = getId(sel);
             var pos = Number(document.getElementById("txt1").value);
@@ -51,6 +56,7 @@
             myToolbar.addListOption(itemId, id, pos, "button", text, lastImg.id + ".gif");
             updateList();
         }
+
         function updateList() {
             sel.options.length = 0;
             sel2.options.length = 0;
@@ -68,14 +74,14 @@
 <body onload="doOnLoad();">
 <div id="toolbarObj"></div>
 <div style="margin-top: 200px;">
-    <table border="0" cellspacing="0" cellpading="2">
+    <table border="0" cellpading="2" cellspacing="0">
         <tr>
             <td style="padding-right: 5px;">Select Parent:</td>
             <td><select id="sel"></select></td>
         </tr>
         <tr>
             <td style="padding-right: 5px; padding-left: 5px;">Position:</td>
-            <td><input id="txt1" type="text" value="1" style="width: 30px;"></td>
+            <td><input id="txt1" style="width: 30px;" type="text" value="1"></td>
         </tr>
         <tr>
             <td style="padding-right: 5px; padding-left: 5px;">Title:</td>
@@ -84,7 +90,7 @@
         <tr>
             <td style="padding-right: 5px; padding-left: 5px;">Select Image:</td>
             <td>
-                <table cellspacing="0" cellpadding="2" border="0">
+                <table border="0" cellpadding="2" cellspacing="0">
                     <tr>
                         <td><img id="text_document" onclick="changeImage(this);" src="../common/imgs/text_document.gif"
                                  style="border: #707070 1px solid; width: 16px; height: 16px; cursor: pointer;"></td>
@@ -110,13 +116,13 @@
         </tr>
         <tr>
             <td style="padding-right: 5px; padding-left: 5px;">Add?</td>
-            <td><input type="button" value="Add Listed Option" onclick="add();"></td>
+            <td><input onclick="add();" type="button" value="Add Listed Option"></td>
         </tr>
     </table>
 </div>
 <div style="margin-top: 20px;">
     <select id="sel2"></select>
-    <input type="button" value="Remove" onclick="removeItem();">
+    <input onclick="removeItem();" type="button" value="Remove">
 </div>
 </body>
 </html>

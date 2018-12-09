@@ -16,12 +16,10 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: default;
     overflow: hidden;
 }
-
 .dhxacc_base_dhx_web div.dhxacc_cont {
     position: absolute;
     *overflow: hidden;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc {
     position: relative;
     background-color: white;
@@ -31,7 +29,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: default;
     box-shadow: 0 0 3px #e0e0e0;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_cont_acc {
     position: absolute;
     border-left: 1px solid #c7c7c7;
@@ -42,12 +39,10 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     z-index: 0;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_cont_acc.dhx_cell_cont_no_borders {
     border: 0px solid #ffffff !important;
     padding: 0px;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_cover {
     position: absolute;
     left: 0px;
@@ -69,7 +64,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_hdr {
     position: relative;
     height: 32px;
@@ -89,14 +83,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_hdr.dhx_cell_hdr_hidden {
     border-top: 1px solid #c7c7c7;
     height: 0px;
     line-height: 0px;
     overflow: hidden;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_hdr div.dhx_cell_hdr_text {
     position: relative;
     margin: 0px 26px 0px 5px;
@@ -104,7 +96,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     white-space: nowrap;
     cursor: default;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_hdr img.dhx_cell_hdr_icon {
     position: absolute;
     top: 7px;
@@ -112,7 +103,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     width: 16px;
     height: 16px;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_hdr i {
     position: absolute;
     top: 7px;
@@ -125,11 +115,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-size: 1.1em;
     color: inherit;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_icon {
     margin-left: 24px !important;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_hdr div.dhx_cell_hdr_arrow {
     position: absolute;
     top: 8px;
@@ -148,15 +136,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc.dhx_cell_closed div.dhx_cell_hdr div.dhx_cell_hdr_arrow {
     background-position: -16px 0px;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_cont_acc.dhx_cell_cont_not_last {
     border-bottom: 0px solid white;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_menu_def {
     position: relative;
     overflow: hidden;
@@ -164,25 +149,21 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-left: 1px solid #c7c7c7;
     border-right: 1px solid #c7c7c7;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_toolbar_def {
     padding: 9px 9px 0px 9px;
     border-left: 1px solid #c7c7c7;
     border-right: 1px solid #c7c7c7;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_ribbon_def div.dhtmlxribbon_dhx_web.dhxrb_without_tabbar {
     border-top: 0px solid white;
     width: auto;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_statusbar_def {
     position: absolute;
     bottom: 0;
     width: 100%;
     background-color: #f4f4f4;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text {
     height: 21px;
     line-height: 21px;
@@ -197,12 +178,10 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-size: 12px;
     color: #000000;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc.acc_cell_dragged {
     box-shadow: 0 0 5px 2px #c2c2c2;
     z-index: 5 !important;
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_progress_bar {
     position: absolute;
     left: 0px;
@@ -214,7 +193,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0.75;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=75);
 }
-
 .dhxacc_base_dhx_web div.dhx_cell_acc div.dhx_cell_progress_img {
     position: absolute;
     left: 0px;
@@ -226,7 +204,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-repeat: no-repeat;
     z-index: 2;
 }
-
 .dhxacc_skin_detect {
     position: absolute;
     left: 0px;

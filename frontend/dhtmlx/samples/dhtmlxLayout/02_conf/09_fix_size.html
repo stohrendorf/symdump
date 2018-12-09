@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Fixing cells size</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#layoutObj {
@@ -47,6 +47,7 @@
     </style>
     <script>
         var myLayout;
+
         function doOnLoad() {
             myLayout = new dhtmlXLayoutObject({
                 parent: "layoutObj",
@@ -73,9 +74,11 @@
                 t +
                 "</table>";
         }
+
         function updateCellContent(id, h, v) {
             myLayout.cells(id).attachHTMLString("<div class='cell_info'>h: " + (h ? "fixed" : "not fixed") + "<br>v: " + (v ? "fixed" : "not fixed") + "</div>");
         }
+
         function fixSize(id) {
             var h = (document.getElementById("chbx_" + id + "_hor").checked == true);
             var v = (document.getElementById("chbx_" + id + "_ver").checked == true);

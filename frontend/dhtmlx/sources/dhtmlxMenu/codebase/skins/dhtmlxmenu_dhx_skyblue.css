@@ -22,7 +22,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 10px;
     overflow: hidden;
 }
-
 .dhtmlxMenu_dhx_skyblue_Middle {
     position: relative;
     height: 30px;
@@ -36,7 +35,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxMenu_dhx_skyblue_Middle div.top_sep {
     float: left;
     position: relative;
@@ -55,14 +53,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxMenu_dhx_skyblue_Middle img.dhtmlxMenu_TopLevel_Item_Icon {
     float: left;
     margin: 2px 3px 0px 3px;
     width: 18px;
     height: 18px;
 }
-
 .dhtmlxMenu_dhx_skyblue_Middle div.dhtmlxMenu_TopLevel_Text_right {
     position: absolute;
     top: 8px;
@@ -73,7 +69,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: black;
     cursor: default;
 }
-
 .dhtmlxMenu_dhx_skyblue_Middle div.dhtmlxMenu_TopLevel_Text_left {
     position: absolute;
     top: 8px;
@@ -84,15 +79,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: black;
     cursor: default;
 }
-
 .dhtmlxMenu_dhx_skyblue_Middle.dir_left div.align_left {
     float: left;
 }
-
 .dhtmlxMenu_dhx_skyblue_Middle.dir_left div.align_right {
     float: right;
 }
-
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Normal,
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Disabled,
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Selected {
@@ -115,14 +107,12 @@ div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Selected {
     margin: 3px 2px 0px 0px;
     padding: 0px 3px;
 }
-
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Normal div.top_level_text,
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Disabled div.top_level_text,
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Selected div.top_level_text {
     float: left;
     margin: 0px 3px;
 }
-
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Normal i,
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Disabled i,
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Selected i {
@@ -133,22 +123,18 @@ div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Selected i {
     margin: 0px 4px;
     font-size: 1.2em;
 }
-
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Normal,
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Disabled {
     border: 1px solid #ebebeb;
 }
-
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Disabled {
     color: #999999 !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_TopLevel_Item_Selected {
     border: 1px solid #a1ceed;
     background-color: #b5deff;
     color: black;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon {
     position: absolute;
     border: 1px solid #a4bed4;
@@ -168,7 +154,6 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td {
     font-family: Tahoma, Helvetica;
     font-size: 11px;
@@ -184,31 +169,26 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_selected td {
     background-color: #b5deff;
     border-top: 1px solid #a1ceed;
     border-bottom: 1px solid #a1ceed;
     color: black;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_selected div.sub_item_hk {
     color: #333333 !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_icon {
     width: 18px;
     text-align: center;
     vertical-align: middle;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_icon img.sub_icon {
     float: left;
     margin: 0px;
     width: 18px;
     height: 18px;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_icon i {
     float: left;
     text-align: center;
@@ -218,11 +198,9 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     font-size: 1.3em;
     color: inherit;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis td.sub_item_icon i {
     color: #999999 !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_item_text {
     padding: 0px 12px 0px 1px;
     height: 22px;
@@ -230,27 +208,22 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     white-space: nowrap;
     text-align: left;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_item_text {
     color: #999999 !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_hk {
     padding-left: 8px;
     padding-right: 8px;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_hk div.sub_item_hk {
     font-family: Tahoma, Helvetica;
     font-size: 10px;
     color: #4d4d4d;
     text-align: right;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis td.sub_item_hk div.sub_item_hk {
     color: #9b9b9b !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.complex_arrow {
     width: 4px;
     margin: 0px 2px 0px 5px;
@@ -262,15 +235,12 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     font-size: 1px;
     float: right;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_selected div.complex_arrow {
     background-position: -4px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.complex_arrow {
     background-position: -8px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.complex_arrow_loading {
     width: 11px;
     height: 22px;
@@ -279,7 +249,6 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     background-image: url("../imgs/dhxmenu_skyblue/dhxmenu_loader.gif");
     float: right;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon {
     float: left;
     margin: 0px;
@@ -289,43 +258,33 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     background-repeat: no-repeat;
     background-image: url("../imgs/dhxmenu_skyblue/dhxmenu_chrd.gif");
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon.chbx_0 {
     background-position: 0px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon.chbx_1 {
     background-position: -18px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_icon.chbx_0 {
     background-position: -36px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_icon.chbx_1 {
     background-position: -54px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon.rdbt_0 {
     background-position: -72px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon.rdbt_1 {
     background-position: -90px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_icon.rdbt_0 {
     background-position: -108px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_icon.rdbt_1 {
     background-position: -126px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon tr.sub_sep td {
     padding: 2px 0px;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon div.sub_sep {
     position: static;
     font-size: 1px;
@@ -334,14 +293,12 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_Polygon div.sub_sep {
     width: 100%;
     border-top: 1px solid #a4bed4;
 }
-
 iframe.dhtmlxMenu_IE6CoverFix_dhx_skyblue {
     position: absolute;
     border: none;
     background: #000000;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowUp,
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowUp_Over,
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowUp_Disabled {
@@ -354,11 +311,9 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowUp_Disabled {
     padding: 8px 0px;
     margin-bottom: 3px;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowUp_Disabled {
     background-image: url("../imgs/dhxmenu_skyblue/dhxmenu_arrow_up_dis.gif");
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowDown,
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowDown_Over,
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowDown_Disabled {
@@ -371,7 +326,6 @@ div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowDown_Disabled {
     padding: 8px 0px;
     margin-top: 3px;
 }
-
 div.dhtmlxMenu_dhx_skyblue_SubLevelArea_ArrowDown_Disabled {
     background-image: url("../imgs/dhxmenu_skyblue/dhxmenu_arrow_down_dis.gif");
 }

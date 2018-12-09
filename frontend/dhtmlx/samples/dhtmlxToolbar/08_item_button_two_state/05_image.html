@@ -2,16 +2,17 @@
 <html>
 <head>
     <title>ButtonTwoState image</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var sel;
         var myToolbar;
         var img;
         var lastImg;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -23,22 +24,27 @@
             img = "new";
             lastImg = document.getElementById("new");
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function changeImage(imgObj) {
             img = imgObj.id;
             imgObj.style.border = "#707070 1px solid";
             lastImg.style.border = "#E0E0E0 1px solid";
             lastImg = imgObj;
         }
+
         function clearImage(text) {
             myToolbar.clearItemImage(getId());
         }
+
         function setImage() {
             myToolbar.setItemImage(getId(), img + ".gif");
         }
+
         function updateList() {
             sel.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -52,13 +58,13 @@
 <body onload="doOnLoad()">
 <div id="toolbarObj"></div>
 <div style="margin-top: 20px;">
-    <table cellspacing="0" cellpadding="2" border="0">
+    <table border="0" cellpadding="2" cellspacing="0">
         <tr>
             <td><select id="sel"></select></td>
-            <td><input type="button" value="Clear Image" onclick="clearImage();"></td>
-            <td><input type="button" value="Set Image" onclick="setImage();"></td>
+            <td><input onclick="clearImage();" type="button" value="Clear Image"></td>
+            <td><input onclick="setImage();" type="button" value="Set Image"></td>
             <td>
-                <table cellspacing="0" cellpadding="2" border="0">
+                <table border="0" cellpadding="2" cellspacing="0">
                     <tr>
                         <td><img id="new" onclick="changeImage(this);" src="../common/imgs/new.gif"
                                  style="border: #707070 1px solid; width: 18px; height: 18px; cursor: pointer;"></td>

@@ -2,13 +2,13 @@
 <html>
 <head>
     <title>Skins</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/web/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/terrace/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../skins/skyblue/dhtmlx.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/web/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/terrace/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../skins/skyblue/dhtmlx.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#sidebarObj {
@@ -43,6 +43,7 @@
             dhx_terrace: "icons_terrace/",
             material: "icons_material/"
         };
+
         function doOnLoad(newSkin) {
             if (newSkin == null) newSkin = "material";
             if (usedSkin == newSkin) return;

@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXTreeView(conf) {
 
@@ -13,24 +13,24 @@ function dhtmlXTreeView(conf) {
 
     var that = this;
 
-    if (typeof(conf) == "object" && conf.tagName == null) {
+    if (typeof (conf) == "object" && conf.tagName == null) {
         // api-init
     } else {
         conf = {parent: conf, clear: true};
     }
 
-    this.base = (typeof(conf.parent) == "string" ? document.getElementById(conf.parent) : conf.parent);
+    this.base = (typeof (conf.parent) == "string" ? document.getElementById(conf.parent) : conf.parent);
 
     if (this.base != document.body) {
         while (this.base.childNodes.length > 0) this.base.removeChild(this.base.lastChild);
     }
 
     this.conf = {
-        skin: (conf.skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxtreeview") || "material"),
+        skin: (conf.skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxtreeview") || "material"),
         tree_id: window.dhx4.newId(), // register tree in common pull
         ofs: {w: 1, h: 0}, // skyblue only
         adjust_base: false,
-        icons: this.icons[(typeof(conf.iconset) == "string" && this.icons[conf.iconset] != null && this.icons[conf.iconset].r == true ? conf.iconset : "tree_native")],
+        icons: this.icons[(typeof (conf.iconset) == "string" && this.icons[conf.iconset] != null && this.icons[conf.iconset].r == true ? conf.iconset : "tree_native")],
         autoload: {
             url: null, // will set automaticaly from 1st loadStruct
             mode: "id" // user function allowed here
@@ -40,7 +40,7 @@ function dhtmlXTreeView(conf) {
         idx: {sign: 0, icon: 1, text: 2}, // icons index
         silent: false, // do not callEvent if true
         // macos related for selection
-        is_mac: (navigator.platform.match(/^mac/i) != null && typeof(window.addEventListener) == "function"),
+        is_mac: (navigator.platform.match(/^mac/i) != null && typeof (window.addEventListener) == "function"),
         mac_cmd_key: false
     };
 
@@ -237,13 +237,13 @@ function dhtmlXTreeView(conf) {
     // open/colse
     this.openItem = function (id, anim) {
         if (this.items[id].opened != true) {
-            if (typeof(anim) == "undefined") anim = true;
+            if (typeof (anim) == "undefined") anim = true;
             this._openCloseItem(id, anim);
         }
     };
     this.closeItem = function (id, anim) {
         if (this.items[id].opened == true) {
-            if (typeof(anim) == "undefined") anim = true;
+            if (typeof (anim) == "undefined") anim = true;
             this._openCloseItem(id, anim);
         }
     };
@@ -532,7 +532,7 @@ dhtmlXTreeView.prototype.getUserData = function (id, name) {
 // events extension
 dhtmlXTreeView.prototype.silent = function (f) {
     this.conf.silent = true;
-    if (typeof(f) == "function") f.apply(window, [this]);
+    if (typeof (f) == "function") f.apply(window, [this]);
     this.conf.silent = false;
 };
 dhtmlXTreeView.prototype._callPublicEvent = function () {
@@ -570,9 +570,9 @@ if (typeof(window.dhtmlXCellObject) == "function") {
         this._attachObject(obj);
 
         var treeConf = {parent: obj, skin: this.conf.skin};
-        if (conf != null && typeof(conf) == "object") {
+        if (conf != null && typeof (conf) == "object") {
             for (var a in conf) {
-                if (typeof(treeConf[a]) == "undefined") treeConf[a] = conf[a];
+                if (typeof (treeConf[a]) == "undefined") treeConf[a] = conf[a];
             }
         }
 
@@ -580,7 +580,7 @@ if (typeof(window.dhtmlXCellObject) == "function") {
         this.dataObj = new dhtmlXTreeView(treeConf);
 
         // draw border if attached to window
-        if (typeof(window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
+        if (typeof (window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
             obj.className += " dhxtreeview_with_border";
             this.dataObj.conf.adjust_base = true;
             this.dataObj.setSizes();
@@ -594,7 +594,7 @@ if (typeof(window.dhtmlXCellObject) == "function") {
         return this.dataObj;
 
     };
-
+	
 }
 // register checkboxes module
 dhtmlXTreeView.prototype.modules.chbx = {
@@ -952,7 +952,7 @@ dhtmlXTreeView.prototype._iconModuleInit = function () { // init
 dhtmlXTreeView.prototype._iconConf = function (id) { // return array with icons
     var icons = this.items[id].icons || {};
     for (var a in {folder_opened: 1, folder_closed: 1, file: 1}) {
-        if (typeof(icons[a]) == "undefined") icons[a] = this.conf.icons[a]; // if item has own icons missing will updated here
+        if (typeof (icons[a]) == "undefined") icons[a] = this.conf.icons[a]; // if item has own icons missing will updated here
     }
     return icons;
 };
@@ -1017,7 +1017,7 @@ dhtmlXTreeView.prototype.modules.loading = {
 
 dhtmlXTreeView.prototype._loadingInit = function (conf) {
     window.dhx4._enableDataLoading(this, "_initObj", "_xmlToObj", "tree", {struct: true});
-    this.conf.root_id = (typeof(conf.root_id) == "undefined" || conf.root_id == null ? "0" : conf.root_id); // top-level item
+    this.conf.root_id = (typeof (conf.root_id) == "undefined" || conf.root_id == null ? "0" : conf.root_id); // top-level item
     this._dhxdataload.onBeforeXLS = function (url) { // add tree_id for 1st load if any
         if (this.conf.autoload.url == null) this.conf.autoload.url = url;
         return {url: url.replace(/\{id\}/gi, this.conf.root_id)};
@@ -1117,15 +1117,15 @@ dhtmlXTreeView.prototype._dndInit = function (conf) { // init
 
         e = e || event;
 
-        if (typeof(e.button) != "undefined" && e.button >= 2) return false;
+        if (typeof (e.button) != "undefined" && e.button >= 2) return false;
 
         var id = null;
         var treeId = null;
 
         var t = e.target || e.srcElement;
 
-        var ofs_x = window.dhx4.absLeft(t) + (typeof(e.offsetX) == "undefined" ? e.layerX : e.offsetX) - e.clientX;
-        var ofs_y = window.dhx4.absTop(t) + (typeof(e.offsetY) == "undefined" ? e.layerY : e.offsetY) - e.clientY;
+        var ofs_x = window.dhx4.absLeft(t) + (typeof (e.offsetX) == "undefined" ? e.layerX : e.offsetX) - e.clientX;
+        var ofs_y = window.dhx4.absTop(t) + (typeof (e.offsetY) == "undefined" ? e.layerY : e.offsetY) - e.clientY;
 
         while (t != null && t != that.cont) {
             if ((t.className || "").match(/dhxtreeview_item/) != null && t._itemId != null) {
@@ -1349,7 +1349,7 @@ dhtmlXTreeView.prototype._dndInit = function (conf) { // init
 
         e = e || event;
 
-        if (typeof(e.button) != "undefined" && e.button >= 2) return;
+        if (typeof (e.button) != "undefined" && e.button >= 2) return;
 
         that._dndUnloadEvents();
         that._dndUnloadDraggedObj();
@@ -1458,7 +1458,7 @@ dhtmlXTreeView.prototype._dndInit = function (conf) { // init
     // events
     this._dndInitEvents = function () {
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.addEventListener("mousemove", this._dndOnMouseMove, false);
             window.addEventListener("mouseup", this._dndOnMouseUp, false);
             window.addEventListener("contextmenu", this._dndOnContextMenu, false);
@@ -1471,7 +1471,7 @@ dhtmlXTreeView.prototype._dndInit = function (conf) { // init
     };
 
     this._dndUnloadEvents = function () {
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("mousemove", this._dndOnMouseMove, false);
             window.removeEventListener("mouseup", this._dndOnMouseUp, false);
             window.removeEventListener("contextmenu", this._dndOnContextMenu, false);
@@ -1601,7 +1601,7 @@ dhtmlXTreeView.prototype._dndInit = function (conf) { // init
     };
 
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.cont.addEventListener("mousedown", this._dndOnMouseDown, false);
     } else {
         this.cont.attachEvent("onmousedown", this._dndOnMouseDown);
@@ -1611,7 +1611,7 @@ dhtmlXTreeView.prototype._dndInit = function (conf) { // init
     // unload
     this._dndUnload = function () {
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.cont.removeEventListener("mousedown", this._dndOnMouseDown, false);
         } else {
             this.cont.detachEvent("onmousedown", this._dndOnMouseDown);
@@ -1621,7 +1621,7 @@ dhtmlXTreeView.prototype._dndInit = function (conf) { // init
     };
 
     conf = null;
-
+	
 };
 // register context menu module
 dhtmlXTreeView.prototype.modules.ctx = {
@@ -1648,8 +1648,8 @@ dhtmlXTreeView.prototype._ctxInit = function (conf) { // init
         if (t.tagName.toLowerCase() == "i") t = t.parentNode; // check if icon
         var id = (t.parentNode._itemId || t.parentNode.parentNode._itemId);
 
-        var cx = window.dhx4.absLeft(t) + (typeof(e.offsetX) == "undefined" ? e.layerX : e.offsetX);
-        var cy = window.dhx4.absTop(t) + (typeof(e.offsetY) == "undefined" ? e.layerY : e.offsetY);
+        var cx = window.dhx4.absLeft(t) + (typeof (e.offsetX) == "undefined" ? e.layerX : e.offsetX);
+        var cy = window.dhx4.absTop(t) + (typeof (e.offsetY) == "undefined" ? e.layerY : e.offsetY);
 
         if (id != null && that._callPublicEvent("onContextMenu", [id, cx, cy, e]) !== true) {
             if (e.preventDefault) e.preventDefault();
@@ -1660,7 +1660,7 @@ dhtmlXTreeView.prototype._ctxInit = function (conf) { // init
 
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.cont.addEventListener("contextmenu", this._ctxCall, false);
     } else {
         this.cont.attachEvent("oncontextmenu", this._ctxCall);
@@ -1668,7 +1668,7 @@ dhtmlXTreeView.prototype._ctxInit = function (conf) { // init
 
     // unload
     this._ctxUnload = function () {
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.cont.removeEventListener("contextmenu", this._ctxCall, false);
         } else {
             this.cont.detachEvent("oncontextmenu", this._ctxCall);
@@ -1678,7 +1678,7 @@ dhtmlXTreeView.prototype._ctxInit = function (conf) { // init
 
     // autoload if any
     this.enableContextMenu(conf.context_menu);
-
+	
 };
 // reguster dynload module
 dhtmlXTreeView.prototype.modules.dynload = {
@@ -1728,7 +1728,7 @@ dhtmlXTreeView.prototype._dynLoadRequest = function (id) {
 
     // return true/false for node auto-open
     // if false - open after data will loaded
-    if (typeof(this.conf.autoload.mode) == "function") {
+    if (typeof (this.conf.autoload.mode) == "function") {
         this.conf.autoload.mode.apply(window, [id]);
         return true;
     }

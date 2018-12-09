@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Setting custom attributes</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myGrid;
+
         function doOnLoad() {
             myGrid = new dhtmlXGridObject('gridbox');
             myGrid.setImagePath("../../../codebase/imgs/");
@@ -23,6 +24,7 @@
             myGrid.setSerializationLevel(false, true);
             myGrid.load("../common/grid_attr.xml");
         }
+
         function addAttribute() {
             var val = document.getElementById('val').value;
             var txt = document.getElementById('txt').value;
@@ -33,9 +35,11 @@
             //register attribute for serialization
             myGrid.xml.row_attrs.push(val);
         }
+
         function showAttribute() {
             alert(myGrid.getRowAttribute(myGrid.getSelectedId(), document.getElementById('sel').value));
         }
+
         function addAttrToSelect(value) {
             var z = document.createElement('option');
             z.value = value;
@@ -56,7 +60,7 @@
                 <option value="price">price</option>
                 <option value="date">date of publication</option>
             </select>
-            <input type="button" name="a2" value="show attribute" onclick="showAttribute();"/>
+            <input name="a2" onclick="showAttribute();" type="button" value="show attribute"/>
         </td>
     </tr>
     <tr>
@@ -66,8 +70,8 @@
     </tr>
     <tr>
         <td valign="top">
-            Name: <input type="text" id="val" size="18"> Value: <input type="text" id="txt" size="18">&nbsp;
-            <input type="button" name="a2" value="add attribute to selected" onclick="addAttribute();"/>
+            Name: <input id="val" size="18" type="text"> Value: <input id="txt" size="18" type="text">&nbsp;
+            <input name="a2" onclick="addAttribute();" type="button" value="add attribute to selected"/>
         </td>
     </tr>
 </table>

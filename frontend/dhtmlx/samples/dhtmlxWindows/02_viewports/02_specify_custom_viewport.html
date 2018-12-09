@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Specify custom viewport</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         #customVPhere {
@@ -26,6 +26,7 @@
     </style>
     <script>
         var dhxWins, w1;
+
         function doOnLoad() {
             dhxWins = new dhtmlXWindows();
             dhxWins.setViewport(20, 150, 600, 420, "customVPhere");
@@ -36,6 +37,7 @@
             w1.button("close").disable();
             w1.attachObject("objId");
         }
+
         function doOnUnload() {
             if (dhxWins != null && dhxWins.unload != null) {
                 dhxWins.unload();
@@ -45,7 +47,7 @@
     </script>
 </head>
 <body onload="doOnLoad();" onunload="doOnUnload();">
-<div style="height: 600px; position: relative;" id="customVPhere">
+<div id="customVPhere" style="height: 600px; position: relative;">
     In this case dhtmlxWindows will create a new object and use it as a viewport.
     <br>
     <br>

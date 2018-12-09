@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Button 2-State</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         /* enabled, not checked */
@@ -44,6 +44,7 @@
     </style>
     <script>
         var myForm, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-right", inputWidth: 42, inputHeight: 20},
@@ -57,10 +58,10 @@
                 },
                 {
                     type: "btn2state", name: "b", value: "mops", label: "Advanced Mouse Operations", list: [
-                    {type: "btn2state", label: "Drag-n-drop in text area"},
-                    {type: "btn2state", label: "Double-click drag joins non-alphanumeric characters"},
-                    {type: "btn2state", label: "Quick copy using middle mouse button", checked: true}
-                ]
+                        {type: "btn2state", label: "Drag-n-drop in text area"},
+                        {type: "btn2state", label: "Double-click drag joins non-alphanumeric characters"},
+                        {type: "btn2state", label: "Quick copy using middle mouse button", checked: true}
+                    ]
                 },
                 {type: "label", label: "Editor settings", offsetTop: 20},
                 {type: "btn2state", label: "Highlight current line", checked: true},
@@ -68,10 +69,10 @@
                 {type: "btn2state", label: "Show structure scope"},
                 {
                     type: "btn2state", label: "Show gutter", list: [
-                    {type: "btn2state", label: "Line numbers", checked: true},
-                    {type: "btn2state", label: "Line selection area"},
-                    {type: "btn2state", label: "Code Folding"}
-                ]
+                        {type: "btn2state", label: "Line numbers", checked: true},
+                        {type: "btn2state", label: "Line selection area"},
+                        {type: "btn2state", label: "Code Folding"}
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);

@@ -22,7 +22,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 10px;
     overflow: hidden;
 }
-
 .dhtmlxMenu_dhx_terrace_Middle {
     position: relative;
     height: 34px;
@@ -36,7 +35,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxMenu_dhx_terrace_Middle div.top_sep {
     float: left;
     position: relative;
@@ -53,14 +51,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxMenu_dhx_terrace_Middle img.dhtmlxMenu_TopLevel_Item_Icon {
     float: left;
     margin: 2px 3px 0px 3px;
     width: 18px;
     height: 18px;
 }
-
 .dhtmlxMenu_dhx_terrace_Middle div.dhtmlxMenu_TopLevel_Text_right {
     position: absolute;
     top: 10px;
@@ -71,7 +67,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: #333333;
     cursor: default;
 }
-
 .dhtmlxMenu_dhx_terrace_Middle div.dhtmlxMenu_TopLevel_Text_left {
     position: absolute;
     top: 10px;
@@ -82,15 +77,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: #333333;
     cursor: default;
 }
-
 .dhtmlxMenu_dhx_terrace_Middle.dir_left div.align_left {
     float: left;
 }
-
 .dhtmlxMenu_dhx_terrace_Middle.dir_left div.align_right {
     float: right;
 }
-
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Normal,
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Disabled,
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Selected {
@@ -115,14 +107,12 @@ div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Selected {
     margin-top: 2px;
     padding: 3px 5px;
 }
-
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Normal div.top_level_text,
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Disabled div.top_level_text,
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Selected div.top_level_text {
     float: left;
     margin: 0px 5px;
 }
-
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Normal i,
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Disabled i,
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Selected i {
@@ -133,17 +123,14 @@ div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Selected i {
     margin: 0px 5px;
     font-size: 1.1em;
 }
-
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Disabled {
     color: #d1d1d1;
     background-color: #ededed;
 }
-
 div.dhtmlxMenu_dhx_terrace_TopLevel_Item_Selected {
     color: #2e2e2e;
     background-color: #ebebeb;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon {
     position: absolute;
     border: 1px solid #cccccc;
@@ -164,7 +151,6 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td {
     font-family: Arial, Helvetica;
     font-size: 13px;
@@ -178,25 +164,21 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_selected td {
     background-color: #fff3a1;
     color: black;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_icon {
     width: 18px;
     text-align: center;
     vertical-align: middle;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_icon img.sub_icon {
     float: left;
     margin: 0px;
     width: 18px;
     height: 18px;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_icon i {
     float: left;
     text-align: center;
@@ -206,7 +188,6 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     font-size: 1.1em;
     color: inherit;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_item_text {
     padding: 0px 16px 0px 1px;
     height: 26px;
@@ -214,31 +195,25 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     white-space: nowrap;
     text-align: left;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_item_text {
     color: #bbbbbb;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis td.sub_item_icon i {
     color: #bbbbbb !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_hk {
     padding-left: 8px;
     padding-right: 8px;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl td.sub_item_hk div.sub_item_hk {
     font-family: Arial, Helvetica;
     font-size: 13px;
     color: #737373;
     text-align: right;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis td.sub_item_hk div.sub_item_hk {
     color: #c8c8c8 !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.complex_arrow {
     width: 4px;
     margin: 0px 2px 0px 5px;
@@ -250,15 +225,12 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     font-size: 1px;
     float: right;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_selected div.complex_arrow {
     background-position: -4px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.complex_arrow {
     background-position: -8px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.complex_arrow_loading {
     width: 11px;
     height: 22px;
@@ -267,7 +239,6 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     background-image: url("../imgs/dhxmenu_terrace/dhxmenu_loader.gif");
     float: right;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon {
     float: left;
     margin: 0px;
@@ -277,43 +248,33 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tb
     background-repeat: no-repeat;
     background-image: url("../imgs/dhxmenu_terrace/dhxmenu_chrd.gif");
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon.chbx_0 {
     background-position: 0px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon.chbx_1 {
     background-position: -18px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_icon.chbx_0 {
     background-position: -36px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_icon.chbx_1 {
     background-position: -54px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon.rdbt_0 {
     background-position: -72px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl div.sub_icon.rdbt_1 {
     background-position: -90px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_icon.rdbt_0 {
     background-position: -108px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon table.dhtmlxMebu_SubLevelArea_Tbl tr.sub_item_dis div.sub_icon.rdbt_1 {
     background-position: -126px 0px !important;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon tr.sub_sep td {
     padding: 2px 0px;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon div.sub_sep {
     position: static;
     font-size: 1px;
@@ -322,14 +283,12 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon div.sub_sep {
     width: 100%;
     border-top: 1px solid #e8e8e8;
 }
-
 iframe.dhtmlxMenu_IE6CoverFix_dhx_terrace {
     position: absolute;
     border: none;
     background: #000000;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowUp,
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowUp_Over,
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowUp_Disabled {
@@ -342,11 +301,9 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowUp_Disabled {
     padding: 8px 0px;
     margin-bottom: 3px;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowUp_Disabled {
     background-image: url("../imgs/dhxmenu_terrace/dhxmenu_arrow_up_dis.gif");
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowDown,
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowDown_Over,
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowDown_Disabled {
@@ -359,7 +316,6 @@ div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowDown_Disabled {
     padding: 8px 0px;
     margin-top: 3px;
 }
-
 div.dhtmlxMenu_dhx_terrace_SubLevelArea_ArrowDown_Disabled {
     background-image: url("../imgs/dhxmenu_terrace/dhxmenu_arrow_down_dis.gif");
 }

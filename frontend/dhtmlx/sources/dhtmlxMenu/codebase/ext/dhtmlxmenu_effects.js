@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 // effects: opacity, slide
 dhtmlXMenuObject.prototype.enableEffect = function (name, maxOpacity, effectSpeed) {
@@ -22,7 +22,7 @@ dhtmlXMenuObject.prototype.enableEffect = function (name, maxOpacity, effectSpee
     }
 
     // opacity max value
-    this._pOpMax = (typeof(maxOpacity) == "undefined" ? 100 : maxOpacity) / (this._pOpStyleIE ? 1 : 100);
+    this._pOpMax = (typeof (maxOpacity) == "undefined" ? 100 : maxOpacity) / (this._pOpStyleIE ? 1 : 100);
 
     // opacity css styles
     this._pOpStyleName = (this._pOpStyleIE ? "filter" : "opacity");
@@ -34,7 +34,7 @@ dhtmlXMenuObject.prototype.enableEffect = function (name, maxOpacity, effectSpee
 
     // timeout to open polygon
     this._pSlTMTimeMax = effectSpeed || 50;
-
+	
 };
 
 // extended show
@@ -145,7 +145,7 @@ dhtmlXMenuObject.prototype._pEffectSet = function (pId, t) {
         ///this.idPull[pId]._step_h = null;
         this.idPull[pId]._step_tm = null;
     }
-
+	
 };
 
 

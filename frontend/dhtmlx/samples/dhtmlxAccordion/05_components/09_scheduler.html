@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Integration with dhtmlxScheduler</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -17,6 +17,7 @@
     </style>
     <script>
         var myAcc;
+
         function doOnLoad() {
             myAcc = new dhtmlXAccordion({
                 parent: "accObj",
@@ -26,7 +27,7 @@
                     {id: "a3", text: "c"}
                 ]
             });
-            if (typeof(window.scheduler) == "undefined") {
+            if (typeof (window.scheduler) == "undefined") {
                 if (window.dhtmlx != null && window.dhtmlx.message != null) {
                     window.setTimeout(function () {
                         dhtmlx.message({type: "error", text: "dhtmlxScheduler required for this demo"});

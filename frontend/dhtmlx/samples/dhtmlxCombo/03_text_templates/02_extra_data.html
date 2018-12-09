@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Extra data with templates</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.combo_info {
@@ -29,6 +29,7 @@
     <script>
         var myCombo;
         var eventIndex = 1;
+
         function doOnLoad() {
             myCombo = new dhtmlXCombo("combo_zone", null, null, "image");
             myCombo.setImagePath("../common/flags/");
@@ -56,6 +57,7 @@
                 log(option.text.country + ", " + option.text.capital + " <span style='vertical-align:baseline;'><img border='0' src='../common/flags/" + option.text.flag + "' style='vertical-align:middle;'></span>");
             });
         }
+
         function log(text) {
             var t = document.getElementById("log_here");
             t.innerHTML += (eventIndex++) + ") " + text + "<br>";

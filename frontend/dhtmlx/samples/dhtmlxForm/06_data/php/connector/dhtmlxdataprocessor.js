@@ -229,7 +229,7 @@ dataProcessor.prototype = {
     },
 
     serialize_one: function (data, pref) {
-        if (typeof(data) == "string") return data;
+        if (typeof (data) == "string") return data;
         var stack = [];
         for (var key in data) {
             if (data.hasOwnProperty(key)) stack.push(this.escape((pref || "") + key) + "=" + this.escape(data[key]));
@@ -309,8 +309,8 @@ dataProcessor.prototype = {
      */
     setVerificator: function (ind, verifFunction) {
         this.mandatoryFields[ind] = verifFunction || (function (value) {
-                return (value != "");
-            });
+            return (value != "");
+        });
     },
     /**
      *    @desc: remove column from list of those which should be verified
@@ -446,9 +446,9 @@ dataProcessor.prototype = {
 
 
     /*! starts autoupdate mode
-     @param interval
-     time interval for sending update requests
-     */
+    @param interval
+    time interval for sending update requests
+    */
     setAutoUpdate: function (interval, user) {
         interval = interval || 2000;
 
@@ -472,9 +472,9 @@ dataProcessor.prototype = {
 
 
     /*! process updating request answer
-     if status == collision version is depricated
-     set flag for autoupdating immidiatly
-     */
+    if status == collision version is depricated
+    set flag for autoupdating immidiatly
+    */
     afterAutoUpdate: function (sid, action, tid, xml_node) {
         if (action == 'collision') {
             this._need_update = true;
@@ -486,8 +486,8 @@ dataProcessor.prototype = {
 
 
     /*! callback function for onFillSync event
-     call update function if it's need
-     */
+    call update function if it's need
+    */
     fullSync: function () {
         if (this._need_update == true) {
             this._need_update = false;
@@ -498,7 +498,7 @@ dataProcessor.prototype = {
 
 
     /*! sends query to the server and call callback function
-     */
+    */
     getUpdates: function (url, callback) {
         if (this._update_busy)
             return false;
@@ -514,9 +514,9 @@ dataProcessor.prototype = {
 
 
     /*! returns xml node value
-     @param node
-     xml node
-     */
+    @param node
+    xml node
+    */
     _v: function (node) {
         if (node.firstChild) return node.firstChild.nodeValue;
         return "";
@@ -524,9 +524,9 @@ dataProcessor.prototype = {
 
 
     /*! returns values array of xml nodes array
-     @param arr
-     array of xml nodes
-     */
+    @param arr
+    array of xml nodes
+    */
     _a: function (arr) {
         var res = [];
         for (var i = 0; i < arr.length; i++) {
@@ -537,7 +537,7 @@ dataProcessor.prototype = {
 
 
     /*! loads updates and processes them
-     */
+    */
     loadUpdate: function () {
         var self = this;
         var version = this.obj.getUserData(0, "version");
@@ -575,7 +575,7 @@ dataProcessor.prototype = {
             self = null;
         });
     }
-
+	
 };
 
 //(c)dhtmlx ltd. www.dhtmlx.com

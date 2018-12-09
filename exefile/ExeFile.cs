@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -15,14 +16,16 @@ namespace exefile
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly Queue<uint> _analysisQueue = new Queue<uint>();
         private readonly byte[] _data;
         private readonly uint? _gpBase;
 
         private readonly Header _header;
 
         private readonly IDebugSource _debugSource;
-        private readonly IDictionary<uint, MicroAssemblyBlock> _decoded = new Dictionary<uint, MicroAssemblyBlock>();
+
+        private readonly IDictionary<uint, MicroAssemblyBlock> _decoded =
+            new SortedDictionary<uint, MicroAssemblyBlock>();
+
         public ISet<uint> Callees = new SortedSet<uint>();
 
         public IEnumerable<KeyValuePair<uint, MicroAssemblyBlock>> RelocatedInstructions =>
@@ -40,28 +43,24 @@ namespace exefile
             _gpBase = _debugSource.Labels
                 .Where(byOffset => byOffset.Value.Any(lbl => lbl.Name.Equals("__SN_GP_BASE")))
                 .Select(lbl => lbl.Key)
+                .Cast<uint?>()
                 .FirstOrDefault();
         }
 
-        public uint MakeGlobal(uint addr)
+        private uint MakeGlobal(uint addr)
         {
             return addr + _header.tAddr;
         }
 
-        public uint MakeLocal(uint addr)
+        private uint MakeLocal(uint addr)
         {
-            if (addr < _header.tAddr)
+            if (addr < _header.tAddr /*TODO || addr >= _header.tAddr + _header.tSize*/)
                 throw new ArgumentOutOfRangeException(nameof(addr), "Address out of range to make local");
 
             return addr - _header.tAddr;
         }
 
-        public uint WordAtGlobal(uint address)
-        {
-            return WordAtLocal(MakeLocal(address));
-        }
-
-        public uint WordAtLocal(uint address)
+        private uint WordAtLocal(uint address)
         {
             uint data;
             data = _data[address++];
@@ -72,45 +71,127 @@ namespace exefile
             return data;
         }
 
-        public bool ContainsGlobal(uint address, bool onlyCode = true)
-        {
-            try
-            {
-                return ContainsLocal(MakeLocal(address), onlyCode);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return false;
-            }
-        }
-
-        public bool ContainsLocal(uint address, bool onlyCode = true)
-        {
-            if (onlyCode)
-                return address < _header.tSize;
-            else
-                return address < _data.Length;
-        }
-
         private static Opcode ExtractOpcode(uint data)
         {
             return (Opcode) (data >> 26);
         }
 
-        public void Disassemble(uint localStart)
+        private uint _tmpRegId = 1000;
+
+        private uint GetTmpRegId()
         {
-            _analysisQueue.Clear();
-            _analysisQueue.Enqueue(localStart);
-            DisassembleImpl();
+            return _tmpRegId++;
         }
+
+        private RegisterArg GetTmpReg(byte bits)
+        {
+            return new RegisterArg(GetTmpRegId(), bits);
+        }
+
 
         public void Disassemble()
         {
-            _analysisQueue.Clear();
-            _analysisQueue.Enqueue(MakeLocal(_header.pc0));
-            foreach (var addr in _debugSource.Functions.Select(f => f.GlobalAddress).Select(MakeLocal))
-                _analysisQueue.Enqueue(addr);
-            DisassembleImpl();
+            _tmpRegId = 1000;
+            
+            logger.Info("Disassembly started");
+
+            Queue<uint> analysisQueue = new Queue<uint>();
+            analysisQueue.Enqueue(MakeLocal(_header.pc0));
+            foreach (var addr in _debugSource.Functions.Select(f => MakeLocal(f.GlobalAddress)))
+                analysisQueue.Enqueue(addr);
+
+            while (analysisQueue.Count != 0)
+            {
+                var localAddress = analysisQueue.Dequeue();
+                if (localAddress >= _header.tSize)
+                    continue;
+
+                if (!_decoded.TryGetValue(localAddress, out var asm))
+                {
+                    asm = new MicroAssemblyBlock(localAddress);
+                    _decoded[localAddress] = asm;
+                    DecodeInstruction(asm, WordAtLocal(localAddress), localAddress + 4, false);
+                }
+
+                foreach (var addr in asm.Outs)
+                {
+                    if (addr.Key >= _header.tSize)
+                    {
+                        //logger.Warn($"Outgoing address 0x{addr.Key:x8} out of bounds");
+                        continue;
+                    }
+
+                    if (!_decoded.ContainsKey(addr.Key))
+                    {
+                        analysisQueue.Enqueue(addr.Key);
+                    }
+                }
+            }
+
+            logger.Info("Reversing control flow");
+            foreach (var asm in _decoded)
+            {
+                foreach (var @out in asm.Value.Outs)
+                {
+                    var addr = @out.Key;
+                    if (!_decoded.TryGetValue(addr, out var target))
+                    {
+                        logger.Warn($"Target address 0x${addr:x8} not in local address space");
+                        continue;
+                    }
+
+                    target.Ins.Add(asm.Key, @out.Value);
+                }
+            }
+
+            logger.Info("Collapsing basic assembly blocks");
+            var tmp = new SortedDictionary<uint, MicroAssemblyBlock>(_decoded);
+            _decoded.Clear();
+            MicroAssemblyBlock basicBlock = null;
+            foreach (var addrAsm in tmp)
+            {
+                if (basicBlock == null)
+                {
+                    basicBlock = addrAsm.Value;
+                    Debug.Assert(basicBlock.Address == addrAsm.Key);
+                    _decoded.Add(basicBlock.Address, basicBlock);
+                    continue;
+                }
+
+                if (addrAsm.Value.Ins.Values.Any(x => x != JumpType.Control))
+                {
+                    // start a new basic block if we have an incoming edge that is no pure control flow
+                    basicBlock = addrAsm.Value;
+                    Debug.Assert(basicBlock.Address == addrAsm.Key);
+                    _decoded.Add(basicBlock.Address, basicBlock);
+                    continue;
+                }
+
+                // replace the current's outgoing edges, and append the assembly
+                basicBlock.Outs = addrAsm.Value.Outs;
+                foreach (var insn in addrAsm.Value.Insns)
+                    basicBlock.Insns.Add(insn);
+                
+                if (basicBlock.Outs.Count == 0 || basicBlock.Outs.Values.Any(x => x != JumpType.Control))
+                {
+                    // stop the current block if we have no pure outgoing control flow
+                    basicBlock = null;
+                }
+            }
+
+            logger.Info("Peephole optimization");
+            foreach (var asm in _decoded.Values)
+            {
+                asm.Optimize(_debugSource);
+            }
+        }
+
+        private static IMicroArg MakeZeroRegisterOperand(uint data, int offset)
+        {
+            var r = (Register) ((data >> offset) & 0x1f);
+            if (r == Register.zero)
+                return new ConstValue(0, 32);
+            return new RegisterArg(RegisterUtil.ToUInt(r), 32);
         }
 
         private static RegisterArg MakeRegisterOperand(uint data, int offset)
@@ -134,29 +215,6 @@ namespace exefile
             return new RegisterMemArg(RegisterUtil.ToUInt((Register) ((data >> shift) & 0x1f)), offset, bits);
         }
 
-        private void DisassembleImpl()
-        {
-            logger.Info("Disassembly started");
-
-            while (_analysisQueue.Count != 0)
-            {
-                var localAddress = _analysisQueue.Dequeue();
-                if (_decoded.ContainsKey(localAddress) || localAddress >= _header.tSize)
-                    continue;
-
-                var asm = new MicroAssemblyBlock(localAddress) {Size = 4};
-                _decoded[localAddress] = asm;
-                localAddress += 4;
-                DecodeInstruction(asm, WordAtLocal(localAddress - 4), ref localAddress, false);
-
-                foreach (var addr in asm.Outs)
-                {
-                    if (!_decoded.ContainsKey(addr))
-                        _analysisQueue.Enqueue(addr);
-                }
-            }
-        }
-
         private IMicroArg MakeGpBasedArg(uint data, int shift, int offset, byte bits)
         {
             var regofs = MakeRegisterOffsetArg(data, shift, offset, bits);
@@ -164,41 +222,50 @@ namespace exefile
                 return regofs;
 
             if (regofs.Register == RegisterUtil.ToUInt(Register.gp))
-                return new AddressValue((uint) (_gpBase.Value + regofs.Offset),
-                    _debugSource.GetSymbolName(_gpBase.Value, regofs.Offset), bits);
+            {
+                var absoluteAddress = (uint) (_gpBase.Value + regofs.Offset);
+                return new AddressValue(absoluteAddress, _debugSource.GetSymbolName(absoluteAddress), bits);
+            }
 
             return regofs;
         }
 
-        private void DecodeInstruction(MicroAssemblyBlock asm, uint data, ref uint nextInsnAddressLocal, bool inDelaySlot)
+        private static uint RelAddr(uint @base, short offset)
+        {
+            return (uint) (@base + offset * 4);
+        }
+
+        private void DecodeInstruction(MicroAssemblyBlock asm, uint data, uint nextInsnAddressLocal, bool inDelaySlot)
         {
             switch (ExtractOpcode(data))
             {
                 case Opcode.RegisterFormat:
-                    DecodeRegisterFormat(asm, ref nextInsnAddressLocal, data);
+                    DecodeRegisterFormat(asm, nextInsnAddressLocal, data);
                     break;
                 case Opcode.PCRelative:
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    DecodePcRelative(asm, ref nextInsnAddressLocal, data);
+                    DecodePcRelative(asm, nextInsnAddressLocal, data);
                     break;
                 case Opcode.j:
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"j: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (data & 0x03FFFFFF) << 2;
-                    var tgt = new AddressValue(addr, _debugSource.GetSymbolName(addr), 0);
-                    asm.Outs.Add(MakeLocal(addr));
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    var absoluteAddress = (data & 0x03FFFFFF) * 4;
+                    var tgt = new AddressValue(absoluteAddress, _debugSource.GetSymbolName(absoluteAddress), 0);
+                    if (MakeLocal(absoluteAddress) != nextInsnAddressLocal + 4)
+                        asm.Outs.Add(MakeLocal(absoluteAddress), JumpType.Jump);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.Jmp, tgt);
                 }
                     break;
@@ -206,16 +273,16 @@ namespace exefile
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"jal: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (data & 0x03FFFFFF) << 2;
-                    var tgt = new AddressValue(addr, _debugSource.GetSymbolName(addr), 0);
-                    asm.Outs.Add(MakeLocal(addr));
-                    Callees.Add(addr);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    var absoluteAddress = (data & 0x03FFFFFF) * 4;
+                    var tgt = new AddressValue(absoluteAddress, _debugSource.GetSymbolName(absoluteAddress), 0);
+                    asm.Outs.Add(MakeLocal(absoluteAddress), JumpType.Call);
+                    Callees.Add(absoluteAddress);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.Call, new RegisterArg(RegisterUtil.ToUInt(Register.ra), 32), tgt);
                 }
                     break;
@@ -223,21 +290,21 @@ namespace exefile
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"beq: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
-                    var tgt = new AddressValue(addr,
-                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2), 0);
-                    asm.Outs.Add(addr);
-                    var r1 = MakeRegisterOperand(data, 21);
-                    var r2 = MakeRegisterOperand(data, 16);
-                    var tmp = asm.GetTmpReg(1);
+                    var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+                    var tgt = new AddressValue(MakeGlobal(localAddress),
+                        _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                    var r1 = MakeZeroRegisterOperand(data, 21);
+                    var r2 = MakeZeroRegisterOperand(data, 16);
+                    var tmp = GetTmpReg(1);
                     asm.Add(MicroOpcode.Cmp, r1, r2);
                     asm.Add(MicroOpcode.SetEq, tmp);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
                 }
                     break;
@@ -245,22 +312,22 @@ namespace exefile
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"bne: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
-                    var tgt = new AddressValue(addr,
-                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2), 0);
-                    asm.Outs.Add(addr);
-                    var r1 = MakeRegisterOperand(data, 21);
-                    var r2 = MakeRegisterOperand(data, 16);
-                    var tmp = asm.GetTmpReg(1);
+                    var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+                    var tgt = new AddressValue(MakeGlobal(localAddress),
+                        _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                    var r1 = MakeZeroRegisterOperand(data, 21);
+                    var r2 = MakeZeroRegisterOperand(data, 16);
+                    var tmp = GetTmpReg(1);
                     asm.Add(MicroOpcode.Cmp, r1, r2);
                     asm.Add(MicroOpcode.SetEq, tmp);
                     asm.Add(MicroOpcode.LogicalNot, tmp);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
                 }
                     break;
@@ -268,20 +335,20 @@ namespace exefile
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"blez: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
-                    var tgt = new AddressValue(addr,
-                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2), 0);
-                    asm.Outs.Add(addr);
-                    var r1 = MakeRegisterOperand(data, 21);
-                    var tmp = asm.GetTmpReg(1);
+                    var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+                    var tgt = new AddressValue(MakeGlobal(localAddress),
+                        _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                    var r1 = MakeZeroRegisterOperand(data, 21);
+                    var tmp = GetTmpReg(1);
                     asm.Add(MicroOpcode.Cmp, r1, new ConstValue(0, 32));
                     asm.Add(MicroOpcode.SSetLE, tmp);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
                 }
                     break;
@@ -289,184 +356,206 @@ namespace exefile
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"bgtz: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
-                    var tgt = new AddressValue(addr,
-                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2), 0);
-                    asm.Outs.Add(addr);
-                    var r1 = MakeRegisterOperand(data, 21);
-                    var tmp = asm.GetTmpReg(1);
+                    var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+                    var tgt = new AddressValue(MakeGlobal(localAddress),
+                        _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                    var r1 = MakeZeroRegisterOperand(data, 21);
+                    var tmp = GetTmpReg(1);
                     asm.Add(MicroOpcode.Cmp, r1, new ConstValue(0, 32));
                     asm.Add(MicroOpcode.SSetLE, tmp);
                     asm.Add(MicroOpcode.LogicalNot, tmp);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
                 }
                     break;
                 case Opcode.addi:
-                    asm.Add(MicroOpcode.Add, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                    asm.Add(MicroOpcode.Add, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
                         new ConstValue((ushort) data, 16));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.addiu:
-                    asm.Add(MicroOpcode.Add, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                    asm.Add(MicroOpcode.Add, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
                         new ConstValue((ushort) data, 16));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.subi:
-                    asm.Add(MicroOpcode.Sub, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                    asm.Add(MicroOpcode.Sub, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
                         new ConstValue((ushort) data, 16));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.subiu:
-                    asm.Add(MicroOpcode.Sub, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                    asm.Add(MicroOpcode.Sub, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
                         new ConstValue((ushort) data, 16));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.andi:
-                    asm.Add(MicroOpcode.And, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                    asm.Add(MicroOpcode.And, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
                         new ConstValue((ushort) data, 16));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.ori:
-                    asm.Add(MicroOpcode.Or, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                    asm.Add(MicroOpcode.Or, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
                         new ConstValue((ushort) data, 16));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.xori:
-                    asm.Add(MicroOpcode.XOr, MakeRegisterOperand(data, 16), MakeRegisterOperand(data, 21),
+                    asm.Add(MicroOpcode.XOr, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
                         new ConstValue((ushort) data, 16));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.lui:
-                    asm.Add(new CopyInsn(MakeRegisterOperand(data, 16), new ConstValue((ulong) ((ushort) data << 16), 32)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Add(new CopyInsn(MakeZeroRegisterOperand(data, 16),
+                        new ConstValue((ulong) ((ushort) data << 16), 32)));
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.CpuControl:
-                    DecodeCpuControl(asm, ref nextInsnAddressLocal, data);
+                    DecodeCpuControl(asm, nextInsnAddressLocal, data);
                     break;
                 case Opcode.FloatingPoint:
                     asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
                     break;
                 case Opcode.lb:
                 {
-                    var tmp = asm.GetTmpReg(8);
+                    var tmp = GetTmpReg(8);
                     asm.Add(new CopyInsn(tmp, MakeGpBasedArg(data, 21, (short) data, 8)));
                     asm.Add(tmp.SCastTo(MakeRegisterOperand(data, 8)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                 }
                     break;
                 case Opcode.lh:
                 {
-                    var tmp = asm.GetTmpReg(16);
+                    var tmp = GetTmpReg(16);
                     asm.Add(new CopyInsn(tmp, MakeGpBasedArg(data, 21, (short) data, 16)));
                     asm.Add(tmp.SCastTo(MakeRegisterOperand(data, 16)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                 }
                     break;
                 case Opcode.lwl:
-                    asm.Add(new UnsupportedInsn("lwl", MakeRegisterOperand(data, 32), MakeGpBasedArg(data, 21, (short) data, 32)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Add(new UnsupportedInsn("lwl", MakeZeroRegisterOperand(data, 32),
+                        MakeGpBasedArg(data, 21, (short) data, 32)));
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.lw:
-                    asm.Add(new CopyInsn(MakeRegisterOperand(data, 16), MakeGpBasedArg(data, 21, (short) data, 32)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Add(new CopyInsn(MakeZeroRegisterOperand(data, 16), MakeGpBasedArg(data, 21, (short) data, 32)));
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.lbu:
                 {
-                    var tmp = asm.GetTmpReg(8);
+                    var tmp = GetTmpReg(8);
                     asm.Add(new CopyInsn(tmp, MakeGpBasedArg(data, 21, (short) data, 8)));
                     asm.Add(tmp.UCastTo(MakeRegisterOperand(data, 16)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                 }
                     break;
                 case Opcode.lhu:
                 {
-                    var tmp = asm.GetTmpReg(16);
+                    var tmp = GetTmpReg(16);
                     asm.Add(new CopyInsn(tmp, MakeGpBasedArg(data, 21, (short) data, 16)));
                     asm.Add(tmp.UCastTo(MakeRegisterOperand(data, 16)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                 }
                     break;
                 case Opcode.lwr:
-                    asm.Add(new UnsupportedInsn("lwr", MakeRegisterOperand(data, 16), MakeGpBasedArg(data, 21, (short) data, 32)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Add(new UnsupportedInsn("lwr", MakeZeroRegisterOperand(data, 16),
+                        MakeGpBasedArg(data, 21, (short) data, 32)));
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.sb:
                 {
-                    var tmp = asm.GetTmpReg(8);
-                    asm.Add(MakeRegisterOperand(data, 16).UCastTo(tmp));
-                    asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 8), tmp));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    var op = MakeZeroRegisterOperand(data, 16);
+                    if (op is RegisterArg r)
+                    {
+                        var tmp = GetTmpReg(8);
+                        asm.Add(r.UCastTo(tmp));
+                        asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 8), tmp));
+                    }
+                    else
+                    {
+                        asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 8), new ConstValue(0, 8)));
+                    }
+
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                 }
                     break;
                 case Opcode.sh:
                 {
-                    var tmp = asm.GetTmpReg(16);
-                    asm.Add(MakeRegisterOperand(data, 16).UCastTo(tmp));
-                    asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 16), tmp));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    var op = MakeZeroRegisterOperand(data, 16);
+                    if (op is RegisterArg r)
+                    {
+                        var tmp = GetTmpReg(16);
+                        asm.Add(r.UCastTo(tmp));
+                        asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 16), tmp));
+                    }
+                    else
+                    {
+                        asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 16), new ConstValue(0, 16)));
+                    }
+                    
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                 }
                     break;
                 case Opcode.swl:
-                    asm.Add(new UnsupportedInsn("swl", MakeRegisterOperand(data, 16), MakeGpBasedArg(data, 21, (short) data, 32)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Add(new UnsupportedInsn("swl", MakeZeroRegisterOperand(data, 16),
+                        MakeGpBasedArg(data, 21, (short) data, 32)));
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.sw:
-                    asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 32), MakeRegisterOperand(data, 16)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 32), MakeZeroRegisterOperand(data, 16)));
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.swr:
-                    asm.Add(new UnsupportedInsn("swr", MakeRegisterOperand(data, 16),
+                    asm.Add(new UnsupportedInsn("swr", MakeZeroRegisterOperand(data, 16),
                         MakeGpBasedArg(data, 21, (short) data, 32)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.swc1:
-                    asm.Add(new UnsupportedInsn("swc1", MakeRegisterOperand(data, 16),
-                        new ConstValue((ushort) data, 16), MakeRegisterOperand(data, 21)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Add(new UnsupportedInsn("swc1", MakeZeroRegisterOperand(data, 16),
+                        new ConstValue((ushort) data, 16), MakeZeroRegisterOperand(data, 21)));
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.lwc1:
                     asm.Add(new UnsupportedInsn("lwc1", MakeC2RegisterOperand(data, 16),
-                        new ConstValue((ushort) data, 16), MakeRegisterOperand(data, 21)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                        new ConstValue((ushort) data, 16), MakeZeroRegisterOperand(data, 21)));
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.cop0:
                     asm.Add(new UnsupportedInsn("cop0", new ConstValue(data & ((1 << 26) - 1), 26)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.cop1:
                     asm.Add(new UnsupportedInsn("cop1", new ConstValue(data & ((1 << 26) - 1), 26)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.cop2:
-                    DecodeCop2(asm, ref nextInsnAddressLocal, data);
+                    DecodeCop2(asm, nextInsnAddressLocal, data);
                     break;
                 case Opcode.cop3:
                     asm.Add(new UnsupportedInsn("cop3", new ConstValue(data & ((1 << 26) - 1), 26)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.beql:
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"beql: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
-                    var tgt = new AddressValue(addr,
-                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2), 0);
-                    asm.Outs.Add(addr);
-                    asm.Add(MicroOpcode.Cmp, MakeRegisterOperand(data, 21), MakeRegisterOperand(data, 16));
-                    var tmp = asm.GetTmpReg(1);
+                    var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+                    var tgt = new AddressValue(MakeGlobal(localAddress),
+                        _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), MakeZeroRegisterOperand(data, 16));
+                    var tmp = GetTmpReg(1);
                     asm.Add(MicroOpcode.SetEq, tmp);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
                 }
                     break;
@@ -474,20 +563,20 @@ namespace exefile
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"bnel: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
-                    var tgt = new AddressValue(addr,
-                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2), 0);
-                    asm.Outs.Add(addr);
-                    asm.Add(MicroOpcode.Cmp, MakeRegisterOperand(data, 21), MakeRegisterOperand(data, 16));
-                    var tmp = asm.GetTmpReg(1);
+                    var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+                    var tgt = new AddressValue(MakeGlobal(localAddress),
+                        _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), MakeZeroRegisterOperand(data, 16));
+                    var tmp = GetTmpReg(1);
                     asm.Add(MicroOpcode.SetEq, tmp);
                     asm.Add(MicroOpcode.LogicalNot, tmp);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
                 }
                     break;
@@ -495,19 +584,19 @@ namespace exefile
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"blezl: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
-                    var tgt = new AddressValue(addr,
-                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2), 0);
-                    asm.Outs.Add(addr);
-                    asm.Add(MicroOpcode.Cmp, MakeRegisterOperand(data, 21), new ConstValue(0, 32));
-                    var tmp = asm.GetTmpReg(1);
+                    var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+                    var tgt = new AddressValue(MakeGlobal(localAddress),
+                        _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), new ConstValue(0, 32));
+                    var tmp = GetTmpReg(1);
                     asm.Add(MicroOpcode.SSetLE, tmp);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
                 }
                     break;
@@ -515,20 +604,20 @@ namespace exefile
                 {
                     if (inDelaySlot)
                     {
-                        logger.Warn($"Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4}");
+                        logger.Warn($"bgtzl: Recursive delay slot disassembly at 0x{nextInsnAddressLocal - 4:x8}");
+                        Console.WriteLine(asm);
                         break;
                     }
 
-                    var addr = (uint) ((nextInsnAddressLocal + (short) data) << 2);
-                    var tgt = new AddressValue(addr,
-                        _debugSource.GetSymbolName(nextInsnAddressLocal, (short) data << 2), 0);
-                    asm.Outs.Add(addr);
-                    asm.Add(MicroOpcode.Cmp, MakeRegisterOperand(data, 21), new ConstValue(0, 32));
-                    var tmp = asm.GetTmpReg(1);
+                    var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+                    var tgt = new AddressValue(MakeGlobal(localAddress),
+                        _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), new ConstValue(0, 32));
+                    var tmp = GetTmpReg(1);
                     asm.Add(MicroOpcode.SSetLE, tmp);
                     asm.Add(MicroOpcode.LogicalNot, tmp);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
                 }
                     break;
@@ -538,11 +627,11 @@ namespace exefile
             }
         }
 
-        private static void DecodeRegisterFormat(MicroAssemblyBlock asm, ref uint nextInsnAddressLocal, uint data)
+        private void DecodeRegisterFormat(MicroAssemblyBlock asm, uint nextInsnAddressLocal, uint data)
         {
-            var rd = MakeRegisterOperand(data, 11);
-            var rs2 = MakeRegisterOperand(data, 16);
-            var rs1 = MakeRegisterOperand(data, 21);
+            var rd = MakeZeroRegisterOperand(data, 11);
+            var rs2 = MakeZeroRegisterOperand(data, 16);
+            var rs1 = MakeZeroRegisterOperand(data, 21);
             switch ((OpcodeFunction) (data & 0x3f))
             {
                 case OpcodeFunction.sll:
@@ -550,33 +639,33 @@ namespace exefile
                         asm.Add(MicroOpcode.Nop);
                     else
                         asm.Add(MicroOpcode.SHL, rd, rs2, new ConstValue(data >> 6 & 0x1F, 5));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.srl:
                     if (data == 0)
                         asm.Add(MicroOpcode.Nop);
                     else
                         asm.Add(MicroOpcode.SRL, rd, rs2, new ConstValue(data >> 6 & 0x1F, 5));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.sra:
                     if (data == 0)
                         asm.Add(MicroOpcode.Nop);
                     else
                         asm.Add(MicroOpcode.SRA, rd, rs2, new ConstValue(data >> 6 & 0x1F, 5));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.sllv:
                     asm.Add(MicroOpcode.SHL, rd, rs2, rs1);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.srlv:
                     asm.Add(MicroOpcode.SRL, rd, rs2, rs1);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.srav:
                     asm.Add(MicroOpcode.SRA, rd, rs2, rs1);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.jr:
                     asm.Add(MicroOpcode.Jmp, rs1);
@@ -592,83 +681,82 @@ namespace exefile
                     break;
                 case OpcodeFunction.mfhi:
                     asm.Add(new UnsupportedInsn("mfhi", rd));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.mthi:
                     asm.Add(new UnsupportedInsn("mthi", rd));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.mflo:
                     asm.Add(new UnsupportedInsn("mflo", rd));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.mtlo:
                     asm.Add(new UnsupportedInsn("mtlo", rd));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.mult:
                     asm.Add(new UnsupportedInsn("mult", rs1, rs2));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.multu:
                     asm.Add(new UnsupportedInsn("multu", rs1, rs2));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.div:
                     asm.Add(new UnsupportedInsn("div", rs1, rs2));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.divu:
                     asm.Add(new UnsupportedInsn("divu", rs1, rs2));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.add:
                     asm.Add(MicroOpcode.Add, rd, rs1, rs2);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     return;
                 case OpcodeFunction.addu:
                     asm.Add(MicroOpcode.Add, rd, rs1, rs2);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     return;
                 case OpcodeFunction.sub:
                     asm.Add(MicroOpcode.Sub, rd, rs1, rs2);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     return;
                 case OpcodeFunction.subu:
                     asm.Add(MicroOpcode.Sub, rd, rs1, rs2);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     return;
                 case OpcodeFunction.and:
                     asm.Add(MicroOpcode.And, rd, rs1, rs2);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     return;
                 case OpcodeFunction.or:
                     asm.Add(MicroOpcode.Or, rd, rs1, rs2);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     return;
                 case OpcodeFunction.xor:
                     asm.Add(MicroOpcode.XOr, rd, rs1, rs2);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     return;
                 case OpcodeFunction.nor:
                 {
-                    var tmp = asm.GetTmpReg(32);
-                    asm.Add(MicroOpcode.Copy, tmp, rs1);
-                    asm.Add(MicroOpcode.Or, tmp, rs2);
+                    var tmp = GetTmpReg(32);
+                    asm.Add(MicroOpcode.Or, tmp, rs1, rs2);
                     asm.Add(MicroOpcode.Not, tmp);
                     asm.Add(MicroOpcode.Copy, rd, tmp);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                 }
                     break;
                 case OpcodeFunction.slt:
                     asm.Add(MicroOpcode.Cmp, rs1, rs2);
                     asm.Add(MicroOpcode.SSetL, rd);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.sltu:
                     asm.Add(MicroOpcode.Cmp, rs1, rs2);
                     asm.Add(MicroOpcode.USetL, rd);
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 default:
                     asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
@@ -676,12 +764,12 @@ namespace exefile
             }
         }
 
-        private void DecodeCpuControl(MicroAssemblyBlock asm, ref uint nextInsnAddressLocal, uint data)
+        private void DecodeCpuControl(MicroAssemblyBlock asm, uint nextInsnAddressLocal, uint data)
         {
             switch ((CpuControlOpcode) ((data >> 21) & 0x1f))
             {
                 case CpuControlOpcode.mtc0:
-                    asm.Add(new UnsupportedInsn("mtc0", MakeRegisterOperand(data, 16),
+                    asm.Add(new UnsupportedInsn("mtc0", MakeZeroRegisterOperand(data, 16),
                         MakeC0RegisterOperand(data, 11)));
                     break;
                 case CpuControlOpcode.bc0:
@@ -689,25 +777,25 @@ namespace exefile
                     {
                         case 0:
                         {
-                            var addr = (uint) (nextInsnAddressLocal + ((short) data << 2));
+                            var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
                             asm.Add(new UnsupportedInsn("bc0f",
-                                new AddressValue(addr, _debugSource.GetSymbolName(nextInsnAddressLocal, (ushort) data << 2), 0)));
+                                new AddressValue(MakeGlobal(localAddress),
+                                    _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0)));
 
-                            asm.Outs.Add(addr);
-                            nextInsnAddressLocal += 4;
-                            DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal,
+                            asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                            DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                                 true);
                         }
                             break;
                         case 1:
                         {
-                            var addr = (uint) (nextInsnAddressLocal + ((short) data << 2));
+                            var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
                             asm.Add(new UnsupportedInsn("bc0t",
-                                new AddressValue(addr, _debugSource.GetSymbolName(nextInsnAddressLocal, (ushort) data << 2), 0)));
+                                new AddressValue(MakeGlobal(localAddress),
+                                    _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0)));
 
-                            asm.Outs.Add(addr);
-                            nextInsnAddressLocal += 4;
-                            DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal,
+                            asm.Outs.Add(localAddress, JumpType.JumpConditional);
+                            DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                                 true);
                         }
                             break;
@@ -718,12 +806,12 @@ namespace exefile
 
                     break;
                 case CpuControlOpcode.tlb:
-                    DecodeTlb(asm, ref nextInsnAddressLocal, data);
+                    DecodeTlb(asm, nextInsnAddressLocal, data);
                     break;
                 case CpuControlOpcode.mfc0:
-                    asm.Add(new UnsupportedInsn("mfc0", MakeRegisterOperand(data, 16),
+                    asm.Add(new UnsupportedInsn("mfc0", MakeZeroRegisterOperand(data, 16),
                         MakeC0RegisterOperand(data, 11)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 default:
                     asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
@@ -731,29 +819,29 @@ namespace exefile
             }
         }
 
-        private static void DecodeTlb(MicroAssemblyBlock asm, ref uint nextInsnAddressLocal, uint data)
+        private static void DecodeTlb(MicroAssemblyBlock asm, uint nextInsnAddressLocal, uint data)
         {
             switch ((TlbOpcode) (data & 0x1f))
             {
                 case TlbOpcode.tlbr:
                     asm.Add(new UnsupportedInsn("tlbr"));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case TlbOpcode.tlbwi:
                     asm.Add(new UnsupportedInsn("tlbwi"));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case TlbOpcode.tlbwr:
                     asm.Add(new UnsupportedInsn("tlbwr"));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case TlbOpcode.tlbp:
                     asm.Add(new UnsupportedInsn("tlbp"));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case TlbOpcode.rfe:
                     asm.Add(new UnsupportedInsn("rfe"));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 default:
                     asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
@@ -761,57 +849,53 @@ namespace exefile
             }
         }
 
-        private void DecodePcRelative(MicroAssemblyBlock asm, ref uint nextInsnAddressLocal, uint data)
+        private void DecodePcRelative(MicroAssemblyBlock asm, uint nextInsnAddressLocal, uint data)
         {
-            var rs = MakeRegisterOperand(data, 21);
-            var addr = (short) data << 2;
-            var offset = new AddressValue((ulong) (nextInsnAddressLocal + addr),
-                _debugSource.GetSymbolName(nextInsnAddressLocal, addr), 0);
+            var rs = MakeZeroRegisterOperand(data, 21);
+            var localAddress = RelAddr(nextInsnAddressLocal, (short) data);
+            var offset = new AddressValue(MakeGlobal(localAddress),
+                _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
             switch ((data >> 16) & 0x1f)
             {
                 case 0: // bltz
                 {
-                    asm.Outs.Add((uint) ((nextInsnAddressLocal + (short) data) << 2));
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
                     asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
-                    var tmpReg = asm.GetTmpReg(1);
+                    var tmpReg = GetTmpReg(1);
                     asm.Add(MicroOpcode.SSetL, tmpReg);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
                     break;
                 }
                 case 1: // bgez
                 {
-                    asm.Outs.Add((uint) ((nextInsnAddressLocal + (short) data) << 2));
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
                     asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
-                    var tmpReg = asm.GetTmpReg(1);
+                    var tmpReg = GetTmpReg(1);
                     asm.Add(MicroOpcode.SSetL, tmpReg);
                     asm.Add(MicroOpcode.LogicalNot, tmpReg);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
                     break;
                 }
                 case 16: // bltzal
                 {
-                    asm.Outs.Add((uint) (nextInsnAddressLocal + addr));
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
                     asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
-                    var tmpReg = asm.GetTmpReg(1);
+                    var tmpReg = GetTmpReg(1);
                     asm.Add(MicroOpcode.SSetL, tmpReg);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
                     break;
                 }
                 case 17: // bgezal
                 {
-                    asm.Outs.Add((uint) (nextInsnAddressLocal + addr));
+                    asm.Outs.Add(localAddress, JumpType.JumpConditional);
                     asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
-                    var tmpReg = asm.GetTmpReg(1);
+                    var tmpReg = GetTmpReg(1);
                     asm.Add(MicroOpcode.SSetL, tmpReg);
                     asm.Add(MicroOpcode.LogicalNot, tmpReg);
-                    nextInsnAddressLocal += 4;
-                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal - 4), ref nextInsnAddressLocal, true);
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
                     break;
                 }
@@ -821,12 +905,12 @@ namespace exefile
             }
         }
 
-        private static void DecodeCop2(MicroAssemblyBlock asm, ref uint nextInsnAddressLocal, uint data)
+        private static void DecodeCop2(MicroAssemblyBlock asm, uint nextInsnAddressLocal, uint data)
         {
             var opc = data & ((1 << 26) - 1);
             if (((data >> 25) & 1) != 0)
             {
-                DecodeCop2Gte(asm, ref nextInsnAddressLocal, opc);
+                DecodeCop2Gte(asm, nextInsnAddressLocal, opc);
                 return;
             }
 
@@ -834,24 +918,24 @@ namespace exefile
             switch (cf)
             {
                 case 0:
-                    asm.Add(new UnsupportedInsn("mfc2", MakeRegisterOperand(opc, 16),
+                    asm.Add(new UnsupportedInsn("mfc2", MakeZeroRegisterOperand(opc, 16),
                         new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case 2:
-                    asm.Add(new UnsupportedInsn("cfc2", MakeRegisterOperand(opc, 16),
+                    asm.Add(new UnsupportedInsn("cfc2", MakeZeroRegisterOperand(opc, 16),
                         new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case 4:
-                    asm.Add(new UnsupportedInsn("mtc2", MakeRegisterOperand(opc, 16),
+                    asm.Add(new UnsupportedInsn("mtc2", MakeZeroRegisterOperand(opc, 16),
                         new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case 6:
-                    asm.Add(new UnsupportedInsn("ctc2", MakeRegisterOperand(opc, 16),
+                    asm.Add(new UnsupportedInsn("ctc2", MakeZeroRegisterOperand(opc, 16),
                         new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 default:
                     asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
@@ -859,7 +943,7 @@ namespace exefile
             }
         }
 
-        private static void DecodeCop2Gte(MicroAssemblyBlock asm, ref uint nextInsnAddressLocal, uint data)
+        private static void DecodeCop2Gte(MicroAssemblyBlock asm, uint nextInsnAddressLocal, uint data)
         {
             switch (data & 0x1F003FF)
             {
@@ -871,94 +955,94 @@ namespace exefile
                         new ConstValue(data >> 13 & 3, 2),
                         new ConstValue(data >> 10 & 1, 1)
                     ));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case 0x0a00428:
                     asm.Add(new UnsupportedInsn("sqr", new ConstValue(data >> 19 & 1, 1)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case 0x170000C:
                     asm.Add(new UnsupportedInsn("op", new ConstValue(data >> 19 & 1, 1)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case 0x190003D:
                     asm.Add(new UnsupportedInsn("gpf", new ConstValue(data >> 19 & 1, 1)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case 0x1A0003E:
                     asm.Add(new UnsupportedInsn("gpl", new ConstValue(data >> 19 & 1, 1)));
-                    asm.Outs.Add(nextInsnAddressLocal);
+                    asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 default:
                     switch (data)
                     {
                         case 0x0180001:
                             asm.Add(new UnsupportedInsn("rtps"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0280030:
                             asm.Add(new UnsupportedInsn("rtpt"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0680029:
                             asm.Add(new UnsupportedInsn("dcpl"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0780010:
                             asm.Add(new UnsupportedInsn("dcps"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0980011:
                             asm.Add(new UnsupportedInsn("intpl"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0C8041E:
                             asm.Add(new UnsupportedInsn("ncs"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0D80420:
                             asm.Add(new UnsupportedInsn("nct"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0E80413:
                             asm.Add(new UnsupportedInsn("ncds"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0F80416:
                             asm.Add(new UnsupportedInsn("ncdt"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x0F8002A:
                             asm.Add(new UnsupportedInsn("dpct"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x108041B:
                             asm.Add(new UnsupportedInsn("nccs"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x118043F:
                             asm.Add(new UnsupportedInsn("ncct"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x1280414:
                             asm.Add(new UnsupportedInsn("cdp"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x138041C:
                             asm.Add(new UnsupportedInsn("cc"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x1400006:
                             asm.Add(new UnsupportedInsn("nclip"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x158002D:
                             asm.Add(new UnsupportedInsn("avsz3"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         case 0x168002E:
                             asm.Add(new UnsupportedInsn("avsz4"));
-                            asm.Outs.Add(nextInsnAddressLocal);
+                            asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                             break;
                         default:
                             asm.Add(MicroOpcode.Data, new ConstValue(data, 32));

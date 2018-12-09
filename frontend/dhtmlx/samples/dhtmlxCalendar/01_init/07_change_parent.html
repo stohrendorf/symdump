@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Change parent</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         td.table_td {
@@ -25,6 +25,7 @@
     </style>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere1");
             myCalendar.setDate(new Date(2013, 2, 1, 16, 0));
@@ -33,11 +34,11 @@
     </script>
 </head>
 <body onload="doOnLoad();">
-<table border="1" cellspaing="2" cellpadding="5">
+<table border="1" cellpadding="5" cellspaing="2">
     <tr>
-        <td class="table_td"><input type="button" value="Show here" onclick="myCalendar.setParent('calendarHere1');">
+        <td class="table_td"><input onclick="myCalendar.setParent('calendarHere1');" type="button" value="Show here">
         </td>
-        <td class="table_td"><input type="button" value="Show here" onclick="myCalendar.setParent('calendarHere2');">
+        <td class="table_td"><input onclick="myCalendar.setParent('calendarHere2');" type="button" value="Show here">
         </td>
     </tr>
     <tr>

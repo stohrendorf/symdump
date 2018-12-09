@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Sticking windows</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -69,15 +69,12 @@
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="winVP"></div>
 <div class="controls">
-    Window #1 <input type="button" value="stick" onclick="stickWindow('w1', true);"> <input type="button"
-                                                                                            value="unstick"
-                                                                                            onclick="stickWindow('w1', false);"><br>
-    Window #2 <input type="button" value="stick" onclick="stickWindow('w2', true);"> <input type="button"
-                                                                                            value="unstick"
-                                                                                            onclick="stickWindow('w2', false);"><br>
-    Window #3 <input type="button" value="stick" onclick="stickWindow('w3', true);"> <input type="button"
-                                                                                            value="unstick"
-                                                                                            onclick="stickWindow('w3', false);"><br>
+    Window #1 <input onclick="stickWindow('w1', true);" type="button" value="stick"> <input
+        onclick="stickWindow('w1', false);" type="button" value="unstick"><br>
+    Window #2 <input onclick="stickWindow('w2', true);" type="button" value="stick"> <input
+        onclick="stickWindow('w2', false);" type="button" value="unstick"><br>
+    Window #3 <input onclick="stickWindow('w3', true);" type="button" value="stick"> <input
+        onclick="stickWindow('w3', false);" type="button" value="unstick"><br>
 </div>
 </body>
 </html>

@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Set / get content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#editorObj {
@@ -22,15 +22,18 @@
     <script>
         var myEditor;
         var defCont = "<b>Lorem ipsum </b>dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud <u>exercitation ullamco laboris nisi ut aliquip ex ea commodo </u>consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. <i>Excepteur sint occaecat cupidatat non proident</i>, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
         function doOnLoad() {
             myEditor = new dhtmlXEditor({
                 parent: "editorObj",
                 content: defCont
             });
         }
+
         function showContent() {
             document.getElementById("res").value = myEditor.getContent();
         }
+
         function setContent() {
             myEditor.setContent(defCont);
         }

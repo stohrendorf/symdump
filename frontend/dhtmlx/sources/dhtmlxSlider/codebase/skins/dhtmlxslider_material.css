@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         transform: rotate(360deg);
     }
 }
-
 @keyframes dhx_loader_dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -31,15 +30,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         stroke-dashoffset: -124px;
     }
 }
-
 .dhtmlxslider_material {
     z-index: 0;
 }
-
 .dhtmlxslider_material .dhxsl_hidden {
     display: none;
 }
-
 .dhtmlxslider_material .dhxsl_container {
     position: relative;
     float: left;
@@ -54,15 +50,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxslider_material .dhxsl_container.dhxsl_cont_hr {
     margin-top: 4px;
 }
-
 .dhtmlxslider_material .dhxsl_container.dhxsl_cont_vr {
     margin-left: 4px;
 }
-
 .dhtmlxslider_material .dhxsl_runner {
     position: absolute;
     background-color: #3399cc;
@@ -77,18 +70,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0;
     overflow: hidden;
 }
-
 .dhtmlxslider_material .dhxsl_runner.dhxsl_runner_actv {
     z-index: 2;
 }
-
 .dhtmlxslider_material .dhxsl_runner_dis {
     background-color: #dfdfdf;
     border: 1px solid white;
     width: 10px;
     height: 10px;
 }
-
 .dhtmlxslider_material .dhxsl_track {
     background-color: #dfdfdf;
     overflow: hidden;
@@ -99,7 +89,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -webkit-user-select: none;
     -ms-touch-action: none;
 }
-
 .dhtmlxslider_material .dhxsl_track div.dhxsl_track_bg {
     position: absolute;
     font-size: 1px;
@@ -111,27 +100,22 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxslider_material .dhxsl_cont_vr .dhxsl_track {
     height: 100%;
     width: 2px;
 }
-
 .dhtmlxslider_material .dhxsl_cont_vr .dhxsl_track div.dhxsl_track_bg {
     left: 0px;
     width: 100%;
 }
-
 .dhtmlxslider_material .dhxsl_cont_hr .dhxsl_track {
     width: 100%;
     height: 2px;
 }
-
 .dhtmlxslider_material .dhxsl_cont_hr .dhxsl_track div.dhxsl_track_bg {
     top: 0px;
     height: 100%;
 }
-
 .dhxslider_skin_detect {
     position: absolute;
     left: 0px;

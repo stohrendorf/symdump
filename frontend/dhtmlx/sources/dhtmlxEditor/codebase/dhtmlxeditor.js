@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXEditor(base, skin) {
 
@@ -34,7 +34,7 @@ function dhtmlXEditor(base, skin) {
     this._doOnFocusChanged = null;
     this._doOnAccess = null;
 
-    if (typeof(base) == "object" && base != null && base.tagName == null) {
+    if (typeof (base) == "object" && base != null && base.tagName == null) {
         skin = base.skin;
         if (base.content != null) this.conf.content = base.content;
         if (base.contentHTML != null) this.conf.contentHTML = base.contentHTML;
@@ -47,17 +47,17 @@ function dhtmlXEditor(base, skin) {
     }
 
     // skin config
-    this.conf.skin = (skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxeditor") || "material");
+    this.conf.skin = (skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxeditor") || "material");
 
     // configure base
-    if (typeof(base) == "string") base = document.getElementById(base);
+    if (typeof (base) == "string") base = document.getElementById(base);
     this.base = base;
     this.base.className += " dhxeditor_" + this.conf.skin;
 
     while (this.base.childNodes.length > 0) this.base.removeChild(this.base.childNodes[0]);
 
     // configure base for dhxcont
-    var pos = (window.dhx4.isIE ? this.base.currentStyle["position"] : (window.getComputedStyle != null ? window.getComputedStyle(this.base, null).getPropertyValue("position") : "" ));
+    var pos = (window.dhx4.isIE ? this.base.currentStyle["position"] : (window.getComputedStyle != null ? window.getComputedStyle(this.base, null).getPropertyValue("position") : ""));
     if (!(pos == "relative" || pos == "absolute")) this.base.style.position = "relative";
 
     // init dhxcont
@@ -80,7 +80,7 @@ function dhtmlXEditor(base, skin) {
 
     // onAccess event - focus/blue as param
     var fr = this.editor;
-    if (typeof(window.addEventListener) != "undefined") {
+    if (typeof (window.addEventListener) != "undefined") {
         fr.onload = function () {
             for (var q = 0; q < that.conf.evs.length; q++) {
                 fr.contentWindow.addEventListener(that.conf.evs[q], that._ev, false);
@@ -88,7 +88,7 @@ function dhtmlXEditor(base, skin) {
         }
     } else {
         fr.onreadystatechange = function (a) {
-            if (typeof(fr.readyState) != "undefined" && fr.readyState == "complete") {
+            if (typeof (fr.readyState) != "undefined" && fr.readyState == "complete") {
                 try {
                     for (var q = 0; q < that.conf.evs.length; q++) {
                         fr.contentWindow.document.body.attachEvent("on" + that.conf.evs[q], that._ev);
@@ -107,9 +107,9 @@ function dhtmlXEditor(base, skin) {
             return;
         }
         that.callEvent("onAccess", [type, e]);
-        if (typeof(that._doOnAccess) == "function") {
+        if (typeof (that._doOnAccess) == "function") {
             that._doOnAccess(type, e);
-        } else if (typeof(that._doOnAccess) == "string" && typeof(window[that._doOnAccess]) == "function") {
+        } else if (typeof (that._doOnAccess) == "string" && typeof (window[that._doOnAccess]) == "function") {
             window[that._doOnAccess](type, e);
         }
     };
@@ -379,7 +379,7 @@ function dhtmlXEditor(base, skin) {
                 ffTest = (k != null && k[1] < 28);
             }
             if (ffTest) {
-                if (typeof(this.conf.ffTest) == "undefined") {
+                if (typeof (this.conf.ffTest) == "undefined") {
                     this.editor.contentWindow.document.body.innerHTML = "";
                     this._runCommand("InsertHTML", "test");
                     this.conf.ffTest = (this.editor.contentWindow.document.body.innerHTML.length > 0);
@@ -403,7 +403,7 @@ function dhtmlXEditor(base, skin) {
                 this.conf.firstLoadData = str;
                 this._onFirstLoad = function () {
                     that.setContent(that.conf.firstLoadData);
-                    if (typeof(window.addEventListener) == "function") {
+                    if (typeof (window.addEventListener) == "function") {
                         that.edWin.removeEventListener("load", that._onFirstLoad, false);
                     } else {
                         that.edWin.detachEvent("onload", that._onFirstLoad);
@@ -412,7 +412,7 @@ function dhtmlXEditor(base, skin) {
                     that.conf.firstLoadEv = false;
                     that._onFirstLoad = null;
                 };
-                if (typeof(window.addEventListener) == "function") {
+                if (typeof (window.addEventListener) == "function") {
                     this.edWin.addEventListener("load", this._onFirstLoad, false);
                 } else {
                     this.edWin.attachEvent("onload", this._onFirstLoad);
@@ -431,14 +431,14 @@ function dhtmlXEditor(base, skin) {
     window.dhx4._eventable(this);
 
     this.attachEvent("onFocusChanged", function (state) {
-        if (typeof(this._doOnFocusChanged) == "function") {
+        if (typeof (this._doOnFocusChanged) == "function") {
             this._doOnFocusChanged(state);
-        } else if (typeof(this._doOnFocusChanged) == "string" && typeof(window[this._doOnFocusChanged]) == "function") {
+        } else if (typeof (this._doOnFocusChanged) == "string" && typeof (window[this._doOnFocusChanged]) == "function") {
             window[this._doOnFocusChanged](state);
         }
     });
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         window.addEventListener("resize", this._doOnResize, false);
         this.edDoc.addEventListener("click", this._doOnClick, false);
         this.edDoc.addEventListener("keyup", this._doOnKeyUp, false);
@@ -452,7 +452,7 @@ function dhtmlXEditor(base, skin) {
     this.unload = function () {
 
         // first detach events from iframe
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("resize", this._doOnResize, false);
             this.edDoc.removeEventListener("click", this._doOnClick, false);
             this.edDoc.removeEventListener("keyup", this._doOnKeyUp, false);
@@ -480,7 +480,7 @@ function dhtmlXEditor(base, skin) {
         this._doOnFocusChanged = null;
 
         // remove editor
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.editor.onload = null;
         } else {
             this.editor.onreadystatechange = null;
@@ -536,7 +536,7 @@ function dhtmlXEditor(base, skin) {
     };
 
     // load extended toolbar if any
-    if (this.conf.toolbar == true && typeof(this.attachToolbar) == "function" && typeof(window.dhtmlXToolbarObject) == "function") {
+    if (this.conf.toolbar == true && typeof (this.attachToolbar) == "function" && typeof (window.dhtmlXToolbarObject) == "function") {
         this.attachToolbar(this.conf.iconsPath);
         if (this.conf.iOSfix == true) {
             this._doOnIOSFix = function () {
@@ -560,6 +560,7 @@ function dhtmlXEditor(base, skin) {
 
     return this;
 }
+
 dhtmlXEditor.prototype.setSizes = function () {
     this.cell._setSize(0, 0, this.base.clientWidth, this.base.clientHeight);
     if (this.editor != null) {
@@ -743,7 +744,7 @@ dhtmlXCellObject.prototype.attachEditor = function (conf) {
     obj.style.overflow = "hidden";
     this._attachObject(obj);
 
-    if (!(typeof(conf) == "object" && conf != null)) conf = {};
+    if (!(typeof (conf) == "object" && conf != null)) conf = {};
     conf.parent = obj;
 
     this.dataType = "editor";
@@ -754,7 +755,7 @@ dhtmlXCellObject.prototype.attachEditor = function (conf) {
     conf = null;
 
     // attach to portal extended logic
-    if (typeof(window.dhtmlXPortalCell) == "function" && this instanceof window.dhtmlXPortalCell) {
+    if (typeof (window.dhtmlXPortalCell) == "function" && this instanceof window.dhtmlXPortalCell) {
 
         if (this.portal.conf.editor_ev == null) {
 
@@ -804,6 +805,6 @@ dhtmlXCellObject.prototype.attachEditor = function (conf) {
     this.callEvent("_onContentAttach", []);
 
     return this.dataObj;
-
+	
 };
 

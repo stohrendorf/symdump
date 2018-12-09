@@ -1,17 +1,17 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXLayoutObject(base, pattern, skin) {
 
     // console.log("resize over iframe");
 
     var autoload = null;
-    if (base != null && typeof(base) == "object" && typeof(base.tagName) == "undefined" && base._isCell != true) {
+    if (base != null && typeof (base) == "object" && typeof (base.tagName) == "undefined" && base._isCell != true) {
         // api-init
         autoload = {};
         if (base.autosize != null) autoload.autosize = base.autosize;
@@ -24,7 +24,7 @@ function dhtmlXLayoutObject(base, pattern, skin) {
 
     this.cdata = {};
     this.conf = {
-        skin: (skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxlayout") || "material"),
+        skin: (skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxlayout") || "material"),
         css: "dhxlayout", // css prefix for topcell mtb
         hh: 20, // header height collapsed, add auto-detect?
         autosize: "b", // cell which will sized when parent size changed
@@ -38,9 +38,9 @@ function dhtmlXLayoutObject(base, pattern, skin) {
     }
 
     // attach layout
-    if (typeof(base) == "object" && base._isCell == true) {
+    if (typeof (base) == "object" && base._isCell == true) {
 
-        var conf = (typeof(autoload) != "undefined" && autoload != null ? autoload : {});
+        var conf = (typeof (autoload) != "undefined" && autoload != null ? autoload : {});
         if (conf.pattern == null && pattern != null) conf.pattern = pattern;
         if (conf.skin == null && skin != null) conf.skin = skin;
 
@@ -70,7 +70,7 @@ function dhtmlXLayoutObject(base, pattern, skin) {
 
     this._init = function (pattern) {
 
-        var t = (typeof(pattern) == "string" ? this.tplData[pattern] : pattern );
+        var t = (typeof (pattern) == "string" ? this.tplData[pattern] : pattern);
 
         this.conf.mode = t.mode;
 
@@ -164,7 +164,7 @@ function dhtmlXLayoutObject(base, pattern, skin) {
             return;
         }
 
-        if (typeof(autosize) == "undefined") {
+        if (typeof (autosize) == "undefined") {
 
             var k = (this.conf.mode == "v" ? "w" : "h");
 
@@ -396,7 +396,7 @@ function dhtmlXLayoutObject(base, pattern, skin) {
         this.setAutoSize(a.h[a.h.length - 1], a.v[a.v.length - 1]);
     }
 
-    if (typeof(window.dhtmlXWindows) == "function" && this.mainInst == null) {
+    if (typeof (window.dhtmlXWindows) == "function" && this.mainInst == null) {
         var params = {
             vp_overflow: (this.conf.fs_mode == true ? false : "auto") // set viewport "auto" for body to keep scroll visible
         };
@@ -429,7 +429,7 @@ function dhtmlXLayoutObject(base, pattern, skin) {
                 if (data.collapsed_text) cell.setCollapsedText(data.collapsed_text);
                 if (data.collapse) cell.collapse();
                 if (data.fix_size) cell.fixSize(data.fix_size[0], data.fix_size[1]);
-                if (typeof(data.header) != "undefined" && window.dhx4.s2b(data.header) == false) cell.hideHeader();
+                if (typeof (data.header) != "undefined" && window.dhx4.s2b(data.header) == false) cell.hideHeader();
             }
         }
 
@@ -455,10 +455,10 @@ dhtmlXLayoutObject.prototype.cells = function (name) {
 
 // iterator
 dhtmlXLayoutObject.prototype.forEachItem = function (handler, env) {
-    if (typeof(handler) != "function") return;
-    if (typeof(env) == "undefined") env = this;
+    if (typeof (handler) != "function") return;
+    if (typeof (env) == "undefined") env = this;
     for (var a in this.cdata) {
-        if (typeof(this.cdata[a].conf.name) != "undefined") handler.apply(env, [this.cdata[a]]);
+        if (typeof (this.cdata[a].conf.name) != "undefined") handler.apply(env, [this.cdata[a]]);
         if (this.cdata[a].dataType == "layout" && this.cdata[a].dataNested == true && this.cdata[a].dataObj != null) {
             this.cdata[a].dataObj.forEachItem(handler, env);
         }
@@ -467,8 +467,8 @@ dhtmlXLayoutObject.prototype.forEachItem = function (handler, env) {
 };
 
 dhtmlXLayoutObject.prototype._forEachSep = function (handler, env) {
-    if (typeof(handler) != "function") return;
-    if (typeof(env) == "undefined") env = this;
+    if (typeof (handler) != "function") return;
+    if (typeof (env) == "undefined") env = this;
     if (this.sep != null) handler.apply(env, [this.sep]);
     for (var a in this.cdata) {
         if (this.cdata[a].dataType == "layout" && this.cdata[a].dataNested == true && this.cdata[a].dataObj != null) {
@@ -506,7 +506,7 @@ dhtmlXLayoutObject.prototype.listAutoSizes = function () {
     var allV = this._availAutoSize[this.conf.pattern].v;
 
     return [curH, curV, allH, allV];
-
+	
 };
 
 
@@ -551,7 +551,7 @@ dhtmlXLayoutObject.prototype.setAutoSize = function (hor, ver, innerCall) {
         if (s) this.conf.autosize = a;
         if (this.cdata[a].dataType == "layout" && this.cdata[a].dataObj != null) this.cdata[a].dataObj.setAutoSize(hor, ver, true);
     }
-
+	
 };
 
 dhtmlXLayoutObject.prototype.tplData = {
@@ -1364,8 +1364,10 @@ dhtmlXLayoutObject.prototype.tplData = {
                                                                 layout: {
                                                                     mode: "h",
                                                                     cells: {
-                                                                        a: {name: "e", fsize: {h: [1, 2], v: [5, 6]}},
-                                                                        b: {name: "f", fsize: {h: [1, 2], v: 6}}
+                                                                        a: {
+                                                                            name: "e",
+                                                                            fsize: {h: [1, 2], v: [5, 6]}
+                                                                        }, b: {name: "f", fsize: {h: [1, 2], v: 6}}
                                                                     }
                                                                 }
                                                             }
@@ -1405,13 +1407,19 @@ dhtmlXLayoutObject.prototype.tplData = {
                                                     layout: {
                                                         mode: "v",
                                                         cells: {
-                                                            a: {name: "d", width: 1 / 3, fsize: {h: [4, 5], v: [1, 2]}},
+                                                            a: {
+                                                                name: "d",
+                                                                width: 1 / 3,
+                                                                fsize: {h: [4, 5], v: [1, 2]}
+                                                            },
                                                             b: {
                                                                 layout: {
                                                                     mode: "v",
                                                                     cells: {
-                                                                        a: {name: "e", fsize: {h: [5, 6], v: [1, 2]}},
-                                                                        b: {name: "f", fsize: {h: 6, v: [1, 2]}}
+                                                                        a: {
+                                                                            name: "e",
+                                                                            fsize: {h: [5, 6], v: [1, 2]}
+                                                                        }, b: {name: "f", fsize: {h: 6, v: [1, 2]}}
                                                                     }
                                                                 }
                                                             }
@@ -1429,7 +1437,7 @@ dhtmlXLayoutObject.prototype.tplData = {
             }
         }
     }
-
+	
 };
 
 dhtmlXLayoutObject.prototype._availAutoSize = {
@@ -1479,7 +1487,7 @@ dhtmlXLayoutObject.prototype._availAutoSize = {
 
     "7H": {h: ["a", "b;c;d;e;f", "g"], v: ["a;b;g", "a;c;g", "a;d;g", "a;e;g", "a;f;g"]},
     "7I": {h: ["a;b;g", "a;c;g", "a;d;g", "a;e;g", "a;f;g"], v: ["a", "b;c;d;e;f", "g"]}
-
+	
 };
 
 function dhtmlXLayoutSepObject(mode, idx) {
@@ -1491,7 +1499,7 @@ function dhtmlXLayoutSepObject(mode, idx) {
         idx: idx,
         blocked: false, // by expand/collapse
         locked: false, // by fix cell size
-        btn_left: ((window.dhx4.isIE6 || window.dhx4.isIE7 || window.dhx4.isIE8) && typeof(window.addEventListener) == "undefined" ? 1 : 0) // 1 for IE8-
+        btn_left: ((window.dhx4.isIE6 || window.dhx4.isIE7 || window.dhx4.isIE8) && typeof (window.addEventListener) == "undefined" ? 1 : 0) // 1 for IE8-
     };
 
     // ie-11 in ie-7 mode
@@ -1503,10 +1511,10 @@ function dhtmlXLayoutSepObject(mode, idx) {
     this.sep.className = "dhxlayout_sep";
 
     /*
-     // dev, show sep index
-     this.sep.innerHTML = "<span style='font-size: 11px; color: red; line-height: 9px;'>"+idx+"</span>";
-     this.sep.style.overflow = "visible";
-     */
+	// dev, show sep index
+	this.sep.innerHTML = "<span style='font-size: 11px; color: red; line-height: 9px;'>"+idx+"</span>";
+	this.sep.style.overflow = "visible";
+	*/
 
     if (window.dhx4.isIE == true) {
         this.sep.onselectstart = function () {
@@ -1582,7 +1590,7 @@ function dhtmlXLayoutSepObject(mode, idx) {
         this.conf.resize.nx = this.conf.resize.sep_x;
         this.conf.resize.ny = this.conf.resize.sep_y;
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.addEventListener("mousemove", this._doOnMouseMove, false);
             window.addEventListener("mouseup", this._doOnMouseUp, false);
             window.addEventListener(window.dhx4.dnd.evs.move, this._doOnMouseMove, false);
@@ -1636,7 +1644,7 @@ function dhtmlXLayoutSepObject(mode, idx) {
 
     this._afterResize = function (e) {
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("mousemove", this._doOnMouseMove, false);
             window.removeEventListener("mouseup", this._doOnMouseUp, false);
             window.removeEventListener(window.dhx4.dnd.evs.move, this._doOnMouseMove, false);
@@ -1808,7 +1816,7 @@ function dhtmlXLayoutSepObject(mode, idx) {
         that._afterResize(e);
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.sep.addEventListener("mousedown", this._doOnMouseDown, false);
         this.sep.addEventListener(window.dhx4.dnd.evs.start, this._doOnMouseDown, false);
         document.body.addEventListener("mousedown", this._doOnBodyMouseDown, false);
@@ -1821,7 +1829,7 @@ function dhtmlXLayoutSepObject(mode, idx) {
 
     this._unload = function () {
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.sep.removeEventListener("mousedown", this._doOnMouseDown, false);
             this.sep.removeEventListener(window.dhx4.dnd.evs.start, this._doOnMouseDown, false);
             document.body.removeEventListener("mousedown", this._doOnBodyMouseDown, false);
@@ -1847,8 +1855,9 @@ function dhtmlXLayoutSepObject(mode, idx) {
     return this;
 
 }
+
 dhtmlXLayoutObject.prototype.setSeparatorSize = function (index, size) {
-    if (typeof(index) == "number") {
+    if (typeof (index) == "number") {
         var s = this.setSeparatorSize({index: index, current: -1}, size);
         if (s.sep != null) s.sep._setWH(size);
         return;
@@ -1936,7 +1945,7 @@ window.dhtmlXLayoutCell = function (id, layout) {
     this._initDocking();
 
     return this;
-
+	
 };
 
 dhtmlXLayoutCell.prototype = new dhtmlXCellObject();
@@ -2141,7 +2150,7 @@ dhtmlXLayoutCell.prototype.setCollapsedText = function (text) {
 };
 
 dhtmlXLayoutCell.prototype.getCollapsedText = function () {
-    return (this.conf.hdr.text_collapsed != null ? this.conf.hdr.text_collapsed : this.conf.hdr.text );
+    return (this.conf.hdr.text_collapsed != null ? this.conf.hdr.text_collapsed : this.conf.hdr.text);
 };
 
 dhtmlXLayoutCell.prototype._hdrUpdText = function () {
@@ -2189,7 +2198,7 @@ dhtmlXLayoutCell.prototype._getHdrHeight = function (incColl) {
 dhtmlXLayoutCell.prototype._fitHdr = function () {
     var h = this.cell.childNodes[this.conf.idx.hdr];
     if (this.conf.collapsed == true) {
-        if (typeof(dhtmlXLayoutObject.prototype._confGlob.hdrColH) == "undefined") {
+        if (typeof (dhtmlXLayoutObject.prototype._confGlob.hdrColH) == "undefined") {
             h.style.height = this.cell.offsetHeight + "px";
             dhtmlXLayoutObject.prototype._confGlob.hdrColH = parseInt(h.style.height) - this._getHdrHeight(true);
         }
@@ -2452,11 +2461,11 @@ dhtmlXLayoutCell.prototype.setWidth = function (w) {
             w = w + k.conf.sw + nextCell._getWidth(); // increase width including nextCell and sw
 
             /*
-             var p = this.layout._getMainInst();
-             if (p != this.layout) {
-             for (var a in p.cdata) if (p.cdata[a].dataObj == k) p.cdata[a].setWidth(w);
-             }
-             */
+			var p = this.layout._getMainInst();
+			if (p != this.layout) {
+				for (var a in p.cdata) if (p.cdata[a].dataObj == k) p.cdata[a].setWidth(w);
+			}
+			*/
 
             p = k = nextCell = null;
 
@@ -2579,7 +2588,7 @@ dhtmlXLayoutCell.prototype.fixSize = function (w, h) {
     });
 
     mainInst = null;
-
+	
 };
 
 
@@ -2594,18 +2603,18 @@ dhtmlXCellObject.prototype.attachLayout = function (conf) {
     obj.style.overflow = "hidden";
     this._attachObject(obj);
 
-    if (typeof(this._layoutMainInst) != "undefined") {
+    if (typeof (this._layoutMainInst) != "undefined") {
         obj._layoutMainInst = this._layoutMainInst;
     }
 
-    if (typeof(window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell) {
+    if (typeof (window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell) {
         obj._isParentCell = true;
         if (this.conf.skin == "material" && String(this.cell.className).match(/dhx_cell_nested_layout/) == null) {
             this.cell.className += " dhx_cell_nested_layout";
         }
     }
 
-    if (typeof(window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) {
+    if (typeof (window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) {
         if (this.conf.skin == "material") {
             obj._ofs = {t: 14, r: 14, b: 14, l: 14};
         } else {
@@ -2613,12 +2622,12 @@ dhtmlXCellObject.prototype.attachLayout = function (conf) {
         }
     }
 
-    if (typeof(window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) {
+    if (typeof (window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) {
         if (this.conf.skin == "dhx_skyblue") obj._ofs = {t: -1, r: -1, b: -1, l: -1};
         if (this.conf.skin == "material") obj._ofs = {t: 8, r: 8, b: 8, l: 8};
     }
 
-    if (typeof(window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) {
+    if (typeof (window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) {
         if (this.conf.skin == "dhx_web") {
             obj._ofs = {l: 8};
             if (this.sidebar.conf.autohide == true) obj._ofs.l = 0;
@@ -2632,16 +2641,16 @@ dhtmlXCellObject.prototype.attachLayout = function (conf) {
         }
     }
 
-    if (typeof(window.dhtmlXCarouselCell) == "function" && this instanceof window.dhtmlXCarouselCell) {
+    if (typeof (window.dhtmlXCarouselCell) == "function" && this instanceof window.dhtmlXCarouselCell) {
         this._hideBorders();
     }
 
-    if (typeof(window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
+    if (typeof (window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
         if (this.conf.skin == "material") obj._ofs = {t: 14, r: 14, b: 14, l: 14};
     }
 
-    if (typeof(conf) == "string") conf = {pattern: conf};
-    if (typeof(conf.skin) == "undefined") conf.skin = this.conf.skin;
+    if (typeof (conf) == "string") conf = {pattern: conf};
+    if (typeof (conf.skin) == "undefined") conf.skin = this.conf.skin;
     conf.parent = obj;
 
     this.dataType = "layout";
@@ -2658,6 +2667,6 @@ dhtmlXCellObject.prototype.attachLayout = function (conf) {
     this.callEvent("_onContentAttach", []);
 
     return this.dataObj;
-
+	
 };
 

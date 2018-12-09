@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Creating custom item</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         /* green */
@@ -41,6 +41,7 @@
     <script>
         var myCombo, myCombo2;
         var eventIndex = 1;
+
         function doOnLoad() {
             // green
             myCombo = new dhtmlXCombo("combo_zone", "combo", 230, "my_radio_green");
@@ -60,6 +61,7 @@
                 return true;
             });
         }
+
         function log(text) {
             var t = document.getElementById("log_here");
             t.innerHTML += (eventIndex++) + ") " + text + "<br>";
@@ -92,7 +94,7 @@
                 // all items from simple combo belong to common parent,
                 // we will set custom attr to it and collect items from common parent to group,
                 // this will allow to separate items from several combos on page
-                if (typeof(item.parentNode._optRbGroup) == "undefined") {
+                if (typeof (item.parentNode._optRbGroup) == "undefined") {
                     // 1st creation, assign uniq id to parent
                     item.parentNode._optRbGroup = window.dhx4.newId();
                     this.items[item.parentNode._optRbGroup] = {}; // storage for items from single combo
@@ -102,7 +104,7 @@
                 // check only first item from group
                 var checked = window.dhx4.s2b(data.checked);
                 if (checked) {
-                    if (typeof(this.last_checked[item.parentNode._optRbGroup]) == "undefined") {
+                    if (typeof (this.last_checked[item.parentNode._optRbGroup]) == "undefined") {
                         // first matched item, mark group
                         this.last_checked[item.parentNode._optRbGroup] = true;
                     } else {

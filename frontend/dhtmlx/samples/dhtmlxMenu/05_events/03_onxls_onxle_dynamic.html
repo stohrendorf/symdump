@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>onXLS / onXLE for dynamic loading</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myMenu;
+
         function doOnLoad() {
             myMenu = new dhtmlXMenuObject({
                 parent: "menuObj",
@@ -22,6 +23,7 @@
             });
             myMenu.enableDynamicLoading("../common/dhxmenu_dynload_json.php");
         }
+
         function printLog(text) {
             document.getElementById("ta").innerHTML = text + document.getElementById("ta").innerHTML;
             document.getElementById("ta").scrollTop = 0;

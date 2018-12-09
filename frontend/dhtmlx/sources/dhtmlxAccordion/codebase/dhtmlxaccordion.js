@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXAccordion(base, skin) {
 
@@ -12,7 +12,7 @@ function dhtmlXAccordion(base, skin) {
     var transData = window.dhx4.transDetect();
 
     this.conf = {
-        skin: (skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxacc") || "material"),
+        skin: (skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxacc") || "material"),
         css: "dhxacc", // css prefix for topcell mtb
         icons_path: "",
         icons_css: false,
@@ -92,7 +92,7 @@ function dhtmlXAccordion(base, skin) {
     }
 
     var apiInit = null;
-    if (typeof(base) == "object" && !base.tagName) {
+    if (typeof (base) == "object" && !base.tagName) {
         apiInit = {};
         for (var a in base) {
             apiInit[a] = base[a];
@@ -180,12 +180,12 @@ function dhtmlXAccordion(base, skin) {
 
         if (this.conf.multi_mode) {
 
-            if (typeof(open) == "undefined") open = true; // opened by default if not set
+            if (typeof (open) == "undefined") open = true; // opened by default if not set
 
             this.cont.appendChild(cell.cell);
 
             cell.conf.opened = (open == true);
-            if (typeof(height) == "undefined" || height == null || height == "*") {
+            if (typeof (height) == "undefined" || height == null || height == "*") {
                 if (height == "*") cell.conf.h_auto = true;
                 height = this.conf.def_height;
             } else {
@@ -280,17 +280,17 @@ function dhtmlXAccordion(base, skin) {
 
     this.forEachItem = function (func) {
         for (var a in this.t) {
-            if (typeof(func) == "function") {
+            if (typeof (func) == "function") {
                 func.apply(this, [this.t[a].cell]);
             } else {
-                if (typeof(func) == "string" && typeof(window[func]) == "function") window[func].apply(this, [this.t[a].cell]);
+                if (typeof (func) == "string" && typeof (window[func]) == "function") window[func].apply(this, [this.t[a].cell]);
             }
         }
     };
 
     this._openItem = function (id, ef) {
 
-        if (typeof(ef) == "undefined") ef = true;
+        if (typeof (ef) == "undefined") ef = true;
 
         if (this.t[id].cell.conf.opened == false) {
 
@@ -318,7 +318,7 @@ function dhtmlXAccordion(base, skin) {
     };
 
     this._closeItem = function (id, ef) {
-        if (typeof(ef) == "undefined") ef = true;
+        if (typeof (ef) == "undefined") ef = true;
         if (this.t[id].cell.conf.opened == true) {
             this.t[id].cell._close(ef);
             this.conf.last_opened = null;
@@ -367,8 +367,8 @@ function dhtmlXAccordion(base, skin) {
 
         // toOpen/toClose - static_or_dyn closed cell from _open() or _close(),
         // cells shoule be included into calculations
-        if (typeof(toOpen) == "undefined" || toOpen == null) toOpen = {};
-        if (typeof(toClose) == "undefined" || toClose == null) toClose = {};
+        if (typeof (toOpen) == "undefined" || toOpen == null) toOpen = {};
+        if (typeof (toClose) == "undefined" || toClose == null) toClose = {};
 
         var dynData = {};
         var dynCount = 0;
@@ -537,7 +537,7 @@ function dhtmlXAccordion(base, skin) {
         for (var a in this.t) this.removeItem(a);
         this.t = null;
 
-        if (typeof(this._unloadDND) == "function") this._unloadDND();
+        if (typeof (this._unloadDND) == "function") this._unloadDND();
 
         if (this.dhxWins) {
             this.dhxWins.unload();
@@ -585,7 +585,7 @@ function dhtmlXAccordion(base, skin) {
                 this.addItem(data.items[q].id, data.items[q].text, data.items[q].open, data.items[q].height, data.items[q].icon || data.items[q].img);
             }
         }
-        if (window.dhx4.s2b(data.dnd) == true && typeof(this.enableDND) == "function") {
+        if (window.dhx4.s2b(data.dnd) == true && typeof (this.enableDND) == "function") {
             this.enableDND();
         }
     };
@@ -599,7 +599,7 @@ function dhtmlXAccordion(base, skin) {
         if (root.getAttribute("iconsPath") != null) t.icons_path = root.getAttribute("iconsPath");
         for (var q = 0; q < root.childNodes.length; q++) {
             var p = root.childNodes[q];
-            if (typeof(p.tagName) != "undefined" && String(p.tagName).toLowerCase() == "cell") {
+            if (typeof (p.tagName) != "undefined" && String(p.tagName).toLowerCase() == "cell") {
                 var k = {};
                 if (p.getAttribute("id") != null) k.id = p.getAttribute("id");
                 if (p.getAttribute("icon") != null) k.icon = p.getAttribute("icon");
@@ -632,7 +632,7 @@ function dhtmlXAccordion(base, skin) {
         }
     });
 
-    if (typeof(window.dhtmlXWindows) == "function") {
+    if (typeof (window.dhtmlXWindows) == "function") {
         this.dhxWins = new dhtmlXWindows();
         this.dhxWins.setSkin(this.conf.skin);
     }
@@ -764,7 +764,7 @@ function dhtmlXAccordionCell(id, acc) {
 
     this._adjustCell = function () {
         this._adjustCont();
-        if (this.dataObj != null && typeof(this.dataObj.setSizes) == "function") {
+        if (this.dataObj != null && typeof (this.dataObj.setSizes) == "function") {
             this.dataObj.setSizes();
         }
     };
@@ -1040,7 +1040,7 @@ dhtmlXAccordionCell.prototype._onActiveCall = function (mode) {
             this.acc.conf.on_active_click = false;
         }
     }
-
+	
 };
 
 /* visibility */
@@ -1198,11 +1198,11 @@ dhtmlXCellObject.prototype.attachAccordion = function (conf) {
     obj.style.position = "relative";
     this._attachObject(obj);
 
-    if (typeof(conf) == "undefined") conf = {};
-    if (typeof(conf.skin) == "undefined") conf.skin = this.conf.skin;
+    if (typeof (conf) == "undefined") conf = {};
+    if (typeof (conf.skin) == "undefined") conf.skin = this.conf.skin;
     conf.parent = obj;
 
-    if (typeof(window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) {
+    if (typeof (window.dhtmlXAccordionCell) == "function" && this instanceof window.dhtmlXAccordionCell) {
         if (this.conf.skin == "material") {
             obj._ofs = {t: -1, r: -1, b: -1, l: -1}; // attach acc to acc
         } else {
@@ -1213,11 +1213,11 @@ dhtmlXCellObject.prototype.attachAccordion = function (conf) {
         }
     }
 
-    if (typeof(window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) {
+    if (typeof (window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell) {
         if (this.conf.skin == "dhx_skyblue" || this.conf.skin == "material") obj._ofs = {t: -1, r: -1, b: -1, l: -1};
     }
 
-    if (typeof(window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) {
+    if (typeof (window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) {
         if (this.conf.skin == "dhx_web") {
             obj._ofs = {};
             if (this.sidebar.conf.autohide != true) obj._ofs.l = 2;
@@ -1231,7 +1231,7 @@ dhtmlXCellObject.prototype.attachAccordion = function (conf) {
         }
     }
 
-    if (typeof(window.dhtmlXCarouselCell) == "function" && this instanceof window.dhtmlXCarouselCell) {
+    if (typeof (window.dhtmlXCarouselCell) == "function" && this instanceof window.dhtmlXCarouselCell) {
         this._hideBorders();
     }
 

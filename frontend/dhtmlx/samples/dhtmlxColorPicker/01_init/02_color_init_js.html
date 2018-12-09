@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Init with linkTo</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         #cv1, #cv2, #cv3 {
@@ -19,6 +19,7 @@
     </style>
     <script>
         var myCP;
+
         function doOnLoad() {
             myCP = new dhtmlXColorPicker([
                 {input: "button1", target_color: "cv1", target_value: "inp1", color: "#05ff50"},
@@ -30,18 +31,18 @@
 </head>
 <body onload="doOnLoad();">
 <div style="position: relative;">
-    <input id="inp1" type="text" style="width: 100px;">
-    <input id='button1' type="button" value="select1" style="width:100px;">
+    <input id="inp1" style="width: 100px;" type="text">
+    <input id='button1' style="width:100px;" type="button" value="select1">
     <div id="cv1"></div>
 </div>
 <div style="position: relative;">
-    <input id="inp2" type="text" style="width: 100px;">
-    <input id='button2' type="button" value="select2" style="width:100px;">
+    <input id="inp2" style="width: 100px;" type="text">
+    <input id='button2' style="width:100px;" type="button" value="select2">
     <div id="cv2"></div>
 </div>
 <div style="position: relative;">
-    <input id="inp3" type="text" style="width: 100px;">
-    <input id='button3' type="button" value="select3" style="width:100px;">
+    <input id="inp3" style="width: 100px;" type="text">
+    <input id='button3' style="width:100px;" type="button" value="select3">
     <div id="cv3"></div>
 </div>
 </body>

@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /* dhtmlx.com */
 
@@ -26,7 +26,7 @@ if (typeof(window.dhx) == "undefined") {
             var t = document.createElement("DIV");
             t.className = className;
             if (document.body.firstChild != null) document.body.insertBefore(t, document.body.firstChild); else document.body.appendChild(t);
-            if (typeof(innerHTML) == "string") t.innerHTML = innerHTML;
+            if (typeof (innerHTML) == "string") t.innerHTML = innerHTML;
             var w = t[property || "offsetWidth"];
             t.parentNode.removeChild(t);
             t = null;
@@ -65,7 +65,7 @@ if (typeof(window.dhx) == "undefined") {
 
         // string to boolean
         s2b: function (r) {
-            if (typeof(r) == "string") r = r.toLowerCase();
+            if (typeof (r) == "string") r = r.toLowerCase();
             return (r == true || r == 1 || r == "true" || r == "1" || r == "yes" || r == "y" || r == "on");
         },
 
@@ -85,11 +85,11 @@ if (typeof(window.dhx) == "undefined") {
 
         // absolute top/left position on screen
         absLeft: function (obj) {
-            if (typeof(obj) == "string") obj = document.getElementById(obj);
+            if (typeof (obj) == "string") obj = document.getElementById(obj);
             return this.getOffset(obj).left;
         },
         absTop: function (obj) {
-            if (typeof(obj) == "string") obj = document.getElementById(obj);
+            if (typeof (obj) == "string") obj = document.getElementById(obj);
             return this.getOffset(obj).top;
         },
         _aOfs: function (elem) {
@@ -123,18 +123,18 @@ if (typeof(window.dhx) == "undefined") {
 
         // copy obj
         _isObj: function (k) {
-            return (k != null && typeof(k) == "object" && typeof(k.length) == "undefined");
+            return (k != null && typeof (k) == "object" && typeof (k.length) == "undefined");
         },
         _copyObj: function (r) {
             if (this._isObj(r)) {
                 var t = {};
                 for (var a in r) {
-                    if (typeof(r[a]) == "object" && r[a] != null) t[a] = this._copyObj(r[a]); else t[a] = r[a];
+                    if (typeof (r[a]) == "object" && r[a] != null) t[a] = this._copyObj(r[a]); else t[a] = r[a];
                 }
             } else {
                 var t = [];
                 for (var a = 0; a < r.length; a++) {
-                    if (typeof(r[a]) == "object" && r[a] != null) t[a] = this._copyObj(r[a]); else t[a] = r[a];
+                    if (typeof (r[a]) == "object" && r[a] != null) t[a] = this._copyObj(r[a]); else t[a] = r[a];
                 }
             }
             return t;
@@ -154,7 +154,7 @@ if (typeof(window.dhx) == "undefined") {
         // input/textarea range selection
         selectTextRange: function (inp, start, end) {
 
-            inp = (typeof(inp) == "string" ? document.getElementById(inp) : inp);
+            inp = (typeof (inp) == "string" ? document.getElementById(inp) : inp);
 
             var len = inp.value.length;
             start = Math.max(Math.min(start, len), 0);
@@ -256,7 +256,7 @@ if (typeof(window.dhx) == "undefined") {
         window.dhx4.dnd.evs = {start: "pointerdown", move: "pointermove", end: "pointerup"};
     } else if (window.navigator.msPointerEnabled == true) { // ie10-
         window.dhx4.dnd.evs = {start: "MSPointerDown", move: "MSPointerMove", end: "MSPointerUp"};
-    } else if (typeof(window.addEventListener) != "undefined") { // rest touch devices
+    } else if (typeof (window.addEventListener) != "undefined") { // rest touch devices
         window.dhx4.dnd.evs = {start: "touchstart", move: "touchmove", end: "touchend"};
     }
 }
@@ -301,12 +301,12 @@ if (typeof(window.dhx4.template) == "undefined") {
             }
 
             // via inner function
-            if (typeof(func) == "string" && typeof(window.dhx4.template[func]) == "function") {
+            if (typeof (func) == "string" && typeof (window.dhx4.template[func]) == "function") {
                 return window.dhx4.template[func].apply(window.dhx4.template, args);
             }
 
             // value only
-            if (key.length > 0 && typeof(data[key]) != "undefined") {
+            if (key.length > 0 && typeof (data[key]) != "undefined") {
                 if (trim == true) return window.dhx4.trim(data[key]);
                 return String(data[key]);
             }
@@ -346,11 +346,11 @@ if (typeof(window.dhx4.template) == "undefined") {
     };
 
     window.dhx4.template.lowercase = function (value) {
-        if (typeof(value) == "undefined" || value == null) value = "";
+        if (typeof (value) == "undefined" || value == null) value = "";
         return String(value).toLowerCase();
     };
     window.dhx4.template.uppercase = function (value) {
-        if (typeof(value) == "undefined" || value == null) value = "";
+        if (typeof (value) == "undefined" || value == null) value = "";
         return String(value).toUpperCase();
     };
 
@@ -363,13 +363,13 @@ if (typeof(window.dhx4.template) == "undefined") {
         var fmt = {
             // int group
             i_len: false,
-            i_sep: (typeof(group_sep) == "string" ? group_sep : ","),
+            i_sep: (typeof (group_sep) == "string" ? group_sep : ","),
             // decimal
             d_len: false,
-            d_sep: (typeof(dec_sep) == "string" ? dec_sep : "."),
+            d_sep: (typeof (dec_sep) == "string" ? dec_sep : "."),
             // chars before and after
-            s_bef: (typeof(t[1]) == "string" ? t[1] : ""),
-            s_aft: (typeof(t[3]) == "string" ? t[3] : "")
+            s_bef: (typeof (t[1]) == "string" ? t[1] : ""),
+            s_aft: (typeof (t[3]) == "string" ? t[3] : "")
         };
 
         var f = t[2].split(".");
@@ -443,8 +443,8 @@ if (typeof(window.dhx4.dateLang) == "undefined") {
 
     window.dhx4.date2str = function (val, format, strings) {
 
-        if (format == null || typeof(format) == "undefined") format = window.dhx4.dateFormat[window.dhx4.dateLang];
-        if (strings == null || typeof(strings) == "undefined") strings = window.dhx4.dateStrings[window.dhx4.dateLang];
+        if (format == null || typeof (format) == "undefined") format = window.dhx4.dateFormat[window.dhx4.dateLang];
+        if (strings == null || typeof (strings) == "undefined") strings = window.dhx4.dateStrings[window.dhx4.dateLang];
 
         if (val instanceof Date) {
             var z = function (t) {
@@ -511,8 +511,8 @@ if (typeof(window.dhx4.dateLang) == "undefined") {
 
     window.dhx4.str2date = function (val, format, strings) {
 
-        if (format == null || typeof(format) == "undefined") format = window.dhx4.dateFormat[window.dhx4.dateLang];
-        if (strings == null || typeof(strings) == "undefined") strings = window.dhx4.dateStrings[window.dhx4.dateLang];
+        if (format == null || typeof (format) == "undefined") format = window.dhx4.dateFormat[window.dhx4.dateLang];
+        if (strings == null || typeof (strings) == "undefined") strings = window.dhx4.dateStrings[window.dhx4.dateLang];
 
         // escape custom chars
         format = format.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\\:|]/g, "\\$&");
@@ -570,16 +570,16 @@ if (typeof(window.dhx4.dateLang) == "undefined") {
 
         // sorting
         /*
-         Year	y,Y	1
-         Month	n,m,M,F	2
-         Day	d,j	3
-         AM/PM	a,A	4
-         Hours	H,G,h,g	5
-         Minutes	i	6
-         Seconds	s	7
-         MSec	u	7
-         Zone 	P	7
-         */
+        Year	y,Y	1
+        Month	n,m,M,F	2
+        Day	d,j	3
+        AM/PM	a,A	4
+        Hours	H,G,h,g	5
+        Minutes	i	6
+        Seconds	s	7
+        MSec	u	7
+        Zone 	P	7
+        */
 
         for (var q = 1; q < e.length; q++) v.push(e[q]);
 
@@ -606,7 +606,7 @@ if (typeof(window.dhx4.dateLang) == "undefined") {
         var v2 = {};
         var f2 = {};
         for (var q = 0; q < f.length; q++) {
-            if (typeof(p[f[q]]) != "undefined") {
+            if (typeof (p[f[q]]) != "undefined") {
                 var ind = p[f[q]];
                 if (!v2[ind]) {
                     v2[ind] = [];
@@ -780,7 +780,7 @@ if (typeof(window.dhx4.ajax) == "undefined") {
         post: function (url, postData, onLoad) {
             if (arguments.length == 1) {
                 postData = "";
-            } else if (arguments.length == 2 && (typeof(postData) == "function" || typeof(window[postData]) == "function")) {
+            } else if (arguments.length == 2 && (typeof (postData) == "function" || typeof (window[postData]) == "function")) {
                 onLoad = postData;
                 postData = "";
             } else {
@@ -796,7 +796,7 @@ if (typeof(window.dhx4.ajax) == "undefined") {
             this._call("GET", url, null, true, onLoad, {url: url});
         },
         postLong: function (url, postData, onLoad) {
-            if (arguments.length == 2 && (typeof(postData) == "function" || typeof(window[postData]))) {
+            if (arguments.length == 2 && (typeof (postData) == "function" || typeof (window[postData]))) {
                 onLoad = postData;
                 postData = "";
             }
@@ -824,7 +824,7 @@ if (typeof(window.dhx4.ajax) == "undefined") {
                         }
 
                         window.setTimeout(function () {
-                            if (typeof(onLoad) == "function") {
+                            if (typeof (onLoad) == "function") {
                                 try {
                                     onLoad.apply(window, [{xmlDoc: t, filePath: url, async: async}]); // dhtmlx-compat, response.xmlDoc.responseXML/responseText
                                 } catch (e) {
@@ -833,7 +833,7 @@ if (typeof(window.dhx4.ajax) == "undefined") {
                                 def.resolve(t.responseText);
                             }
                             if (longParams != null) {
-                                if (typeof(longParams.postData) != "undefined") {
+                                if (typeof (longParams.postData) != "undefined") {
                                     dhx4.ajax.postLong(longParams.url, longParams.postData, onLoad);
                                 } else {
                                     dhx4.ajax.getLong(longParams.url, onLoad);
@@ -885,7 +885,7 @@ if (typeof(window.dhx4.ajax) == "undefined") {
         _dhxr: function (sign, value) {
             if (this.cache != true) {
                 if (sign.match(/^[\?\&]$/) == null) sign = (sign.indexOf("?") >= 0 ? "&" : "?");
-                if (typeof(value) == "undefined") value = true;
+                if (typeof (value) == "undefined") value = true;
                 return sign + "dhxr" + new Date().getTime() + (value == true ? "=1" : "");
             }
             return "";
@@ -937,7 +937,7 @@ if (typeof(window.dhx4._enableDataLoading) == "undefined") {
 
             this.callEvent("onXLS", []);
 
-            if (typeof(data) == "string") {
+            if (typeof (data) == "string") {
 
                 var k = data.replace(/^\s{1,}/, "").replace(/\s{1,}$/, "");
 
@@ -959,9 +959,9 @@ if (typeof(window.dhx4._enableDataLoading) == "undefined") {
                     var params = [];
 
                     // allow to modify url and add params
-                    if (typeof(this._dhxdataload.onBeforeXLS) == "function") {
+                    if (typeof (this._dhxdataload.onBeforeXLS) == "function") {
                         var k = this._dhxdataload.onBeforeXLS.apply(this, [data]);
-                        if (k != null && typeof(k) == "object") {
+                        if (k != null && typeof (k) == "object") {
                             if (k.url != null) data = k.url;
                             if (k.params != null) {
                                 for (var a in k.params) params.push(a + "=" + encodeURIComponent(k.params[a]));
@@ -986,9 +986,9 @@ if (typeof(window.dhx4._enableDataLoading) == "undefined") {
                         t.callEvent("onXLE", []);
 
                         if (onLoad != null) {
-                            if (typeof(onLoad) == "function") {
+                            if (typeof (onLoad) == "function") {
                                 onLoad.apply(t, []);
-                            } else if (typeof(window[onLoad]) == "function") {
+                            } else if (typeof (window[onLoad]) == "function") {
                                 window[onLoad].apply(t, []);
                             }
                         }
@@ -998,7 +998,7 @@ if (typeof(window.dhx4._enableDataLoading) == "undefined") {
 
                     };
 
-                    params = params.join("&") + (typeof(loadParams) == "string" ? "&" + loadParams : "");
+                    params = params.join("&") + (typeof (loadParams) == "string" ? "&" + loadParams : "");
 
                     if (dhx4.ajax.method == "post") {
                         return dhx4.ajax.post(data, params, callBack);
@@ -1010,7 +1010,7 @@ if (typeof(window.dhx4._enableDataLoading) == "undefined") {
                 }
 
             } else {
-                if (typeof(data.documentElement) == "object" || (typeof(data.tagName) != "undefined" && typeof(data.getElementsByTagName) != "undefined" && data.getElementsByTagName(this._dhxdataload.xmlRootTag).length > 0)) { // xml
+                if (typeof (data.documentElement) == "object" || (typeof (data.tagName) != "undefined" && typeof (data.getElementsByTagName) != "undefined" && data.getElementsByTagName(this._dhxdataload.xmlRootTag).length > 0)) { // xml
                     obj = this[this._dhxdataload.xmlToJson].apply(this, [data]);
                 } else { // json
                     obj = window.dhx4._copyObj(data);
@@ -1022,9 +1022,9 @@ if (typeof(window.dhx4._enableDataLoading) == "undefined") {
 
             this.callEvent("onXLE", []);
             if (onLoad != null) {
-                if (typeof(onLoad) == "function") {
+                if (typeof (onLoad) == "function") {
                     onLoad.apply(this, []);
-                } else if (typeof(window[onLoad]) == "function") {
+                } else if (typeof (window[onLoad]) == "function") {
                     window[onLoad].apply(this, []);
                 }
                 onLoad = null;
@@ -1231,6 +1231,7 @@ if (typeof(window.dhtmlx) == "undefined") {
         }
     };
 }
+
 /**
  *     @desc: find out what symbol to use as url param delimiters in further params
  *     @type: private
@@ -1254,6 +1255,7 @@ function dhtmlDragAndDropObject() {
 
     return this;
 }
+
 dhtmlDragAndDropObject.prototype.removeDraggableItem = function (htmlNode) {
     htmlNode.onmousedown = null;
     htmlNode.dragStarter = null;
@@ -1322,8 +1324,7 @@ dhtmlDragAndDropObject.prototype.callDrag = function (e) {
             dragger.waitDrag = 0;
             dragger.dragNode.pWindow = window;
             dragger.initFrameRoute();
-        }
-        else return dragger.stopDrag(e, true);
+        } else return dragger.stopDrag(e, true);
     }
 
     if (dragger.dragNode.parentNode != window.document.body && dragger.gldragNode) {
@@ -1356,12 +1357,12 @@ dhtmlDragAndDropObject.prototype.callDrag = function (e) {
     }
 
     dragger.dragNode.style.left = e.clientX + 15 + (dragger.fx
-            ? dragger.fx * (-1)
-            : 0)
+        ? dragger.fx * (-1)
+        : 0)
         + (document.body.scrollLeft || document.documentElement.scrollLeft) + "px";
     dragger.dragNode.style.top = e.clientY + 3 + (dragger.fy
-            ? dragger.fy * (-1)
-            : 0)
+        ? dragger.fy * (-1)
+        : 0)
         + (document.body.scrollTop || document.documentElement.scrollTop) + "px";
 
     if (!e.srcElement)
@@ -1523,10 +1524,7 @@ if ((navigator.userAgent.indexOf('Safari') != -1) || (navigator.userAgent.indexO
 } else if (navigator.userAgent.indexOf('Opera') != -1) {
     _isOpera = true;
     _OperaRv = parseFloat(navigator.userAgent.substr(navigator.userAgent.indexOf('Opera') + 6, 3));
-}
-
-
-else if (navigator.appName.indexOf("Microsoft") != -1) {
+} else if (navigator.appName.indexOf("Microsoft") != -1) {
     _isIE = true;
     if ((navigator.appVersion.indexOf("MSIE 8.0") != -1 ||
         navigator.appVersion.indexOf("MSIE 9.0") != -1 ||
@@ -1569,6 +1567,7 @@ if (typeof(dhtmlxEvent.initTouch) == "undefined") {
             ty = ev.touches[0].clientY;
             longtouch = window.setTimeout(touch_event, dhtmlxEvent.touchDelay);
         });
+
         function touch_event() {
             if (target) {
                 var ev = document.createEvent("HTMLEvents"); // for chrome and firefox

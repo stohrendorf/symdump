@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Cells header manipulations</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#layoutObj {
@@ -29,6 +29,7 @@
     <script>
         var myLayout;
         var sel;
+
         function doOnLoad() {
             myLayout = new dhtmlXLayoutObject({
                 parent: "layoutObj",
@@ -40,20 +41,25 @@
                 sel.options.add(new Option(item.getId(), item.getId()));
             });
         }
+
         function getId() {
             var sel = document.getElementById("sel");
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function setText() {
             myLayout.cells(getId()).setText(document.getElementById("txt").value);
         }
+
         function isVisible() {
             alert(myLayout.cells(getId()).isHeaderVisible());
         }
+
         function hidePanel() {
             myLayout.cells(getId()).hideHeader();
         }
+
         function showPanel() {
             myLayout.cells(getId()).showHeader();
         }
@@ -63,11 +69,11 @@
 <div id="layoutObj"></div>
 <div style="position: relative; margin-top: 40px; margin-left: 10px;">
     Item: <select id="sel"></select>
-    <input type="button" value="Show Header" onclick="showPanel();">
-    <input type="button" value="Hide Header" onclick="hidePanel();">
-    <input type="button" value="Is Header Visible?" onclick="isVisible();">
+    <input onclick="showPanel();" type="button" value="Show Header">
+    <input onclick="hidePanel();" type="button" value="Hide Header">
+    <input onclick="isVisible();" type="button" value="Is Header Visible?">
     <input id="txt" type="text" value="New Text">
-    <input type="button" value="Set Text" onclick="setText();">
+    <input onclick="setText();" type="button" value="Set Text">
 </div>
 <div id="objId" style="display: none;">
     <div style="margin: 3px 5px 3px 5px;">

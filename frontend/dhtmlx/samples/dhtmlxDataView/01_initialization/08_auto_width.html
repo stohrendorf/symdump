@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Auto-adjust item</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style type="text/css">
         .dhx_dataview .dhx_dataview_item {
@@ -14,10 +14,12 @@
     </style>
     <script>
         var myDataView;
+
         function changeCols(n) {
             myDataView.config.autowidth = n;
             myDataView.refresh();
         }
+
         function doOnLoad() {
             myLayout = new dhtmlXLayoutObject({
                 parent: "layoutObj",
@@ -43,8 +45,8 @@
 <h1>Auto-adjust item size to a container</h1>
 <div id="layoutObj" style="width:800px;height:396px;"></div>
 <br>
-<input type="button" value="2 columns" onclick='changeCols(2)'>
-<input type="button" value="3 columns" onclick='changeCols(3)'>
-<input type="button" value="4 columns" onclick='changeCols(4)'>
+<input onclick='changeCols(2)' type="button" value="2 columns">
+<input onclick='changeCols(3)' type="button" value="3 columns">
+<input onclick='changeCols(4)' type="button" value="4 columns">
 </body>
 </html>

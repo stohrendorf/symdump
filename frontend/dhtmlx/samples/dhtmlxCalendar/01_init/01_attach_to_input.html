@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Attach to input</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         #calendar,
@@ -19,6 +19,7 @@
     </style>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject(["cal_1", "cal_2", "cal_3"]);
         }
@@ -26,9 +27,9 @@
 </head>
 <body onload="doOnLoad();">
 <div style="position:relative;height:350px;">
-    <input type="text" id="cal_1">
-    <input type="text" id="cal_2">
-    <input type="text" id="cal_3">
+    <input id="cal_1" type="text">
+    <input id="cal_2" type="text">
+    <input id="cal_3" type="text">
 </div>
 </body>
 </html>

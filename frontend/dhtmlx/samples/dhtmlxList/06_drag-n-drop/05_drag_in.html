@@ -2,12 +2,12 @@
 <html>
 <head>
     <title>Drag HTML element into List</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
-    <link rel="stylesheet" type="text/css" href="../common/demo_style.css"/>
+    <link href="../common/demo_style.css" rel="stylesheet" type="text/css"/>
     <style>
         body {
             -webkit-user-select: none;
@@ -18,6 +18,7 @@
     </style>
     <script>
         var myDataView;
+
         function doOnLoad() {
             dhtmlx.DragControl.addDrag("drag_1");
             myList = new dhtmlXList({
@@ -45,17 +46,17 @@
 </head>
 <body class="dhx_noselect" onload="doOnLoad();">
 <h1>Drag HTML element into List</h1>
-<table border="0" cellspacing="5" cellpadding="5">
+<table border="0" cellpadding="5" cellspacing="5">
     <tr>
         <td>
-            <div id="data_container1" class="list_demo_samples"></div>
+            <div class="list_demo_samples" id="data_container1"></div>
         </td>
         <td>
         </td>
         <td>
             <div id="data_container2"
                  style="border:1px solid #c0c0c0; background-color:white;width:150px;height:397px;">
-                <div name="dhtmlx Team" address="5.0" city="dhtmlx" id="drag_1"
+                <div address="5.0" city="dhtmlx" id="drag_1" name="dhtmlx Team"
                      style='width:150px; height:50px; color:white; background-color:navy;'>Drag me into the List
                 </div>
             </div>

@@ -21,7 +21,6 @@ div.dhxcombo_dhx_skyblue {
     height: 22px;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 div.dhxcombo_dhx_skyblue input.dhxcombo_input {
     position: relative;
     top: 0px;
@@ -40,11 +39,9 @@ div.dhxcombo_dhx_skyblue input.dhxcombo_input {
     color: black;
     vertical-align: middle;
 }
-
 div.dhxcombo_dhx_skyblue input.dhxcombo_input::-ms-clear {
     display: none;
 }
-
 div.dhxcombo_dhx_skyblue div.dhxcombo_select_button {
     position: absolute;
     width: 18px;
@@ -67,7 +64,6 @@ div.dhxcombo_dhx_skyblue div.dhxcombo_select_button {
     user-select: none;
     overflow: hidden;
 }
-
 div.dhxcombo_dhx_skyblue div.dhxcombo_select_button div.dhxcombo_select_img {
     position: relative;
     width: 100%;
@@ -76,7 +72,6 @@ div.dhxcombo_dhx_skyblue div.dhxcombo_select_button div.dhxcombo_select_img {
     background-repeat: no-repeat;
     background-position: center center;
 }
-
 div.dhxcombo_dhx_skyblue div.dhxcombo_top_image {
     position: absolute;
     left: 0px;
@@ -92,7 +87,6 @@ div.dhxcombo_dhx_skyblue div.dhxcombo_top_image {
     overflow: hidden;
     cursor: default;
 }
-
 div.dhxcombolist_dhx_skyblue {
     position: absolute;
     font-family: Tahoma, Helvetica;
@@ -114,7 +108,6 @@ div.dhxcombolist_dhx_skyblue {
     -moz-transition: height 0.15s ease 0s;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 div.dhxcombolist_dhx_skyblue div.dhxcombo_option {
     position: relative;
     font-size: inherit;
@@ -126,14 +119,12 @@ div.dhxcombolist_dhx_skyblue div.dhxcombo_option {
     overflow: hidden;
     cursor: default;
 }
-
 div.dhxcombolist_dhx_skyblue div.dhxcombo_option.dhxcombo_option_selected {
     background-color: #b5deff !important;
     border-top: 1px solid #a1ceed !important;
     border-bottom: 1px solid #a1ceed !important;
     color: black;
 }
-
 div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_option_text {
     position: relative;
     padding: 0px 4px;
@@ -145,7 +136,6 @@ div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_option_text {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_option_text_chbx {
     position: relative;
     padding: 0px 4px 0px 4px;
@@ -158,7 +148,6 @@ div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_option_text.dhxcom
     user-select: none;
     white-space: nowrap;
 }
-
 div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_checkbox {
     position: absolute;
     left: 1px;
@@ -176,15 +165,12 @@ div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_checkbox {
     overflow: hidden;
     cursor: default;
 }
-
 div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_checkbox.dhxcombo_chbx_0 {
     background-position: 0px 0px;
 }
-
 div.dhxcombolist_dhx_skyblue .dhxcombo_option div.dhxcombo_checkbox.dhxcombo_chbx_1 {
     background-position: -18px 0px;
 }
-
 div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_option_text_image {
     position: relative;
     padding: 0px 4px 0px 4px;
@@ -197,7 +183,6 @@ div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_option_text.dhxcom
     user-select: none;
     white-space: nowrap;
 }
-
 div.dhxcombo_dhx_skyblue div.dhxcombo_top_image div.dhxcombo_image,
 div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_image {
     position: absolute;
@@ -216,17 +201,14 @@ div.dhxcombolist_dhx_skyblue div.dhxcombo_option div.dhxcombo_image {
     overflow: hidden;
     cursor: default;
 }
-
 div.dhxcombo_dhx_skyblue.dhxcombo_disabled {
     border: 1px solid #cccccc;
     background-color: #fafafa;
 }
-
 div.dhxcombo_dhx_skyblue.dhxcombo_disabled input.dhxcombo_input {
     color: #b2b2b2;
     background-color: #fafafa;
 }
-
 div.dhxcombo_dhx_skyblue.dhxcombo_disabled div.dhxcombo_select_button {
     border-color: #cccccc;
     background-color: #fefefe;
@@ -235,24 +217,20 @@ div.dhxcombo_dhx_skyblue.dhxcombo_disabled div.dhxcombo_select_button {
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#fefefe, endColorStr=#f4f4f4) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
     cursor: default;
 }
-
 div.dhxcombo_dhx_skyblue.dhxcombo_disabled div.dhxcombo_select_button div.dhxcombo_select_img {
     background-image: url("../imgs/dhxcombo_skyblue/dhxcombo_arrow_down_dis.gif");
 }
-
 .dhxgrid_combo_icon {
     position: absolute;
     top: 0px;
     right: 0px;
     z-index: 1;
 }
-
 div.dhxcombo_in_grid_parent {
     position: relative;
     height: 100%;
     top: 0px;
 }
-
 div.dhxcombo_in_grid_parent div.dhxcombo_dhx_skyblue {
     position: absolute;
     top: 0px;
@@ -260,7 +238,6 @@ div.dhxcombo_in_grid_parent div.dhxcombo_dhx_skyblue {
     *top: -2px;
     *height: 23px;
 }
-
 div.dhxcombo_in_grid_parent input.dhxcombo_input {
     border-left: 2px solid white;
     font-family: Arial;
@@ -269,7 +246,6 @@ div.dhxcombo_in_grid_parent input.dhxcombo_input {
     *height: 18px;
     *line-height: 17px;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr {
     border-bottom-width: 0px;
     height: 27px;
@@ -282,7 +258,6 @@ div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr {
     background: -webkit-linear-gradient(#e2efff, #d3e7ff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext {
     position: relative;
     padding: 0px;
@@ -297,7 +272,6 @@ div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell,
 div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_first {
     float: left;
@@ -309,12 +283,10 @@ div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_
     padding: 0px;
     margin: 0px;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_first,
 div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell:first-child {
     border-left-width: 0px;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option {
     height: 24px;
     line-height: 24px;
@@ -324,15 +296,12 @@ div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option {
     border-bottom: 1px solid #d3e7ff;
     background-color: white;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option:last-child {
     border-bottom-color: white;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_option_text {
     padding: 0px;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell,
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_first {
     float: left;
@@ -343,20 +312,16 @@ div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option div.dh
     padding: 0px;
     margin: 0px;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_first,
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell:first-child {
     border-left-width: 0px;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option.dhxcombo_option_selected {
     z-index: 1;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option.dhxcombo_option_selected div.dhxcombo_cell {
     border-left-color: #b5deff;
 }
-
 div.dhxcombolist_dhx_skyblue.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_text,
 div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_text {
     position: relative;
@@ -367,7 +332,6 @@ div.dhxcombolist_dhx_skyblue.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_
     width: auto;
     min-height: 32px;
 }
-
 .dhxcombo_skin_detect {
     position: absolute;
     left: 0px;

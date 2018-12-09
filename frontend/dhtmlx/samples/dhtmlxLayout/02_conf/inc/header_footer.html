@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Header/footer</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../../codebase/dhtmlx.js"></script>
     <style>
         html, body {
@@ -39,6 +39,7 @@
     <script>
 
         var myLayout;
+
         function doOnLoad() {
             myLayout = new dhtmlXLayoutObject({parent: document.body, pattern: "3L"});
             myLayout.cells("a").attachObject("controls");
@@ -46,18 +47,22 @@
             document.getElementById("my_copy").style.display = "none";
 
         }
+
         function attachHeader() {
             document.getElementById("my_logo").style.display = "";
             myLayout.attachHeader("my_logo");
         }
+
         function attachFooter() {
             document.getElementById("my_copy").style.display = "";
             myLayout.attachFooter("my_copy");
         }
+
         function detachHeader() {
             myLayout.detachHeader();
             document.getElementById("my_logo").style.display = "none";
         }
+
         function detachFooter() {
             myLayout.detachFooter();
             document.getElementById("my_copy").style.display = "none";
@@ -66,19 +71,19 @@
     </script>
 </head>
 <body onload="doOnLoad();">
-<div id="my_logo" class="my_hdr">
+<div class="my_hdr" id="my_logo">
     <div class="text">Hi! I'm header!</div>
 </div>
-<div id="my_copy" class="my_ftr">
+<div class="my_ftr" id="my_copy">
     <div class="text">Hi! I'm copyright &copy;!</div>
 </div>
 <div id="controls">
     <div style="margin:20px;">
-        <input type="button" value="attach header" onclick="attachHeader();">
-        <input type="button" value="detach header" onclick="detachHeader();">
+        <input onclick="attachHeader();" type="button" value="attach header">
+        <input onclick="detachHeader();" type="button" value="detach header">
         <br><br>
-        <input type="button" value="attach footer" onclick="attachFooter();">
-        <input type="button" value="detach footer" onclick="detachFooter();">
+        <input onclick="attachFooter();" type="button" value="attach footer">
+        <input onclick="detachFooter();" type="button" value="detach footer">
     </div>
 </div>
 </body>

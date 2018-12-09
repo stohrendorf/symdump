@@ -2,28 +2,29 @@
 <html>
 <head>
     <title>Init from HTML</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCP;
+
         function doOnLoad() {
             myCP = dhtmlXColorPicker(["input1", "input2", "input3"]);
         }
     </script>
 </head>
 <body onload="doOnLoad();">
-<table cellspacing="2" cellpadding="2" border="0">
+<table border="0" cellpadding="2" cellspacing="2">
     <tr>
-        <td><input type="text" id="input1" selectedcolor="#00ff00"></td>
+        <td><input id="input1" selectedcolor="#00ff00" type="text"></td>
     </tr>
     <tr>
-        <td><input type="text" id="input2" colorbox="true"></td>
+        <td><input colorbox="true" id="input2" type="text"></td>
     </tr>
     <tr>
-        <td><input type="text" id="input3" customcolors="true"></td>
+        <td><input customcolors="true" id="input3" type="text"></td>
     </tr>
 </table>
 </body>

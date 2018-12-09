@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Select items</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myDataView;
+
         function doOnLoad() {
             myDataView = new dhtmlXDataView({
                 container: "data_container",
@@ -24,10 +25,10 @@
 <body onload="doOnLoad();">
 <h1>Select items</h1>
 <div id="data_container" style="border:1px solid #c0c0c0; background-color:white;width:596px;height:396px;"></div>
-<input type="button" name="some_name" value="select firtst item" onclick="myDataView.select(myDataView.first())"><br>
-<input type="button" name="some_name" value="select last item" onclick="myDataView.select(myDataView.last())">
-<input type="button" name="some_name" value="select all" onclick="myDataView.select()"> <br><br>
-<input type="button" name="some_name" value="show firtst item" onclick="myDataView.show(myDataView.first())"><br>
-<input type="button" name="some_name" value="show last item" onclick="myDataView.show(myDataView.last())">
+<input name="some_name" onclick="myDataView.select(myDataView.first())" type="button" value="select firtst item"><br>
+<input name="some_name" onclick="myDataView.select(myDataView.last())" type="button" value="select last item">
+<input name="some_name" onclick="myDataView.select()" type="button" value="select all"> <br><br>
+<input name="some_name" onclick="myDataView.show(myDataView.first())" type="button" value="show firtst item"><br>
+<input name="some_name" onclick="myDataView.show(myDataView.last())" type="button" value="show last item">
 </body>
 </html>

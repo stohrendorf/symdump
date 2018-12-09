@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Unload</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myToolbar;
+
         function doOnLoad() {
             if (myToolbar == null) {
                 myToolbar = new dhtmlXToolbarObject({
@@ -18,6 +19,7 @@
                 });
             }
         }
+
         function unload() {
             if (myToolbar != null) {
                 myToolbar.unload();
@@ -31,7 +33,7 @@
 <div style="height: 150px;">
     <div id="toolbarObj"></div>
 </div>
-<input type="button" value="init" onclick="doOnLoad();">
-<input type="button" value="unload" onclick="unload();">
+<input onclick="doOnLoad();" type="button" value="init">
+<input onclick="unload();" type="button" value="unload">
 </body>
 </html>

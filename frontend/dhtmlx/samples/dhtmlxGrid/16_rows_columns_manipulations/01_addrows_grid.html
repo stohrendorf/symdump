@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Add/Delete Rows in Grid</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myGrid;
+
         function doOnLoad() {
             myGrid = new dhtmlXGridObject('gridbox');
             myGrid.setImagePath("../../../codebase/imgs/");
@@ -21,6 +22,7 @@
             myGrid.init();
             myGrid.load("../common/grid_16_rows_columns_manipulations.xml");
         }
+
         function add_r() {
             var ind1 = window.prompt('Value for the first cell', '');
             if (ind1 === null || typeof ind1 == "undefined") return;
@@ -29,6 +31,7 @@
             //
             myGrid.addRow(myGrid.uid(), [ind1, ind2], 1);
         }
+
         function delete_r() {
             var ind1 = window.prompt('Row[index] to delete', '0');
             if (ind1 === null) return;

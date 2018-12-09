@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Custom multiline item</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.dhxcombolist_material div.dhxcombo_option_multiline {
@@ -40,14 +40,15 @@
     <script>
         var myCombo;
         var imgPath = "../common/flags/";
+
         function doOnLoad() {
             myCombo = new dhtmlXCombo("combo_zone", "combo", 230, "my_multiline");
             myCombo.setTemplate({ // point (2) (see below)
                 input: "#capital#",
                 option: "<div style='position:relative;'>" +
-                "<div style='position: relative; margin-left: 32px; left: 0px;'><span style='color:#112a3d;'>#capital#</span><br><span style='color:#596268;'>#country#</span></div>" +
-                "<img src='#image#' border='0' style='position: absolute; left: 6px; top: 14px;'>" +
-                "</div>"
+                    "<div style='position: relative; margin-left: 32px; left: 0px;'><span style='color:#112a3d;'>#capital#</span><br><span style='color:#596268;'>#country#</span></div>" +
+                    "<img src='#image#' border='0' style='position: absolute; left: 6px; top: 14px;'>" +
+                    "</div>"
             });
             myCombo.addOption([
                 {

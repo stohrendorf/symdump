@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Insensitive days</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere");
             myCalendar.hideTime();
@@ -16,9 +17,11 @@
             myCalendar.setDate("2011-07-12");
             setDays();
         }
+
         function setDays() {
             myCalendar.setInsensitiveDays(["2011-07-10,2011-07-11", new Date(2011, 6, 17), "2011-07-18"]);
         }
+
         function clearDays() {
             myCalendar.clearInsensitiveDays();
         }
@@ -26,8 +29,8 @@
 </head>
 <body onload="doOnLoad();">
 <div style="margin-bottom: 20px;">
-    <input type="button" value="set days" onclick="setDays();">
-    <input type="button" value="clear days" onclick="clearDays();">
+    <input onclick="setDays();" type="button" value="set days">
+    <input onclick="clearDays();" type="button" value="clear days">
 </div>
 <div id="calendarHere" style="position:relative;height:350px;"></div>
 </body>

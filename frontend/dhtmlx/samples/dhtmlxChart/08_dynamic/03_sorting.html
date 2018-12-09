@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Sorting</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script src="../common/testdata.js"></script>
     <script>
         var myBarChart;
+
         function doOnLoad() {
             myBarChart = new dhtmlXChart({
                 view: "bar",
@@ -39,9 +40,9 @@
 </head>
 <body onload="doOnLoad();">
 <div id="chart1" style="width:600px;height:250px;border:1px solid #c0c0c0;"></div>
-<input type="button" value="sort by sales, ASC" onclick="myBarChart.sort('#sales#','asc');">
-<input type="button" value="sort by sales, DESC" onclick="myBarChart.sort('#sales#','desc');">
-<input type="button" value="sort by year, ASC" onclick="myBarChart.sort('#year#','asc');">
-<input type="button" value="sort by year, DESC" onclick="myBarChart.sort('#year#','desc');">
+<input onclick="myBarChart.sort('#sales#','asc');" type="button" value="sort by sales, ASC">
+<input onclick="myBarChart.sort('#sales#','desc');" type="button" value="sort by sales, DESC">
+<input onclick="myBarChart.sort('#year#','asc');" type="button" value="sort by year, ASC">
+<input onclick="myBarChart.sort('#year#','desc');" type="button" value="sort by year, DESC">
 </body>
 </html>

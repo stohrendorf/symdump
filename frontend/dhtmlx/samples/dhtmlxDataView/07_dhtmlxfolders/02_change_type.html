@@ -2,20 +2,22 @@
 <html>
 <head>
     <title>Change item type on the fly</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
-    <link rel="STYLESHEET" type="text/css" href="./types/ftypes.css">
+    <link href="./types/ftypes.css" rel="STYLESHEET" type="text/css">
     <script src="./types/ftypes.js" type="text/javascript"></script>
     <script>
         var myDataView;
+
         function doOnLoad() {
             myDataView = new dhtmlXDataView("data_container");
             changeType("ficon");
             myDataView.load("../common/files_ext.xml");
         }
+
         function changeType(type) {
             myDataView.types[type].icons_src_dir = "../common/images";
             myDataView.define("type", type);
@@ -25,13 +27,13 @@
 <body onload="doOnLoad();">
 <h1>Change item type on the fly</h1>
 <div style="position:relative;">
-    <img src="../common/images/samples_frame.gif" width="436" height="513" alt="" border="0">
+    <img alt="" border="0" height="513" src="../common/images/samples_frame.gif" width="436">
     <div id="data_container"
          style="width:396px;height:398px;overflow:hidden;position:absolute;top:65px;left:20px;border:0px solid red;"></div>
 </div>
 <h3>Change Items Type</h3>
-<input type="radio" name="switch" onclick="changeType(this.value)" value="ficon" checked> F-icon<br>
-<input type="radio" name="switch" onclick="changeType(this.value)" value="ftiles"> F-titles<br>
-<input type="radio" name="switch" onclick="changeType(this.value)" value="ftable"> F-table<br>
+<input checked name="switch" onclick="changeType(this.value)" type="radio" value="ficon"> F-icon<br>
+<input name="switch" onclick="changeType(this.value)" type="radio" value="ftiles"> F-titles<br>
+<input name="switch" onclick="changeType(this.value)" type="radio" value="ftable"> F-table<br>
 </body>
 </html>

@@ -2,11 +2,11 @@
 <html>
 <head>
     <title>Header/Footer with menu/toolbar/ribbon/status</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../../codebase/dhtmlx.css"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../../codebase/dhtmlx.js"></script>
     <style>
         html, body {
@@ -38,6 +38,7 @@
     <script>
 
         var myLayout, myMenu, myToolbar, myRibbon, sbObj;
+
         function doOnLoad() {
             myLayout = new dhtmlXLayoutObject({
                 parent: document.body,
@@ -53,28 +54,33 @@
             //attachFooter();
 
         }
+
         // header
         function attachHeader() {
             document.getElementById("my_logo").style.display = "";
             myLayout.attachHeader("my_logo");
             checkHeight();
         }
+
         function detachHeader() {
             myLayout.detachHeader();
             document.getElementById("my_logo").style.display = "none";
             checkHeight();
         }
+
         // footer
         function attachFooter() {
             document.getElementById("my_copy").style.display = "";
             myLayout.attachFooter("my_copy");
             checkHeight();
         }
+
         function detachFooter() {
             myLayout.detachFooter();
             document.getElementById("my_copy").style.display = "none";
             checkHeight();
         }
+
         // menu
         function attachMenu() {
             if (myMenu != null) return;
@@ -84,12 +90,14 @@
             });
             checkHeight();
         }
+
         function detachMenu() {
             if (myMenu == null) return;
             myLayout.detachMenu();
             myMenu = null;
             checkHeight();
         }
+
         // toolbar
         function attachToolbar() {
             if (myToolbar != null) return;
@@ -100,12 +108,14 @@
             });
             checkHeight();
         }
+
         function detachToolbar() {
             if (myToolbar == null) return;
             myLayout.detachToolbar();
             myToolbar = null;
             checkHeight();
         }
+
         // ribbon
         function attachRibbon() {
             if (myRibbon != null) return;
@@ -116,24 +126,28 @@
             });
             checkHeight();
         }
+
         function detachRibbon() {
             if (myRibbon == null) return;
             myLayout.detachRibbon();
             myRibbon = null;
             checkHeight();
         }
+
         // status bar
         function attachStatusBar() {
             if (sbObj != null) return;
             sbObj = myLayout.attachStatusBar({text: "Status bar text here"});
             checkHeight();
         }
+
         function detachStatusBar() {
             if (sbObj == null) return;
             myLayout.detachStatusBar();
             sbObj = null;
             checkHeight();
         }
+
         // fix cells' height
         function checkHeight() {
             myLayout.cells("b").setHeight(Math.round(myLayout.cells("a").getHeight() / 2));
@@ -142,21 +156,21 @@
 </head>
 <body onload="doOnLoad();">
 <!-- header -->
-<div id="my_logo" class="my_header">
+<div class="my_header" id="my_logo">
     <div class="text_block">Attached header</div>
 </div>
 <!-- footer -->
-<div id="my_copy" class="my_footer">
+<div class="my_footer" id="my_copy">
     <div class="text_block">Attached footer</div>
 </div>
 <!-- buttons -->
 <div id="controls">
     <div style="margin:20px;">
-        <input type="button" value="attach header" onclick="attachHeader();">
-        <input type="button" value="detach header" onclick="detachHeader();">
+        <input onclick="attachHeader();" type="button" value="attach header">
+        <input onclick="detachHeader();" type="button" value="detach header">
         <br><br>
-        <input type="button" value="attach footer" onclick="attachFooter();">
-        <input type="button" value="detach footer" onclick="detachFooter();">
+        <input onclick="attachFooter();" type="button" value="attach footer">
+        <input onclick="detachFooter();" type="button" value="detach footer">
     </div>
     <div style="position: relative; margin-top: 50px;">
 			<span style="margin-left: 10px;">

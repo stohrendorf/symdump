@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Enable/Disable tooltips</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myGrid;
+
         function doOnLoad() {
             myGrid = new dhtmlXGridObject('gridbox');
             myGrid.selMultiRows = true;
@@ -24,6 +25,7 @@
             myGrid.enableTooltips("false,true,true,true,true");
             myGrid.load("../common/grid_16_rows_columns_manipulations.xml");
         }
+
         function chTT() {
             var z = "";
             if (document.getElementById("c1").checked)
@@ -64,11 +66,11 @@
         <td>
             <br><br>
             Enable tooltips for the next columns:
-            <input type='checkbox' id='c1' onclick='chTT()'> 1
-            <input type='checkbox' id='c2' checked='true' onclick='chTT()'> 2
-            <input type='checkbox' id='c3' checked='true' onclick='chTT()'> 3
-            <input type='checkbox' id='c4' checked='true' onclick='chTT()'> 4
-            <input type='checkbox' id='c5' checked='true' onclick='chTT()'> 5
+            <input id='c1' onclick='chTT()' type='checkbox'> 1
+            <input checked='true' id='c2' onclick='chTT()' type='checkbox'> 2
+            <input checked='true' id='c3' onclick='chTT()' type='checkbox'> 3
+            <input checked='true' id='c4' onclick='chTT()' type='checkbox'> 4
+            <input checked='true' id='c5' onclick='chTT()' type='checkbox'> 5
         </td>
     </tr>
 </table>

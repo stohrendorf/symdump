@@ -1,19 +1,19 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /*
- Copyright DHTMLX LTD. http://www.dhtmlx.com
- You allowed to use this component or parts of it under GPL terms
- To use it on other terms or get Professional edition of the component please contact us at sales@dhtmlx.com
- */
+Copyright DHTMLX LTD. http://www.dhtmlx.com
+You allowed to use this component or parts of it under GPL terms
+To use it on other terms or get Professional edition of the component please contact us at sales@dhtmlx.com
+*/
 /*
- 2014 March 19
- */
+2014 March 19
+*/
 
 
 
@@ -91,7 +91,7 @@ dhtmlx.assert_event_attach = function (obj, name) {
 dhtmlx.assert_property = function (obj, evs) {
     if (!obj._settings_check)
         obj._settings_check = {};
-    dhtmlx.extend(obj._settings_check, evs);
+    dhtmlx.extend(obj._settings_check, evs);		
 };
 //check all options in collection, against list of allowed properties
 dhtmlx.assert_check = function (data, coll) {
@@ -272,8 +272,8 @@ if (dhtmlx.assert_enabled()) {
 /*DHX:Depend assert.js*/
 
 /*
- Common helpers
- */
+	Common helpers
+*/
 dhtmlx.codebase = "./";
 
 //coding helpers
@@ -342,7 +342,7 @@ dhtmlx.proto_extend = function () {
 dhtmlx.bind = function (functor, object) {
     return function () {
         return functor.apply(object, arguments);
-    };
+    };  
 };
 
 //loads module from external js file
@@ -365,9 +365,9 @@ dhtmlx.exec = function (code) {
 };
 
 /*
- creates method in the target object which will transfer call to the source object
- if event parameter was provided , each call of method will generate onBefore and onAfter events
- */
+	creates method in the target object which will transfer call to the source object
+	if event parameter was provided , each call of method will generate onBefore and onAfter events
+*/
 dhtmlx.methodPush = function (object, method, event) {
     return function () {
         var res = false;
@@ -410,7 +410,7 @@ dhtmlx.toArray = function (array) {
 };
 //resolve function name
 dhtmlx.toFunctor = function (str) {
-    return (typeof(str) == "string") ? eval(str) : str;
+    return (typeof (str) == "string") ? eval(str) : str; 
 };
 
 //dom helpers
@@ -466,7 +466,7 @@ dhtmlx.log = function (type, message, details) {
             window.console.log(type + ": " + message);
         if (details)
             window.console.log(details);
-    }
+    }	
 };
 //register rendering time from call point 
 dhtmlx.log_full_time = function (name) {
@@ -527,10 +527,10 @@ dhtmlx.EventSystem = {
         if (event_stack)
             for (var i = 0; i < event_stack.length; i++)
                 /*
-                 Call events one by one
-                 If any event return false - result of whole event will be false
-                 Handlers which are not returning anything - counted as positive
-                 */
+					Call events one by one
+					If any event return false - result of whole event will be false
+					Handlers which are not returning anything - counted as positive
+				*/
                 if (event_stack[i].apply(this, (params || [])) === false) return_value = false;
 
         if (this._map[type] && !this._map[type].callEvent(type, params))
@@ -565,7 +565,7 @@ dhtmlx.EventSystem = {
             event_stack.remove(functor);
             delete this._handlers[id];
         }
-    }
+    } 
 };
 
 //array helper
@@ -792,11 +792,11 @@ if (!dhtmlx.ui)
 
 
 /*
- Behavior:Destruction
-
- @export
- destructor
- */
+	Behavior:Destruction
+	
+	@export
+		destructor
+*/
 
 /*DHX:Depend dhtmlx.js*/
 
@@ -868,15 +868,15 @@ dhtmlx.event(window, "unload", function () {
 
 
 /* 
- ajax operations 
+	ajax operations 
+	
+	can be used for direct loading as
+		dhtmlx.ajax(ulr, callback)
+	or
+		dhtmlx.ajax().item(url)
+		dhtmlx.ajax().post(url)
 
- can be used for direct loading as
- dhtmlx.ajax(ulr, callback)
- or
- dhtmlx.ajax().item(url)
- dhtmlx.ajax().post(url)
-
- */
+*/
 
 /*DHX:Depend dhtmlx.js*/
 
@@ -900,10 +900,10 @@ dhtmlx.ajax.prototype = {
             return new XMLHttpRequest();
     },
     /*
-     send data to the server
-     params - hash of properties which will be added to the url
-     call - callback, can be an array of functions
-     */
+		send data to the server
+		params - hash of properties which will be added to the url
+		call - callback, can be an array of functions
+	*/
     send: function (url, params, call) {
         var x = this.getXHR();
         if (typeof call == "function")
@@ -997,8 +997,7 @@ dhtmlx.AtomDataLoader = {
         if (typeof call == "string") {	//second parameter can be a loading type or callback
             this.data.driver = dhtmlx.DataDriver[call];
             call = arguments[2];
-        }
-        else
+        } else
             this.data.driver = dhtmlx.DataDriver[this._settings.datatype || "xml"];
         //load data by async ajax call
         if (window.dhx4) {
@@ -1047,8 +1046,8 @@ dhtmlx.AtomDataLoader = {
 };
 
 /*
- Abstraction layer for different data types
- */
+	Abstraction layer for different data types
+*/
 
 dhtmlx.DataDriver = {};
 dhtmlx.DataDriver.json = {
@@ -1095,7 +1094,7 @@ dhtmlx.DataDriver.json_ext = {
             for (var i = 0; i < temp.data.length; i++) {
                 var item = {};
                 for (var j = 0; j < header.length; j++) {
-                    if (typeof(temp.data[i][j]) != "undefined")
+                    if (typeof (temp.data[i][j]) != "undefined")
                         item[header[j]] = temp.data[i][j];
                 }
                 dhtmlx.temp.push(item);
@@ -1125,11 +1124,11 @@ dhtmlx.DataDriver.json_ext = {
 
 dhtmlx.DataDriver.html = {
     /*
-     incoming data can be
-     - collection of nodes
-     - ID of parent container
-     - HTML text
-     */
+		incoming data can be
+		 - collection of nodes
+		 - ID of parent container
+		 - HTML text
+	*/
     toObject: function (data) {
         if (typeof data == "string") {
             var t = null;
@@ -1271,11 +1270,10 @@ dhtmlx.DataDriver.xml = {
                 temp = col.iterateNext();
             }
             return res;
-        }
-        else {
+        } else {
             var test = true;
             try {
-                if (typeof(xml.selectNodes) == "undefined")
+                if (typeof (xml.selectNodes) == "undefined")
                     test = false;
             } catch (e) { /*IE7 and below can't operate with xml object*/
             }
@@ -1306,8 +1304,7 @@ dhtmlx.DataDriver.xml = {
                     if (!(z[name] instanceof Array))
                         z[name] = [z[name]];
                     z[name].push(this.tagToObject(b[i], {}));
-                }
-                else
+                } else
                     z[b[i].tagName] = this.tagToObject(b[i], {});	//sub-object for complex subtags
                 flag = true;
             }
@@ -1346,7 +1343,7 @@ dhtmlx.DataDriver.xml = {
     },
     //check is XML correct and try to reparse it if its invalid
     checkResponse: function (text, xml) {
-        if (xml && ( xml.firstChild && xml.firstChild.tagName != "parsererror"))
+        if (xml && (xml.firstChild && xml.firstChild.tagName != "parsererror"))
             return xml;
         //parsing as string resolves incorrect content type
         //regexp removes whitespaces before xml declaration, which is vital for FF
@@ -1365,12 +1362,12 @@ dhtmlx.DataDriver.xml = {
 /*DHX:Depend dhtmlx.js*/
 
 /*
- Behavior:DataLoader - load data in the component
-
- @export
- load
- parse
- */
+	Behavior:DataLoader - load data in the component
+	
+	@export
+		load
+		parse
+*/
 dhtmlx.DataLoader = {
     _init: function (config) {
         //prepare data store
@@ -1443,25 +1440,25 @@ dhtmlx.DataLoader = {
 
 
 /*
- DataStore is not a behavior, it standalone object, which represents collection of data.
- Call provideAPI to map data API
+	DataStore is not a behavior, it standalone object, which represents collection of data.
+	Call provideAPI to map data API
 
- @export
- exists
- idByIndex
- indexById
- get
- set
- refresh
- dataCount
- sort
- filter
- next
- previous
- clearAll
- first
- last
- */
+	@export
+		exists
+		idByIndex
+		indexById
+		get
+		set
+		refresh
+		dataCount
+		sort
+		filter
+		next
+		previous
+		clearAll
+		first
+		last
+*/
 dhtmlx.DataStore = function () {
     this.name = "DataStore";
 
@@ -1644,12 +1641,12 @@ dhtmlx.DataStore.prototype = {
     },
     scheme: function (config) {
         /*
-         some.scheme({
-         order:1,
-         name:"dummy",
-         title:""
-         })
-         */
+			some.scheme({
+				order:1,
+				name:"dummy",
+				title:""
+			})
+		*/
         this._scheme = config;
 
     },
@@ -1812,22 +1809,22 @@ dhtmlx.DataStore.prototype = {
         return this.order[this.indexById(id) - (step || 1)];
     },
     /*
-     sort data in collection
-     by - settings of sorting
-
-     or
-
-     by - sorting function
-     dir - "asc" or "desc"
-
-     or
-
-     by - property
-     dir - "asc" or "desc"
-     as - type of sortings
-
-     Sorting function will accept 2 parameters and must return 1,0,-1, based on desired order
-     */
+		sort data in collection
+			by - settings of sorting
+		
+		or
+		
+			by - sorting function
+			dir - "asc" or "desc"
+			
+		or
+		
+			by - property
+			dir - "asc" or "desc"
+			as - type of sortings
+		
+		Sorting function will accept 2 parameters and must return 1,0,-1, based on desired order
+	*/
     sort: function (by, dir, as) {
         var sort = by;
         if (typeof by == "function")
@@ -1855,17 +1852,17 @@ dhtmlx.DataStore.prototype = {
         this.callEvent("onaftersort", parameters);
     },
     /*
-     Filter datasource
-
-     text - property, by which filter
-     value - filter mask
-
-     or
-
-     text  - filter method
-
-     Filter method will receive data object and must return true or false
-     */
+		Filter datasource
+		
+		text - property, by which filter
+		value - filter mask
+		
+		or
+		
+		text  - filter method
+		
+		Filter method will receive data object and must return true or false
+	*/
     filter: function (text, value) {
         if (!this.callEvent("onBeforeFilter", [text, value])) return;
 
@@ -1906,15 +1903,15 @@ dhtmlx.DataStore.prototype = {
         this.callEvent("onAfterFilter", []);
     },
     /*
-     Iterate through collection
-     */
+		Iterate through collection
+	*/
     each: function (method, master) {
         for (var i = 0; i < this.order.length; i++)
             method.call((master || this), this.item(this.order[i]));
     },
     /*
-     map inner methods to some distant object
-     */
+		map inner methods to some distant object
+	*/
     provideApi: function (target, eventable) {
         this.debug_bind_master = target;
 
@@ -1927,8 +1924,8 @@ dhtmlx.DataStore.prototype = {
                 onbeforedelete: target,
                 onafterdelete: target,
                 onbeforeupdate: target/*,
-                 onafterfilter:	target,
-                 onbeforefilter:	target*/
+				onafterfilter:	target,
+				onbeforefilter:	target*/
             });
         }
 
@@ -1940,8 +1937,8 @@ dhtmlx.DataStore.prototype = {
             this.assert_event(target);
     },
     /*
-     serializes data to a json object
-     */
+		serializes data to a json object
+	*/
     serialize: function () {
         var ids = this.order;
         var result = [];
@@ -1992,12 +1989,13 @@ dhtmlx.sort = {
 };
 
 
+
 /* DHX DEPEND FROM FILE 'key.js'*/
 
 
 /*
- Behavior:KeyEvents - hears keyboard 
- */
+	Behavior:KeyEvents - hears keyboard 
+*/
 dhtmlx.KeyEvents = {
     _init: function () {
         //attach handler to the main container
@@ -2016,8 +2014,8 @@ dhtmlx.KeyEvents = {
 
 
 /*
- Behavior:MouseEvents - provides inner evnets for  mouse actions
- */
+	Behavior:MouseEvents - provides inner evnets for  mouse actions
+*/
 dhtmlx.MouseEvents = {
     _init: function () {
         //attach dom events if related collection is defined
@@ -2048,10 +2046,10 @@ dhtmlx.MouseEvents = {
             return dhtmlx.html.preventEvent(e);
     },
     /*
-     event throttler - ignore events which occurs too fast
-     during mouse moving there are a lot of event firing - we need no so much
-     also, mouseout can fire when moving inside the same html container - we need to ignore such fake calls
-     */
+		event throttler - ignore events which occurs too fast
+		during mouse moving there are a lot of event firing - we need no so much
+		also, mouseout can fire when moving inside the same html container - we need to ignore such fake calls
+	*/
     _onMouse: function (e) {
         if (dhtmlx._isIE)	//make a copy of event, will be used in timed call
             e = document.createEventObject(event);
@@ -2115,12 +2113,12 @@ dhtmlx.MouseEvents = {
 
 
 /*
- Behavior:Settings
-
- @export
- customize
- config
- */
+	Behavior:Settings
+	
+	@export
+		customize
+		config
+*/
 
 /*DHX:Depend template.js*/
 /*DHX:Depend dhtmlx.js*/
@@ -2128,10 +2126,10 @@ dhtmlx.MouseEvents = {
 dhtmlx.Settings = {
     _init: function () {
         /* 
-         property can be accessed as this.config.some
-         in same time for inner call it have sense to use _settings
-         because it will be minified in final version
-         */
+			property can be accessed as this.config.some
+			in same time for inner call it have sense to use _settings
+			because it will be minified in final version
+		*/
         this._settings = this.config = {};
     },
     define: function (property, value) {
@@ -2181,9 +2179,9 @@ dhtmlx.Settings = {
     //helper for html container init
     _parseContainer: function (obj, name, fallback) {
         /*
-         parameter can be a config object, in such case real container will be obj.container
-         or it can be html object or ID of html object
-         */
+			parameter can be a config object, in such case real container will be obj.container
+			or it can be html object or ID of html object
+		*/
         if (typeof obj == "object" && !obj.tagName)
             obj = obj.container;
         this._obj = this.$view = dhtmlx.toNode(obj);
@@ -2238,12 +2236,13 @@ dhtmlx.Settings = {
 };
 
 
+
 /* DHX DEPEND FROM FILE 'template.js'*/
 
 
 /*
- Template - handles html templates
- */
+	Template - handles html templates
+*/
 
 /*DHX:Depend dhtmlx.js*/
 
@@ -2289,10 +2288,10 @@ dhtmlx.Template = {
 
 dhtmlx.Type = {
     /*
-     adds new template-type
-     obj - object to which template will be added
-     data - properties of template
-     */
+		adds new template-type
+		obj - object to which template will be added
+		data - properties of template
+	*/
     add: function (obj, data) {
         //auto switch to prototype, if name of class was provided
         if (!obj.types && obj.prototype.types)
@@ -2360,12 +2359,12 @@ dhtmlx.Type = {
 
 
 /*
- REnders single item. 
- Can be used for elements without datastore, or with complex custom rendering logic
-
- @export
- render
- */
+	REnders single item. 
+	Can be used for elements without datastore, or with complex custom rendering logic
+	
+	@export
+		render
+*/
 
 /*DHX:Depend template.js*/
 
@@ -2375,9 +2374,9 @@ dhtmlx.SingleRender = {
     //convert item to the HTML text
     _toHTML: function (obj) {
         /*
-         this one doesn't support per-item-$template
-         it has not sense, because we have only single item per object
-         */
+				this one doesn't support per-item-$template
+				it has not sense, because we have only single item per object
+			*/
         return this.type._item_start(obj, this.type) + this.type.template(obj, this.type) + this.type._item_end;
     },
     //render self, by templating data object
@@ -2395,12 +2394,12 @@ dhtmlx.SingleRender = {
 
 
 /*
- UI: Tooltip
-
- @export
- show
- hide
- */
+	UI: Tooltip
+	
+	@export
+		show
+		hide
+*/
 
 /*DHX:Depend tooltip.css*/
 /*DHX:Depend template.js*/
@@ -2462,12 +2461,13 @@ dhtmlx.ui.Tooltip.prototype = {
 };
 
 
+
 /* DHX DEPEND FROM FILE 'autotooltip.js'*/
 
 
 /*
- Behavior: AutoTooltip - links tooltip to data driven item
- */
+	Behavior: AutoTooltip - links tooltip to data driven item
+*/
 
 /*DHX:Depend tooltip.js*/
 
@@ -2492,8 +2492,8 @@ dhtmlx.AutoTooltip = {
 
 
 /*
- Collection of compatibility hacks
- */
+	Collection of compatibility hacks
+*/
 
 /*DHX:Depend dhtmlx.js*/
 

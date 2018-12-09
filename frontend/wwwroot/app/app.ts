@@ -135,7 +135,7 @@ function appInit(): void {
         xhr.send(form);
     });
 
-    menu.attachEvent('onclick', id => {
+    menu.attachEvent('onClick', id => {
         if (id === 'ftLoadSym') {
             uploadUrl = 'api/upload/sym';
             postUploadAction = () => {

@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXWindows.prototype._dndInitModule = function () {
 
@@ -224,7 +224,7 @@ dhtmlXWindows.prototype._dndInitModule = function () {
     };
 
     this._dndInitEvents = function () {
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.addEventListener("mousemove", this._dndOnMouseMove, false);
             window.addEventListener("mouseup", this._dndOnMouseUp, false);
             window.addEventListener("selectstart", this._dndOnSelectStart, false);
@@ -236,7 +236,7 @@ dhtmlXWindows.prototype._dndInitModule = function () {
     };
 
     this._dndUnloadEvents = function () {
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("mousemove", this._dndOnMouseMove, false);
             window.removeEventListener("mouseup", this._dndOnMouseUp, false);
             window.removeEventListener("selectstart", this._dndOnSelectStart, false);
@@ -274,7 +274,7 @@ dhtmlXWindows.prototype._dndInitModule = function () {
 
         if (this.w[data.id] == null || this.w[data.id].conf.allow_move != true) return;
 
-        if (typeof(e.button) != "undefined" && e.button >= 2) return;
+        if (typeof (e.button) != "undefined" && e.button >= 2) return;
 
         if (e.type == window.dhx4.dnd.evs.start) {
 
@@ -331,6 +331,6 @@ dhtmlXWindows.prototype._dndInitModule = function () {
         return false;
 
     });
-
+	
 };
 

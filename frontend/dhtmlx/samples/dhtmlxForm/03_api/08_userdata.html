@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>UserData</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#simpleLog, div#simpleLog2 {
@@ -17,6 +17,7 @@
     <script>
         var myForm, formData, logObj;
         var myForm2, logObj2;
+
         function doOnLoad() {
 
             // init from json
@@ -25,48 +26,48 @@
                 {type: "settings", position: "label-left", labelWidth: 130, inputWidth: 120},
                 {
                     type: "fieldset", label: "Init from JSON", inputWidth: "auto", list: [
-                    {
-                        type: "radio",
-                        name: "type",
-                        label: "Already have account",
-                        labelWidth: "auto",
-                        value: "have_account",
-                        position: "label-right",
-                        checked: true,
-                        list: [
-                            {
-                                type: "input", label: "Login", value: "p_rossi", name: "login", userdata: {
-                                max_lentgh: 15,
-                                char_allowed: "a-zA-Z0-9_-"
+                        {
+                            type: "radio",
+                            name: "type",
+                            label: "Already have account",
+                            labelWidth: "auto",
+                            value: "have_account",
+                            position: "label-right",
+                            checked: true,
+                            list: [
+                                {
+                                    type: "input", label: "Login", value: "p_rossi", name: "login", userdata: {
+                                        max_lentgh: 15,
+                                        char_allowed: "a-zA-Z0-9_-"
+                                    }
+                                },
+                                {type: "password", label: "Password", value: "123"},
+                                {type: "checkbox", label: "Remember me", checked: true}
+                            ],
+                            userdata: {
+                                check_session: true,
+                                exp_days: 10
                             }
-                            },
-                            {type: "password", label: "Password", value: "123"},
-                            {type: "checkbox", label: "Remember me", checked: true}
-                        ],
-                        userdata: {
-                            check_session: true,
-                            exp_days: 10
+                        },
+                        {
+                            type: "radio",
+                            name: "type",
+                            label: "Not registered yet",
+                            labelWidth: "auto",
+                            position: "label-right",
+                            list: [
+                                {type: "input", label: "Login", value: "p_rossi"},
+                                {type: "password", label: "Password", value: "123"},
+                                {type: "password", label: "Confirm Password", value: "123"},
+                                {type: "input", label: "E-mail Address", value: "p_rossi@example.com"}
+                            ]
+                        },
+                        {
+                            type: "button", value: "Proceed", name: "proceed", userdata: {
+                                skip_validation: true
+                            }
                         }
-                    },
-                    {
-                        type: "radio",
-                        name: "type",
-                        label: "Not registered yet",
-                        labelWidth: "auto",
-                        position: "label-right",
-                        list: [
-                            {type: "input", label: "Login", value: "p_rossi"},
-                            {type: "password", label: "Password", value: "123"},
-                            {type: "password", label: "Confirm Password", value: "123"},
-                            {type: "input", label: "E-mail Address", value: "p_rossi@example.com"}
-                        ]
-                    },
-                    {
-                        type: "button", value: "Proceed", name: "proceed", userdata: {
-                        skip_validation: true
-                    }
-                    }
-                ]
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);

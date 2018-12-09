@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Spacer</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var sel;
         var myToolbar;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -24,9 +25,11 @@
                 });
             });
         }
+
         function addSpacer() {
             myToolbar.addSpacer(sel.options[sel.selectedIndex].value);
         }
+
         function removeSpacer() {
             myToolbar.removeSpacer();
         }
@@ -37,7 +40,7 @@
     <div id="toolbarObj"></div>
 </div>
 <select id="sel"></select>
-<input type="button" value="Add Spacer" onclick="addSpacer();">
-<input type="button" value="Remove Spacer" onclick="removeSpacer();">
+<input onclick="addSpacer();" type="button" value="Add Spacer">
+<input onclick="removeSpacer();" type="button" value="Remove Spacer">
 </body>
 </html>

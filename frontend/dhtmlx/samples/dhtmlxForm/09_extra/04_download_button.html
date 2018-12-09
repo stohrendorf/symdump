@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Download files with form</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         .download_iframe {
@@ -26,57 +26,57 @@
                 {type: "settings", position: "label-left", labelWidth: 70, inputWidth: 150},
                 {
                     type: "block", width: "auto", blockOffset: 0, list: [
-                    {type: "label", label: "Download Text Document", labelWidth: "auto", offsetTop: 20},
-                    {
-                        type: "combo", label: "Name", name: "name", options: [
-                        {value: "Trinidad Ellwood", text: "Trinidad Ellwood"},
-                        {value: "Travis Milne", text: "Travis Milne", selected: true},
-                        {value: "Latrice Bowman", text: "Latrice Bowman"},
-                        {value: "Trisha Cooper", text: "Trisha Cooper"},
-                        {value: "Elliott Campbell", text: "Elliott Campbell"},
-                        {value: "Vivienne Connolly", text: "Vivienne Connolly"}
+                        {type: "label", label: "Download Text Document", labelWidth: "auto", offsetTop: 20},
+                        {
+                            type: "combo", label: "Name", name: "name", options: [
+                                {value: "Trinidad Ellwood", text: "Trinidad Ellwood"},
+                                {value: "Travis Milne", text: "Travis Milne", selected: true},
+                                {value: "Latrice Bowman", text: "Latrice Bowman"},
+                                {value: "Trisha Cooper", text: "Trisha Cooper"},
+                                {value: "Elliott Campbell", text: "Elliott Campbell"},
+                                {value: "Vivienne Connolly", text: "Vivienne Connolly"}
+                            ]
+                        },
+                        {
+                            type: "combo",
+                            label: "Country",
+                            name: "country",
+                            comboType: "image",
+                            comboImagePath: "../common/imgs_combo/",
+                            options: [
+                                {value: "Denmark", img: "denmark.png", text: "Denmark"},
+                                {value: "Finland", img: "finland.png", text: "Finland", selected: true},
+                                {value: "Germany", img: "germany.png", text: "Germany"},
+                                {value: "Italy", img: "italy.png", text: "Italy"}
+                            ]
+                        },
+                        {
+                            type: "checkbox",
+                            label: "I agree with terms and conditions",
+                            checked: false,
+                            position: "label-right",
+                            labelWidth: "auto",
+                            list: [
+                                {type: "button", name: "download_txt", value: "Download", offsetLeft: 45}
+                            ]
+                        }
                     ]
-                    },
-                    {
-                        type: "combo",
-                        label: "Country",
-                        name: "country",
-                        comboType: "image",
-                        comboImagePath: "../common/imgs_combo/",
-                        options: [
-                            {value: "Denmark", img: "denmark.png", text: "Denmark"},
-                            {value: "Finland", img: "finland.png", text: "Finland", selected: true},
-                            {value: "Germany", img: "germany.png", text: "Germany"},
-                            {value: "Italy", img: "italy.png", text: "Italy"}
-                        ]
-                    },
-                    {
-                        type: "checkbox",
-                        label: "I agree with terms and conditions",
-                        checked: false,
-                        position: "label-right",
-                        labelWidth: "auto",
-                        list: [
-                            {type: "button", name: "download_txt", value: "Download", offsetLeft: 45}
-                        ]
-                    }
-                ]
                 },
                 {type: "newcolumn"},
                 {
                     type: "block", width: "auto", blockOffset: 30, list: [
-                    {type: "label", label: "Download Image", labelWidth: "auto", offsetTop: 20},
-                    {
-                        type: "checkbox",
-                        label: "aquarium.jpg",
-                        checked: false,
-                        position: "label-right",
-                        labelWidth: "auto",
-                        list: [
-                            {type: "button", name: "download_img", value: "Download", offsetLeft: 45}
-                        ]
-                    }
-                ]
+                        {type: "label", label: "Download Image", labelWidth: "auto", offsetTop: 20},
+                        {
+                            type: "checkbox",
+                            label: "aquarium.jpg",
+                            checked: false,
+                            position: "label-right",
+                            labelWidth: "auto",
+                            list: [
+                                {type: "button", name: "download_img", value: "Download", offsetLeft: 45}
+                            ]
+                        }
+                    ]
                 }
             ];
 
@@ -94,6 +94,7 @@
         }
 
         var downloadFrame;
+
         function downloadFile(url, params) {
 
             // create iframe once if needed

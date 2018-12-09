@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Using with real form</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         .submit_iframe {
@@ -27,21 +27,21 @@
                 {type: "settings", position: "label-left", labelWidth: 110, inputWidth: 140},
                 {
                     type: "block", width: "auto", blockOffset: 0, list: [
-                    {type: "label", label: "Please submit the form", labelWidth: "auto", offsetTop: 30},
-                    {type: "input", label: "Full Name", name: "user_name", value: "Emmett Kenith"},
-                    {type: "input", label: "Email Address", name: "user_email", value: "emmett@mail.com"},
-                    {
-                        type: "checkbox",
-                        label: "I agree with terms and conditions",
-                        name: "user_agree",
-                        checked: false,
-                        position: "label-right",
-                        labelWidth: "auto",
-                        list: [
-                            {type: "button", name: "submit", value: "Submit", offsetLeft: 45}
-                        ]
-                    }
-                ]
+                        {type: "label", label: "Please submit the form", labelWidth: "auto", offsetTop: 30},
+                        {type: "input", label: "Full Name", name: "user_name", value: "Emmett Kenith"},
+                        {type: "input", label: "Email Address", name: "user_email", value: "emmett@mail.com"},
+                        {
+                            type: "checkbox",
+                            label: "I agree with terms and conditions",
+                            name: "user_agree",
+                            checked: false,
+                            position: "label-right",
+                            labelWidth: "auto",
+                            list: [
+                                {type: "button", name: "submit", value: "Submit", offsetLeft: 45}
+                            ]
+                        }
+                    ]
                 }
             ];
 
@@ -59,12 +59,12 @@
 <div>This demo shows how send data to server by using real html form</div>
 <!-- real form should be around dhtmlx form -->
 <div style="height: 230px;">
-    <form id="realForm" action="../common/realform.php" method="POST" target="submit_ifr">
+    <form action="../common/realform.php" id="realForm" method="POST" target="submit_ifr">
         <div id="dhxForm"></div>
     </form>
 </div>
 <!-- submit results here (just for demo prurposes) -->
 <div>Check the result</div>
-<iframe border="0" frameBorder="0" name="submit_ifr" class="submit_iframe"></iframe>
+<iframe border="0" class="submit_iframe" frameBorder="0" name="submit_ifr"></iframe>
 </body>
 </html>

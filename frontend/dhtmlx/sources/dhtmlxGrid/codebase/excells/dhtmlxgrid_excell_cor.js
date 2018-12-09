@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 //Combobox
 function eXcell_cor(cell) {
@@ -64,8 +64,7 @@ function eXcell_cor(cell) {
                 //  cell.editor_obj.setValue(cell.value);
                 cell.editor_obj.editable = false;
                 cell.editor_obj.grid.editStop();
-            }
-            else {
+            } else {
                 ev.cancelBubble = true;
                 cell.editor_obj.obj.value = "";
                 cell.editor_obj.obj.focus();
@@ -90,8 +89,7 @@ function eXcell_cor(cell) {
         this.cstate = 1;
         if (this.editable) {
             this.cell.innerHTML = "";
-        }
-        else {
+        } else {
             this.obj.style.width = "1px";
             this.obj.style.height = "1px";
         }

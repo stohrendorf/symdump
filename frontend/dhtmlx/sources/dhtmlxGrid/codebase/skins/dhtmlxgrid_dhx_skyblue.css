@@ -15,15 +15,12 @@ div.gridbox {
     overflow: hidden;
     text-align: left;
 }
-
 .dhx_sub_row {
     background-color: #ffffff;
 }
-
 div.gridbox table.obj {
     height: 1px;
 }
-
 div.gridbox table.hdr td {
     line-height: normal;
     border: 1px solid;
@@ -41,11 +38,9 @@ div.gridbox table.hdr td {
     -o-user-select: none;
     user-select: none;
 }
-
 div.gridbox table.hdr td div.hdrcell {
     overflow: hidden;
 }
-
 div.gridbox table.obj td {
     overflow: hidden;
     padding-top: 0px;
@@ -59,30 +54,25 @@ div.gridbox table.obj td {
     -o-user-select: none;
     user-select: none;
 }
-
 div.gridbox table.obj th,
 div.gridbox table.hdr th {
     padding: 0px;
     margin: 0px;
 }
-
 div.gridbox table.row20px tr td {
     height: 20px;
     white-space: nowrap;
     padding: 0px;
 }
-
 div.gridbox .objbox {
     background-color: #ffffff;
     position: relative;
     -webkit-overflow-scrolling: touch;
 }
-
 div.gridbox table.obj td span.space,
 div.gridbox table.obj td img.space {
     width: 18px;
 }
-
 div.gridbox table.obj td.editable {
     -webkit-user-select: text;
     -khtml-user-select: text;
@@ -91,7 +81,6 @@ div.gridbox table.obj td.editable {
     -o-user-select: text;
     user-select: text;
 }
-
 div.gridbox table.obj td.group_row {
     vertical-align: middle;
     font-family: Tahoma;
@@ -101,7 +90,6 @@ div.gridbox table.obj td.group_row {
     border: 0px;
     border-bottom: 2px solid navy;
 }
-
 .dragSpanDiv {
     font-family: Tahoma, Helvetica;
     font-size: 12px;
@@ -109,7 +97,6 @@ div.gridbox table.obj td.group_row {
     background-color: #ffffff;
     z-index: 999;
 }
-
 .dhx_combo_select {
     border: 1px solid;
     border-color: black silver silver black;
@@ -120,7 +107,6 @@ div.gridbox table.obj td.group_row {
     height: auto;
     z-index: 600;
 }
-
 .dhx_combo_edit {
     width: 100%;
     border: 0px;
@@ -129,11 +115,9 @@ div.gridbox table.obj td.group_row {
     margin: 0px;
     overflow: hidden;
 }
-
 .gridbox_dhx_skyblue textarea.dhx_combo_edit {
     margin-bottom: -6px;
 }
-
 .dhx_textarea {
     border: 1px solid;
     border-color: black silver silver black;
@@ -141,14 +125,12 @@ div.gridbox table.obj td.group_row {
     height: 100px;
     z-index: 600;
 }
-
 .dhx_clist {
     background-color: #ffffff;
     border: 1px solid black;
     padding: 2px 2px 2px 2px;
     z-index: 300;
 }
-
 .gridDragLine {
     position: absolute;
     top: 10px;
@@ -159,40 +141,33 @@ div.gridbox table.obj td.group_row {
     overflow: hidden;
     pointer-events: none;
 }
-
 div.pagingBlock .pagingCurrentPage {
     font-weight: bold;
     cursor: default;
 }
-
 div.pagingBlock .pagingPage {
     cursor: pointer;
     text-decoration: underline;
 }
-
 div.pagingBlock a {
     text-decoration: none;
     padding-right: 2px;
     color: black;
     cursor: pointer;
 }
-
 div.pagingBlock a.dhx_not_active {
     text-decoration: none;
     cursor: default;
 }
-
 .toolbar_select {
     font-size: 10px;
 }
-
 .dhtmlxGrid_selection {
     opacity: 0.5;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=50);
     background-color: yellow;
     border: 1px dotted black;
 }
-
 div.gridbox div.ftr {
     position: absolute;
     left: 0px;
@@ -200,7 +175,6 @@ div.gridbox div.ftr {
     width: 100%;
     overflow: hidden;
 }
-
 div.gridbox div.ftr td {
     padding: 0px;
     padding-left: 10px;
@@ -211,17 +185,14 @@ div.gridbox div.ftr td {
     font-style: italic;
     overflow: hidden;
 }
-
 div.gridbox table.hdr td.columnTargetR div.hdrcell {
     border-right: 3px double #FF6600;
     border-left: 3px solid #D4D0C8;
 }
-
 div.gridbox table.hdr td.columnTargetL div.hdrcell {
     border-right: 3px solid #D4D0C8;
     border-left: 3px double #FF6600;
 }
-
 .dhx_dragColDiv {
     background-color: #D4D0C8;
     border: 1px solid;
@@ -234,25 +205,20 @@ div.gridbox table.hdr td.columnTargetL div.hdrcell {
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=75);
     z-index: 100;
 }
-
 .dhtmlx_live_validation_error {
     background-color: #FFE0E0 !important;
 }
-
 .dhtmlx_validation_error {
     border-bottom: 2px solid red !important;
 }
-
 .dhx_header_cmenu {
     background-color: #ffffff;
     border: 2px outset silver;
     z-index: 2;
 }
-
 .dhx_header_cmenu_item {
     white-space: nowrap;
 }
-
 div.gridboxgridbox_dhx_skyblue div.ftr td {
     text-align: right;
     color: black;
@@ -262,7 +228,6 @@ div.gridboxgridbox_dhx_skyblue div.ftr td {
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
     border-color: #a4bed4;
 }
-
 div.gridbox td.filter input,
 div.gridbox td.filter select {
     width: 90%;
@@ -275,11 +240,9 @@ div.gridbox td.filter select {
     -o-user-select: text;
     user-select: text;
 }
-
 div.gridbox .filter input::-ms-clear {
     display: none;
 }
-
 div.gridbox_dhx_skyblue.gridbox .ftr,
 div.gridbox_dhx_skyblue.gridbox .xhdr {
     color: black;
@@ -288,7 +251,6 @@ div.gridbox_dhx_skyblue.gridbox .xhdr {
     background: -webkit-linear-gradient(#e2efff, #d3e7ff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 div.gridbox_dhx_skyblue.isModern table.hdr tr td {
     color: black;
     background-color: #e2efff;
@@ -296,7 +258,6 @@ div.gridbox_dhx_skyblue.isModern table.hdr tr td {
     background: -webkit-linear-gradient(#e2efff, #d3e7ff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 div.gridbox_dhx_skyblue.isIE table.hdr tr {
     color: black;
     background-color: #e2efff;
@@ -304,18 +265,15 @@ div.gridbox_dhx_skyblue.isIE table.hdr tr {
     background: -webkit-linear-gradient(#e2efff, #d3e7ff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr td {
     border-width: 0px 0px 0px 0px;
     padding-right: 4px;
     padding-left: 4px;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
     padding-left: 10px;
     width: auto;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.hdr td {
     border-width: 1px 1px 1px 1px;
     border-color: #e7f1ff #a4bed4 #a4bed4 #e7f1ff;
@@ -327,33 +285,27 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td {
     text-align: left;
     position: relative;
 }
-
 div.gridbox_dhx_skyblue.gridbox {
     border: 1px solid #a4bed4;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj,
 .dhx_grid_adjust {
     font-family: Tahoma, Helvetica;
     font-size: 12px;
     color: black;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr td {
     padding-top: 3px;
     padding-bottom: 3.2px;
 }
-
 * html .gridbox_dhx_skyblue.gridbox .obj td {
     height: auto;
     padding-top: 3px;
     padding-bottom: 3px;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td {
     height: 23px;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr td {
     padding-top: 1px;
     padding-bottom: 1px;
@@ -361,34 +313,27 @@ div.gridbox_dhx_skyblue.gridbox table.obj tr td {
     border-top: 1px solid #ffffff;
     border-bottom: 1px solid #ffffff;
 }
-
 div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     line-height: 23px;
 }
-
 div.gridbox_dhx_skyblue table.obj.row20px tr td.editable {
     height: 21px;
     line-height: 21px;
 }
-
 div.gridbox_dhx_skyblue table.obj.row20px tr td.editable .treegrid_cell {
     margin-top: -2px;
     height: 21px;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr td.editable div.treegrid_cell {
     padding: 1px 4px !important;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected {
     background-color: #b5deff;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td {
     background-color: #b5deff;
     color: black;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td,
 div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
     background-color: #b5deff;
@@ -396,21 +341,17 @@ div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
     border-bottom: 1px solid #a1ceed;
     border-right: 1px solid #b5deff;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr td.cellselected {
     background-color: #b5deff;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue {
     background: #ebf3ff;
     border-top: 1px solid #ebf3ff;
     border-bottom: 1px solid #ebf3ff;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue {
     background: #ebf3ff;
 }
-
 .dhx_combo_select,
 .gridbox_dhx_skyblue.gridbox .dhx_combo_edit,
 .gridbox_dhx_skyblue.gridbox .dhx_textarea,
@@ -423,43 +364,35 @@ span.recordsInfoBlock {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
 }
-
 .gridbox_dhx_skyblue .dhx_combo_edit {
     padding: 1px 0px 1px 1px;
 }
-
 .gridbox_dhx_skyblue.isIE .dhx_combo_edit {
     padding: 0px 0px 0px 1px;
 }
-
 .gridbox_dhx_skyblue.gridbox .dhx_sub_row {
     background-color: transparent;
 }
-
 .dhx_header_cmenu {
     background-color: #ffffff;
     border: 2px outset silver;
     z-index: 2;
 }
-
 .dhx_header_cmenu_item {
     white-space: nowrap;
 }
-
 .dhx_pbox {
     margin-top: 3px;
     border: 1px solid #D4D0C8;
     border-top: 0px;
     font-size: 10px;
 }
-
 .dhx_pline {
     background-color: white;
     margin: -15px 10px 10px 10px;
     padding: 0px 5px 0px 5px;
     float: left;
 }
-
 .dhx_page,
 .dhx_pager_info {
     margin: 3px;
@@ -472,7 +405,6 @@ span.recordsInfoBlock {
     background-color: gray;
     padding: 1px;
 }
-
 .dhx_pager_info {
     white-space: nowrap;
     background-color: white;
@@ -480,35 +412,30 @@ span.recordsInfoBlock {
     padding: 0px 5px 0px 5px;
     cursor: default;
 }
-
 .dhx_page div {
     background-color: white;
     width: 16px;
     height: 17px;
     vertical-align: middle;
 }
-
 div.dhx_page_active {
     font-weight: bold;
     background-color: lightgrey;
     cursor: default;
     color: white;
 }
-
 .dhx_pbox_modern {
     margin-top: 3px;
     border: 1px solid #D6D6D6;
     border-top: 0px;
     font-size: 10px;
 }
-
 .dhx_pline_modern {
     background-color: white;
     margin: -15px 10px 10px 10px;
     padding: 0px 5px 0px 5px;
     float: left;
 }
-
 .dhx_page_modern,
 .dhx_pager_info_modern {
     margin: 3px;
@@ -521,7 +448,6 @@ div.dhx_page_active {
     background-color: #D6D6D6;
     padding: 1px;
 }
-
 .dhx_pager_info_modern {
     white-space: nowrap;
     background-color: white;
@@ -529,35 +455,30 @@ div.dhx_page_active {
     padding: 0px 5px 0px 5px;
     cursor: default;
 }
-
 .dhx_page_modern div {
     background-color: white;
     width: 16px;
     height: 17px;
     vertical-align: middle;
 }
-
 div.dhx_page_active_modern {
     font-weight: bold;
     background-color: #055A78;
     cursor: default;
     color: white;
 }
-
 .dhx_pbox_light {
     margin-top: 3px;
     border: 1px solid #C2D5DC;
     border-top: 0px;
     font-size: 10px;
 }
-
 .dhx_pline_light {
     background-color: white;
     margin: -15px 10px 10px 10px;
     padding: 0px 5px 0px 5px;
     float: left;
 }
-
 .dhx_page_light,
 .dhx_pager_info_light {
     margin: 3px;
@@ -570,7 +491,6 @@ div.dhx_page_active_modern {
     background-color: #93AFBA;
     padding: 1px;
 }
-
 .dhx_pager_info_light {
     white-space: nowrap;
     background-color: white;
@@ -578,35 +498,30 @@ div.dhx_page_active_modern {
     padding: 0px 5px 0px 5px;
     cursor: default;
 }
-
 .dhx_page_light div {
     background-color: white;
     width: 16px;
     height: 17px;
     vertical-align: middle;
 }
-
 div.dhx_page_active_light {
     font-weight: bold;
     background-color: #D1DFE3;
     cursor: default;
     color: white;
 }
-
 .dhx_pbox_skyblue {
     margin-top: 3px;
     border: 1px solid #C2D5DC;
     border-top: 0px;
     font-size: 10px;
 }
-
 .dhx_pline_skyblue {
     background-color: white;
     margin: -15px 10px 10px 10px;
     padding: 0px 5px 0px 5px;
     float: left;
 }
-
 .dhx_page_skyblue,
 .dhx_pager_info_skyblue {
     margin: 3px;
@@ -619,7 +534,6 @@ div.dhx_page_active_light {
     background-color: #93AFBA;
     padding: 1px;
 }
-
 .dhx_pager_info_skyblue {
     white-space: nowrap;
     background-color: white;
@@ -627,14 +541,12 @@ div.dhx_page_active_light {
     padding: 0px 5px 0px 5px;
     cursor: default;
 }
-
 .dhx_page_skyblue div {
     background-color: white;
     width: 16px;
     height: 17px;
     vertical-align: middle;
 }
-
 div.dhx_page_active_skyblue {
     font-weight: bold;
     color: black;
@@ -646,17 +558,14 @@ div.dhx_page_active_skyblue {
     padding: 0px;
     cursor: default;
 }
-
 div.dhx_page_active_skyblue div.dhx_page_active_skyblue {
     border: 0px solid #a4bed4;
 }
-
 .calcTable {
     width: 100px;
     background-color: silver;
     border: 1px black solid;
 }
-
 .calcButton {
     height: 20px;
     cursor: pointer;
@@ -668,7 +577,6 @@ div.dhx_page_active_skyblue div.dhx_page_active_skyblue {
     border-top: 1px solid silver;
     border-right: 1px solid silver;
 }
-
 .calcPressed {
     height: 20px;
     cursor: pointer;
@@ -680,14 +588,12 @@ div.dhx_page_active_skyblue div.dhx_page_active_skyblue {
     border-top: 1px solid black;
     border-right: 1px solid black;
 }
-
 .calcInput {
     background-color: white;
     font-size: 10px;
     font-weight: bold;
     font-family: Tahoma, Helvetica;
 }
-
 .calkSubmit {
     padding: 2px;
     cursor: pointer;
@@ -699,7 +605,6 @@ div.dhx_page_active_skyblue div.dhx_page_active_skyblue {
     border-top: 1px solid white;
     border-right: 1px solid white;
 }
-
 .dhxgrid_sort_desc,
 .dhxgrid_sort_asc {
     width: 9px;
@@ -708,12 +613,10 @@ div.dhx_page_active_skyblue div.dhx_page_active_skyblue {
     background-repeat: no-repeat;
     z-index: 10;
 }
-
 .dhxgrid_sort_asc {
     background-image: url("../imgs/dhxgrid_skyblue/sort_asc.gif");
     background-repeat: no-repeat;
 }
-
 .dhxgrid_rh_dhx_skyblue {
     position: absolute;
     top: -20px;
@@ -726,7 +629,6 @@ div.dhx_page_active_skyblue div.dhx_page_active_skyblue {
     font-size: 1px;
     overflow: hidden;
 }
-
 .dhxgrid_skin_detect {
     position: absolute;
     left: 0px;
@@ -738,22 +640,18 @@ div.dhx_page_active_skyblue div.dhx_page_active_skyblue {
     height: 10px;
     overflow: hidden;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td img {
     display: block;
 }
-
 div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td.group_row img,
 div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td .treegrid_cell img {
     display: inline;
 }
-
 .dhx_grid_icon {
     text-align: center;
     color: #777;
     font-size: 18px;
 }
-
 .dhx_treegrid_icon {
     text-align: center;
     color: #777;
@@ -762,7 +660,6 @@ div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td .treegrid_cell img {
     position: relative;
     top: 1px;
 }
-
 .grid_cell_dyn {
     position: relative;
     padding-right: 2px;
@@ -770,27 +667,22 @@ div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td .treegrid_cell img {
     overflow: hidden;
     white-space: nowrap;
 }
-
 .grid_cell_dyn img {
     position: absolute;
     top: 0px;
     left: 0px;
     height: 15px;
 }
-
 .grid_cell_dyn span {
     padding-left: 20px;
     width: 100%;
 }
-
 .grid_collapse_icon {
     margin-top: -2px;
 }
-
 div.gridbox_dhx_skyblue.gridbox .obj.row20px td[excell] {
     vertical-align: top !important;
 }
-
 div.gridbox_dhx_skyblue.gridbox .obj.row20px td[excell] img {
     margin-top: 3px;
 }

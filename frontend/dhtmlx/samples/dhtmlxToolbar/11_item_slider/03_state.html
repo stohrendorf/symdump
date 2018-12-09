@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Slider state</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#toolbarObj {
@@ -15,6 +15,7 @@
     <script>
         var sel;
         var myToolbar;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -24,22 +25,27 @@
                 onload: updateList
             });
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function enable() {
             var id = getId();
             myToolbar.enableItem(id);
         }
+
         function disable() {
             var id = getId();
             myToolbar.disableItem(id);
         }
+
         function isEnabled() {
             var id = getId();
             alert(myToolbar.isEnabled(id));
         }
+
         function updateList() {
             sel.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -54,9 +60,9 @@
 <div id="toolbarObj"></div>
 <div style="margin-top: 30px;">
     <select id="sel"></select>
-    <input type="button" value="Enable" onclick="enable();">
-    <input type="button" value="Disable" onclick="disable();">
-    <input type="button" value="Is Enabled" onclick="isEnabled();">
+    <input onclick="enable();" type="button" value="Enable">
+    <input onclick="disable();" type="button" value="Disable">
+    <input onclick="isEnabled();" type="button" value="Is Enabled">
 </div>
 </body>
 </html>

@@ -2,39 +2,47 @@
 <html>
 <head>
     <title>Custom item</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myForm, formData;
+
         function doOnLoad() {
             formData = [
                 {
                     type: "checkbox", label: "Checkbox", position: "label-right", list: [
-                    {
-                        type: "myItem", name: "test", my_text: "Temp text here", list: [
-                        {type: "radio", name: "r0", label: "Radiobutton #1", position: "label-right", checked: true},
-                        {type: "radio", name: "r0", label: "Radiobutton #2", position: "label-right"}
+                        {
+                            type: "myItem", name: "test", my_text: "Temp text here", list: [
+                                {
+                                    type: "radio",
+                                    name: "r0",
+                                    label: "Radiobutton #1",
+                                    position: "label-right",
+                                    checked: true
+                                },
+                                {type: "radio", name: "r0", label: "Radiobutton #2", position: "label-right"}
+                            ]
+                        }
                     ]
-                    }
-                ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);
             myForm.setItemValue("test", "item value");
 
             /*
-             myForm.attachEvent("onTextChanged",function(name,text,is_bolded){
-             alert("onTextChanged event, name: "+name+", text: "+text+(is_bolded?", bolded":""));
-             });
-             */
+            myForm.attachEvent("onTextChanged",function(name,text,is_bolded){
+                alert("onTextChanged event, name: "+name+", text: "+text+(is_bolded?", bolded":""));
+            });
+            */
 
             myForm.setItemLabel("test", "Temp text 2");
             myForm.setBoldTextForMyItem("test", "This is custom item");
 
         }
+
         dhtmlXForm.prototype.items.myItem = {
             // methods will added automaticaly:
             // show, hide, isHidden, isExist, getType

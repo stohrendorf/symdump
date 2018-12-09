@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Change or remove icon</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -46,6 +46,7 @@
     </style>
     <script>
         var dhxWins, w1, w2, w3;
+
         function doOnLoad() {
             dhxWins = new dhtmlXWindows();
             dhxWins.attachViewportTo("winVP");
@@ -83,20 +84,20 @@
 <div id="winVP"></div>
 <div class="controls">
     Window #1
-    <input type="button" value="without icon (default mode)" onclick="setIconCss('w1', '');">
-    <input type="button" value="use default icon" onclick="setIconCss('w1', 'with_default');">
-    <input type="button" value="use custom icon" onclick="setIconCss('w1', 'flag_red');"><br>
+    <input onclick="setIconCss('w1', '');" type="button" value="without icon (default mode)">
+    <input onclick="setIconCss('w1', 'with_default');" type="button" value="use default icon">
+    <input onclick="setIconCss('w1', 'flag_red');" type="button" value="use custom icon"><br>
 
 
     Window #2
-    <input type="button" value="without icon (default mode)" onclick="setIconCss('w2', '');">
-    <input type="button" value="use default icon" onclick="setIconCss('w2', 'with_default');">
-    <input type="button" value="use custom icon" onclick="setIconCss('w2', 'flag_green');"><br>
+    <input onclick="setIconCss('w2', '');" type="button" value="without icon (default mode)">
+    <input onclick="setIconCss('w2', 'with_default');" type="button" value="use default icon">
+    <input onclick="setIconCss('w2', 'flag_green');" type="button" value="use custom icon"><br>
 
     Window #3
-    <input type="button" value="without icon (default mode)" onclick="setIconCss('w3', '');">
-    <input type="button" value="use default icon" onclick="setIconCss('w3', 'with_default');">
-    <input type="button" value="use custom icon" onclick="setIconCss('w3', 'flag_blue');">
+    <input onclick="setIconCss('w3', '');" type="button" value="without icon (default mode)">
+    <input onclick="setIconCss('w3', 'with_default');" type="button" value="use default icon">
+    <input onclick="setIconCss('w3', 'flag_blue');" type="button" value="use custom icon">
 
 </div>
 </body>

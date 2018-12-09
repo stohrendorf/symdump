@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>onDock / onUnDock events</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -42,6 +42,7 @@
         var myGrid;
         var myMenu;
         var eventIndex = 1;
+
         function doOnLoad() {
 
             myAcc = new dhtmlXAccordion({
@@ -78,18 +79,22 @@
             });
 
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function dockCell() {
             myAcc.cells(getId()).dock();
         }
+
         function undockCell() {
             var id = getId();
             myAcc.cells(id).undock(550, 20, 400, 300);
             myAcc.dhxWins.window(id).keepInViewport(true);
         }
+
         function log(text) {
             var t = document.getElementById("log_here");
             t.innerHTML += (eventIndex++) + ") " + text + "<br>";
@@ -102,9 +107,8 @@
     <div id="accObj"></div>
 </div>
 <div style="margin: 10px;">
-    Select Item <select id="sel"></select> <input type="button" value="Dock" onclick="dockCell();"> <input type="button"
-                                                                                                           value="Undock"
-                                                                                                           onclick="undockCell();">
+    Select Item <select id="sel"></select> <input onclick="dockCell();" type="button" value="Dock"> <input
+        onclick="undockCell();" type="button" value="Undock">
 </div>
 <div id="log_here">
     <div>

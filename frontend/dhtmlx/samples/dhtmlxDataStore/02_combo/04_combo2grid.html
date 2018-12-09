@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <title>Grid linked to Combo</title>
 </head>
@@ -29,7 +29,7 @@
     combo1 = new dhtmlXCombo("combo_here1", "combo1", "100%");
     combo1.sync(list1);
 
-
+	
     mygrid = new dhtmlXGridObject('gridbox');
     mygrid.setImagePath("../../../codebase/imgs/");
 
@@ -40,7 +40,8 @@
     mygrid.bind(combo1, function (data, filter) {
         return mygrid.cells(data, 0).getValue() == filter.text;
     });
-
+	
+	
 
 </script>
 

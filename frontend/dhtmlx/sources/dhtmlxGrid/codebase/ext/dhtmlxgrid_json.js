@@ -1,14 +1,14 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXGridObject.prototype._process_json_row = function (r, data) {
     r._attrs = data;
-    for (var j = 0; j < r.childNodes.length; j++)r.childNodes[j]._attrs = {};
+    for (var j = 0; j < r.childNodes.length; j++) r.childNodes[j]._attrs = {};
     if (data.userdata)
         for (var a in data.userdata)
             this.setUserData(r.idd, a, data.userdata[a]);
@@ -165,8 +165,7 @@ dhtmlXGridObject.prototype._parseOptionsJson = function (json) {
             if (this.cellType[ind] == "combo") {
                 var combo = this.getColumnCombo(ind);
                 combo.addOption(data);
-            }
-            else if (this.cellType[ind].indexOf("co") == 0) {
+            } else if (this.cellType[ind].indexOf("co") == 0) {
                 var combo = this.getCombo(ind);
                 for (var i = 0; i < data.length; i++)
                     combo.put(data[i].value, data[i].label);

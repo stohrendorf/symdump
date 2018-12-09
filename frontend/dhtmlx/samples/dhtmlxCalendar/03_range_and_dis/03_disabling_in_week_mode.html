@@ -2,22 +2,25 @@
 <html>
 <head>
     <title>Disabling in week mode</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere");
             myCalendar.hideTime();
             myCalendar.setDate("2013-03-01");
             myCalendar.show();
         }
+
         function enableDays() {
             myCalendar.enableDays("week");
         }
+
         function disableDays(d) {
             myCalendar.disableDays("week", d);
         }
@@ -27,23 +30,23 @@
 <div style="margin-bottom: 20px;">
     <table>
         <tr>
-            <td><input type="button" value="apply" onclick="disableDays(1);"></td>
+            <td><input onclick="disableDays(1);" type="button" value="apply"></td>
             <td>disable mondays</td>
         </tr>
         <tr>
-            <td><input type="button" value="apply" onclick="disableDays(2);"></td>
+            <td><input onclick="disableDays(2);" type="button" value="apply"></td>
             <td>disable tuesdays</td>
         </tr>
         <tr>
-            <td><input type="button" value="apply" onclick="disableDays([1,2]);"></td>
+            <td><input onclick="disableDays([1,2]);" type="button" value="apply"></td>
             <td>disable mondays and tuesdays</td>
         </tr>
         <tr>
-            <td><input type="button" value="apply" onclick="disableDays([1,2,4]);"></td>
+            <td><input onclick="disableDays([1,2,4]);" type="button" value="apply"></td>
             <td>disable mondays, tuesdays and thursdays</td>
         </tr>
         <tr>
-            <td><input type="button" value="apply" onclick="enableDays();"></td>
+            <td><input onclick="enableDays();" type="button" value="apply"></td>
             <td>clear disabled days</td>
         </tr>
     </table>

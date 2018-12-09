@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Events</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script src="../../../codebase/ext/swfobject.js"></script>
     <style>
@@ -22,19 +22,20 @@
         var beforeFileAdd = false;
         var beforeFileRemove = false;
         var beforeClear = false;
+
         function doOnLoad() {
             formData = [
                 {
                     type: "fieldset", label: "Uploader", list: [
-                    {
-                        type: "upload",
-                        name: "myFiles",
-                        inputWidth: 330,
-                        url: "php/dhtmlxform_item_upload.php",
-                        swfPath: "uploader.swf",
-                        swfUrl: "php/dhtmlxform_item_upload.php"
-                    }
-                ]
+                        {
+                            type: "upload",
+                            name: "myFiles",
+                            inputWidth: 330,
+                            url: "php/dhtmlxform_item_upload.php",
+                            swfPath: "uploader.swf",
+                            swfUrl: "php/dhtmlxform_item_upload.php"
+                        }
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);
@@ -75,14 +76,17 @@
             changeOnBeforeEvent("beforeFileRemove");
             changeOnBeforeEvent("beforeClear");
         }
+
         function logEvent(t) {
             if (!logObj) logObj = document.getElementById("simpleLog");
             logObj.innerHTML += t + "<br>";
         }
+
         function clearLog() {
             if (!logObj) logObj = document.getElementById("simpleLog");
             logObj.innerHTML = "";
         }
+
         function changeOnBeforeEvent(name) {
             window[name] = !window[name];
             document.getElementById(name + "Info").innerHTML = window[name] ? "<span style='color:green;'>allowed<span>" : "<span style='color:red;'>not allowed<span>";
@@ -102,17 +106,17 @@
                 <tr>
                     <td width="160">before file add:</td>
                     <td width="110"><span id="beforeFileAddInfo"></span></td>
-                    <td><input type="button" onclick="changeOnBeforeEvent('beforeFileAdd');" value="change"></td>
+                    <td><input onclick="changeOnBeforeEvent('beforeFileAdd');" type="button" value="change"></td>
                 </tr>
                 <tr>
                     <td>before file remove:</td>
                     <td><span id="beforeFileRemoveInfo"></span></td>
-                    <td><input type="button" onclick="changeOnBeforeEvent('beforeFileRemove');" value="change"></td>
+                    <td><input onclick="changeOnBeforeEvent('beforeFileRemove');" type="button" value="change"></td>
                 </tr>
                 <tr>
                     <td>before clear:</td>
                     <td><span id="beforeClearInfo"></span></td>
-                    <td><input type="button" onclick="changeOnBeforeEvent('beforeClear');" value="change"></td>
+                    <td><input onclick="changeOnBeforeEvent('beforeClear');" type="button" value="change"></td>
                 </tr>
             </table>
         </td>

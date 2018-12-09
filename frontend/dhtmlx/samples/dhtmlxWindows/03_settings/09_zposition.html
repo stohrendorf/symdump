@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Change z-pozition</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -64,15 +64,12 @@
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="winVP"></div>
 <div class="controls">
-    Window #1 <input type="button" value="bring to top" onclick="changeZPoz('w1', true);"><input type="button"
-                                                                                                 value="bring to bottom"
-                                                                                                 onclick="changeZPoz('w1', false);"><br>
-    Window #2 <input type="button" value="bring to top" onclick="changeZPoz('w2', true);"><input type="button"
-                                                                                                 value="bring to bottom"
-                                                                                                 onclick="changeZPoz('w2', false);"><br>
-    Window #3 <input type="button" value="bring to top" onclick="changeZPoz('w3', true);"><input type="button"
-                                                                                                 value="bring to bottom"
-                                                                                                 onclick="changeZPoz('w3', false);">
+    Window #1 <input onclick="changeZPoz('w1', true);" type="button" value="bring to top"><input
+        onclick="changeZPoz('w1', false);" type="button" value="bring to bottom"><br>
+    Window #2 <input onclick="changeZPoz('w2', true);" type="button" value="bring to top"><input
+        onclick="changeZPoz('w2', false);" type="button" value="bring to bottom"><br>
+    Window #3 <input onclick="changeZPoz('w3', true);" type="button" value="bring to top"><input
+        onclick="changeZPoz('w3', false);" type="button" value="bring to bottom">
 </div>
 </body>
 </html>

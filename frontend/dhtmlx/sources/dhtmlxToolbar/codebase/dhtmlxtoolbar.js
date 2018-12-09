@@ -1,17 +1,17 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXToolbarObject(base, skin) {
 
     var main_self = this;
 
     this.conf = {
-        skin: (skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxtoolbar") || "material"),
+        skin: (skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxtoolbar") || "material"),
         align: "left",
         align_autostart: "left",
         icons_path: "",
@@ -24,7 +24,7 @@ function dhtmlXToolbarObject(base, skin) {
         cssShadow: (dhx4.isIE6 || dhx4.isIE7 || dhx4.isIE8 ? "" : " dhx_toolbar_shadow") // for material
     };
 
-    if (typeof(base) == "object" && base != null && typeof(base.tagName) == "undefined") {
+    if (typeof (base) == "object" && base != null && typeof (base.tagName) == "undefined") {
         // object-api init
         if (base.icons_path != null || base.icon_path != null) this.conf.icons_path = (base.icons_path || base.icon_path);
         if (base.icons_size != null) this.conf.icons_size_autoload = base.icons_size;
@@ -39,7 +39,7 @@ function dhtmlXToolbarObject(base, skin) {
         base = base.parent;
     }
 
-    this.cont = (typeof(base) != "object") ? document.getElementById(base) : base;
+    this.cont = (typeof (base) != "object") ? document.getElementById(base) : base;
     while (this.cont.childNodes.length > 0) this.cont.removeChild(this.cont.childNodes[0]);
 
     base = null;
@@ -216,7 +216,7 @@ function dhtmlXToolbarObject(base, skin) {
         }
     };
 
-    if (typeof(window.addEventListener) != "undefined") {
+    if (typeof (window.addEventListener) != "undefined") {
         window.addEventListener("mousedown", this._doOnClick, false);
         window.addEventListener("touchstart", this._doOnClick, false);
     } else {
@@ -244,15 +244,16 @@ function dhtmlXToolbarObject(base, skin) {
         this.conf.align_autostart = null;
     }
 
-    if (typeof(this.conf.auto_onclick) == "function") {
+    if (typeof (this.conf.auto_onclick) == "function") {
         this.attachEvent("onClick", this.conf.auto_onclick);
-    } else if (typeof(this.conf.auto_onclick) == "string" && typeof(window[this.conf.auto_onclick]) == "function") {
+    } else if (typeof (this.conf.auto_onclick) == "string" && typeof (window[this.conf.auto_onclick]) == "function") {
         this.attachEvent("onClick", window[this.conf.auto_onclick]);
     }
 
     //
     return this;
 }
+
 dhtmlXToolbarObject.prototype.addSpacer = function (nextToId) {
     var nti = this.idPrefix + nextToId;
     if (this._spacer != null) {
@@ -320,7 +321,7 @@ dhtmlXToolbarObject.prototype.removeSpacer = function () {
 };
 dhtmlXToolbarObject.prototype._fixSpacer = function () {
     // IE icons mixing fix
-    if (typeof(window.addEventListener) == "undefined" && this._spacer != null) {
+    if (typeof (window.addEventListener) == "undefined" && this._spacer != null) {
         this._spacer.style.borderLeft = "1px solid #a4bed4";
         var k = this._spacer;
         window.setTimeout(function () {
@@ -364,7 +365,7 @@ dhtmlXToolbarObject.prototype.getParentId = function (listId) {
 };
 /* adding items */
 dhtmlXToolbarObject.prototype._addItem = function (itemData, pos) {
-    if (typeof(itemData.text) == "string") {
+    if (typeof (itemData.text) == "string") {
         itemData.text = window.dhx4.trim(itemData.text);
         if (itemData.text.length == 0) itemData.text = null;
     }
@@ -389,7 +390,7 @@ dhtmlXToolbarObject.prototype.addButtonSelect = function (id, pos, text, opts, i
             u.type = (opts[q][1] == "obj" ? "button" : "separator");
             u.text = (opts[q][2] || null);
             u.img = (opts[q][3] || null);
-        } else if (opts[q] instanceof Object && opts[q] != null && typeof(opts[q].id) != "undefined" && typeof(opts[q].type) != "undefined") {
+        } else if (opts[q] instanceof Object && opts[q] != null && typeof (opts[q].id) != "undefined" && typeof (opts[q].type) != "undefined") {
             u.id = opts[q].id;
             u.type = (opts[q].type == "obj" ? "button" : "separator");
             u.text = opts[q].text;
@@ -567,7 +568,7 @@ dhtmlXToolbarObject.prototype._removeItem = function (itemId) {
         if (window.dhx4.isIE) p.obj.onselectstart = null;
         this._evs.clear.apply(p, [p.obj.evs, p.obj]);
 
-        for (var a in p.obj) if (typeof(p.obj[a]) == "function") p.obj[a] = null;
+        for (var a in p.obj) if (typeof (p.obj[a]) == "function") p.obj[a] = null;
         p.obj.parentNode.removeChild(p.obj);
         p.obj = null;
 
@@ -597,11 +598,11 @@ dhtmlXToolbarObject.prototype._removeItem = function (itemId) {
         this._evs.clear.apply(p, [p.obj.evs, p.obj]);
         this._evs.clear.apply(p, [p.arw.evs, p.arw]);
 
-        for (var a in p.obj) if (typeof(p.obj[a]) == "function") p.obj[a] = null;
+        for (var a in p.obj) if (typeof (p.obj[a]) == "function") p.obj[a] = null;
         p.obj.parentNode.removeChild(p.obj);
         p.obj = null;
 
-        for (var a in p.arw) if (typeof(p.arw[a]) == "function") p.arw[a] = null;
+        for (var a in p.arw) if (typeof (p.arw[a]) == "function") p.arw[a] = null;
         p.arw.parentNode.removeChild(p.arw);
         p.arw = null;
 
@@ -646,7 +647,7 @@ dhtmlXToolbarObject.prototype._removeItem = function (itemId) {
             document.removeEventListener("touchmove", pen._doOnMouseMoveStart, false);
             document.removeEventListener("touchend", pen._doOnMouseMoveEnd, false);
         } else {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 window.removeEventListener("mousemove", p.pen._doOnMouseMoveStart, false);
                 window.removeEventListener("mouseup", p.pen._doOnMouseMoveEnd, false);
             } else {
@@ -744,8 +745,8 @@ dhtmlXToolbarObject.prototype._removeItem = function (itemId) {
     p = null;
     this.objPull[itemId] = null;
     delete this.objPull[itemId];
-
-
+	
+	
 };
 //#tool_list:06062008{
 (function () {
@@ -1340,9 +1341,9 @@ dhtmlXToolbarObject.prototype._buttonSelectObject = function (that, id, data) {
     this._buttonButtonSelectObject = function (id, data, pos) {
 
         var en = true;
-        if (typeof(data.enabled) != "undefined") {
+        if (typeof (data.enabled) != "undefined") {
             en = window.dhx4.s2b(data.enabled);
-        } else if (typeof(data.disabled) != "undefined") {
+        } else if (typeof (data.disabled) != "undefined") {
             en = window.dhx4.s2b(data.disabled);
         }
 
@@ -1509,7 +1510,7 @@ dhtmlXToolbarObject.prototype._buttonSelectObject = function (that, id, data) {
         for (var q = 0; q < data.options.length; q++) {
             var t = "_" + (data.options[q].type || "") + "ButtonSelectObject";
             if (data.options[q].id == null) data.options[q].id = that._genStr(24);
-            if (typeof(this[t]) == "function") new this[t](data.options[q].id, data.options[q]);
+            if (typeof (this[t]) == "function") new this[t](data.options[q].id, data.options[q]);
         }
     }
 
@@ -1765,7 +1766,7 @@ dhtmlXToolbarObject.prototype._buttonSelectObject = function (that, id, data) {
 
     this.setMaxOpen = function (r) {
         this._ph = null;
-        if (typeof(r) == "number") {
+        if (typeof (r) == "number") {
             this.maxOpen = r;
             this._maxOpenTest();
             return;
@@ -1775,7 +1776,7 @@ dhtmlXToolbarObject.prototype._buttonSelectObject = function (that, id, data) {
 
     if (data.width) this.setWidth(data.width);
 
-    if (this.mode == "select" && typeof(data.selected) != "undefined") this.setListOptionSelected(data.selected);
+    if (this.mode == "select" && typeof (data.selected) != "undefined") this.setListOptionSelected(data.selected);
 
     //
     return this;
@@ -1848,7 +1849,7 @@ dhtmlXToolbarObject.prototype._buttonInputObject = function (that, id, data) {
         return this.obj.firstChild;
     };
 
-    if (typeof(data.enabled) != "undefined" && window.dhx4.s2b(data.enabled) == false) {
+    if (typeof (data.enabled) != "undefined" && window.dhx4.s2b(data.enabled) == false) {
         this.disableItem();
     }
 
@@ -2146,7 +2147,7 @@ dhtmlXToolbarObject.prototype._sliderObject = function (that, id, data) {
         document.addEventListener("touchmove", pen._doOnMouseMoveStart, false);
         document.addEventListener("touchend", pen._doOnMouseMoveEnd, false);
     } else {
-        if (typeof(window.addEventListener) != "undefined") {
+        if (typeof (window.addEventListener) != "undefined") {
             window.addEventListener("mousemove", pen._doOnMouseMoveStart, false);
             window.addEventListener("mouseup", pen._doOnMouseMoveEnd, false);
         } else {
@@ -2230,7 +2231,7 @@ dhtmlXToolbarObject.prototype._sliderObject = function (that, id, data) {
 
 dhtmlXToolbarObject.prototype.unload = function () {
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         window.removeEventListener("mousedown", this._doOnClick, false);
         window.removeEventListener("touchstart", this._doOnClick, false);
     } else {
@@ -2390,7 +2391,7 @@ dhtmlXToolbarObject.prototype.setIconset = function (name) {
 dhtmlXToolbarObject.prototype._evs = {
     add: function (evs, obj) { // this->calle
         for (var a in evs) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 obj.addEventListener(a, this[evs[a]], false);
             } else if (a.match(/^touch/) == null) {
                 obj.attachEvent("on" + a, this[evs[a]]);
@@ -2400,7 +2401,7 @@ dhtmlXToolbarObject.prototype._evs = {
     },
     clear: function (evs, obj) {
         for (var a in evs) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 obj.removeEventListener(a, this[evs[a]], false);
             } else if (a.match(/^touch/) == null) {
                 obj.detachEvent("on" + a, this[evs[a]]);
@@ -2549,20 +2550,20 @@ dhtmlXToolbarObject.prototype._addItemToStorage = function (data, pos) {
         }
 
         if (type == "buttonTwoState") {
-            if (typeof(data.selected) == "undefined" && typeof(data.pressed) != "undefined" && window.dhx4.s2b(data.pressed)) {
+            if (typeof (data.selected) == "undefined" && typeof (data.pressed) != "undefined" && window.dhx4.s2b(data.pressed)) {
                 data.selected = true;
             }
         }
 
         // common
-        if (typeof(data.enabled) == "undefined" && typeof(data.disabled) != "undefined" && window.dhx4.s2b(data.disabled)) {
+        if (typeof (data.enabled) == "undefined" && typeof (data.disabled) != "undefined" && window.dhx4.s2b(data.disabled)) {
             data.enabled = false;
         }
         if (data.imgDis == null && data.img_disabled != null) {
             data.imgdis = data.img_disabled;
         }
 
-        if ((typeof(data.openAll) == "undefined" || data.openAll == null) && this.conf.skin == "dhx_terrace") data.openAll = true;
+        if ((typeof (data.openAll) == "undefined" || data.openAll == null) && this.conf.skin == "dhx_terrace") data.openAll = true;
         this.objPull[this.idPrefix + id] = new this["_" + type + "Object"](this, id, data);
         this.objPull[this.idPrefix + id]["type"] = type;
         this.setPosition(id, pos);
@@ -2771,7 +2772,7 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
     dhtmlXCellObject.prototype._createNode_toolbar = function (obj, type, htmlString, append, node) {
 
-        if (typeof(node) != "undefined") {
+        if (typeof (node) != "undefined") {
             obj = node;
         } else {
             obj = document.createElement("DIV");
@@ -2796,12 +2797,12 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         this.callEvent("_onBeforeContentAttach", ["toolbar"]);
 
-        if (typeof(conf) == "undefined") {
+        if (typeof (conf) == "undefined") {
             conf = {};
-        } else if (typeof(conf) == "string") {
+        } else if (typeof (conf) == "string") {
             conf = {skin: conf};
         }
-        if (typeof(conf.skin) == "undefined") conf.skin = this.conf.skin;
+        if (typeof (conf.skin) == "undefined") conf.skin = this.conf.skin;
         conf.parent = this._attachObject("toolbar").firstChild;
 
         this.dataNodes.toolbar = new dhtmlXToolbarObject(conf);
@@ -2826,7 +2827,7 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
         if (this.dataNodes.toolbar == null) return;
 
         this.dataNodes.toolbar._masterCell = null; // link to this
-        if (typeof(this.dataNodes.toolbar.unload) == "function") this.dataNodes.toolbar.unload();
+        if (typeof (this.dataNodes.toolbar.unload) == "function") this.dataNodes.toolbar.unload();
         this.dataNodes.toolbar = null;
         delete this.dataNodes.toolbar;
 
@@ -2846,6 +2847,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
     dhtmlXCellObject.prototype.getAttachedToolbar = function () {
         return this.dataNodes.toolbar;
     };
-
+	
 }
 

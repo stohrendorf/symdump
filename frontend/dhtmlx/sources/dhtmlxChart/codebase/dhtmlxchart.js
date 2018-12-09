@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 
 /* DHX DEPEND FROM FILE 'group.js'*/
@@ -104,10 +104,10 @@ dhtmlx.Group = {
 //			labels.sortBy(stats.sort);
 
         /*this._not_grouped_data = this.data;
-         this.data = new dhtmlx.DataStore();
-         this.data.provideApi(this,true);
-         this._init_group_data_event(this.data, this);
-         this.parse(labels,"json");*/
+		this.data = new dhtmlx.DataStore();
+		this.data.provideApi(this,true);
+		this._init_group_data_event(this.data, this);
+		this.parse(labels,"json");*/
 
         this.data._not_grouped_order = this.data.order;
         this.data._not_grouped_pull = this.data.pull;
@@ -117,8 +117,8 @@ dhtmlx.Group = {
         for (var i = 0; i < labels.length; i++) {
             var id = this.data.id(labels[i]);
             /*if(!labels[i].id)
-             labels[i].id = dhtmlx.uid();
-             var id = labels[i].id;*/
+				labels[i].id = dhtmlx.uid();
+			var id = labels[i].id;*/
             this.data.pull[id] = labels[i];
             this.data.order.push(id);
         }
@@ -133,9 +133,9 @@ dhtmlx.Group = {
     },
     ungroup: function (mode) {
         /*if (this._not_grouped_data){
-         this.data = this._not_grouped_data;
-         this.data.provideApi(this, true);
-         }*/
+			this.data = this._not_grouped_data;
+			this.data.provideApi(this, true);
+		}*/
         if (this.data._not_grouped_order) {
             this.data.order = this.data._not_grouped_order;
             this.data.pull = this.data._not_grouped_pull;
@@ -233,7 +233,7 @@ dhtmlx.Date = {
         return ndate;
     },
     to_fixed: function (num) {
-        if (num < 10)    return "0" + num;
+        if (num < 10) return "0" + num;
         return num;
     },
     copy: function (date) {
@@ -370,7 +370,7 @@ dhtmlx.math.hexToDec = function (hex) {
 };
 dhtmlx.math.toRgb = function (rgb) {
     var r, g, b, rgbArr;
-    if (typeof(rgb) != 'string') {
+    if (typeof (rgb) != 'string') {
         r = rgb[0];
         g = rgb[1];
         b = rgb[2];
@@ -608,6 +608,7 @@ dhtmlx.presets.chart = {
 };
 
 
+
 /* DHX DEPEND FROM FILE 'map.js'*/
 
 
@@ -754,6 +755,7 @@ dhtmlx.chart.scatter = {
 };
 
 
+
 /* DHX DEPEND FROM FILE 'ext/chart/chart_radar.js'*/
 
 
@@ -783,7 +785,7 @@ dhtmlx.chart.radar = {
         /*angles for each unit*/
         var ratioUnits = [];
         for (var i = 0; i < data.length; i++)
-            ratioUnits.push(1)
+            ratioUnits.push(1);
         var ratios = this._getRatios(ratioUnits, data.length);
         this._mapStart = point0;
         if (!sIndex)
@@ -826,7 +828,7 @@ dhtmlx.chart.radar = {
             pos1 = this._getPositionByAngle(alpha1, x, y, r1);
             /*creates map area*/
             /*areaWidth  = (config.eventRadius||(parseInt(config.item.radius.call(this,data[i]),10)+config.item.borderWidth));
-             map.addRect(data[i].id,[pos0.x-areaWidth,pos0.y-areaWidth,pos0.x+areaWidth,pos0.y+areaWidth],sIndex);*/
+		    map.addRect(data[i].id,[pos0.x-areaWidth,pos0.y-areaWidth,pos0.x+areaWidth,pos0.y+areaWidth],sIndex);*/
             //this._drawLine(ctx,pos0.x,pos0.y,pos1.x,pos1.y,config.line.color.call(this,data[i]),config.line.width)
             posArr.push(pos0);
         }
@@ -916,8 +918,7 @@ dhtmlx.chart.radar = {
                 this._drawScaleSector(ctx, "arc", x, y, radius - units[units.length - 1], -Math.PI / 2, 3 * Math.PI / 2, i);
                 return;
             }
-            var startAlpha = -Math.PI / 2;
-            /*possibly need  to moved in config*/
+            var startAlpha = -Math.PI / 2;/*possibly need  to moved in config*/
             var alpha0 = startAlpha;
             var alpha1;
             for (j = 0; j < ratios.length; j++) {
@@ -987,8 +988,7 @@ dhtmlx.chart.radar = {
         }
         if (Math.abs(a + Math.PI / 2) < delta || Math.abs(a - Math.PI / 2) < delta) {
             corr_x = -width / 2;
-        }
-        else if (Math.abs(a) < delta || Math.abs(a - Math.PI) < delta) {
+        } else if (Math.abs(a) < delta || Math.abs(a - Math.PI) < delta) {
             corr_y = -height / 2;
         }
         t.style.top = pos.y + corr_y + "px";
@@ -997,6 +997,7 @@ dhtmlx.chart.radar = {
         t.style.whiteSpace = "nowrap";
     }
 };
+
 
 
 /* DHX DEPEND FROM FILE 'ext/chart/chart_area.js'*/
@@ -1031,9 +1032,9 @@ dhtmlx.chart.area = {
             x0 = (!config.offset ? point0.x : point0.x + params.cellWidth * 0.5);
 
             /*
-             iterates over all data items:
-             calculates [x,y] for area path, adds rect to chart map and renders labels
-             */
+				iterates over all data items:
+			    calculates [x,y] for area path, adds rect to chart map and renders labels
+			*/
             for (i = 0; i < data.length; i++) {
                 obj = data[i];
 
@@ -1148,9 +1149,9 @@ dhtmlx.chart.stackedArea = {
             };
 
             /*
-             iterates over all data items:
-             calculates [x,y] for area path, adds rect to chart map and renders labels
-             */
+			 iterates over all data items:
+			 calculates [x,y] for area path, adds rect to chart map and renders labels
+			 */
 
             for (i = 0; i < data.length; i++) {
                 obj = data[i];
@@ -1158,8 +1159,7 @@ dhtmlx.chart.stackedArea = {
                 if (!i) {
                     y = setOffset(i, point1.y);
                     path.push([x, y]);
-                }
-                else {
+                } else {
                     x += params.cellWidth;
                 }
 
@@ -1232,6 +1232,7 @@ dhtmlx.chart.stackedArea = {
 };
 
 
+
 /* DHX DEPEND FROM FILE 'ext/chart/chart_spline.js'*/
 
 
@@ -1294,8 +1295,8 @@ dhtmlx.chart.spline = {
                 this._drawItem(ctx, x1, y1, data[items[i].index], config.label(data[items[i].index]), sIndex, map);
                 /*creates map area*/
                 /*radius = (parseInt(config.item.radius.call(this,data[i-1]),10)||2);
-                 areaPos = (config.eventRadius||radius+1);
-                 map.addRect(data[i].id,[x1-areaPos,y1-areaPos,x1+areaPos,y1+areaPos],sIndex); */
+			    areaPos = (config.eventRadius||radius+1);
+				map.addRect(data[i].id,[x1-areaPos,y1-areaPos,x1+areaPos,y1+areaPos],sIndex); */
 
             }
             //this._drawItemOfLineChart(ctx,x2,y2,data[i],config.label(data[i]));
@@ -1427,7 +1428,7 @@ dhtmlx.chart.barH = {
         innerGradient = false;
         gradient = this._settings.gradient;
 
-        if (gradient && typeof(gradient) != "function") {
+        if (gradient && typeof (gradient) != "function") {
             innerGradient = gradient;
             gradient = false;
         } else if (gradient) {
@@ -1604,8 +1605,7 @@ dhtmlx.chart.barH = {
         var c = 0;
         for (var i = start; i <= end; i += step) {
             if (scaleParam.fixNum) i = parseFloat((Number(i)).toFixed(scaleParam.fixNum));
-            var xi = Math.floor(x0 + c * stepHeight) + 0.5;
-            /*canvas line fix*/
+            var xi = Math.floor(x0 + c * stepHeight) + 0.5;/*canvas line fix*/
             if (!(i == start && this._settings.origin == "auto") && axis.lines.call(this, i))
                 this._drawLine(ctx, xi, y0, xi, point0.y, this._settings.xAxis.lineColor.call(this, i), 1);
             if (i == this._settings.origin) yAxisStart = xi + 1;
@@ -1657,8 +1657,7 @@ dhtmlx.chart.barH = {
         if (unit * p.value > 0) {
             points = this._setBarHPoints(ctx, p.x0, p.y0, barWidth, radius, unit, p.value, (this._settings.border ? 1 : 0));
             if (gradient && !inner_gradient) ctx.lineTo(point1.x, p.y0 + (this._settings.border ? 1 : 0)); //fix gradient sphreading
-        }
-        else
+        } else
             points = [p.x0, p.y0 + 1];
 
         ctx.fill();
@@ -1697,6 +1696,7 @@ dhtmlx.chart.barH = {
         ctx.restore();
     }
 };
+
 
 
 /* DHX DEPEND FROM FILE 'ext/chart/chart_stackedbarh.js'*/
@@ -1933,8 +1933,7 @@ dhtmlx.chart.stackedBar = {
                         y0 = xAxisY + 1;
                     data[i].$startYN = xAxisY + 1;
                 }
-            }
-            else {
+            } else {
                 y0 = negValue ? data[i].$startYN : data[i].$startY;
             }
 
@@ -2042,6 +2041,7 @@ dhtmlx.chart.stackedBar = {
 };
 
 
+
 /* DHX DEPEND FROM FILE 'ext/chart/chart_line.js'*/
 
 
@@ -2122,7 +2122,7 @@ dhtmlx.chart.line = {
         }
     },
     _calcOverflowX: function (x1, x2, y1, y2, y) {
-        return x1 + ( y - y1 ) * ( x2 - x1 ) / ( y2 - y1 );
+        return x1 + (y - y1) * (x2 - x1) / (y2 - y1);
     },
     /**
      *   draws an item and its label
@@ -2161,8 +2161,7 @@ dhtmlx.chart.line = {
 
             if (config.type == "image" && config.src) {
                 this._drawImage(ctx, x0 - R, y0 - R, config.src, R * 2, R * 2);
-            }
-            else {
+            } else {
                 ctx.lineWidth = config.borderWidth;
                 ctx.fillStyle = config.color.call(this, obj);
                 ctx.strokeStyle = config.borderColor.call(this, obj);
@@ -2210,8 +2209,7 @@ dhtmlx.chart.line = {
                 [x0 - R, y0 + R],
                 [x0 - R, y0 - R]
             ];
-        }
-        else if (type && (type == "diamond" || type == "d")) {
+        } else if (type && (type == "diamond" || type == "d")) {
             var corr = (ctx.lineWidth > 1 ? ctx.lineWidth * Math.sqrt(2) / 4 : 0);
             p = [
                 [x0, y0 - R],
@@ -2220,16 +2218,14 @@ dhtmlx.chart.line = {
                 [x0 - R, y0],
                 [x0 + corr, y0 - R - corr]
             ];
-        }
-        else if (type && (type == "triangle" || type == "t")) {
+        } else if (type && (type == "triangle" || type == "t")) {
             p = [
                 [x0, y0 - R],
                 [x0 + Math.sqrt(3) * R / 2, y0 + R / 2],
                 [x0 - Math.sqrt(3) * R / 2, y0 + R / 2],
                 [x0, y0 - R]
             ];
-        }
-        else
+        } else
             p = [
                 [x0, y0, R, 0, Math.PI * 2, true]
             ];
@@ -2257,13 +2253,12 @@ dhtmlx.chart.line = {
         var y = point1.y - unit * v;
 
         /*the limit of the max and min values*/
-        if (this._settings.fixOverflow && ( this._settings.view == "line" || this._settings.view == "area")) {
+        if (this._settings.fixOverflow && (this._settings.view == "line" || this._settings.view == "area")) {
             if (value > maxValue)
                 y = {y: point0.y, y0: y, out: "max"};
             else if (v < 0 || value < minValue)
                 y = {y: point1.y, y0: y, out: "min"};
-        }
-        else {
+        } else {
             if (value > maxValue)
                 y = point0.y;
             if (v < 0 || value < minValue)
@@ -2317,6 +2312,7 @@ dhtmlx.chart.line = {
         return params;
     }
 };
+
 
 
 /* DHX DEPEND FROM FILE 'ext/chart/chart_bar.js'*/
@@ -2412,7 +2408,7 @@ dhtmlx.chart.bar = {
         var inner_gradient = false;
         var gradient = this._settings.gradient;
 
-        if (gradient && typeof(gradient) != "function") {
+        if (gradient && typeof (gradient) != "function") {
             inner_gradient = gradient;
             gradient = false;
         } else if (gradient) {
@@ -2520,17 +2516,17 @@ dhtmlx.chart.bar = {
             this._setBarPoints(ctx, p.x0, p.y0, barWidth, radius, unit, p.value, ctx.lineWidth / 2, 1);
         ctx.stroke();
         /*ctx.fillStyle = color;
-         this._setBarPoints(ctx,p.x0,p.y0,barWidth,radius,unit,p.value,0);
-         ctx.lineTo(p.x0,0);
-         ctx.fill()
-
-
-         ctx.fillStyle = "#000000";
-         ctx.globalAlpha = 0.37;
-
-         this._setBarPoints(ctx,p.x0,p.y0,barWidth,radius,unit,p.value,0);
-         ctx.fill()
-         */
+		this._setBarPoints(ctx,p.x0,p.y0,barWidth,radius,unit,p.value,0);
+		ctx.lineTo(p.x0,0);
+		ctx.fill()
+	   
+				
+		ctx.fillStyle = "#000000";
+		ctx.globalAlpha = 0.37;
+		
+		this._setBarPoints(ctx,p.x0,p.y0,barWidth,radius,unit,p.value,0);
+		ctx.fill()
+		*/
         ctx.restore();
     },
     _drawBarGradient: function (ctx, x0, y0, barWidth, minValue, radius, unit, value, color, inner_gradient) {
@@ -2762,8 +2758,7 @@ dhtmlx.chart.pie = {
                 while (j >= 0) {
                     if ((inc || j) && dists[q][j + 1] - inc < 18) {
                         inc += 18 - dists[q][j + 1];
-                    }
-                    else {
+                    } else {
                         inc = 0;
                     }
 
@@ -2775,21 +2770,18 @@ dhtmlx.chart.pie = {
                         incX += 6;
                         distIncrease[k]["x"] = incX;
 
-                    }
-                    else {
+                    } else {
                         distIncrease[k]["x"] = 0;
                         incX = 0;
                     }
                 }
-            }
-            else {
+            } else {
                 var j = 1;
                 distIncrease.push({y: 0, x: 0});
                 while (j < dists[q].length) {
                     if (dists[q][j] - inc < 18) {
                         inc += 18 - dists[q][j];
-                    }
-                    else {
+                    } else {
                         inc = 0;
                     }
                     distIncrease.push({y: inc * (q == 4 ? -1 : 1)});
@@ -2800,8 +2792,7 @@ dhtmlx.chart.pie = {
                         incX += 8;
                         distIncrease[k]["x"] = incX;
 
-                    }
-                    else {
+                    } else {
                         incX = 0;
                         distIncrease[k]["x"] = 0;
                     }
@@ -2857,13 +2848,13 @@ dhtmlx.chart.pie = {
      */
     _getPieParameters: function (point0, point1) {
         /*var offsetX = 0;
-         var offsetY = 0;
-         if(this._settings.legend &&this._settings.legend.layout!="x")
-         offsetX = this._settings.legend.width*(this._settings.legend.align=="right"?-1:1);
-         var x0 = (x + offsetX)/2;
-         if(this._settings.legend &&this._settings.legend.layout=="x")
-         offsetY = this._settings.legend.height*(this._settings.legend.valign=="bottom"?-1:1);
-         var y0 = (y+offsetY)/2;*/
+		 var offsetY = 0;
+		 if(this._settings.legend &&this._settings.legend.layout!="x")
+		 offsetX = this._settings.legend.width*(this._settings.legend.align=="right"?-1:1);
+		 var x0 = (x + offsetX)/2;
+		 if(this._settings.legend &&this._settings.legend.layout=="x")
+		 offsetY = this._settings.legend.height*(this._settings.legend.valign=="bottom"?-1:1);
+		 var y0 = (y+offsetY)/2;*/
         var width = point1.x - point0.x;
         var height = point1.y - point0.y;
         var x0 = point0.x + width / 2;
@@ -2959,8 +2950,7 @@ dhtmlx.chart.pie = {
         if (typeof this._settings.gradient != "function") {
             gradient = ctx.createRadialGradient(x0, y0, radius / 4, x, y, radius);
             gradient = this._getGrayGradient(gradient);
-        }
-        else gradient = this._settings.gradient(gradient);
+        } else gradient = this._settings.gradient(gradient);
         ctx.fillStyle = gradient;
         ctx.arc(x, y, radius, 0, Math.PI * 2, true);
         ctx.fill();
@@ -3002,8 +2992,7 @@ dhtmlx.chart.pie = {
 
         //for items in left upper and lower sector
         if (alpha >= Math.PI / 2 && alpha < Math.PI || alpha <= 3 * Math.PI / 2 && alpha >= Math.PI) {
-            corr_x = -labelWidth - corr_x;
-            /*correction for label width*/
+            corr_x = -labelWidth - corr_x;/*correction for label width*/
             align = "left";
         }
 
@@ -3027,10 +3016,8 @@ dhtmlx.chart.pie = {
         if (left_start && left_end) {
             x = Math.max(x, x0 + 3);	//right part of pie
             /*if(alpha2-alpha1<0.2)
-             x = x0;*/
-        }
-
-        else if (!left_start && !left_end) {
+			 x = x0;*/
+        } else if (!left_start && !left_end) {
 
             x = Math.min(x, x0 - labelWidth);	//left part of pie
         } else if (!in_width && !this._settings.labelLines && (alpha >= Math.PI / 2 && alpha < Math.PI || alpha <= 3 * Math.PI / 2 && alpha >= Math.PI)) {
@@ -3046,8 +3033,7 @@ dhtmlx.chart.pie = {
                 y += margin.y;
             if (align == "left") {
                 x -= margin.x;
-            }
-            else
+            } else
                 x += margin.x;
 
             ctx.beginPath();
@@ -3064,8 +3050,7 @@ dhtmlx.chart.pie = {
                 y2 = y2 + 16;
                 if (alpha < Math.PI)
                     y2 -= 8;
-            }
-            else
+            } else
                 y2 += 8;
             ctx.lineTo(x2, y2);
 
@@ -3110,14 +3095,15 @@ dhtmlx.chart.donut = {
 };
 
 
+
 /* DHX DEPEND FROM FILE 'compatibility_grid.js'*/
 
 
 /*
- Compatibility hack for loading data from the grid.
- Provides new type of datasource - dhtmlxgrid
-
- */
+	Compatibility hack for loading data from the grid.
+	Provides new type of datasource - dhtmlxgrid
+	
+*/
 
 /*DHX:Depend load.js*/
 
@@ -3324,14 +3310,14 @@ dhtmlx.ui.Canvas.prototype = {
 
 /*DHX:Depend ext/chart/chart_base.js*/
 /*DHX:Depend ext/chart/chart_pie.js*/		//+pie3d
-/*DHX:Depend ext/chart/chart_bar.js*/
+/*DHX:Depend ext/chart/chart_bar.js*/	
 /*DHX:Depend ext/chart/chart_line.js*/
 /*DHX:Depend ext/chart/chart_barh.js*/
-/*DHX:Depend ext/chart/chart_stackedbar.js*/
+/*DHX:Depend ext/chart/chart_stackedbar.js*/	
 /*DHX:Depend ext/chart/chart_stackedbarh.js*/
-/*DHX:Depend ext/chart/chart_spline.js*/
+/*DHX:Depend ext/chart/chart_spline.js*/	
 /*DHX:Depend ext/chart/chart_area.js*/	 	//+stackedArea
-/*DHX:Depend ext/chart/chart_radar.js*/
+/*DHX:Depend ext/chart/chart_radar.js*/	 	
 /*DHX:Depend ext/chart/chart_scatter.js*/
 /*DHX:Depend ext/chart/presets.js*/
 /*DHX:Depend math.js*/
@@ -3388,8 +3374,7 @@ dhtmlXChart.prototype = {
                     if (toggle) {
                         if (obj.className.indexOf("hidden") != -1) {
                             this.showSeries(series);
-                        }
-                        else {
+                        } else {
                             this.hideSeries(series);
                         }
                     }
@@ -3464,8 +3449,7 @@ dhtmlXChart.prototype = {
             for (i in this.canvases) {
                 this.canvases[i].clearCanvas();
             }
-        }
-        else
+        } else
             this.canvases = {};
 
         if (this._settings.legend) {
@@ -3526,8 +3510,7 @@ dhtmlXChart.prototype = {
                     units.push(start);
                     start = config.next.call(this, start);
                 }
-            }
-            else if (Object.prototype.toString.call(config) === '[object Array]') {
+            } else if (Object.prototype.toString.call(config) === '[object Array]') {
                 units = config;
             }
             newData = [];
@@ -3541,8 +3524,7 @@ dhtmlXChart.prototype = {
                     if (typeof valuesHash[units[i]] != "undefined") {
                         data[valuesHash[units[i]]].$unit = units[i];
                         newData.push(data[valuesHash[units[i]]]);
-                    }
-                    else {
+                    } else {
                         newData.push({$unit: units[i]});
                     }
                 }
@@ -3562,7 +3544,7 @@ dhtmlXChart.prototype = {
     borderColor_setter: dhtmlx.Template.obj_setter,
     pieInnerText_setter: dhtmlx.Template.obj_setter,
     gradient_setter: function (config) {
-        if ((typeof(config) != "function") && config && (config === true))
+        if ((typeof (config) != "function") && config && (config === true))
             config = "light";
         return config;
     },
@@ -3594,8 +3576,7 @@ dhtmlXChart.prototype = {
                 if (typeof preset[a] == "object") {
                     if (!this.defaults[a] || typeof this.defaults[a] != "object") {
                         this.defaults[a] = dhtmlx.extend({}, preset[a]);
-                    }
-                    else {
+                    } else {
                         this.defaults[a] = dhtmlx.extend({}, this.defaults[a]);
                         for (b in preset[a]) {
                             this.defaults[a][b] = preset[a][b];
@@ -3617,7 +3598,7 @@ dhtmlXChart.prototype = {
             }
             return false;
         }
-        if (typeof(config) != "object")	//allow to use template string instead of object
+        if (typeof (config) != "object")	//allow to use template string instead of object
             config = {template: config};
 
         this._mergeSettings(config, {
@@ -3674,20 +3655,20 @@ dhtmlXChart.prototype = {
         origin: "auto"
     },
     item_setter: function (config) {
-        if (typeof(config) != "object")
+        if (typeof (config) != "object")
             config = {color: config, borderColor: config};
         this._mergeSettings(config, dhtmlx.extend({}, this.defaults.item));
         var settings = ["alpha", "borderColor", "color", "radius"];
         for (var i = 0; i < settings.length; i++)
             config[settings[i]] = dhtmlx.Template.setter(config[settings[i]]);
         /*config.alpha = dhtmlx.Template.setter(config.alpha);
-         config.borderColor = dhtmlx.Template.setter(config.borderColor);
-         config.color = dhtmlx.Template.setter(config.color);
-         config.radius = dhtmlx.Template.setter(config.radius);*/
+        config.borderColor = dhtmlx.Template.setter(config.borderColor);
+		config.color = dhtmlx.Template.setter(config.color);
+        config.radius = dhtmlx.Template.setter(config.radius);*/
         return config;
     },
     line_setter: function (config) {
-        if (typeof(config) != "object")
+        if (typeof (config) != "object")
             config = {color: config};
         dhtmlx.extend(this.defaults.line, config);
         config = dhtmlx.extend({}, this.defaults.line);
@@ -3695,7 +3676,7 @@ dhtmlXChart.prototype = {
         return config;
     },
     padding_setter: function (config) {
-        if (typeof(config) != "object")
+        if (typeof (config) != "object")
             config = {left: config, right: config, top: config, bottom: config};
         this._mergeSettings(config, {
             left: 50,
@@ -3707,7 +3688,7 @@ dhtmlXChart.prototype = {
     },
     xAxis_setter: function (config) {
         if (!config) return false;
-        if (typeof(config) != "object")
+        if (typeof (config) != "object")
             config = {template: config};
         if (!config.value)
             config.value = config.template;
@@ -3820,10 +3801,10 @@ dhtmlXChart.prototype = {
         }
         this._setYAxisTitle(point0, point1);
         /*if(step===0) return;
-         if(end==start){
-         return y0;
-         }
-         var stepHeight = (y0-y1)*step/(end-start);*/
+		if(end==start){
+			return y0;
+		}
+		var stepHeight = (y0-y1)*step/(end-start);*/
         if (step === 0) {
             end = start;
             step = 1;
@@ -3832,8 +3813,7 @@ dhtmlXChart.prototype = {
         var c = 0;
         for (var i = start; i <= end; i += step) {
             if (scaleParam.fixNum) i = parseFloat((Number(i)).toFixed(scaleParam.fixNum));
-            var yi = Math.floor(y0 - c * stepHeight) + 0.5;
-            /*canvas line fix*/
+            var yi = Math.floor(y0 - c * stepHeight) + 0.5;/*canvas line fix*/
             if (!(i == start && this._settings.origin == "auto") && this._settings.yAxis.lines.call(this, i))
                 this._drawLine(ctx, x0, yi, point1.x, yi, this._settings.yAxis.lineColor.call(this, i), 1);
             if (i == this._settings.origin) lineX = yi;
@@ -3861,17 +3841,17 @@ dhtmlXChart.prototype = {
         if (text)
             text.style.left = (dhtmlx.env.transform ? (text.offsetHeight - text.offsetWidth) / 2 : 0) + "px";
         /*var ctx = this.canvases["y"].getCanvas();
-         var metric = ctx.measureText(this._settings.yAxis.title);
-         var tx = 5 + (metric.width/2);
-         var ty = 5 +point0.y+ (point1.y-point0.y)/2+metric.width/2;
-         ctx.font = "bold 12pt sans-serif";
-         ctx.save();
-         ctx.translate(tx,ty);
-         ctx.rotate(Math.PI/2*3);
-         //ctx.translate(-tx,-ty);
+		var metric = ctx.measureText(this._settings.yAxis.title);
+		var tx = 5 + (metric.width/2);
+		var ty = 5 +point0.y+ (point1.y-point0.y)/2+metric.width/2;
+		ctx.font = "bold 12pt sans-serif";
+		ctx.save();
+		ctx.translate(tx,ty);
+		ctx.rotate(Math.PI/2*3);
+		//ctx.translate(-tx,-ty);
 
-         ctx.fillText(this._settings.yAxis.title, 0,0)
-         ctx.restore();*/
+		ctx.fillText(this._settings.yAxis.title, 0,0)
+		ctx.restore();*/
 
     },
     _calculateScale: function (nmin, nmax) {
@@ -3914,8 +3894,7 @@ dhtmlXChart.prototype = {
         if (axis && (typeof axis.end != "undefined") && (typeof axis.start != "undefined") && axis.step) {
             maxValue = parseFloat(axis.end);
             minValue = parseFloat(axis.start);
-        }
-        else {
+        } else {
             maxValue = this.max(this._series[0][value]);
             minValue = (axis && (typeof axis.start != "undefined")) ? parseFloat(axis.start) : this.min(this._series[0][value]);
             if (this._series.length > 1)
@@ -3957,14 +3936,13 @@ dhtmlXChart.prototype = {
         if (maxValue != minValue) {
             relValue = maxValue - minValue;
             /*if(Math.abs(relValue) < 1){
-             while(Math.abs(relValue)<1){
-             valueFactor *= 10;
-             relValue = origRelValue* valueFactor;
-             }
-             }
-             */
-        }
-        else relValue = minValue;
+			    while(Math.abs(relValue)<1){
+				    valueFactor *= 10;
+				    relValue = origRelValue* valueFactor;
+				}
+			}
+			*/
+        } else relValue = minValue;
         return [relValue, valueFactor];
     },
     _rainbow: [
@@ -4030,8 +4008,7 @@ dhtmlXChart.prototype = {
                 if (selection) {
                     if (areas[i].index > selection.index)
                         selection = areas[i];
-                }
-                else
+                } else
                     selection = areas[i];
             }
         }
@@ -4117,7 +4094,7 @@ dhtmlXChart.prototype = {
         legendWidth = legendContainer.offsetWidth;
         legendHeight = legendContainer.offsetHeight;
         /*this._settings.legend.width = legendWidth;
-         this._settings.legend.height = legendHeight;*/
+		this._settings.legend.height = legendHeight;*/
 
         /*setting legend position*/
         if (legendWidth < this._obj.offsetWidth) {
@@ -4153,8 +4130,7 @@ dhtmlXChart.prototype = {
             if (legend.values && legend.values[i].$hidden) {
                 disabled = true;
                 itemColor = (legend.values[i].disableColor ? legend.values[i].disableColor : "#d9d9d9");
-            }
-            else {
+            } else {
                 disabled = false;
                 itemColor = (legend.values ? legend.values[i].color : this._settings.color.call(this, data[i]));
             }
@@ -4238,15 +4214,13 @@ dhtmlXChart.prototype = {
                 if (config.type == "image" && config.src) {
                     this._drawImage(ctx, x + 5, y + marker.height / 2 - 5, config.src, radius * 2, radius * 2);
                     return;
-                }
-                else {
+                } else {
                     ctx.beginPath();
                     if (disabled) {
                         ctx.lineWidth = config.borderWidth;
                         ctx.strokeStyle = color;
                         ctx.fillStyle = color;
-                    }
-                    else {
+                    } else {
                         ctx.lineWidth = config.borderWidth;
                         ctx.fillStyle = config.color.call(this, {});
                         ctx.strokeStyle = config.borderColor.call(this, {});
@@ -4317,11 +4291,9 @@ dhtmlXChart.prototype = {
                         chartX1 -= legendWidth;
                     else if (legend.align == "left")
                         chartX0 += legendWidth;
-                }
-                else if (legend.valign == "bottom") {
+                } else if (legend.valign == "bottom") {
                     chartY1 -= legendHeight;
-                }
-                else {
+                } else {
                     chartY0 += legendHeight;
                 }
             }
@@ -4344,8 +4316,7 @@ dhtmlXChart.prototype = {
         if (this._settings.yAxis && (typeof this._settings.yAxis.end != "undefined") && (typeof this._settings.yAxis.start != "undefined") && this._settings.yAxis.step) {
             maxValue = parseFloat(this._settings.yAxis.end);
             minValue = parseFloat(this._settings.yAxis.start);
-        }
-        else {
+        } else {
             for (i = 0; i < data.length; i++) {
                 data[i].$sum = 0;
                 data[i].$min = Infinity;
@@ -4377,8 +4348,7 @@ dhtmlXChart.prototype = {
                 gradient = ctx.createLinearGradient(x1, y1, x1, y2);
             stops = [[0, "#FFFFFF"], [0.9, color], [1, color]];
             offset = 2;
-        }
-        else if (type == "falling" || type == "rising") {
+        } else if (type == "falling" || type == "rising") {
             if (axis == "x")
                 gradient = ctx.createLinearGradient(x1, y1, x2, y1);
             else
@@ -4389,13 +4359,11 @@ dhtmlXChart.prototype = {
             color0 = "rgb(" + dhtmlx.math.hsvToRgb(hsv[0], hsv[1], hsv[2]) + ")";
             if (type == "falling") {
                 stops = [[0, color0], [0.7, color], [1, color]];
-            }
-            else if (type == "rising") {
+            } else if (type == "rising") {
                 stops = [[0, color], [0.3, color], [1, color0]];
             }
             offset = 0;
-        }
-        else {
+        } else {
             ctx.globalAlpha = 0.37;
             offset = 0;
             if (axis == "x")
@@ -4470,6 +4438,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         return this.dataObj;
     };
-
+	
 }
 

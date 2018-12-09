@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 //container - can be a HTML container or it's ID
 dhtmlXList = function (container) {
@@ -142,7 +142,7 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
         obj.style.overflowX = "hidden";
         this._attachObject(obj);
 
-        if (typeof(conf) == "undefined") conf = {};
+        if (typeof (conf) == "undefined") conf = {};
         obj.id = "ListObject_" + new Date().getTime();
         conf.container = obj.id;
         conf.skin = this.conf.skin;
@@ -162,6 +162,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         return this.dataObj;
     };
-
+	
 }
 

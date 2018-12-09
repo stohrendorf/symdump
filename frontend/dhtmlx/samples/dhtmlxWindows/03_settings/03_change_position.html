@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Change position</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -62,15 +62,15 @@
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="winVP"></div>
 <div class="controls">
-    Window #1 <input type="button" value="20,10" onclick="setPos('w1',20,10);"> <input type="button" value="100,20"
-                                                                                       onclick="setPos('w1',100,20);">
-    <input type="button" value="180,30" onclick="setPos('w1',180,30);"><br>
-    Window #2 <input type="button" value="30,40" onclick="setPos('w2',30,40);"> <input type="button" value="110,50"
-                                                                                       onclick="setPos('w2',110,50);">
-    <input type="button" value="190,60" onclick="setPos('w2',190,60);"><br>
-    Window #3 <input type="button" value="40,70" onclick="setPos('w3',40,70);"> <input type="button" value="120,80"
-                                                                                       onclick="setPos('w3',120,80);">
-    <input type="button" value="200,90" onclick="setPos('w3',200,90);"><br>
+    Window #1 <input onclick="setPos('w1',20,10);" type="button" value="20,10"> <input onclick="setPos('w1',100,20);"
+                                                                                       type="button" value="100,20">
+    <input onclick="setPos('w1',180,30);" type="button" value="180,30"><br>
+    Window #2 <input onclick="setPos('w2',30,40);" type="button" value="30,40"> <input onclick="setPos('w2',110,50);"
+                                                                                       type="button" value="110,50">
+    <input onclick="setPos('w2',190,60);" type="button" value="190,60"><br>
+    Window #3 <input onclick="setPos('w3',40,70);" type="button" value="40,70"> <input onclick="setPos('w3',120,80);"
+                                                                                       type="button" value="120,80">
+    <input onclick="setPos('w3',200,90);" type="button" value="200,90"><br>
 </div>
 </body>
 </html>

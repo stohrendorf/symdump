@@ -22,11 +22,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 10px;
     overflow: hidden;
 }
-
 .dhtmlxcp_dhx_skyblue {
     line-height: normal;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_g_area {
     position: absolute;
     width: 254px;
@@ -34,11 +32,9 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border: 1px solid #a4bed4;
     background-color: #e7f1ff;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_add_memory {
     height: 317px !important;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_sub_area {
     margin: 1px;
     width: 252px;
@@ -51,18 +47,15 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_add_memory .dhxcp_sub_area {
     height: 229px !important;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_g_color_area {
     padding: 10px;
     width: 232px;
     height: 122px;
     margin: 0px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_color_selector {
     position: absolute;
     width: 210px;
@@ -73,7 +66,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: pointer;
     float: left;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_contrast_area {
     border: 1px solid #a4bed4;
     position: relative;
@@ -82,13 +74,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: pointer;
     float: right;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_ie_gradient {
     height: 120px;
     width: 10px;
     margin: 0px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_color_selector .dhxcp_v_line {
     position: absolute;
     width: 0px;
@@ -97,7 +87,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: pointer;
     overflow: hidden;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_color_selector .dhxcp_h_line,
 .dhtmlxcp_dhx_skyblue .dhxcp_contrast_area .dhxcp_h_line {
     position: absolute;
@@ -106,34 +95,28 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     cursor: pointer;
     overflow: hidden;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_color_selector .dhxcp_h_line {
     width: 210px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_contrast_area .dhxcp_h_line {
     width: 10px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_g_input_area {
     padding: 0px 10px;
     width: 232px;
     height: 78px;
     margin: 0px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_value_cont {
     width: 60px;
     height: 82px;
     float: left;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_value_color {
     width: 56px;
     height: 30px;
     border: 1px solid #a4bed4;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_value {
     width: 49px;
     height: 20px;
@@ -147,7 +130,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: black;
     text-align: left;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_inputs_cont {
     border: none;
     border-spacing: 0px;
@@ -155,7 +137,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 78px;
     float: right;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_label_hsl,
 .dhtmlxcp_dhx_skyblue .dhxcp_label_rgb {
     font-family: Tahoma, Helvetica;
@@ -164,7 +145,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     text-align: right;
     padding: 0px 3px 0px 0px;
 }
-
 .dhtmlxcp_dhx_skyblue td.dhxcp_input_hsl,
 .dhtmlxcp_dhx_skyblue td.dhxcp_input_rgb {
     width: 27px;
@@ -172,7 +152,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 3px 0px;
     margin: 0px;
 }
-
 .dhtmlxcp_dhx_skyblue input.dhxcp_input_hsl,
 .dhtmlxcp_dhx_skyblue input.dhxcp_input_rgb {
     width: 25px;
@@ -187,7 +166,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0px 3px;
     line-height: 18px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_g_memory_area {
     width: 232px;
     height: 0px;
@@ -195,13 +173,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-top: 1px solid #ffffff;
     margin: 10px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_memory_button_cont {
     width: 232px;
     margin: 0px;
     height: 24px;
 }
-
 .dhtmlxcp_dhx_skyblue button {
     outline: none;
     border-radius: 2px;
@@ -215,14 +191,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background: -webkit-linear-gradient(#e2efff, #d3e7ff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#e2efff, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 .dhtmlxcp_dhx_skyblue button:hover {
     background-color: #f1f7ff;
     background: linear-gradient(#f1f7ff, #e2efff);
     background: -webkit-linear-gradient(#f1f7ff, #e2efff);
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#f1f7ff, endColorStr=#e2efff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
-
 .dhtmlxcp_dhx_skyblue button:active {
     background-color: #d2e7fe;
     background: linear-gradient(#d2e7fe, #d3e7ff);
@@ -230,12 +204,10 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#d2e7fe, endColorStr=#d3e7ff) progid:DXImageTransform.Microsoft.Alpha(opacity=100);
     box-shadow: 0 0 3px #ccc inset;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_save_to_memory {
     width: 232px;
     height: 24px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_save_to_memory .dhxcp_label_bm {
     background-image: url("../imgs/dhxcp_skyblue/dhxcp_icon_save.png");
     background-repeat: no-repeat;
@@ -249,14 +221,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     white-space: nowrap;
     text-align: left;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_memory_els_cont {
     width: 232px;
     height: 25px;
     margin-top: 3px;
     text-align: center;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_memory_el {
     width: 24px;
     height: 24px;
@@ -265,21 +235,17 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     display: inline-block;
     margin: 0px 1px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_memory_el_select {
     border: 1px dashed black !important;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_memory_el_next {
     border: 1px dashed red !important;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_add_memory .dhxcp_g_memory_area {
     height: 55px !important;
     border-top: none !important;
     margin: 5px 10px 5px 10px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhxcp_buttons_area {
     padding: 0px 10px;
     width: 232px;
@@ -287,7 +253,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     text-align: right;
     margin: 0px;
 }
-
 .dhtmlxcp_dhx_skyblue .dhx_button_save,
 .dhtmlxcp_dhx_skyblue .dhx_button_cancel {
     padding: 2px 10px;
@@ -297,15 +262,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     text-align: center;
 }
-
 .dhxcp_colorBox {
     float: right;
 }
-
 .dhxcp_colorInput {
     float: left;
 }
-
 .dhxcp_frm {
     position: absolute;
     background-color: white;
@@ -314,7 +276,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     width: 256px;
     height: 274px;
 }
-
 .dhtmlxcp_dhx_skyblue.dhtmlxcp_in_form .dhxcp_g_area {
     padding: 5px;
     border: 1px solid #a4bed4;

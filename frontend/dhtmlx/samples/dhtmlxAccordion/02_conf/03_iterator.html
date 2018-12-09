@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Iterator</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -22,10 +22,12 @@
         };
         var nameIndex = 1;
         var myAcc;
+
         function doOnLoad() {
             myAcc = new dhtmlXAccordion("accObj");
             for (var q = 0; q < names[0].length; q++) myAcc.addItem("a" + q, names[0][q], q == 0);
         }
+
         function setText() {
             var k = 0;
             myAcc.forEachItem(function (cell) {
@@ -38,7 +40,7 @@
 <body onload="doOnLoad();">
 <div id="accObj" style="position: relative; width: 320px; height: 400px;"></div>
 <div style="margin: 50px 0px 20px 0px;">
-    <input type="button" value="Set Text" onclick="setText();">
+    <input onclick="setText();" type="button" value="Set Text">
 </div>
 </body>
 </html>

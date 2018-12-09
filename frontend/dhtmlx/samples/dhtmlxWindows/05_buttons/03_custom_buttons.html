@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Custom buttons</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         /* conf, enabled state */
@@ -63,6 +63,7 @@
     </style>
     <script>
         var dhxWins, w1;
+
         function doOnLoad() {
 
             dhxWins = new dhtmlXWindows();
@@ -110,10 +111,12 @@
                     break;
             }
         }
+
         function writeLog(text) {
             document.getElementById("logsHere").innerHTML += "<br>" + text;
             document.getElementById("logsHere").scrollTop = document.getElementById("logsHere").scrollHeight;
         }
+
         function doOnUnload() {
             if (dhxWins != null && dhxWins.unload != null) {
                 dhxWins.unload();
@@ -131,12 +134,12 @@
                     <option value="conf">button conf</option>
                     <option value="reload">button reload</option>
                 </select>
-                <input type="button" value="show" onclick="executeScript('show');">
-                <input type="button" value="hide" onclick="executeScript('hide');">
-                <input type="button" value="isHidden" onclick="executeScript('isHidden');">
-                <input type="button" value="enable" onclick="executeScript('enable');">
-                <input type="button" value="disable" onclick="executeScript('disable');">
-                <input type="button" value="isEnabled" onclick="executeScript('isEnabled');">
+                <input onclick="executeScript('show');" type="button" value="show">
+                <input onclick="executeScript('hide');" type="button" value="hide">
+                <input onclick="executeScript('isHidden');" type="button" value="isHidden">
+                <input onclick="executeScript('enable');" type="button" value="enable">
+                <input onclick="executeScript('disable');" type="button" value="disable">
+                <input onclick="executeScript('isEnabled');" type="button" value="isEnabled">
             </td>
         </tr>
     </table>

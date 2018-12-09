@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Init from ul</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         function doOnFormInit() {
@@ -17,19 +17,19 @@
 <body>
 <div id="myForm" style="height:500px;">
     <ul class="dhtmlxForm" name="myForm" oninit="doOnFormInit">
-        <li ftype="settings" position="label-left" labelWidth="130" inputWidth="120"></li>
-        <li ftype="fieldset" name="data" inputWidth="340">
+        <li ftype="settings" inputWidth="120" labelWidth="130" position="label-left"></li>
+        <li ftype="fieldset" inputWidth="340" name="data">
             Welcome
             <ul>
-                <li ftype="radio" name="type" labelWidth="auto" position="label-right" checked="true">
+                <li checked="true" ftype="radio" labelWidth="auto" name="type" position="label-right">
                     Already have account
                     <ul>
                         <li ftype="input" value="p_rossi">Login</li>
                         <li ftype="password" value="123">Password</li>
-                        <li ftype="checkbox" checked="true">Remember me</li>
+                        <li checked="true" ftype="checkbox">Remember me</li>
                     </ul>
                 </li>
-                <li ftype="radio" name="type" labelWidth="auto" position="label-right">
+                <li ftype="radio" labelWidth="auto" name="type" position="label-right">
                     Not registered yet
                     <ul>
                         <li ftype="input" value="Patricia D. Rossi">Full Name</li>
@@ -40,7 +40,7 @@
                         <li ftype="checkbox">Subscribe on news</li>
                     </ul>
                 </li>
-                <li ftype="radio" name="type" labelWidth="auto" position="label-right">
+                <li ftype="radio" labelWidth="auto" name="type" position="label-right">
                     Guest login
                     <ul>
                         <li ftype="select">

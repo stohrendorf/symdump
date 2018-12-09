@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXSlider(data) {
 
@@ -38,11 +38,11 @@ function dhtmlXSlider(data) {
 
     if (arguments.length > 1) { // init by arguments
         return new dhtmlXSlider(this._renderArgumets(arguments));
-    } else if (typeof(data) == "string" || (typeof(data) == "object" && data.tagName)) { // init by node
+    } else if (typeof (data) == "string" || (typeof (data) == "object" && data.tagName)) { // init by node
         return new dhtmlXSlider({parent: data});
     }
 
-    if (typeof(data.parent) == "string") {
+    if (typeof (data.parent) == "string") {
         this.base = document.getElementById(data.parent);
     } else {
         this.base = data.parent;
@@ -64,7 +64,7 @@ function dhtmlXSlider(data) {
 
     this._detectDecimals();
 
-    if (this.conf.size == null || typeof(this.conf.size) == "undefined") {
+    if (this.conf.size == null || typeof (this.conf.size) == "undefined") {
         if (this.conf.vertical) {
             this.conf.size = this.base.offsetHeight;
         } else {
@@ -72,7 +72,7 @@ function dhtmlXSlider(data) {
         }
     }
 
-    var skin = this.conf.skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxslider") || "material";
+    var skin = this.conf.skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxslider") || "material";
 
     this.setSkin(skin);
 
@@ -96,7 +96,7 @@ function dhtmlXSlider(data) {
             this._nodes.cont.onselectstart =
                 this._nodes.track.onselectstart = function (e) {
                     e = e || event;
-                    if (typeof(e.preventDefault) == "function") {
+                    if (typeof (e.preventDefault) == "function") {
                         e.preventDefault();
                     } else {
                         e.returnValue = false;
@@ -121,7 +121,7 @@ function dhtmlXSlider(data) {
         if (that.conf.disabled) return;
 
         e = e || event;
-        if (typeof(e.preventDefault) == "function") e.preventDefault();
+        if (typeof (e.preventDefault) == "function") e.preventDefault();
 
         if (index != null) {
             that._r_actv = that._nodes[index == 0 ? "runner" : "runner2"];
@@ -142,7 +142,7 @@ function dhtmlXSlider(data) {
         that._movingInitialValues.coord = that._getTouchCoord(e);
 
         if (that.conf.disabled == false) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 window.addEventListener("mousemove", that._move, false);
                 window.addEventListener("mouseup", that._cleanMove, false);
                 window.addEventListener("touchmove", that._move, false);
@@ -161,7 +161,7 @@ function dhtmlXSlider(data) {
         if (that.conf.disabled) return;
 
         e = e || event;
-        if (typeof(e.preventDefault) == "function") e.preventDefault();
+        if (typeof (e.preventDefault) == "function") e.preventDefault();
 
         var runner = (that.conf.vertical) ? that._r_actv.offsetHeight : that._r_actv.offsetWidth;
         var range = that.conf.max - that.conf.min;
@@ -183,7 +183,7 @@ function dhtmlXSlider(data) {
     };
 
     this._cleanMove = function (e) {
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("mousemove", that._move, false);
             window.removeEventListener("mouseup", that._cleanMove, false);
             window.removeEventListener("touchmove", that._move, false);
@@ -206,7 +206,7 @@ function dhtmlXSlider(data) {
         if (that._movingInitialValues != null) return false;
 
         e = e || event;
-        if (typeof(e.preventDefault) == "function") e.preventDefault();
+        if (typeof (e.preventDefault) == "function") e.preventDefault();
 
         var ofs = 0;
         var t = e.target || e.srcElement;
@@ -310,6 +310,7 @@ function dhtmlXSlider(data) {
     return this;
 
 }
+
 dhtmlXSlider.prototype._setOrient = function (vertical) {
     vertical = vertical || false;
 
@@ -330,12 +331,12 @@ dhtmlXSlider.prototype._setOrient = function (vertical) {
 
 dhtmlXSlider.prototype._getTouchCoord = function (e) {
     var type = (e.type.match(/mouse/) != null ? "client" : "page") + (this.conf.vertical == true ? "Y" : "X");
-    var coord = (typeof(e[type]) != "undefined" && e[type] != 0 ? e[type] : (e.touches != null && e.touches[0] != null ? e.touches[0][type] || 0 : 0));
+    var coord = (typeof (e[type]) != "undefined" && e[type] != 0 ? e[type] : (e.touches != null && e.touches[0] != null ? e.touches[0][type] || 0 : 0));
     return coord;
 };
 
 dhtmlXSlider.prototype._attachEvents = function (nodes) {
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         nodes.runner.addEventListener("mousedown", this._initMover, false);
         nodes.runner.addEventListener("touchstart", this._initMover, false);
         nodes.cont.addEventListener("mousedown", this._doOnSetValue, false);
@@ -354,7 +355,7 @@ dhtmlXSlider.prototype._attachEvents = function (nodes) {
 };
 
 dhtmlXSlider.prototype._detachEvents = function (nodes) {
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         nodes.runner.removeEventListener("mousedown", this._initMover, false);
         nodes.runner.removeEventListener("touchstart", this._initMover, false);
         nodes.cont.removeEventListener("mousedown", this._doOnSetValue, false);
@@ -623,7 +624,7 @@ dhtmlXSlider.prototype._attachNode = function (node, index) {
     switch (tagName) {
         case "input":
         case "select":
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 node.addEventListener("change", this._doOnChangeInput, false);
                 node.addEventListener("keydown", this._doOnKeyDown, false);
             } else {
@@ -657,7 +658,7 @@ dhtmlXSlider.prototype._detachNode = function (index) {
     switch (tagName) {
         case "input":
         case "select":
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 node.removeEventListener("change", this._doOnChangeInput, false);
                 node.removeEventListener("keydown", this._doOnChangeInput, false);
             } else {
@@ -768,7 +769,7 @@ dhtmlXSlider.prototype.setValue = function (value, callEvent) {
         }
     }
 
-    if (typeof(this._attachedNode.setValue) == "function") {
+    if (typeof (this._attachedNode.setValue) == "function") {
         if (index == null) index = this.conf.init_index;
         this._attachedNode.setValue(this.conf.value, this.conf.decimals, index);
     }
@@ -829,7 +830,7 @@ dhtmlXSlider.prototype.disableTooltip = function () {
 };
 
 dhtmlXSlider.prototype.enableTooltip = function (mode) {
-    if (typeof(mode) == "undefined") mode = true; else mode = dhx4.s2b(mode);
+    if (typeof (mode) == "undefined") mode = true; else mode = dhx4.s2b(mode);
     if (mode) {
         this.conf.tooltip = true;
         this._refreshTooltip();
@@ -897,7 +898,7 @@ dhtmlXSlider.prototype.linkTo = function (node) {
     if (!(node instanceof Array)) node = [node];
     for (var q = 0; q < node.length && q < 2; q++) {
         if (node[q] != null) {
-            if (typeof(node[q]) == "string") node[q] = document.getElementById(node[q]);
+            if (typeof (node[q]) == "string") node[q] = document.getElementById(node[q]);
             this._attachNode(node[q], q);
         }
     }

@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         transform: rotate(360deg);
     }
 }
-
 @keyframes dhx_loader_dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -31,13 +30,11 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         stroke-dashoffset: -124px;
     }
 }
-
 .dhxcarousel_base_material {
     background-color: white;
     position: relative;
     cursor: default;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont {
     position: absolute;
     left: 0px;
@@ -46,17 +43,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 100%;
     overflow: hidden;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area.dhxcarousel_area_flip {
     perspective: 900px;
     -webkit-perspective: 900;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel {
     position: absolute;
     background-color: white;
@@ -67,7 +61,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     z-index: 0;
     -webkit-transform-style: preserve-3d;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cover {
     position: absolute;
     left: 0px;
@@ -89,7 +82,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_bar {
     position: absolute;
     left: 0px;
@@ -107,7 +99,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_img {
     position: absolute;
     left: 0px;
@@ -126,7 +117,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_svg {
     border: 1px solid #e4e4e4;
     z-index: 2;
@@ -142,7 +132,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_svg .dhx_cell_prsvg {
     position: absolute;
     top: 0;
@@ -155,7 +144,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     animation: dhx_loader_rotate 2s linear infinite;
     transform-origin: center center;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_progress_svg .dhx_cell_prsvg .dhx_cell_prcircle {
     fill: none;
     stroke: #3399cc;
@@ -166,7 +154,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     stroke-linecap: round;
     animation: dhx_loader_dash 1.5s ease-in-out infinite;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_def {
     position: relative;
     overflow: hidden;
@@ -174,32 +161,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-width: 0px 1px 1px 1px;
     border-color: #dfdfdf;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_toolbar_def {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_toolbar_def .dhx_toolbar_material {
     border-width: 0px 1px 1px 1px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhxrb_with_tabbar.dhxtabbar_base_material {
     border-top-width: 0px;
     margin-top: -1px;
     width: auto;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhtmlxribbon_material.dhxrb_without_tabbar {
     border-top-width: 0px;
     width: auto;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_statusbar_def {
     position: absolute;
     bottom: 0px;
@@ -210,7 +191,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text {
     position: relative;
     font: inherit;
@@ -224,7 +204,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0px 12px;
     color: #737373;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cont_carousel {
     position: absolute;
     border: 1px solid #dfdfdf;
@@ -233,32 +212,25 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0px;
     z-index: 0;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_cont_carousel.dhx_cell_cont_no_borders {
     border-width: 0px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_menu_def {
     border-width: 1px 1px 0px 1px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_toolbar_def .dhx_toolbar_material {
     border-width: 1px 1px 0px 1px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhtmlxribbon_material.dhxrb_without_tabbar {
     border-width: 1px 1px 0px 1px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhxrb_with_tabbar.dhxtabbar_base_material {
     border-top-width: 1px;
     margin-top: 0px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhxcarousel_area div.dhx_cell_carousel div.dhx_cell_ribbon_def div.dhxrb_with_tabbar.dhxtabbar_base_material div.dhxtabbar_tabs_top div.dhx_cell_tabbar div.dhx_cell_cont_tabbar {
     border-bottom-width: 0px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls {
     position: absolute;
     width: 100%;
@@ -271,7 +243,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-color: #fafafa;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn {
     position: absolute;
     bottom: 0px;
@@ -295,52 +266,42 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev {
     background-image: url(../imgs/dhxcarousel_material/dhxcarousel_arrow_left.png);
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis {
     background-image: url(../imgs/dhxcarousel_material/dhxcarousel_arrow_left_dis.png);
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next {
     background-image: url(../imgs/dhxcarousel_material/dhxcarousel_arrow_right.png);
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     background-image: url(../imgs/dhxcarousel_material/dhxcarousel_arrow_right_dis.png);
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev:hover,
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next:hover {
     background-color: #ebebeb;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev:active,
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next:active {
     background-color: #dcdcdc;
     border-color: #d2d2d2;
     box-shadow: 0 0 4px rgba(127, 127, 127, 0.2) inset;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev,
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis {
     left: 0px;
     border-right-width: 1px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next,
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     right: 0px;
     border-left-width: 1px;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis,
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis {
     z-index: 1;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars {
     position: absolute;
     top: 10px;
@@ -354,7 +315,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar {
     float: left;
     position: relative;
@@ -373,15 +333,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar div.dhx_carousel_barcore {
     display: none;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar.dhx_carousel_baractv {
     border-color: #3399cc;
 }
-
 .dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_bars div.dhx_carousel_onebar.dhx_carousel_baractv div.dhx_carousel_barcore {
     position: absolute;
     display: block;
@@ -402,15 +359,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_hdr {
     position: relative;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_ftr {
     position: absolute;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_progress {
     position: absolute;
     left: 0px;
@@ -428,7 +382,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_progress_img {
     position: absolute;
     left: 0px;
@@ -446,7 +399,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_progress_svg {
     z-index: 4;
     position: absolute;
@@ -461,7 +413,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_progress_svg .dhx_cell_prsvg {
     position: absolute;
     top: 0;
@@ -474,7 +425,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     animation: dhx_loader_rotate 2s linear infinite;
     transform-origin: center center;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_progress_svg .dhx_cell_prsvg .dhx_cell_prcircle {
     fill: none;
     stroke: #3399cc;
@@ -485,7 +435,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     stroke-linecap: round;
     animation: dhx_loader_dash 1.5s ease-in-out infinite;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_menu {
     position: relative;
     overflow: hidden;
@@ -493,30 +442,24 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-style: solid;
     border-color: #dfdfdf;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_toolbar {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_toolbar div.dhx_toolbar_material {
     border-width: 1px 1px 0px 1px;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_ribbon {
     position: relative;
     overflow: hidden;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_ribbon div.dhtmlxribbon_material.dhxrb_without_tabbar {
     border-bottom-width: 0px;
     width: auto;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_ribbon div.dhtmlxribbon_material div.dhxrb_with_tabbar.dhxtabbar_base_material div.dhxtabbar_tabs_top div.dhx_cell_tabbar div.dhx_cell_cont_tabbar {
     border-bottom-width: 0px;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_statusbar {
     position: absolute;
     overflow: hidden;
@@ -525,7 +468,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhxcarousel_base_material div.dhxcelltop_statusbar div.dhxcont_statusbar {
     position: relative;
     background-color: #fafafa;
@@ -540,7 +482,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     white-space: nowrap;
     overflow: hidden;
 }
-
 .dhxcarousel_skin_detect {
     position: absolute;
     left: 0px;
@@ -552,17 +493,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     height: 10px;
     overflow: hidden;
 }
-
 div.dhx_popup_material div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_material {
     background-color: #fafafa;
 }
-
 div.dhx_popup_material div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls,
 .dhxwins_vp_material div.dhxwin_active div.dhx_cell_wins div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls,
 .dhxwins_vp_material div.dhxwin_inactive div.dhx_cell_wins div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls {
     border-bottom: 1px solid #dfdfdf;
 }
-
 div.dhx_popup_material div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev,
 div.dhx_popup_material div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis,
 .dhxwins_vp_material div.dhxwin_active div.dhx_cell_wins div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev,
@@ -571,7 +509,6 @@ div.dhx_popup_material div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcaro
 .dhxwins_vp_material div.dhxwin_inactive div.dhx_cell_wins div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_prev_dis {
     border-left-width: 1px;
 }
-
 div.dhx_popup_material div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next,
 div.dhx_popup_material div.dhx_popup_area tr.dhxnode td.dhx_popup_td div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next_dis,
 .dhxwins_vp_material div.dhxwin_active div.dhx_cell_wins div.dhxcarousel_base_material div.dhxcarousel_cont div.dhx_carousel_controls div.dhx_carousel_btn.dhx_carousel_btn_next,

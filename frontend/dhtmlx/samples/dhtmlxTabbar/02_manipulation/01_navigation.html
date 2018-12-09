@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Navigation</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myTabbar;
+
         function doOnLoad() {
             myTabbar = new dhtmlXTabBar({
                 parent: "my_tabbar",
@@ -29,9 +30,9 @@
 
 <br>
 
-<input type="Button" value="Prev" onclick="myTabbar.goToPrevTab();">
-<input type="Button" value="Current" onclick="alert(myTabbar.getActiveTab());">
-<input type="Button" value="Next" onclick="myTabbar.goToNextTab();">
+<input onclick="myTabbar.goToPrevTab();" type="Button" value="Prev">
+<input onclick="alert(myTabbar.getActiveTab());" type="Button" value="Current">
+<input onclick="myTabbar.goToNextTab();" type="Button" value="Next">
 
 <br><br>
 
@@ -42,7 +43,7 @@
     <option value="a4">a4</option>
     <option value="a5">a5</option>
 </select>
-<input type="Button" value="Set active tab" onclick="myTabbar.tabs(document.getElementById('sel').value).setActive();">
+<input onclick="myTabbar.tabs(document.getElementById('sel').value).setActive();" type="Button" value="Set active tab">
 
 </body>
 </html>

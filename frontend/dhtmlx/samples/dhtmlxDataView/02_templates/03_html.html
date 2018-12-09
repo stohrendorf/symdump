@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Template from HTML container</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myDataView;
+
         function doOnLoad() {
             myDataView = new dhtmlXDataView({
                 container: "data_container",
@@ -19,6 +20,7 @@
             });
             myDataView.load("../common/data.xml");
         }
+
         function apply_type() {
             myDataView.define("type", {
                 template: "html->template_container",
@@ -29,10 +31,10 @@
 </head>
 <body onload="doOnLoad();">
 <h1>Template from HTML container</h1>
-<textarea id="template_container" rows="5" cols="60">
+<textarea cols="60" id="template_container" rows="5">
 		#Package# : #Version#
 		<br/>#Maintainer#</textarea>
-<input type="button" name="apply" value="apply" onclick="apply_type()">
+<input name="apply" onclick="apply_type()" type="button" value="apply">
 <div id="data_container" style="border:1px solid #c0c0c0; background-color:white;width:596px;height:396px;"></div>
 </body>
 </html>

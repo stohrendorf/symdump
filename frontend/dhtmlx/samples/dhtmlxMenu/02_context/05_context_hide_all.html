@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Context menu hideAll mode</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         span.mode_en {
@@ -22,6 +22,7 @@
     </style>
     <script>
         var myContextMenu;
+
         function doOnLoad() {
             myContextMenu = new dhtmlXMenuObject({
                 parent: "contextArea",
@@ -30,6 +31,7 @@
                 xml: "../common/dhxmenu.xml"
             });
         }
+
         function onOff() {
             myContextMenu.setContextMenuHideAllMode(!myContextMenu.getContextMenuHideAllMode());
             document.getElementById("spmod").className = (myContextMenu.getContextMenuHideAllMode() ? "mode_en" : "mode_dis");
@@ -44,7 +46,7 @@
 </div>
 <div>hideAll contex menu mode means hide all opened context menu polygons on mouseout (true by the default)</div>
 <br>
-<div><input type="button" value="On/Off" onclick="onOff();"><span
-        style="margin-left: 7px;"><b>hideAll</b> mode</span><span id="spmod" class="mode_en">enabled</span></div>
+<div><input onclick="onOff();" type="button" value="On/Off"><span
+        style="margin-left: 7px;"><b>hideAll</b> mode</span><span class="mode_en" id="spmod">enabled</span></div>
 </body>
 </html>

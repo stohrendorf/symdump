@@ -1,29 +1,29 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXCarousel(conf, effect, skin) {
 
-    if (typeof(conf) == "string" || (typeof(conf) == "object" && typeof(conf.tagName) != "undefined")) {
+    if (typeof (conf) == "string" || (typeof (conf) == "object" && typeof (conf.tagName) != "undefined")) {
         conf = {
-            parent: (typeof(conf) == "string" ? document.getElementById(conf) : conf),
+            parent: (typeof (conf) == "string" ? document.getElementById(conf) : conf),
             effect: effect,
             skin: skin,
             delete_conf: true
         };
     } else {
         // object-api
-        if (typeof(conf) == "undefined" || conf == null) {
+        if (typeof (conf) == "undefined" || conf == null) {
             conf = {};
         }
     }
 
     this.conf = {
-        skin: (conf.skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxcarousel") || "material"),
+        skin: (conf.skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxcarousel") || "material"),
         css: "dhxcarousel", // css prefix for topcell mtb
         // misc
         items_count: 0,
@@ -35,12 +35,12 @@ function dhtmlXCarousel(conf, effect, skin) {
         ofs_left: Number(conf.offset_left) || 0,
         ofs_top: Number(conf.offset_top) || 0,
         // controls
-        buttons: (typeof(conf.buttons) == "undefined" ? true : window.dhx4.s2b(conf.buttons)), // show left/right arrows
+        buttons: (typeof (conf.buttons) == "undefined" ? true : window.dhx4.s2b(conf.buttons)), // show left/right arrows
         drops: false, // show rectangle for each cell
         // keys and touch events
-        keys: (typeof(conf.keys) == "undefined" ? true : window.dhx4.s2b(conf.keys)), // enable crtl+left/right
+        keys: (typeof (conf.keys) == "undefined" ? true : window.dhx4.s2b(conf.keys)), // enable crtl+left/right
         key_data: {left: 37, right: 39},
-        touch_scroll: (typeof(conf.touch_scroll) != "undefined" ? window.dhx4.s2b(conf.touch_scroll) : true), // scroll cells with touch
+        touch_scroll: (typeof (conf.touch_scroll) != "undefined" ? window.dhx4.s2b(conf.touch_scroll) : true), // scroll cells with touch
         // arrows
         arw: ["&#9668;", "&#9658;"]
     };
@@ -61,9 +61,9 @@ function dhtmlXCarousel(conf, effect, skin) {
             this.conf.anim_type = "slide";
             t = this["_" + this.conf.anim_type + "_init"]();
         }
-        if (typeof(t) == "object") {
+        if (typeof (t) == "object") {
             for (var a in t) {
-                if (typeof(this.conf[a]) == "undefined") this.conf[a] = t[a];
+                if (typeof (this.conf[a]) == "undefined") this.conf[a] = t[a];
             }
         }
     }
@@ -78,7 +78,7 @@ function dhtmlXCarousel(conf, effect, skin) {
     this.area.className = "dhxcarousel_area";
     this.cont.appendChild(this.area);
 
-    if (typeof(window.addEventListener) == "function" && that.conf.touch_scroll == true) {
+    if (typeof (window.addEventListener) == "function" && that.conf.touch_scroll == true) {
 
         this._doOnTouchStart = function (e) {
 
@@ -158,7 +158,7 @@ function dhtmlXCarousel(conf, effect, skin) {
         this._checkControls();
 
         // detect index
-        if (typeof(index) == "undefined" || index == null) {
+        if (typeof (index) == "undefined" || index == null) {
             index = this.conf.items_count - 1;
         } else if (index < 0) {
             index = 0;
@@ -387,7 +387,7 @@ function dhtmlXCarousel(conf, effect, skin) {
 
         this.conf.unloading = true;
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("keydown", this._doOnWinKeyDown, false);
             if (this._doOnTouchStart != null) this.area.removeEventListener(window.dhx4.dnd.evs.start, this._doOnTouchStart, false);
         } else {
@@ -444,7 +444,7 @@ function dhtmlXCarousel(conf, effect, skin) {
         }
     };
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         window.addEventListener("keydown", this._doOnWinKeyDown, false);
     } else {
         document.body.attachEvent("onkeydown", this._doOnWinKeyDown);
@@ -471,9 +471,9 @@ dhtmlXCarousel.prototype.cells = function (id) {
 // iterator
 dhtmlXCarousel.prototype.forEachCell = function (handler) {
     for (var a in this.cdata) {
-        if (typeof(handler) == "function") {
+        if (typeof (handler) == "function") {
             handler.apply(window, [this.cdata[a].cell]);
-        } else if (typeof(handler) == "string" && typeof(window[handler]) == "function") {
+        } else if (typeof (handler) == "string" && typeof (window[handler]) == "function") {
             window[handler].apply(window, [this.cdata[a].cell]);
         }
     }
@@ -520,7 +520,7 @@ dhtmlXCarousel.prototype._initControls = function () {
         if (anim != null) that._animateStart(anim);
         t = null;
     };
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         this.controls.addEventListener("click", this._doOnControlClick, false);
         if (window.dhx4.dnd.evs.start != null) this.controls.addEventListener(window.dhx4.dnd.evs.start, this._doOnControlClick, false);
     } else {
@@ -580,7 +580,7 @@ dhtmlXCarousel.prototype._initControls = function () {
 
     this._unloadControls = function () {
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.controls.removeEventListener("click", this._doOnControlClick, false);
             if (window.dhx4.dnd.evs.start != null) this.controls.removeEventListener(window.dhx4.dnd.evs.start, this._doOnControlClick, false);
         } else {
@@ -641,7 +641,7 @@ window.dhtmlXCarouselCell = function (id, carousel) {
     };
 
     return this;
-
+	
 };
 
 dhtmlXCarouselCell.prototype = new dhtmlXCellObject();
@@ -673,14 +673,14 @@ dhtmlXCellObject.prototype.attachCarousel = function (conf) {
     obj.style.overflow = "hidden";
     this._attachObject(obj);
 
-    if (typeof(window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) {
+    if (typeof (window.dhtmlXSideBarCell) == "function" && this instanceof window.dhtmlXSideBarCell) {
         if (this.conf.skin == "dhx_terrace") {
             obj._ofs = {t: -1, r: -1, b: -1, l: -1};
         }
     }
 
-    if (typeof(conf) == "undefined" || conf == null) conf = {};
-    if (typeof(conf.skin) == "undefined") conf.skin = this.conf.skin;
+    if (typeof (conf) == "undefined" || conf == null) conf = {};
+    if (typeof (conf.skin) == "undefined") conf.skin = this.conf.skin;
     conf.parent = obj;
 
     this.dataType = "carousel";
@@ -692,7 +692,7 @@ dhtmlXCellObject.prototype.attachCarousel = function (conf) {
     this.callEvent("_onContentAttach", []);
 
     return this.dataObj;
-
+	
 };
 
 // slide effect extension
@@ -812,13 +812,13 @@ dhtmlXCarousel.prototype._slide_detect_area_width = function () {
 
 /*
 
- ----[L]----[L]----[S]----[R]----[R]----
+	----[L]----[L]----[S]----[R]----[R]----
+	
+	L   ietm on left    angle  -87
+	S   selected ite    angle  0
+	R   ietm on right   angle  87
 
- L   ietm on left    angle  -87
- S   selected ite    angle  0
- R   ietm on right   angle  87
-
- */
+*/
 
 
 dhtmlXCarousel.prototype.ef.flip = true;
@@ -1077,7 +1077,7 @@ dhtmlXCarousel.prototype._cards_adjust_middle = function (fromIndex, toIndex, i)
 
 dhtmlXCarousel.prototype._cards_detect_x = function (id, i) {
     // i==0 -> item on left, i==1 => item on right
-    if (typeof(i) == "undefined" || i == null) i = (this.cdata[id].index <= this.conf.selected ? 0 : 1);
+    if (typeof (i) == "undefined" || i == null) i = (this.cdata[id].index <= this.conf.selected ? 0 : 1);
     var x = i * (this.conf.width + this.conf.ofs_left + this.conf.ofs_item) + this.conf.ofs_item;
     return x;
 };

@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Integration with dhtmlxEditor</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#carouselObj {
@@ -20,6 +20,7 @@
     <script>
         var myCarousel;
         var myEditor;
+
         function doOnLoad() {
             myCarousel = new dhtmlXCarousel({
                 parent: "carouselObj",
@@ -34,8 +35,8 @@
                 if (q == 0) {
                     myEditor = myCarousel.cells(id).attachEditor({
                         content: "<br>" +
-                        "Yoshi, full name T. Yoshisaur Munchakoopas, is a fictional anthropomorphic dinosaur (referred to as a dragon at times) who appears in video games published by Nintendo.<br><br>" +
-                        "He debuted in Super Mario World (1990) on the Super Nintendo Entertainment System as Mario and Luigi's sidekick (a role he has often reprised), and he later established his own series with several platform and puzzle games, including Super Mario World 2: Yoshi's Island.<br><br>"
+                            "Yoshi, full name T. Yoshisaur Munchakoopas, is a fictional anthropomorphic dinosaur (referred to as a dragon at times) who appears in video games published by Nintendo.<br><br>" +
+                            "He debuted in Super Mario World (1990) on the Super Nintendo Entertainment System as Mario and Luigi's sidekick (a role he has often reprised), and he later established his own series with several platform and puzzle games, including Super Mario World 2: Yoshi's Island.<br><br>"
                     });
                 } else {
                     myCarousel.cells(id).attachURL("../common/test_pages/test_page_" + q + ".html", true);

@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Connecting to database</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
-    <link rel="stylesheet" type="text/css" href="../common/demo_style.css"/>
+    <link href="../common/demo_style.css" rel="stylesheet" type="text/css"/>
     <script>
         var myList;
+
         function doOnLoad() {
             myList = new dhtmlXList({
                 container: "data_container",
@@ -24,6 +25,7 @@
             var myDataProcessor = new dataProcessor("../common/php/data.php");
             myDataProcessor.init(myList);
         }
+
         function add_data(argument) {
             myList.add({
                 Package: document.getElementById("p_name").value,
@@ -31,6 +33,7 @@
                 Maintainer: document.getElementById("m_name").value
             }, 0)
         }
+
         function remove_data() {
             myList.remove(myList.getSelected());
         }
@@ -38,15 +41,15 @@
 </head>
 <body onload="doOnLoad();">
 <h1>Connecting to database</h1>
-<div id="data_container" class="list_demo_samples" style="float:left"></div>
+<div class="list_demo_samples" id="data_container" style="float:left"></div>
 <br><br>
 <form>
-    Product <input type="text" id="p_name" value="dhtmlxList"/><br>
-    Version <input type="text" id="v_name" value="3.0"/><br>
-    Maintainer <input type="text" id="m_name" value="Ivan"><br>
-    <input type="button" value="Add &rarr;" onclick='add_data()'/>
+    Product <input id="p_name" type="text" value="dhtmlxList"/><br>
+    Version <input id="v_name" type="text" value="3.0"/><br>
+    Maintainer <input id="m_name" type="text" value="Ivan"><br>
+    <input onclick='add_data()' type="button" value="Add &rarr;"/>
     <br><br>
-    <input type="button" value="Remove selected &rarr;" onclick='remove_data()'/>
+    <input onclick='remove_data()' type="button" value="Remove selected &rarr;"/>
 </form>
 </body>
 </html>

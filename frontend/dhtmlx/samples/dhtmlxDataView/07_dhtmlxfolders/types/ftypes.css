@@ -29,6 +29,7 @@
     width: 65px;
 }
 
+
 /* ftiles template*/
 
 .dhx_dataview_ftiles_item, .dhx_dataview_ftiles_item_selected {
@@ -106,11 +107,9 @@
     border-width: 0px 1px 0px 1px;
     padding-top: 0px !important;
 }
-
 .dhx_dataview_fthumbs_item_selected img {
     border: 3px solid #316AC5;
 }
-
 .dhx_dataview_fthumbs_item_selected .dhx_item_text {
     background-color: #3366ff;
     color: white;

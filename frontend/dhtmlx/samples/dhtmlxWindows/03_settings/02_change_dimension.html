@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Change dimension</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.controls {
@@ -61,15 +61,15 @@
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="winVP"></div>
 <div class="controls">
-    Window #1 <input type="button" value="320x200" onclick="setDim('w1',320,200);"> <input type="button" value="350x230"
-                                                                                           onclick="setDim('w1',350,230);">
-    <input type="button" value="380x260" onclick="setDim('w1',380,260);"><br>
-    Window #2 <input type="button" value="320x200" onclick="setDim('w2',320,200);"> <input type="button" value="350x230"
-                                                                                           onclick="setDim('w2',350,230);">
-    <input type="button" value="380x260" onclick="setDim('w2',380,260);"><br>
-    Window #3 <input type="button" value="320x200" onclick="setDim('w3',320,200);"> <input type="button" value="350x230"
-                                                                                           onclick="setDim('w3',350,230);">
-    <input type="button" value="380x260" onclick="setDim('w3',380,260);">
+    Window #1 <input onclick="setDim('w1',320,200);" type="button" value="320x200"> <input
+        onclick="setDim('w1',350,230);" type="button" value="350x230"> <input onclick="setDim('w1',380,260);"
+                                                                              type="button" value="380x260"><br>
+    Window #2 <input onclick="setDim('w2',320,200);" type="button" value="320x200"> <input
+        onclick="setDim('w2',350,230);" type="button" value="350x230"> <input onclick="setDim('w2',380,260);"
+                                                                              type="button" value="380x260"><br>
+    Window #3 <input onclick="setDim('w3',320,200);" type="button" value="320x200"> <input
+        onclick="setDim('w3',350,230);" type="button" value="350x230"> <input onclick="setDim('w3',380,260);"
+                                                                              type="button" value="380x260">
 </div>
 </body>
 </html>

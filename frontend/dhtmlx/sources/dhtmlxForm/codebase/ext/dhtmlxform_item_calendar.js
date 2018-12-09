@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXForm.prototype.items.calendar = {
 
@@ -67,7 +67,7 @@ dhtmlXForm.prototype.items.calendar = {
         if (window.dhx4.s2b(data.enableTodayButton)) item._c.showToday();
         if (window.dhx4.s2b(data.showWeekNumbers)) item._c.showWeekNumbers();
         if (!isNaN(data.weekStart)) item._c.setWeekStartDay(data.weekStart);
-        if (typeof(data.calendarPosition) != "undefined") item._c.setPosition(data.calendarPosition);
+        if (typeof (data.calendarPosition) != "undefined") item._c.setPosition(data.calendarPosition);
         if (data.minutesInterval != null) item._c.setMinutesInterval(data.minutesInterval);
 
         item._c._itemIdd = item._idd;
@@ -120,7 +120,7 @@ dhtmlXForm.prototype.items.calendar = {
     },
 
     setValue: function (item, value, cUpd) {
-        if (!value || value == null || typeof(value) == "undefined" || value == "") {
+        if (!value || value == null || typeof (value) == "undefined" || value == "") {
             item._value = null;
             item.childNodes[item._ll ? 1 : 0].childNodes[0].value = "";
         } else {

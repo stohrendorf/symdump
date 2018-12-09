@@ -2,17 +2,19 @@
 <html>
 <head>
     <title>Presets</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script src="../common/testdata.js"></script>
     <script type="text/javascript">
         var myLineChart;
+
         function doOnLoad() {
             drawChart("plot");
         }
+
         function drawChart(preset) {
             myLineChart = new dhtmlXChart({
                 view: "line",
@@ -33,6 +35,7 @@
             });
             myLineChart.parse(dataset, "json");
         }
+
         function applyPreset() {
             var preset = document.getElementById("preset").value;
             myLineChart.destructor();
@@ -44,7 +47,7 @@
 <div style="padding: 5px;">
     <b>Preset:</b>
     <select id="preset" onchange="applyPreset()">
-        <option value="plot" selected>plot</option>
+        <option selected value="plot">plot</option>
         <option value="diamond">diamond</option>
         <option value="simple">simple</option>
     </select>

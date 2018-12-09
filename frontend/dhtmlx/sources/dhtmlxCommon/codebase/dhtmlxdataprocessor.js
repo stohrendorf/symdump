@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /**
  *    @desc: constructor, data processor object
@@ -280,7 +280,7 @@ dataProcessor.prototype = {
     _applyPayload: function (url) {
         if (this._payload)
             for (var key in this._payload)
-                url = url + (url.indexOf("?") === -1 ? "?" : "&" ) + this.escape(key) + "=" + this.escape(this._payload[key]);
+                url = url + (url.indexOf("?") === -1 ? "?" : "&") + this.escape(key) + "=" + this.escape(this._payload[key]);
         return url;
     },
     _sendData: function (a1, rowId) {
@@ -316,8 +316,7 @@ dataProcessor.prototype = {
                 headers: this._headers,
                 callback: back
             });
-        }
-        else if (this._tMode == "POST") {
+        } else if (this._tMode == "POST") {
             dhx4.ajax.query({
                 url: a4,
                 method: "POST",
@@ -325,8 +324,7 @@ dataProcessor.prototype = {
                 callback: back,
                 data: this.serialize(a1, rowId)
             });
-        }
-        else if (this._tMode == "JSON") {
+        } else if (this._tMode == "JSON") {
             var action = a1[this.action_param];
             var data = {};
             for (var key in a1) data[key] = a1[key];
@@ -345,8 +343,7 @@ dataProcessor.prototype = {
                     data: data
                 })
             });
-        }
-        else if (this._tMode == "REST") {
+        } else if (this._tMode == "REST") {
             var state = this.getState(rowId);
             var url = a3.replace(/(\&|\?)editing\=true/, "");
             var parts = url.split("?");
@@ -426,8 +423,8 @@ dataProcessor.prototype = {
      */
     setVerificator: function (ind, verifFunction) {
         this.mandatoryFields[ind] = verifFunction || (function (value) {
-                return (value !== "");
-            });
+            return (value !== "");
+        });
     },
     /**
      *    @desc: remove column from list of those which should be verified
@@ -589,9 +586,9 @@ dataProcessor.prototype = {
 
 
     /* starts autoupdate mode
-     @param interval
-     time interval for sending update requests
-     */
+        @param interval
+            time interval for sending update requests
+    */
     setAutoUpdate: function (interval, user) {
         interval = interval || 2000;
 
@@ -614,9 +611,9 @@ dataProcessor.prototype = {
 
 
     /* process updating request answer
-     if status == collision version is depricated
-     set flag for autoupdating immidiatly
-     */
+        if status == collision version is depricated
+        set flag for autoupdating immidiatly
+    */
     afterAutoUpdate: function (sid, action, tid, xml_node) {
         if (action == 'collision') {
             this._need_update = true;
@@ -628,8 +625,8 @@ dataProcessor.prototype = {
 
 
     /* callback function for onFillSync event
-     call update function if it's need
-     */
+        call update function if it's need
+    */
     fullSync: function () {
         if (this._need_update == true) {
             this._need_update = false;
@@ -640,7 +637,7 @@ dataProcessor.prototype = {
 
 
     /* sends query to the server and call callback function
-     */
+    */
     getUpdates: function (url, callback) {
         if (this._update_busy)
             return false;
@@ -652,9 +649,9 @@ dataProcessor.prototype = {
 
 
     /* returns xml node value
-     @param node
-     xml node
-     */
+        @param node
+            xml node
+    */
     _v: function (node) {
         if (node.firstChild) return node.firstChild.nodeValue;
         return "";
@@ -662,9 +659,9 @@ dataProcessor.prototype = {
 
 
     /* returns values array of xml nodes array
-     @param arr
-     array of xml nodes
-     */
+        @param arr
+            array of xml nodes
+    */
     _a: function (arr) {
         var res = [];
         for (var i = 0; i < arr.length; i++) {
@@ -675,7 +672,7 @@ dataProcessor.prototype = {
 
 
     /* loads updates and processes them
-     */
+    */
     loadUpdate: function () {
         var self = this;
         var version = this.obj.getUserData(0, "version");

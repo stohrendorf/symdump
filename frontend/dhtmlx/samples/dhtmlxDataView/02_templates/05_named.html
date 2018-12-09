@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Named templates</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         dhtmlx.Type.add(dhtmlXDataView, {
@@ -19,6 +19,7 @@
             height: 40
         });
         var myDataView;
+
         function doOnLoad() {
             myDataView = new dhtmlXDataView({
                 container: "data_container",
@@ -31,7 +32,7 @@
 <body onload="doOnLoad();">
 <h1>Named templates</h1>
 <div id="data_container" style="border:1px solid #c0c0c0; background-color:white;width:596px;height:396px;"></div>
-<input type="button" name="" value="Template A" onclick="myDataView.define('type','dataA')">
-<input type="button" name="" value="Template B" onclick="myDataView.define('type','dataB')">
+<input name="" onclick="myDataView.define('type','dataA')" type="button" value="Template A">
+<input name="" onclick="myDataView.define('type','dataB')" type="button" value="Template B">
 </body>
 </html>

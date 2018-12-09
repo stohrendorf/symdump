@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Init from object</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myRibbon;
@@ -15,22 +15,27 @@
             items: [
                 {
                     type: 'block', text: 'office document', mode: 'cols', list: [
-                    {
-                        id: "menu", type: "buttonSelect", text: "menu", img: "48/open.gif", items: [
-                        {id: "new", text: "New", img: "18/new.gif"},
-                        {id: "sep0", type: "separator"},
-                        {id: "open", text: "Open", img: "18/open.gif"},
-                        {id: "save", text: "Save", img: "18/save.gif"}
+                        {
+                            id: "menu", type: "buttonSelect", text: "menu", img: "48/open.gif", items: [
+                                {id: "new", text: "New", img: "18/new.gif"},
+                                {id: "sep0", type: "separator"},
+                                {id: "open", text: "Open", img: "18/open.gif"},
+                                {id: "save", text: "Save", img: "18/save.gif"}
+                            ]
+                        },
+                        {
+                            id: "buffer",
+                            type: "buttonSelect",
+                            text: "Buffer",
+                            isbig: true,
+                            img: "48/copy.gif",
+                            items: [
+                                {id: "copy", text: "copy", img: "18/copy.gif"},
+                                {id: "cut", text: "cut", img: "18/cut.gif"},
+                                {id: "paste", text: "paste", img: "18/paste.gif"}
+                            ]
+                        }
                     ]
-                    },
-                    {
-                        id: "buffer", type: "buttonSelect", text: "Buffer", isbig: true, img: "48/copy.gif", items: [
-                        {id: "copy", text: "copy", img: "18/copy.gif"},
-                        {id: "cut", text: "cut", img: "18/cut.gif"},
-                        {id: "paste", text: "paste", img: "18/paste.gif"}
-                    ]
-                    }
-                ]
                 }
             ]
         };

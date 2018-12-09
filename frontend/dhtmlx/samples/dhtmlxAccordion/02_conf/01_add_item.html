@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Adding Items</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -18,10 +18,12 @@
     <script>
         var id = 0;
         var myAcc;
+
         function doOnLoad() {
             myAcc = new dhtmlXAccordion("accObj");
             myAcc.addItem("a" + (id++), "First Item");
         }
+
         function addItem() {
             if (id > 5) {
                 alert("Too many items");
@@ -34,8 +36,8 @@
 <body onload="doOnLoad();">
 <div id="accObj" style="position: relative; width: 320px; height: 400px;"></div>
 <div style="margin: 50px 0px 20px 0px;">
-    Item Text <input id="newText" type="text" value="Second Item"> <input type="button" value="Add Item"
-                                                                          onclick="addItem();">
+    Item Text <input id="newText" type="text" value="Second Item"> <input onclick="addItem();" type="button"
+                                                                          value="Add Item">
 </div>
 </body>
 </html>

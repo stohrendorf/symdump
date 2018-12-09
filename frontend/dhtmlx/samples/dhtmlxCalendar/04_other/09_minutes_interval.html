@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Minutes Interval</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         #calendarHere {
@@ -15,6 +15,7 @@
     </style>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere");
             myCalendar.show();
@@ -25,10 +26,10 @@
 <body onload="doOnLoad();">
 <div style="margin-bottom: 20px;">This will affect on minutes-selector; 1, 5 (default), 10, 15 only allowed</div>
 <div style="margin-bottom: 20px;">
-    <input type="button" value="1" onclick="myCalendar.setMinutesInterval(1);">
-    <input type="button" value="5" onclick="myCalendar.setMinutesInterval(5);">
-    <input type="button" value="10" onclick="myCalendar.setMinutesInterval(10);">
-    <input type="button" value="15" onclick="myCalendar.setMinutesInterval(15);">
+    <input onclick="myCalendar.setMinutesInterval(1);" type="button" value="1">
+    <input onclick="myCalendar.setMinutesInterval(5);" type="button" value="5">
+    <input onclick="myCalendar.setMinutesInterval(10);" type="button" value="10">
+    <input onclick="myCalendar.setMinutesInterval(15);" type="button" value="15">
 </div>
 <div id="calendarHere"></div>
 </body>

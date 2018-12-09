@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Light mouse navigation</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myGrid;
+
         function doOnLoad() {
             myGrid = new dhtmlXGridObject('gridbox');
             myGrid.setImagePath("../../../codebase/imgs/");
@@ -32,6 +33,7 @@
             myGrid.enableLightMouseNavigation(true);
             myGrid.load("../common/grid.xml");
         }
+
         function m_f2(id) {
             document.getElementById("a_1").innerHTML = "Selected row: " + id;
         }
@@ -45,7 +47,7 @@
 </p>
 <table width="600">
     <tr>
-        <td width="50%" valign="top">
+        <td valign="top" width="50%">
             <div id="gridbox" style="width:100%;height:450px;background-color:white;"></div>
         </td>
     </tr>

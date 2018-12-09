@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXMenuObject(base, skin) {
 
@@ -12,7 +12,7 @@ function dhtmlXMenuObject(base, skin) {
 
     // iframe
     this.conf = {
-        skin: (skin || window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxmenu") || "material"),
+        skin: (skin || window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxmenu") || "material"),
         mode: "web",
         align: "left",
         is_touched: false,
@@ -81,7 +81,7 @@ function dhtmlXMenuObject(base, skin) {
         opened_poly: []
     };
 
-    if (typeof(base) == "object" && base != null && typeof(base.tagName) == "undefined") {
+    if (typeof (base) == "object" && base != null && typeof (base.tagName) == "undefined") {
 
         // object-api init
         if (base.icons_path != null || base.icon_path != null) this.conf.icons_path = (base.icons_path || base.icon_path);
@@ -122,7 +122,7 @@ function dhtmlXMenuObject(base, skin) {
     if (base == null) {
         this.base = document.body;
     } else {
-        var baseObj = (typeof(base) == "string" ? document.getElementById(base) : base);
+        var baseObj = (typeof (base) == "string" ? document.getElementById(base) : base);
         if (baseObj != null) {
             this.base = baseObj;
             if (!this.base.id) this.base.id = "menuBaseId_" + new Date().getTime();
@@ -240,7 +240,7 @@ function dhtmlXMenuObject(base, skin) {
                 window.dhx4.zim.clear(this.idPull["polygon_" + id]._zId);
             }
             //
-            if (typeof(this._menuEffect) != "undefined" && this._menuEffect !== false) {
+            if (typeof (this._menuEffect) != "undefined" && this._menuEffect !== false) {
                 this._hidePolygonEffect("polygon_" + id);
             } else {
                 // already hidden
@@ -439,7 +439,7 @@ function dhtmlXMenuObject(base, skin) {
             //this.idPull[pId].style.top = y+arrUpH+"px";
             this.idPull[pId].style.top = y + "px";
             //
-            if (typeof(this._menuEffect) != "undefined" && this._menuEffect !== false) {
+            if (typeof (this._menuEffect) != "undefined" && this._menuEffect !== false) {
                 this._showPolygonEffect(pId);
             } else {
                 this.idPull[pId].style.visibility = "";
@@ -592,9 +592,9 @@ function dhtmlXMenuObject(base, skin) {
     this._searchMenuNode = function (node, menu) {
         var m = [];
         for (var q = 0; q < menu.length; q++) {
-            if (typeof(menu[q]) == "object") {
+            if (typeof (menu[q]) == "object") {
                 if (menu[q].length == 5) {
-                    if (typeof(menu[q][0]) != "object") {
+                    if (typeof (menu[q][0]) != "object") {
                         if ((menu[q][0].replace(this.idPrefix, "") == node) && (q == 0)) {
                             m = menu;
                         }
@@ -717,7 +717,7 @@ function dhtmlXMenuObject(base, skin) {
         if (toHide) that.hideContextMenu();
     };
 
-    if (typeof(window.addEventListener) != "undefined") {
+    if (typeof (window.addEventListener) != "undefined") {
         window.addEventListener("click", this._bodyClick, false);
         window.addEventListener("contextmenu", this._bodyContext, false);
     } else {
@@ -738,7 +738,7 @@ function dhtmlXMenuObject(base, skin) {
         }
         this.conf.live_id = null;
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.removeEventListener("click", this._bodyClick, false);
             window.removeEventListener("contextmenu", this._bodyContext, false);
         } else {
@@ -800,9 +800,9 @@ function dhtmlXMenuObject(base, skin) {
 
     for (var a in {onclick: 1, oncheckboxclick: 1, onradioclick: 1}) {
         if (this.conf.autoload[a] != null) {
-            if (typeof(this.conf.autoload[a]) == "function") {
+            if (typeof (this.conf.autoload[a]) == "function") {
                 this.attachEvent(a, this.conf.autoload[a]);
-            } else if (typeof(window[this.conf.autoload[a]]) == "function") {
+            } else if (typeof (window[this.conf.autoload[a]]) == "function") {
                 this.attachEvent(a, window[this.conf.autoload[a]]);
             }
         }
@@ -824,6 +824,7 @@ function dhtmlXMenuObject(base, skin) {
     return this;
 
 }
+
 dhtmlXMenuObject.prototype._init = function () {
     if (this._isInited == true) return;
     if (this.conf.dload) {
@@ -955,7 +956,7 @@ dhtmlXMenuObject.prototype._updateItemImage = function (id, levelType) {
             var imgObj = this.idPull[id].childNodes[this.conf.rtl ? 2 : 0].childNodes[0];
         } catch (e) {
         }
-        if (!(imgObj != null && typeof(imgObj.className) != "undefined" && (imgObj.className == "sub_icon" || imgObj.tagName.toLowerCase() == "i"))) imgObj = null;
+        if (!(imgObj != null && typeof (imgObj.className) != "undefined" && (imgObj.className == "sub_icon" || imgObj.tagName.toLowerCase() == "i"))) imgObj = null;
     }
 
     var imgSrc = this.itemPull[id][(this.itemPull[id]["state"] == "enabled" ? "imgen" : "imgdis")];
@@ -1632,7 +1633,7 @@ dhtmlXMenuObject.prototype._initObj = function (items, nested, parentId) {
     for (var q = 0; q < items.length; q++) {
 
         // api-init, items w/o id
-        if (typeof(items[q].id) == "undefined" || items[q].id == null) {
+        if (typeof (items[q].id) == "undefined" || items[q].id == null) {
             items[q].id = this._genStr(24);
         }
 
@@ -1646,7 +1647,7 @@ dhtmlXMenuObject.prototype._initObj = function (items, nested, parentId) {
 
         var k = {type: "item", tip: "", hotkey: "", state: "enabled", imgen: "", imgdis: ""};
         for (var a in k) {
-            if (typeof(items[q][a]) == "undefined") items[q][a] = k[a];
+            if (typeof (items[q][a]) == "undefined") items[q][a] = k[a];
         }
 
         //
@@ -1667,14 +1668,14 @@ dhtmlXMenuObject.prototype._initObj = function (items, nested, parentId) {
 
 
         // en/dis
-        if (typeof(items[q].enabled) != "undefined" && window.dhx4.s2b(items[q].enabled) == false) {
+        if (typeof (items[q].enabled) != "undefined" && window.dhx4.s2b(items[q].enabled) == false) {
             items[q].state = "disabled";
-        } else if (typeof(items[q].disabled) != "undefined" && window.dhx4.s2b(items[q].disabled) == true) {
+        } else if (typeof (items[q].disabled) != "undefined" && window.dhx4.s2b(items[q].disabled) == true) {
             items[q].state = "disabled";
         }
 
         //
-        if (typeof(items[q].parent) == "undefined") {
+        if (typeof (items[q].parent) == "undefined") {
             items[q].parent = (parentId != null ? parentId : this.idPrefix + this.topId);
         }
 
@@ -1689,7 +1690,7 @@ dhtmlXMenuObject.prototype._initObj = function (items, nested, parentId) {
             items[q].checked = window.dhx4.s2b(items[q].checked);
             items[q].imgen = items[q].imgdis = "rdbt_" + (items[q].checked ? "1" : "0");
             // group
-            if (typeof(items[q].group) == "undefined" || items[q].group == null) items[q].group = this._genStr(24);
+            if (typeof (items[q].group) == "undefined" || items[q].group == null) items[q].group = this._genStr(24);
             if (this.radio[items[q].group] == null) this.radio[items[q].group] = [];
             this.radio[items[q].group].push(items[q].id);
         }
@@ -1761,7 +1762,7 @@ dhtmlXMenuObject.prototype._xmlToJson = function (xml, parentId) {
     }
 
     for (var q = 0; q < root.childNodes.length; q++) {
-        if (typeof(root.childNodes[q].tagName) != "undefined" && String(root.childNodes[q].tagName).toLowerCase() == this.conf.tags.item) {
+        if (typeof (root.childNodes[q].tagName) != "undefined" && String(root.childNodes[q].tagName).toLowerCase() == this.conf.tags.item) {
             var r = root.childNodes[q];
             var item = {
                 // basic
@@ -1807,7 +1808,7 @@ dhtmlXMenuObject.prototype._xmlToJson = function (xml, parentId) {
 
             // misc
             for (var w = 0; w < r.childNodes.length; w++) {
-                if (typeof(r.childNodes[w].tagName) != "undefined") {
+                if (typeof (r.childNodes[w].tagName) != "undefined") {
                     var t = String(r.childNodes[w].tagName || "").toLowerCase();
                     // userdata
                     if (t == this.conf.tags.userdata) {
@@ -1870,6 +1871,7 @@ dhtmlXMenuObject.prototype._updateLoaderIcon = function (id, state) {
     if (String(aNode.className).search("complex_arrow") === 0) aNode.className = "complex_arrow" + (state ? "_loading" : "");
 
 };
+
 
 
 // add/remove
@@ -2011,7 +2013,7 @@ dhtmlXMenuObject.prototype.removeItem = function (id, _isTId, _recCall) {
 
     // update corners
     if (this.conf.skin == "dhx_terrace" && arguments.length == 1) this._improveTerraceSkin();
-
+	
 };
 
 
@@ -2047,7 +2049,7 @@ dhtmlXMenuObject.prototype.addContextZone = function (zoneId) {
     if (zoneId == document.body) {
         zoneId = "document.body." + this.idPrefix;
         var zone = document.body;
-    } else if (typeof(zoneId) == "string") {
+    } else if (typeof (zoneId) == "string") {
         var zone = document.getElementById(zoneId);
     } else {
         var zone = zoneId;
@@ -2266,7 +2268,7 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
     dhtmlXCellObject.prototype._createNode_menu = function (obj, type, htmlString, append, node) {
 
-        if (typeof(node) != "undefined") {
+        if (typeof (node) != "undefined") {
             obj = node;
         } else {
             obj = document.createElement("DIV");
@@ -2290,8 +2292,8 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         this.callEvent("_onBeforeContentAttach", ["menu"]);
 
-        if (typeof(conf) == "undefined") conf = {};
-        if (typeof(conf.skin) == "undefined") conf.skin = this.conf.skin;
+        if (typeof (conf) == "undefined") conf = {};
+        if (typeof (conf.skin) == "undefined") conf.skin = this.conf.skin;
         conf.parent = this._attachObject("menu").firstChild;
 
         this.dataNodes.menu = new dhtmlXMenuObject(conf);
@@ -2310,7 +2312,7 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         if (this.dataNodes.menu == null) return;
 
-        if (typeof(this.dataNodes.menu.unload) == "function") this.dataNodes.menu.unload();
+        if (typeof (this.dataNodes.menu.unload) == "function") this.dataNodes.menu.unload();
         this.dataNodes.menu = null;
         delete this.dataNodes.menu;
 
@@ -2329,6 +2331,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
     dhtmlXCellObject.prototype.getAttachedMenu = function () {
         return this.dataNodes.menu;
     };
-
+	
 }
 

@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Listed option position</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var sel2;
         var myToolbar;
+
         function doOnLoad() {
             sel2 = document.getElementById("sel2");
             myToolbar = new dhtmlXToolbarObject({
@@ -19,18 +20,22 @@
                 onload: updateList
             });
         }
+
         function getId() {
             var id = (sel2.options[sel2.selectedIndex].value).split(";");
             return id;
         }
+
         function setPosition(text) {
             var id = getId();
             myToolbar.setListOptionPosition(id[0], id[1], Number(document.getElementById("txt").value));
         }
+
         function getPosition() {
             var id = getId();
             alert(myToolbar.getListOptionPosition(id[0], id[1]));
         }
+
         function updateList() {
             sel2.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -47,9 +52,9 @@
 <div id="toolbarObj"></div>
 <div style="margin-top: 200px;">
     <select id="sel2"></select>
-    <input type="button" value="Get Position" onclick="getPosition();">
-    <input type="button" value="Set Position" onclick="setPosition();">
-    <input id="txt" type="text" value="1" style="width: 30px;">
+    <input onclick="getPosition();" type="button" value="Get Position">
+    <input onclick="setPosition();" type="button" value="Set Position">
+    <input id="txt" style="width: 30px;" type="text" value="1">
 </div>
 </body>
 </html>

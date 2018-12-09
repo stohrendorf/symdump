@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /**
  *   @desc: hide pivot table related to grid, if any exists, switch grid back to normal mode
@@ -44,8 +44,8 @@ dhtmlXGridObject.prototype.makePivot = function (cont, details) {
         this.entBox.appendChild(cont);
     }
 
-    if (typeof(cont) != "object") cont = document.getElementById(cont);
-
+    if (typeof (cont) != "object") cont = document.getElementById(cont);
+   
     if (details.column_list)
         this._column_list = details.column_list;
     else {
@@ -309,7 +309,7 @@ dhtmlXGridObject.prototype._reFillPivotLists = function () {
     this._fillPivotList(s[2], this._column_list, m, v[2]);
 
     this._reFfillPivotLists = t;
-
+	
 };
 
 

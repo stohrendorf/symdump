@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>onToolbarClick with dhtmlxToolbar</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#editorObj {
@@ -29,6 +29,7 @@
     </style>
     <script>
         var myEditor;
+
         function doOnLoad() {
             myEditor = new dhtmlXEditor({
                 parent: "editorObj",
@@ -40,6 +41,7 @@
                 writeLog("onToolbarClick event fired, name: <b>" + name + "</b>");
             });
         }
+
         function writeLog(text) {
             document.getElementById("logsHere").innerHTML += "<br>" + text;
             document.getElementById("logsHere").scrollTop = document.getElementById("logsHere").scrollHeight;

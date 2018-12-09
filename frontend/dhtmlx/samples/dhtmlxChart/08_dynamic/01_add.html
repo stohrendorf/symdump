@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Adding</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script src="../common/testdata.js"></script>
     <script>
         var myBarChart;
+
         function doOnLoad() {
             myBarChart = new dhtmlXChart({
                 view: "bar",
@@ -37,6 +38,7 @@
             myBarChart.parse(dataset, "json");
         }
         var counter = 12;
+
         function addNew() {
             myBarChart.add({
                 year: counter,
@@ -44,6 +46,7 @@
             });
             counter++;
         }
+
         function deleteFirst() {
             myBarChart.remove(myBarChart.first());
         }
@@ -51,7 +54,7 @@
 </head>
 <body onload="doOnLoad();">
 <div id="chartDiv" style="width:800px;height:250px;border:1px solid #c0c0c0;"></div>
-<input type="button" value="add" onclick="addNew()">
-<input type="button" value="delete" onclick="deleteFirst()">
+<input onclick="addNew()" type="button" value="add">
+<input onclick="deleteFirst()" type="button" value="delete">
 </body>
 </html>

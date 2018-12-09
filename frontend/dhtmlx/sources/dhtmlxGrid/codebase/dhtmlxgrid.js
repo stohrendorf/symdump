@@ -1,27 +1,27 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 //latest dev. version
 
 /*_TOPICS_
- @0:initialization
- @1:selection control
- @2:rows control
- @3:colums control
- @4:cells controll
- @5:data manipulation
- @6:appearence control
- @7:overal control
- @8:tools
- @9:treegrid
- @10: event handlers
- @11: paginal output
- */
+@0:initialization
+@1:selection control
+@2:rows control
+@3:colums control
+@4:cells controll
+@5:data manipulation
+@6:appearence control
+@7:overal control
+@8:tools
+@9:treegrid
+@10: event handlers
+@11: paginal output
+*/
 
 var globalActiveDHTMLGridObject;
 String.prototype._dhx_trim = function () {
@@ -31,6 +31,7 @@ String.prototype._dhx_trim = function () {
 function dhtmlxArray(ar) {
     return dhtmlx.extend((ar || []), dhtmlxArray._master);
 }
+
 dhtmlxArray._master = {
     _dhx_find: function (pattern) {
         for (var i = 0; i < this.length; i++) {
@@ -42,7 +43,7 @@ dhtmlxArray._master = {
     _dhx_insertAt: function (ind, value) {
         this[this.length] = null;
         for (var i = this.length - 1; i >= ind; i--)
-            this[i] = this[i - 1]
+            this[i] = this[i - 1];
         this[ind] = value
     },
     _dhx_removeAt: function (ind) {
@@ -68,8 +69,7 @@ function dhtmlXGridObject(id) {
     if (_isIE)
         try {
             document.execCommand("BackgroundImageCache", false, true);
-        }
-        catch (e) {
+        } catch (e) {
         }
 
     if (id) {
@@ -214,8 +214,7 @@ function dhtmlXGridObject(id) {
     dhtmlxEvent(window, "unload", function () {
         try {
             if (self.destructor) self.destructor();
-        }
-        catch (e) {
+        } catch (e) {
         }
     });
 
@@ -345,7 +344,7 @@ function dhtmlXGridObject(id) {
             return;
 
         if (!this.skin_name)
-            this.setSkin(window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxgrid") || "material");
+            this.setSkin(window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxgrid") || "material");
 
         this.editStop();
         /*TEMPORARY STATES*/
@@ -446,8 +445,7 @@ function dhtmlXGridObject(id) {
 
         if (this.noHeader) {
             this.hdrBox.style.display = 'none';
-        }
-        else {
+        } else {
             this.noHeader = false
         }
         //#__pro_feature:21092006{
@@ -569,7 +567,7 @@ function dhtmlXGridObject(id) {
             } else {
                 if (this._delta_x) {
                     /*when placed directly in TD tag, container can't use native percent based sizes, 
-                     because table auto-adjust to show all content - too clever*/
+					because table auto-adjust to show all content - too clever*/
                     if (this.entBox.parentNode && this.entBox.parentNode.tagName == "TD") {
                         this.entBox.style.width = "1px";
                         this.entBox.style.width = parseInt(this._delta_x) * this.entBox.parentNode.clientWidth / 100 - outerBorder * 2 + "px";
@@ -821,8 +819,7 @@ function dhtmlXGridObject(id) {
         var check = (ev.layerX || 0) + (((!_isIE) && (ev.target.tagName == "DIV")) ? el.offsetLeft : 0);
         if ((el.offsetWidth - (ev.offsetX || (parseInt(this.getPosition(el, this.hdrBox)) - check) * -1)) < (_isOpera ? 20 : 10)) {
             el.style.cursor = "E-resize";
-        }
-        else {
+        } else {
             el.style.cursor = "default";
         }
 
@@ -890,10 +887,10 @@ function dhtmlXGridObject(id) {
         var wtabW = tabW + (ev.clientX - x);
 
         if (!(this.callEvent("onResize", [
-                el._cellIndex,
-                fcolW,
-                this
-            ])))
+            el._cellIndex,
+            fcolW,
+            this
+        ])))
             return;
 
         if (_isIE)
@@ -905,7 +902,7 @@ function dhtmlXGridObject(id) {
 
             for (var i = 0;
                  i < el.colSpan;
-                 i++)a_sizes[i] = Math.round(fcolW * this.hdr.rows[0].childNodes[el._cellIndexS + i].offsetWidth / el.offsetWidth);
+                 i++) a_sizes[i] = Math.round(fcolW * this.hdr.rows[0].childNodes[el._cellIndexS + i].offsetWidth / el.offsetWidth);
 
             for (var i = 0; i < el.colSpan; i++)
                 result = this._setColumnSizeR(el._cellIndexS + i * 1, a_sizes[i]);
@@ -934,8 +931,7 @@ function dhtmlXGridObject(id) {
 
             if (this.cellWidthType == 'px') {
                 this.cellWidthPX[ind] = fcolW;
-            }
-            else {
+            } else {
                 var gridWidth = parseInt(this.entBox.offsetWidth);
 
                 if (this.objBox.scrollHeight > this.objBox.offsetHeight)
@@ -1097,17 +1093,17 @@ function dhtmlXGridObject(id) {
     this._doContClick = function (ev) {
         var el = this.getFirstParentOfType(_isIE ? ev.srcElement : ev.target, "TD");
 
-        if ((!el) || ( typeof (el.parentNode.idd) == "undefined")) {
+        if ((!el) || (typeof (el.parentNode.idd) == "undefined")) {
             this.callEvent("onEmptyClick", [ev]);
             return true;
         }
 
         if (ev.button == 2 || (_isMacOS && ev.ctrlKey)) {
             if (!this.callEvent("onRightClick", [
-                    el.parentNode.idd,
-                    el._cellIndex,
-                    ev
-                ])) {
+                el.parentNode.idd,
+                el._cellIndex,
+                ev
+            ])) {
                 var z = function (e) {
                     (e || event).cancelBubble = true;
                     return false;
@@ -1119,10 +1115,10 @@ function dhtmlXGridObject(id) {
 
             if (this._ctmndx) {
                 if (!(this.callEvent("onBeforeContextMenu", [
-                        el.parentNode.idd,
-                        el._cellIndex,
-                        this
-                    ])))
+                    el.parentNode.idd,
+                    el._cellIndex,
+                    this
+                ])))
                     return true;
 
                 if (_isIE)
@@ -1156,9 +1152,7 @@ function dhtmlXGridObject(id) {
                 ev.cancelBubble = true;
                 return false;
             }
-        }
-
-        else if (this._ctmndx) {
+        } else if (this._ctmndx) {
             if (this._ctmndx.hideContextMenu)
                 this._ctmndx.hideContextMenu();
             else
@@ -1236,10 +1230,10 @@ function dhtmlXGridObject(id) {
 
             if ((!skipRowSelection) && (!el.parentNode._sRow)) {
                 if (this.callEvent("onBeforeSelect", [
-                        el.parentNode.idd,
-                        psid,
-                        el._cellIndex
-                    ])) {
+                    el.parentNode.idd,
+                    psid,
+                    el._cellIndex
+                ])) {
                     if (this.getSelectedRowId() != el.parentNode.idd) {
                         if (selMethod == 0)
                             this.clearSelection();
@@ -1353,8 +1347,7 @@ function dhtmlXGridObject(id) {
                 this.doClick(c, fl, 3, show);
             else
                 this.doClick(c, fl, 0, show)
-        }
-        else
+        } else
             this.doMark(c, preserve ? 2 : 0);
 
         if (edit)
@@ -1398,8 +1391,7 @@ function dhtmlXGridObject(id) {
             if (!cell_obj.offsetHeight) {
                 var mask = this._realfake ? this._fake.rowsAr[cell_obj.parentNode.idd] : cell_obj.parentNode;
                 distance = this.rowsBuffer._dhx_find(mask) * this._srdh;
-            }
-            else
+            } else
                 distance = cell_obj.offsetTop;
             var distancemax = distance + cell_obj.offsetHeight + 38;
 
@@ -1411,8 +1403,7 @@ function dhtmlXGridObject(id) {
 
             if (scrollTop)
                 this.objBox.scrollTop = scrollTop;
-        }
-        catch (er) {
+        } catch (er) {
         }
     };
     /**
@@ -1445,10 +1436,10 @@ function dhtmlXGridObject(id) {
             }
 
             if (this.callEvent("onEditCell", [
-                    0,
-                    this.row.idd,
-                    this.cell._cellIndex
-                ]) != false && this.editor.edit) {
+                0,
+                this.row.idd,
+                this.cell._cellIndex
+            ]) != false && this.editor.edit) {
                 this._Opera_stop = (new Date).valueOf();
                 c.className += " editable";
                 this.editor.edit();
@@ -1509,7 +1500,7 @@ function dhtmlXGridObject(id) {
                 g.val
             ]);
 
-            if (( typeof (z) == "string") || ( typeof (z) == "number"))
+            if ((typeof (z) == "string") || (typeof (z) == "number"))
                 g[g.setImage ? "setLabel" : "setValue"](z);
 
             else if (!z)
@@ -1653,11 +1644,11 @@ function dhtmlXGridObject(id) {
             return true;
 
         if (!this.callEvent("onKeyPress", [
-                ev.keyCode,
-                ev.ctrlKey,
-                ev.shiftKey,
-                ev
-            ]))
+            ev.keyCode,
+            ev.ctrlKey,
+            ev.shiftKey,
+            ev
+        ]))
             return false;
 
         var code = "k" + ev.keyCode + "_" + (ev.ctrlKey ? 1 : 0) + "_" + (ev.shiftKey ? 1 : 0);
@@ -1724,9 +1715,9 @@ function dhtmlXGridObject(id) {
 
         if (this.grid.resized == null) {
             if (!(this.grid.callEvent("onHeaderClick", [
-                    el._cellIndexS,
-                    (e || window.event)
-                ])))
+                el._cellIndexS,
+                (e || window.event)
+            ])))
                 return false;
             //#sorting:06042008{				
             that.sortField(el._cellIndexS, false, el)
@@ -1753,17 +1744,16 @@ function dhtmlXGridObject(id) {
 
             if (!this.deleteRow(node.idd, node)) {
                 this.selectedRows[this.selectedRows.length] = node;
-            }
-            else {
+            } else {
                 if (node == this.row) {
                     var ind = i;
                 }
             }
             /*
-             this.rowsAr[node.idd] = null;
-             var posInCol = this.rowsCol._dhx_find(node)
-             this.rowsCol[posInCol].parentNode.removeChild(this.rowsCol[posInCol]);//nb:this.rowsCol[posInCol].removeNode(true);
-             this.rowsCol._dhx_removeAt(posInCol)*/
+			this.rowsAr[node.idd] = null;
+			var posInCol = this.rowsCol._dhx_find(node)
+			this.rowsCol[posInCol].parentNode.removeChild(this.rowsCol[posInCol]);//nb:this.rowsCol[posInCol].removeNode(true);
+			this.rowsCol._dhx_removeAt(posInCol)*/
         }
 
         if (ind) {
@@ -1771,8 +1761,7 @@ function dhtmlXGridObject(id) {
                 if (ind + 1 > this.rowsCol.length) //this.obj.rows.length)
                     ind--;
                 this.selectCell(ind, 0, true)
-            }
-            catch (er) {
+            } catch (er) {
                 this.row = null;
                 this.cell = null
             }
@@ -1892,9 +1881,9 @@ function dhtmlXGridObject(id) {
         if (oldRowId == newRowId)
             return;
         /*
-         for (var i=0; i<row.childNodes.length; i++)
-         if (row.childNodes[i]._code)
-         this._compileSCL("-",row.childNodes[i]);      */
+		for (var i=0; i<row.childNodes.length; i++)
+		if (row.childNodes[i]._code)
+		this._compileSCL("-",row.childNodes[i]);      */
         var row = this.rowsAr[oldRowId];
         row.idd = newRowId;
 
@@ -2038,7 +2027,7 @@ function dhtmlXGridObject(id) {
     this.setRowColor = function (row_id, color) {
         var r = this.getRowById(row_id);
 
-        for (var i = 0; i < r.childNodes.length; i++)r.childNodes[i].bgColor = color;
+        for (var i = 0; i < r.childNodes.length; i++) r.childNodes[i].bgColor = color;
     };
     /**
      *   @desc: sets style to cell
@@ -2425,10 +2414,10 @@ function dhtmlXGridObject(id) {
 
         //  if (!this._fake){
         /*
-         if ((this._hideShowColumn)&&(this.hdr.rows[0]))
-         for (var i=0; i<this.hdr.rows[0].cells.length; i++)
-         this._hideShowColumn(i,"");
-         this._hrrar=new Array();*/
+		if ((this._hideShowColumn)&&(this.hdr.rows[0]))
+		for (var i=0; i<this.hdr.rows[0].cells.length; i++)
+		this._hideShowColumn(i,"");
+		this._hrrar=new Array();*/
         //}
         if (this._contextCallTimer)
             window.clearTimeout(this._contextCallTimer);
@@ -2465,13 +2454,13 @@ function dhtmlXGridObject(id) {
         if (el.tagName == "TH" && (this.fldSort.length - 1) >= el._cellIndex
             && this.fldSort[el._cellIndex] != 'na') { //this.entBox.fieldstosort!="" &&
             var data = this.getSortingState();
-            var sortType = ( data[0] == ind && data[1] == "asc" ) ? "des" : "asc";
+            var sortType = (data[0] == ind && data[1] == "asc") ? "des" : "asc";
 
             if (!this.callEvent("onBeforeSorting", [
-                    ind,
-                    this.fldSort[ind],
-                    sortType
-                ]))
+                ind,
+                this.fldSort[ind],
+                sortType
+            ]))
                 return;
             this.sortImg.className = "dhxgrid_sort_" + (sortType == "asc" ? "asc" : "desc");
 
@@ -2510,7 +2499,7 @@ function dhtmlXGridObject(id) {
     this.setCustomSorting = function (func, col) {
         if (!this._customSorts)
             this._customSorts = [];
-        this._customSorts[col] = ( typeof (func) == "string") ? eval(func) : func;
+        this._customSorts[col] = (typeof (func) == "string") ? eval(func) : func;
         this.fldSort[col] = "cus";
     };
     //#}
@@ -2641,7 +2630,7 @@ function dhtmlXGridObject(id) {
         //str, int, date
         var check = {str: 1, "int": 1, date: 1};
         for (var i = 0; i < this.fldSort.length; i++)
-            if ((!check[this.fldSort[i]]) && ( typeof (window[this.fldSort[i]]) == "function")) {
+            if ((!check[this.fldSort[i]]) && (typeof (window[this.fldSort[i]]) == "function")) {
                 if (!this._customSorts)
                     this._customSorts = [];
                 this._customSorts[i] = window[this.fldSort[i]];
@@ -2830,7 +2819,7 @@ function dhtmlXGridObject(id) {
             var row = this.rowsCol[i];
             if (row && row.childNodes) {
                 var cols = row.childNodes.length;
-                for (var j = 0; j < cols; j++)row.childNodes[j].wasChanged = false;
+                for (var j = 0; j < cols; j++) row.childNodes[j].wasChanged = false;
                 if (clear_added)
                     row._added = false;
             }
@@ -2904,7 +2893,7 @@ function dhtmlXGridObject(id) {
         }
         this._srClmn = (list || "").split(",");
 
-        for (var i = 0; i < this._srClmn.length; i++)this._srClmn[i] = dhx4.s2b(this._srClmn[i]);
+        for (var i = 0; i < this._srClmn.length; i++) this._srClmn[i] = dhx4.s2b(this._srClmn[i]);
     };
 
     /**
@@ -2930,8 +2919,7 @@ function dhtmlXGridObject(id) {
             }, this, function () {
                 out.push(close);
             });
-        }
-        else
+        } else
             for (var i = 0; i < this.rowsBuffer.length; i++)
                 if (this.rowsBuffer[i]) {
                     if (this._chAttr && this.rowsBuffer[i]._locator)
@@ -2968,7 +2956,7 @@ function dhtmlXGridObject(id) {
             out.push(" open='1'");
 
         if (ra.length)
-            for (var i = 0; i < ra.length; i++)out.push(" " + ra[i] + "='" + r._attrs[ra[i]] + "'");
+            for (var i = 0; i < ra.length; i++) out.push(" " + ra[i] + "='" + r._attrs[ra[i]] + "'");
         out.push(">");
 
         //userdata
@@ -2992,7 +2980,7 @@ function dhtmlXGridObject(id) {
                 out.push("<cell");
 
                 if (ca.length)
-                    for (var i = 0; i < ca.length; i++)out.push(" " + ca[i] + "='" + zx.cell._attrs[ca[i]] + "'");
+                    for (var i = 0; i < ca.length; i++) out.push(" " + ca[i] + "='" + zx.cell._attrs[ca[i]] + "'");
                 zxVal = zx[this._agetm]();
 
                 if (this._asCDATA)
@@ -3008,9 +2996,7 @@ function dhtmlXGridObject(id) {
                         out.push(" changed=\"1\"");
                         changeFl = true;
                     }
-                }
-
-                else if ((this._onlChAttr) && (zx.wasChanged()))
+                } else if ((this._onlChAttr) && (zx.wasChanged()))
                     changeFl = true;
 
                 if (this._sAll && this.cellType[jj] == "tree")
@@ -3061,7 +3047,7 @@ function dhtmlXGridObject(id) {
             var z = this.getCombo(i);
 
             if (z)
-                for (var j = 0; j < z.keys.length; j++)out += "<option value='" + z.keys[j] + "'>" + z.values[j] + "</option>";
+                for (var j = 0; j < z.keys.length; j++) out += "<option value='" + z.keys[j] + "'>" + z.values[j] + "</option>";
             out += "</column>"
         }
         return out += "</head>";
@@ -3085,7 +3071,7 @@ function dhtmlXGridObject(id) {
 
             for (var i = 0;
                  i < keysAr.length;
-                 i++)out += "<userdata name='" + keysAr[i] + "'>" + this.UserData["gridglobaluserdata"].get(keysAr[i])
+                 i++) out += "<userdata name='" + keysAr[i] + "'>" + this.UserData["gridglobaluserdata"].get(keysAr[i])
                 + "</userdata>";
         }
 
@@ -3328,7 +3314,7 @@ dhtmlXGridObject.prototype = {
 
                 for (var i = 0;
                      i < row.childNodes.length;
-                     i++)row.childNodes[i].className = row.childNodes[i].className.replace(/cellselected/g, "");
+                     i++) row.childNodes[i].className = row.childNodes[i].className.replace(/cellselected/g, "");
                 this.selectedRows._dhx_removeAt(z);
             }
             this.callEvent("onGridReconstructed", []);
@@ -3411,7 +3397,7 @@ dhtmlXGridObject.prototype = {
             this._ivizcol = list.split(this.delim);
 
         if (this.hdr.rows.length && this._ivizcol)
-            for (var i = 0; i < this._ivizcol.length; i++)this.setColumnHidden(i, this._ivizcol[i]);
+            for (var i = 0; i < this._ivizcol.length; i++) this.setColumnHidden(i, this._ivizcol[i]);
     },
     /**
      *   @desc: fix hidden state for column in all rows
@@ -3638,7 +3624,7 @@ dhtmlXGridObject.prototype = {
         if ((that._lahRw) && (that._lahRw != c)) {
             for (var i = 0;
                  i < that._lahRw.childNodes.length;
-                 i++)that._lahRw.childNodes[i].className = that._lahRw.childNodes[i].className.replace(that._hvrCss, "");
+                 i++) that._lahRw.childNodes[i].className = that._lahRw.childNodes[i].className.replace(that._hvrCss, "");
             that._lahRw = null;
         }
     },
@@ -3654,7 +3640,7 @@ dhtmlXGridObject.prototype = {
             this.grid._unsetRowHover(0, c);
             c = c.parentNode;
             if (!c.idd || c.idd == "__filler__") return;
-            for (var i = 0; i < c.childNodes.length; i++)c.childNodes[i].className += " " + this.grid._hvrCss;
+            for (var i = 0; i < c.childNodes.length; i++) c.childNodes[i].className += " " + this.grid._hvrCss;
             this.grid._lahRw = c;
         }
         this._honmousemove(e);
@@ -3706,7 +3692,7 @@ dhtmlXGridObject.prototype = {
             this._sizeTime = window.clearTimeout(this._sizeTime);
         this.entBox.className = (this.entBox.className || "").replace(/gridbox.*/, "");
         if (this.formInputs)
-            for (var i = 0; i < this.formInputs.length; i++)this.parentForm.removeChild(this.formInputs[i]);
+            for (var i = 0; i < this.formInputs.length; i++) this.parentForm.removeChild(this.formInputs[i]);
 
         var a;
 
@@ -3839,7 +3825,7 @@ dhtmlXGridObject.prototype = {
     enableTooltips: function (list) {
         this._enbTts = list.split(",");
 
-        for (var i = 0; i < this._enbTts.length; i++)this._enbTts[i] = dhx4.s2b(this._enbTts[i]);
+        for (var i = 0; i < this._enbTts.length; i++) this._enbTts[i] = dhx4.s2b(this._enbTts[i]);
     },
     //#}	
 
@@ -3853,7 +3839,7 @@ dhtmlXGridObject.prototype = {
     enableResizing: function (list) {
         this._drsclmn = list.split(",");
 
-        for (var i = 0; i < this._drsclmn.length; i++)this._drsclmn[i] = dhx4.s2b(this._drsclmn[i]);
+        for (var i = 0; i < this._drsclmn.length; i++) this._drsclmn[i] = dhx4.s2b(this._drsclmn[i]);
     },
 
     /**
@@ -4006,7 +3992,7 @@ dhtmlXGridObject.prototype = {
         data[a[0]] = (data[a[0]] || "0") + a[4];
 
         if (a[1] > 0)
-            for (var j = (a[0] > 0 ? 0 : 1) + a[0] + a[1]; j < data.length; j += a[1])data[j] += a[5];
+            for (var j = (a[0] > 0 ? 0 : 1) + a[0] + a[1]; j < data.length; j += a[1]) data[j] += a[5];
         return c + data.reverse().join("") + a[3];
     },
     //#}
@@ -4045,7 +4031,7 @@ dhtmlXGridObject.prototype = {
             var split = false;
 
             if (asettings[0]) {
-                for (var s = 0; s < asettings[0].childNodes.length; s++)switch (asettings[0].childNodes[s].tagName) {
+                for (var s = 0; s < asettings[0].childNodes.length; s++) switch (asettings[0].childNodes[s].tagName) {
                     case "colwidth":
                         if (asettings[0].childNodes[s].firstChild && asettings[0].childNodes[s].firstChild.data == "%")
                             awidthmet = "setInitWidthsP";
@@ -4077,7 +4063,7 @@ dhtmlXGridObject.prototype = {
                     "", "setColumnIds"];
 
                 for (var i = 0; i < headCol.length; i++) {
-                    for (var j = 1; j < attrs.length; j++)sets[j].push(headCol[i].getAttribute(attrs[j]));
+                    for (var j = 1; j < attrs.length; j++) sets[j].push(headCol[i].getAttribute(attrs[j]));
                     sets[0].push((headCol[i].firstChild
                         ? headCol[i].firstChild.data
                         : "").replace(/^\s*((\s\S)*.+)\s*$/gi, "$1"));
@@ -4097,7 +4083,7 @@ dhtmlXGridObject.prototype = {
                             if (this.cellType[i] == "clist") {
                                 for (var j = 0;
                                      j < optCol.length;
-                                     j++)resAr[resAr.length] = optCol[j].firstChild
+                                     j++) resAr[resAr.length] = optCol[j].firstChild
                                     ? optCol[j].firstChild.data
                                     : "";
 
@@ -4107,15 +4093,13 @@ dhtmlXGridObject.prototype = {
 
                                 for (var j = 0;
                                      j < optCol.length;
-                                     j++)combo.put(optCol[j].getAttribute("value"),
+                                     j++) combo.put(optCol[j].getAttribute("value"),
                                     optCol[j].firstChild
                                         ? optCol[j].firstChild.data
                                         : "");
                             }
                         }
-                    }
-
-                    else if (sets[6][i])
+                    } else if (sets[6][i])
                         if ((this.cellType[i].toLowerCase().indexOf("calendar") != -1) || (this.fldSort[i] == "date"))
                             this.setDateFormat(sets[6][i]);
                         else
@@ -4223,10 +4207,10 @@ dhtmlXGridObject.prototype = {
             return true;
 
         if (!this.grid.callEvent("onMouseOver", [
-                r.idd,
-                c._cellIndex,
-                (e || window.event)
-            ]))
+            r.idd,
+            c._cellIndex,
+            (e || window.event)
+        ]))
             return true;
 
         if ((this.grid._enbTts) && (!this.grid._enbTts[c._cellIndex])) {
@@ -4337,7 +4321,7 @@ dhtmlXGridObject.prototype = {
                 var j = col_ind;
                 r._childIndexes = [];
 
-                for (var z = 0; z < r.childNodes.length; z++)r._childIndexes[z] = z;
+                for (var z = 0; z < r.childNodes.length; z++) r._childIndexes[z] = z;
             }
 
             r.childNodes[j].colSpan = colspan;
@@ -4349,7 +4333,7 @@ dhtmlXGridObject.prototype = {
 
             var c1 = r.childNodes[r._childIndexes[col_ind]]._cellIndex;
 
-            for (var z = c1 * 1 + 1 * colspan; z < r._childIndexes.length; z++)r._childIndexes[z] -= (colspan - 1);
+            for (var z = c1 * 1 + 1 * colspan; z < r._childIndexes.length; z++) r._childIndexes[z] -= (colspan - 1);
         }
     },
 
@@ -4427,7 +4411,7 @@ dhtmlXGridObject.prototype = {
             if (!row.childNodes[col] || row.childNodes[col]._cellIndex != cInd)
                 continue;
 
-            d.innerHTML = ( row.childNodes[col].innerText || row.childNodes[col].textContent || "" );
+            d.innerHTML = (row.childNodes[col].innerText || row.childNodes[col].textContent || "");
             z = d.offsetWidth;
             if (this._h2 && cInd == tree)
                 z += this._h2.get[row.idd].level * 22;
@@ -4494,7 +4478,7 @@ dhtmlXGridObject.prototype = {
                 ], this[(_type == "_aHead") ? "hdr" : "ftr"]);
 
             else if (this[_type])
-                for (var i = 0; i < this[_type].length; i++)this.attachHeader.apply(this, this[_type][i]);
+                for (var i = 0; i < this[_type].length; i++) this.attachHeader.apply(this, this[_type][i]);
         } else {
             if (!this[_type])
                 this[_type] = [];
@@ -4671,7 +4655,7 @@ dhtmlXGridObject.prototype = {
     setRowExcellType: function (rowId, type) {
         var z = this.rowsAr[rowId];
 
-        for (var i = 0; i < z.childNodes.length; i++)this.changeCellType(z, i, type);
+        for (var i = 0; i < z.childNodes.length; i++) this.changeCellType(z, i, type);
     },
     /**
      *   @desc: set excell type for all cells in specified column
@@ -4882,7 +4866,7 @@ dhtmlXGridObject.prototype = {
         this._tabOrder = [];
         var max = this._cCount || order.length;
 
-        for (var i = 0; i < max; i++)t[i] = {
+        for (var i = 0; i < max; i++) t[i] = {
             c: parseInt(t[i]),
             ind: i
         };
@@ -4891,7 +4875,7 @@ dhtmlXGridObject.prototype = {
         });
 
         for (var i = 0; i < max; i++)
-            if (!t[i + 1] || ( typeof t[i].c == "undefined"))
+            if (!t[i + 1] || (typeof t[i].c == "undefined"))
                 this._tabOrder[t[i].ind] = (t[0].ind + 1) * -1;
             else
                 this._tabOrder[t[i].ind] = t[i + 1].ind;
@@ -5013,9 +4997,9 @@ dhtmlXGridObject.prototype = {
                 } else {
                     this._key_events.k33_0_0.apply(this, []);
                     /*
-                     if (this.pagingOn && this.rowsCol[this.rowsBufferOutSize-1])
-                     this.selectCell(this.rowsBufferOutSize-1, 0, true);
-                     */
+					if (this.pagingOn && this.rowsCol[this.rowsBufferOutSize-1])
+					this.selectCell(this.rowsBufferOutSize-1, 0, true);
+					*/
                 }
             }
             this._still_active = true;
@@ -5028,7 +5012,7 @@ dhtmlXGridObject.prototype = {
         var t = document.createElement("DIV");
         var html = ["<table><tr>"];
 
-        for (var i = 0; i < this._cCount; i++)html.push("<td></td>");
+        for (var i = 0; i < this._cCount; i++) html.push("<td></td>");
         html.push("</tr></table>");
         t.innerHTML = html.join("");
         this._master_row = t.firstChild.rows[0];
@@ -5056,7 +5040,7 @@ dhtmlXGridObject.prototype = {
     _process_jsarray_row: function (r, data) {
         r._attrs = {};
 
-        for (var j = 0; j < r.childNodes.length; j++)r.childNodes[j]._attrs = {};
+        for (var j = 0; j < r.childNodes.length; j++) r.childNodes[j]._attrs = {};
 
         this._fillRow(r, (this._c_order ? this._swapColumns(data) : data));
         return r;
@@ -5100,7 +5084,7 @@ dhtmlXGridObject.prototype = {
     _process_csv_row: function (r, data) {
         r._attrs = {};
 
-        for (var j = 0; j < r.childNodes.length; j++)r.childNodes[j]._attrs = {};
+        for (var j = 0; j < r.childNodes.length; j++) r.childNodes[j]._attrs = {};
 
         this._fillRow(r, (this._c_order ? this._swapColumns(data.split(this.csv.cell)) : data.split(this.csv.cell)));
         return r;
@@ -5162,7 +5146,7 @@ dhtmlXGridObject.prototype = {
             strAr.push(cellVal);
         }
 
-        for (j < cellsCol.length; j < r.childNodes.length; j++)r.childNodes[j]._attrs = {};
+        for (j < cellsCol.length; j < r.childNodes.length; j++) r.childNodes[j]._attrs = {};
 
         //treegrid
         if (r.parentNode && r.parentNode.tagName == "row")
@@ -5200,7 +5184,7 @@ dhtmlXGridObject.prototype = {
                 var val = text[ii];
                 var aeditor = this.cells4(r.childNodes[i]);
 
-                if ((this.defVal[ii]) && ((val == "") || ( typeof (val) == "undefined")))
+                if ((this.defVal[ii]) && ((val == "") || (typeof (val) == "undefined")))
                     val = this.defVal[ii];
 
                 if (aeditor) aeditor.setValue(val)
@@ -5355,7 +5339,7 @@ dhtmlXGridObject.prototype = {
         var data = {};
 
         if (node.attributes.length) {
-            for (var i = 0; i < node.attributes.length; i++)data[node.attributes[i].name] = node.attributes[i].value;
+            for (var i = 0; i < node.attributes.length; i++) data[node.attributes[i].name] = node.attributes[i].value;
         }
 
         return data;
@@ -5645,12 +5629,12 @@ dhtmlXGridObject.prototype = {
     _get_cell_value: function (row, ind, method) {
         if (row._locator) {
             /*if (!this._data_cache[row.idd])
-             this._data_cache[row.idd]=[];
-             if (this._data_cache[row.idd][ind]) 
-             return this._data_cache[row.idd][ind];
-             else
-             return this._data_cache[row.idd][ind]=row._locator.call(this,row.data,ind);
-             */
+			this._data_cache[row.idd]=[];
+			if (this._data_cache[row.idd][ind]) 
+			return this._data_cache[row.idd][ind];
+			else
+			return this._data_cache[row.idd][ind]=row._locator.call(this,row.data,ind);
+			*/
             if (this._c_order)
                 ind = this._c_order[ind];
             return row._locator.call(this, row.data, ind);
@@ -5692,7 +5676,7 @@ dhtmlXGridObject.prototype = {
 
             for (var i = 0;
                  i < this.rowsBuffer.length;
-                 i++)arrTS[this.rowsBuffer[i].idd] = this._get_cell_value(this.rowsBuffer[i], col, amet);
+                 i++) arrTS[this.rowsBuffer[i].idd] = this._get_cell_value(this.rowsBuffer[i], col, amet);
 
             this._sortRows(col, type, order, arrTS);
         }
@@ -5719,13 +5703,11 @@ dhtmlXGridObject.prototype = {
             s[sort](function (a, b) {
                 return cstr(arrTS[a.idd], arrTS[b.idd], order, a.idd, b.idd);
             });
-        }
-        else if (typeof (type) == 'function') {
+        } else if (typeof (type) == 'function') {
             s[sort](function (a, b) {
                 return type(arrTS[a.idd], arrTS[b.idd], order, a.idd, b.idd);
             });
-        }
-        else
+        } else
         //#}
         //#}
         if (type == 'str') {
@@ -5735,8 +5717,7 @@ dhtmlXGridObject.prototype = {
                 else
                     return arrTS[a.idd] < arrTS[b.idd] ? 1 : (arrTS[a.idd] > arrTS[b.idd] ? -1 : 0);
             });
-        }
-        else if (type == 'int') {
+        } else if (type == 'int') {
             s[sort](function (a, b) {
                 var aVal = parseFloat(arrTS[a.idd]);
                 aVal = isNaN(aVal) ? -99999999999999 : aVal;
@@ -5748,8 +5729,7 @@ dhtmlXGridObject.prototype = {
                 else
                     return bVal - aVal;
             });
-        }
-        else if (type == 'date') {
+        } else if (type == 'date') {
             s[sort](function (a, b) {
                 var aVal = Date.parse(arrTS[a.idd]) || (Date.parse("01/01/1900"));
                 var bVal = Date.parse(arrTS[b.idd]) || (Date.parse("01/01/1900"));
@@ -5797,8 +5777,7 @@ dhtmlXGridObject.prototype = {
                 // this._get_view_size=function(){ return 1; }
                 this.render_dataset();
                 // this._get_view_size=p;
-            }
-            else
+            } else
                 this.render_dataset();
         }
 
@@ -5826,8 +5805,7 @@ dhtmlXGridObject.prototype = {
         if (this.cellType._dhx_find("tree") != -1 && !this._realfake) {
             pid = this._h2.get[row_id].parent.id;
             this._removeTrGrRow(node);
-        }
-        else {
+        } else {
             if (node.parentNode)
                 node.parentNode.removeChild(node);
 
@@ -5876,7 +5854,7 @@ dhtmlXGridObject.prototype = {
         var row = this._prepareRow(new_id);
         row._attrs = {};
 
-        for (var j = 0; j < row.childNodes.length; j++)row.childNodes[j]._attrs = {};
+        for (var j = 0; j < row.childNodes.length; j++) row.childNodes[j]._attrs = {};
 
 
         this.rowsAr[row.idd] = row;
@@ -5985,10 +5963,10 @@ dhtmlXGridObject.prototype = {
                 r.className = css + " " + this._cssEven + (this._cssSU ? (" " + this._cssEven + "_" + this.getLevel(r.idd)) : "");
         }
         /*
-         if (r._skipInsert) {                
-         this.rowsAr[r.idd] = r;
-         return r;
-         }*/
+		if (r._skipInsert) {                
+		this.rowsAr[r.idd] = r;
+		return r;
+		}*/
         if (!skip)
             if ((ind == (this.obj.rows.length - 1)) || (!this.rowsCol[ind]))
                 if (_isKHTML)
@@ -6151,7 +6129,7 @@ dhtmlXGridObject.prototype = {
      */
     setExternalTabOrder: function (start, end) {
         var grid = this;
-        this.tabStart = ( typeof (start) == "object") ? start : document.getElementById(start);
+        this.tabStart = (typeof (start) == "object") ? start : document.getElementById(start);
 
         var oldkeydown_start = this.tabStart.onkeydown;
         this.tabStart.onkeydown = function (e) {
@@ -6172,7 +6150,7 @@ dhtmlXGridObject.prototype = {
             }
         };
         if (_isOpera) this.tabStart.onkeypress = this.tabStart.onkeydown;
-        this.tabEnd = ( typeof (end) == "object") ? end : document.getElementById(end);
+        this.tabEnd = (typeof (end) == "object") ? end : document.getElementById(end);
 
         var oldkeydown_end = this.tabEnd.onkeydown;
         this.tabEnd.onkeydown = this.tabEnd.onkeypress = function (e) {
@@ -6303,7 +6281,7 @@ dhtmlXGridObject.prototype = {
         }
 
         for (var i = 0; i < value.length; i++) {
-            if (typeof(value[i]) == "object" && value[i].length) {
+            if (typeof (value[i]) == "object" && value[i].length) {
                 for (var j = 0; j < value[i].length; j++)
                     add(i, j, value[i][j]);
             } else
@@ -6410,7 +6388,7 @@ dhtmlXGridObject.prototype = {
                 this.attachHeader(obj[i]);
         }
     });
-
+		
 })();
 
 
@@ -6496,7 +6474,7 @@ dhtmlXGridObject.prototype._dp_init = function (dp) {
             dp.setUpdated(rowId, false);
             return true;
         }
-        if (z == "deleted")  return false;
+        if (z == "deleted") return false;
         if (z == "true_deleted") {
             dp.setUpdated(rowId, false);
             return true;
@@ -6573,7 +6551,7 @@ dhtmlXGridObject.prototype._dp_init = function (dp) {
             this.setUpdated(rowId, false);
         }
         return valid;
-    };
+    };	
 };
 
 
@@ -6605,7 +6583,7 @@ dhx4.attachEvent("onGridCreated", function (grid) {
     };
     grid.attachEvent("onCollectValues", function (ind) {
         if (this._con_f_used[ind]) {
-            if (typeof(this._con_f_used[ind]) == "object")
+            if (typeof (this._con_f_used[ind]) == "object")
                 return this._con_f_used[ind];
             else
                 return false;
@@ -6713,7 +6691,7 @@ if (!dhtmlXGridObject.prototype.load_connector) {
 
 }
 
-dhtmlXGridObject.prototype.getRowData = function (/*string*/ rowId) {
+dhtmlXGridObject.prototype.getRowData = function ( /*string*/ rowId) {
     var result = {};
     var colsNum = this.getColumnsNum();
     for (var index = 0; index < colsNum; index++) {
@@ -6725,7 +6703,7 @@ dhtmlXGridObject.prototype.getRowData = function (/*string*/ rowId) {
     return result;
 };
 
-dhtmlXGridObject.prototype.setRowData = function (/*string*/ rowId, /*json*/ rowJson) {
+dhtmlXGridObject.prototype.setRowData = function ( /*string*/ rowId, /*json*/ rowJson) {
     var colsNum = this.getColumnsNum();
     for (var index = 0; index < colsNum; index++) {
         var colId = this.getColumnId(index);
@@ -6776,7 +6754,7 @@ function dhtmlXGridCellObject(obj) {
         else
             return this.getValue();
     };
-
+	
 //#excell_methods:04062008{
     /**
      *    @desc: determ. font style if it was set
@@ -7003,7 +6981,7 @@ dhtmlXGridCellObject.prototype = {
  *    @type: public
  */
 dhtmlXGridCellObject.prototype.setValue = function (val) {
-    if (( typeof (val) != "number") && (!val || val.toString()._dhx_trim() == "")) {
+    if ((typeof (val) != "number") && (!val || val.toString()._dhx_trim() == "")) {
         val = "&nbsp;";
         this.cell._clearCell = true;
     } else
@@ -7117,6 +7095,7 @@ function eXcell() {
         return [iLeft, iTop];
     }
 }
+
 eXcell.prototype = new dhtmlXGridCellObject;
 
 
@@ -7177,6 +7156,7 @@ function eXcell_ed(cell) {
         return this.val != this.getValue();
     }
 }
+
 eXcell_ed.prototype = new eXcell;
 
 /**
@@ -7207,6 +7187,7 @@ function eXcell_edtxt(cell) {
         this.setCTxtValue(val);
     }
 }
+
 eXcell_edtxt.prototype = new eXcell_ed;
 //#__pro_feature:21092006{
 /**
@@ -7237,6 +7218,7 @@ function eXcell_edn(cell) {
         return this.val != this.getValue();
     }
 }
+
 eXcell_edn.prototype = new eXcell_ed;
 eXcell_edn.prototype.setValue = function (val) {
     if (!val || val.toString()._dhx_trim() == "") {
@@ -7281,10 +7263,10 @@ function eXcell_ch(cell) {
             return;
 
         if (this.grid.callEvent("onEditCell", [
-                0,
-                this.cell.parentNode.idd,
-                this.cell._cellIndex
-            ])) {
+            0,
+            this.cell.parentNode.idd,
+            this.cell._cellIndex
+        ])) {
             this.val = this.getValue();
 
             if (this.val == "1")
@@ -7337,6 +7319,7 @@ function eXcell_ch(cell) {
     };
     this.edit = null;
 }
+
 eXcell_ch.prototype = new eXcell;
 eXcell_ch.prototype.setValue = function (val) {
     this.cell.style.verticalAlign = "middle"; //nb:to center checkbox in line
@@ -7389,10 +7372,10 @@ function eXcell_ra(cell) {
             return;
 
         if (this.grid.callEvent("onEditCell", [
-                0,
-                this.cell.parentNode.idd,
-                this.cell._cellIndex
-            ]) != false) {
+            0,
+            this.cell.parentNode.idd,
+            this.cell._cellIndex
+        ]) != false) {
             this.val = this.getValue();
 
             if (this.val == "1")
@@ -7424,6 +7407,7 @@ function eXcell_ra(cell) {
     };
     this.edit = null;
 }
+
 eXcell_ra.prototype = new eXcell_ch;
 eXcell_ra.prototype.setValue = function (val) {
     this.cell.style.verticalAlign = "middle"; //nb:to center checkbox in line
@@ -7533,8 +7517,7 @@ function eXcell_txt(cell) {
 
         if (a_val == "") {
             this.cell._clearCell = true;
-        }
-        else
+        } else
             this.cell._clearCell = false;
         this.setValue(a_val);
         document.body.removeChild(this.obj);
@@ -7724,8 +7707,7 @@ function eXcell_co(cell) {
 
         if (this.editable) {
             this.cell.innerHTML = "";
-        }
-        else {
+        } else {
             this.obj.style.width = "0px";
             this.obj.style.height = "0px";
         }
@@ -7776,8 +7758,7 @@ function eXcell_co(cell) {
                     if (val != -1) this.setValue(combo.keys[val]);
                     else this.setValue(this.cell.combo_value = this.obj.value);
                 }
-            }
-            else
+            } else
                 this.setValue(this.list.value)
         }
 
@@ -7790,6 +7771,7 @@ function eXcell_co(cell) {
         return this.val != this.getValue();
     }
 }
+
 eXcell_co.prototype = new eXcell;
 eXcell_co.prototype.getText = function () {
     return this.cell.innerHTML;
@@ -7803,7 +7785,7 @@ eXcell_co.prototype.setValue = function (val) {
 
         for (var j = 0;
              j < optCol.length;
-             j++)this.cell._combo.put(optCol[j].getAttribute("value"),
+             j++) this.cell._combo.put(optCol[j].getAttribute("value"),
             optCol[j].firstChild
                 ? optCol[j].firstChild.data
                 : "");
@@ -7820,7 +7802,7 @@ eXcell_co.prototype.setValue = function (val) {
     } else
         this.setCValue("&nbsp;", val);
 
-
+	
 };
 /**
  *    @desc: selectbox editor
@@ -7832,12 +7814,14 @@ function eXcell_coro(cell) {
     this.base(cell);
     this.editable = false;
 }
+
 eXcell_coro.prototype = new eXcell_co;
 
 function eXcell_cotxt(cell) {
     this.base = eXcell_co;
     this.base(cell)
 }
+
 eXcell_cotxt.prototype = new eXcell_co;
 eXcell_cotxt.prototype.getText = function () {
     return (_isIE ? this.cell.innerText : this.cell.textContent);
@@ -7851,7 +7835,7 @@ eXcell_cotxt.prototype.setValue = function (val) {
 
         for (var j = 0;
              j < optCol.length;
-             j++)this.cell._combo.put(optCol[j].getAttribute("value"),
+             j++) this.cell._combo.put(optCol[j].getAttribute("value"),
             optCol[j].firstChild
                 ? optCol[j].firstChild.data
                 : "");
@@ -7874,6 +7858,7 @@ function eXcell_corotxt(cell) {
     this.base(cell);
     this.editable = false;
 }
+
 eXcell_corotxt.prototype = new eXcell_cotxt;
 //#}
 
@@ -7887,8 +7872,7 @@ function eXcell_cp(cell) {
     try {
         this.cell = cell;
         this.grid = this.cell.parentNode.grid;
-    }
-    catch (er) {
+    } catch (er) {
     }
     this.edit = function () {
         this.val = this.getValue();
@@ -7966,6 +7950,7 @@ function eXcell_cp(cell) {
         return this.val != this.getValue();
     }
 }
+
 eXcell_cp.prototype = new eXcell;
 eXcell_cp.prototype.setValue = function (val) {
     this.setCValue("<div style='width:100%;height:" + ((this.grid.multiLine ? "100%" : 23)) + ";background-color:" + (val || "")
@@ -7981,25 +7966,25 @@ eXcell_cp.prototype.setValue = function (val) {
  *    @returns: dhtmlxGrid cell editor object
  *    @type: public
  */
+
 /*
- The corresponding  cell value in XML should be a "^" delimited list of following values:
- 1st - image src
- 2nd - image alt text (optional)
- 3rd - link (optional)
- 4rd - target (optional, default is _self)
- */
+	The corresponding  cell value in XML should be a "^" delimited list of following values:
+	1st - image src
+	2nd - image alt text (optional)
+	3rd - link (optional)
+	4rd - target (optional, default is _self)
+*/
 function eXcell_img(cell) {
     try {
         this.cell = cell;
         this.grid = this.cell.parentNode.grid;
-    }
-    catch (er) {
+    } catch (er) {
     }
     this.getValue = function () {
         if (this.cell.firstChild.tagName == "IMG")
             return this.cell.firstChild.src + (this.cell.titFl != null
-                    ? "^" + this.cell._brval
-                    : "");
+                ? "^" + this.cell._brval
+                : "");
         else if (this.cell.firstChild.tagName == "A") {
             var out = this.cell.firstChild.firstChild.src + (this.cell.titFl != null ? "^" + this.cell._brval : "");
             out += "^" + this.cell.lnk;
@@ -8013,6 +7998,7 @@ function eXcell_img(cell) {
         return true;
     }
 }
+
 eXcell_img.prototype = new eXcell;
 eXcell_img.prototype.getTitle = function () {
     return this.cell._brval
@@ -8044,14 +8030,14 @@ eXcell_img.prototype.setValue = function (val) {
     }
     this.cell._brval = title;
 };
+
 function eXcell_icon(cell) {
     this.base = eXcell_ed;
     this.base(cell);
     try {
         this.cell = cell;
         this.grid = this.cell.parentNode.grid;
-    }
-    catch (er) {
+    } catch (er) {
     }
 
     this.setValue = function (val) {
@@ -8065,6 +8051,7 @@ function eXcell_icon(cell) {
         return true;
     }
 }
+
 eXcell_icon.prototype = new eXcell_ed;
 //#}
 
@@ -8170,6 +8157,7 @@ function eXcell_ro(cell) {
         return this.cell._clearCell ? "" : this.cell.innerHTML.toString()._dhx_trim();
     }
 }
+
 eXcell_ro.prototype = new eXcell;
 
 
@@ -8206,11 +8194,11 @@ function eXcell_ron(cell) {
         return this.cell._clearCell ? "" : this.cell._orig_value || this.grid._aplNFb(this.cell.innerHTML.toString()._dhx_trim(), this.cell._cellIndex).toString();
     }
 }
+
 eXcell_ron.prototype = new eXcell;
 eXcell_ron.prototype.setValue = function (val) {
     if (val === 0) {
-    }
-    else if (!val || val.toString()._dhx_trim() == "") {
+    } else if (!val || val.toString()._dhx_trim() == "") {
         this.setCValue("&nbsp;");
         return this.cell._clearCell = true;
     }
@@ -8238,8 +8226,7 @@ function eXcell_rotxt(cell) {
         if (!val) {
             val = " ";
             this.cell._clearCell = true;
-        }
-        else
+        } else
             this.cell._clearCell = false;
 
         this.setCTxtValue(val);
@@ -8250,6 +8237,7 @@ function eXcell_rotxt(cell) {
         return (_isIE ? this.cell.innerText : this.cell.textContent);
     }
 }
+
 eXcell_rotxt.prototype = new eXcell;
 
 /**
@@ -8296,9 +8284,9 @@ function dhtmlXGridComboObject() {
      */
     this.clear = function () {
         /*for(var i=0;i<this.keys.length;i++){
-         this.keys._dhx_removeAt(i);
-         this.values._dhx_removeAt(i);
-         }*/
+				this.keys._dhx_removeAt(i);
+				this.values._dhx_removeAt(i);
+		}*/
         this.keys = new dhtmlxArray();
         this.values = new dhtmlxArray();
     };
@@ -8352,7 +8340,7 @@ function dhtmlXGridComboObject() {
     this.save = function () {
         this._save = [];
 
-        for (var i = 0; i < this.keys.length; i++)this._save[i] = [
+        for (var i = 0; i < this.keys.length; i++) this._save[i] = [
             this.keys[i],
             this.values[i]
         ];
@@ -8382,6 +8370,7 @@ function Hashtable() {
     this.values = new dhtmlxArray();
     return this;
 }
+
 Hashtable.prototype = new dhtmlXGridComboObject;
 
 //(c)dhtmlx ltd. www.dhtmlx.com
@@ -8407,18 +8396,18 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
         this.dataObj.setSkin(this.conf.skin);
 
         // fix for grid atatched to tabbar for safari on ios 5.1.7
-        if (typeof(window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell && navigator.userAgent.match(/7[\.\d]* mobile/gi) != null && navigator.userAgent.match(/AppleWebKit/gi) != null) {
+        if (typeof (window.dhtmlXTabBarCell) == "function" && this instanceof window.dhtmlXTabBarCell && navigator.userAgent.match(/7[\.\d]* mobile/gi) != null && navigator.userAgent.match(/AppleWebKit/gi) != null) {
             this.dataObj.objBox.style.webkitOverflowScrolling = "auto";
         }
 
         // fix layout cell for material
-        if (this.conf.skin == "material" && typeof(window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell) {
+        if (this.conf.skin == "material" && typeof (window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell) {
             this.cell.childNodes[this.conf.idx.cont].style.overflow = "hidden";
         }
 
 
         // keep border for window and remove for other
-        if (this.conf.skin == "dhx_skyblue" && typeof(window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
+        if (this.conf.skin == "dhx_skyblue" && typeof (window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
             this.dataObj.entBox.style.border = "1px solid #a4bed4";
             this.dataObj._sizeFix = 0;
         } else {
@@ -8432,6 +8421,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
 
         return this.dataObj;
     };
-
+	
 }
 

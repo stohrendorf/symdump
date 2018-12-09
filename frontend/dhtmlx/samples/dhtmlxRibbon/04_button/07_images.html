@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Change icons</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         table.my_table {
@@ -18,6 +18,7 @@
     </style>
     <script>
         var myRibbon;
+
         function doOnLoad() {
             myRibbon = new dhtmlXRibbon({
                 parent: "ribbonObj",
@@ -25,31 +26,31 @@
                 items: [
                     {
                         type: "block", text: "Project", list: [
-                        {id: "create", type: "button", text: "Create", img: "48/new.gif", isbig: true},
-                        {
-                            id: "open",
-                            type: "button",
-                            text: "Open Project",
-                            img: "18/open.gif",
-                            imgdis: "18/open_dis.gif"
-                        },
-                        {id: "print", type: "button", text: "Print", img: "18/print.gif"},
-                        {id: "save", type: "button", text: "Save As...", img: "18/save.gif"}
-                    ]
+                            {id: "create", type: "button", text: "Create", img: "48/new.gif", isbig: true},
+                            {
+                                id: "open",
+                                type: "button",
+                                text: "Open Project",
+                                img: "18/open.gif",
+                                imgdis: "18/open_dis.gif"
+                            },
+                            {id: "print", type: "button", text: "Print", img: "18/print.gif"},
+                            {id: "save", type: "button", text: "Save As...", img: "18/save.gif"}
+                        ]
                     },
                     {
                         type: "block", text: "Edit", list: [
-                        {
-                            id: "cut",
-                            type: "button",
-                            text: "Cut",
-                            img: "48/cut.gif",
-                            imgdis: "48/cut_dis.gif",
-                            isbig: true
-                        },
-                        {id: "copy", type: "button", text: "Copy", img: "48/copy.gif", isbig: true},
-                        {id: "paste", type: "button", text: "Paste", img: "48/paste.gif", isbig: true},
-                    ]
+                            {
+                                id: "cut",
+                                type: "button",
+                                text: "Cut",
+                                img: "48/cut.gif",
+                                imgdis: "48/cut_dis.gif",
+                                isbig: true
+                            },
+                            {id: "copy", type: "button", text: "Copy", img: "48/copy.gif", isbig: true},
+                            {id: "paste", type: "button", text: "Paste", img: "48/paste.gif", isbig: true},
+                        ]
                     }
                 ]
 
@@ -71,29 +72,29 @@
 </head>
 <body onload="doOnLoad();" onunload="doOnUnload();">
 <div id="ribbonObj"></div>
-<table cellspacing="1" cellpadding="1" class="my_table">
+<table cellpadding="1" cellspacing="1" class="my_table">
     <tr>
         <td>Open</td>
         <td>
-            <input type="button" onclick="setImage('open', '18/open.gif', '18/open_dis.gif');" value="open.gif">
-            <input type="button" onclick="setImage('open', '18/print.gif', '18/print_dis.gif');" value="print.gif">
-            <input type="button" onclick="setImage('open', '18/save.gif', '18/save_dis.gif');" value="save.gif">
+            <input onclick="setImage('open', '18/open.gif', '18/open_dis.gif');" type="button" value="open.gif">
+            <input onclick="setImage('open', '18/print.gif', '18/print_dis.gif');" type="button" value="print.gif">
+            <input onclick="setImage('open', '18/save.gif', '18/save_dis.gif');" type="button" value="save.gif">
         </td>
         <td>
-            <input type="button" onclick="myRibbon.enable('open');" value="enable">
-            <input type="button" onclick="myRibbon.disable('open');" value="disable">
+            <input onclick="myRibbon.enable('open');" type="button" value="enable">
+            <input onclick="myRibbon.disable('open');" type="button" value="disable">
         </td>
     </tr>
     <tr>
         <td>Cut</td>
         <td>
-            <input type="button" onclick="setImage('cut', '48/cut.gif', '48/cut_dis.gif');" value="cut.gif">
-            <input type="button" onclick="setImage('cut', '48/copy.gif', '48/copy_dis.gif');" value="copy.gif">
-            <input type="button" onclick="setImage('cut', '48/paste.gif', '48/paste_dis.gif');" value="paste.gif">
+            <input onclick="setImage('cut', '48/cut.gif', '48/cut_dis.gif');" type="button" value="cut.gif">
+            <input onclick="setImage('cut', '48/copy.gif', '48/copy_dis.gif');" type="button" value="copy.gif">
+            <input onclick="setImage('cut', '48/paste.gif', '48/paste_dis.gif');" type="button" value="paste.gif">
         </td>
         <td>
-            <input type="button" onclick="myRibbon.enable('cut');" value="enable">
-            <input type="button" onclick="myRibbon.disable('cut');" value="disable">
+            <input onclick="myRibbon.enable('cut');" type="button" value="enable">
+            <input onclick="myRibbon.disable('cut');" type="button" value="disable">
         </td>
     </tr>
 </table>

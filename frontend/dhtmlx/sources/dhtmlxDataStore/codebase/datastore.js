@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 (function () {
 
@@ -32,8 +32,8 @@
     };
 
     /*
-     Common helpers
-     */
+	Common helpers
+*/
     dhx.codebase = "./";
     dhx.name = "Core";
 
@@ -327,7 +327,7 @@
     };
 //resolve function name
     dhx.toFunctor = function (str) {
-        return (typeof(str) == "string") ? eval(str) : str;
+        return (typeof (str) == "string") ? eval(str) : str;
     };
     /*checks where an object is instance of Array*/
     dhx.isArray = function (obj) {
@@ -465,10 +465,10 @@
             if (event_stack)
                 for (var i = 0; i < event_stack.length; i++) {
                     /*
-                     Call events one by one
-                     If any event return false - result of whole event will be false
-                     Handlers which are not returning anything - counted as positive
-                     */
+					Call events one by one
+					If any event return false - result of whole event will be false
+					Handlers which are not returning anything - counted as positive
+				*/
                     if (event_stack[i].apply(this, (params || [])) === false) return_value = false;
                 }
             if (this._evs_map[type] && !this._evs_map[type].callEvent(type, params))
@@ -839,17 +839,17 @@
     /*DHX:Depend core/dhx.js*/
     /*DHX:Depend core/config.js*/
     /*
-     Behavior:Settings
-
-     @export
-     customize
-     config
-     */
+	Behavior:Settings
+	
+	@export
+		customize
+		config
+*/
 
     /*DHX:Depend core/template.js*/
     /*
-     Template - handles html templates
-     */
+	Template - handles html templates
+*/
 
     /*DHX:Depend core/dhx.js*/
 
@@ -909,10 +909,10 @@
 
 
         /*
-         adds new template-type
-         obj - object to which template will be added
-         data - properties of template
-         */
+		adds new template-type
+		obj - object to which template will be added
+		data - properties of template
+	*/
         dhx.Type = function (obj, data) {
             if (obj._dhx_proto_wait) {
                 if (!obj._dhx_type_wait)
@@ -950,10 +950,10 @@
     dhx.Settings = {
         $init: function () {
             /* 
-             property can be accessed as this.config.some
-             in same time for inner call it have sense to use _settings
-             because it will be minified in final version
-             */
+			property can be accessed as this.config.some
+			in same time for inner call it have sense to use _settings
+			because it will be minified in final version
+		*/
             this._settings = this.config = {};
         },
         define: function (property, value) {
@@ -1008,15 +1008,15 @@
     /*DHX:Depend core/datastore.js*/
     /*DHX:Depend core/load.js*/
     /* 
-     ajax operations 
+	ajax operations 
+	
+	can be used for direct loading as
+		dhx.ajax(ulr, callback)
+	or
+		dhx.ajax().item(url)
+		dhx.ajax().post(url)
 
-     can be used for direct loading as
-     dhx.ajax(ulr, callback)
-     or
-     dhx.ajax().item(url)
-     dhx.ajax().post(url)
-
-     */
+*/
 
     /*DHX:Depend core/dhx.js*/
 
@@ -1042,10 +1042,10 @@
                 return new XMLHttpRequest();
         },
         /*
-         send data to the server
-         params - hash of properties which will be added to the url
-         call - callback, can be an array of functions
-         */
+		send data to the server
+		params - hash of properties which will be added to the url
+		call - callback, can be an array of functions
+	*/
         send: function (url, params, call) {
             var x = this.getXHR();
             if (!dhx.isArray(call))
@@ -1252,8 +1252,8 @@
     };
 
     /*
-     Abstraction layer for different data types
-     */
+	Abstraction layer for different data types
+*/
 
     dhx.DataDriver = {};
     dhx.DataDriver.json = {
@@ -1310,11 +1310,11 @@
 
     dhx.DataDriver.html = {
         /*
-         incoming data can be
-         - collection of nodes
-         - ID of parent container
-         - HTML text
-         */
+		incoming data can be
+		 - collection of nodes
+		 - ID of parent container
+		 - HTML text
+	*/
         toObject: function (data) {
             if (typeof data == "string") {
                 var t = null;
@@ -1482,11 +1482,10 @@
                     temp = col.iterateNext();
                 }
                 return res;
-            }
-            else {
+            } else {
                 var test = true;
                 try {
-                    if (typeof(xml.selectNodes) == "undefined")
+                    if (typeof (xml.selectNodes) == "undefined")
                         test = false;
                 } catch (e) { /*IE7 and below can't operate with xml object*/
                 }
@@ -1542,8 +1541,7 @@
                         if (!dhx.isArray(z[name]))
                             z[name] = [z[name]];
                         z[name].push(this.tagToObject(b[i], {}));
-                    }
-                    else
+                    } else
                         z[b[i].tagName] = this.tagToObject(b[i], {});	//sub-object for complex subtags
                     flag = true;
                 }
@@ -1582,12 +1580,12 @@
     /*DHX:Depend core/dhx.js*/
 
     /*
-     Behavior:DataLoader - load data in the component
-
-     @export
-     load
-     parse
-     */
+	Behavior:DataLoader - load data in the component
+	
+	@export
+		load
+		parse
+*/
     dhx.DataLoader = dhx.proto({
         $init: function (config) {
             //prepare data store
@@ -1657,7 +1655,7 @@
         _maybe_loading_already: function (count, from) {
             var last = this._feed_last;
             if (this._load_count && last) {
-                if (last[0] <= from && (last[1] + last[0] >= count + from )) return true;
+                if (last[0] <= from && (last[1] + last[0] >= count + from)) return true;
             }
             return false;
         },
@@ -1733,25 +1731,25 @@
 
 
     /*
-     DataStore is not a behavior, it standalone object, which represents collection of data.
-     Call provideAPI to map data API
+	DataStore is not a behavior, it standalone object, which represents collection of data.
+	Call provideAPI to map data API
 
-     @export
-     exists
-     idByIndex
-     indexById
-     get
-     set
-     refresh
-     dataCount
-     sort
-     filter
-     next
-     previous
-     clearAll
-     first
-     last
-     */
+	@export
+		exists
+		idByIndex
+		indexById
+		get
+		set
+		refresh
+		dataCount
+		sort
+		filter
+		next
+		previous
+		clearAll
+		first
+		last
+*/
     dhx.DataStore = function () {
         this.name = "DataStore";
 
@@ -2173,22 +2171,22 @@
             return this.order[this.indexById(id) - (step || 1)];
         },
         /*
-         sort data in collection
-         by - settings of sorting
-
-         or
-
-         by - sorting function
-         dir - "asc" or "desc"
-
-         or
-
-         by - property
-         dir - "asc" or "desc"
-         as - type of sortings
-
-         Sorting function will accept 2 parameters and must return 1,0,-1, based on desired order
-         */
+		sort data in collection
+			by - settings of sorting
+		
+		or
+		
+			by - sorting function
+			dir - "asc" or "desc"
+			
+		or
+		
+			by - property
+			dir - "asc" or "desc"
+			as - type of sortings
+		
+		Sorting function will accept 2 parameters and must return 1,0,-1, based on desired order
+	*/
         sort: function (by, dir, as) {
             var sort = by;
             if (typeof by == "function")
@@ -2220,17 +2218,17 @@
             }
         },
         /*
-         Filter datasource
-
-         text - property, by which filter
-         value - filter mask
-
-         or
-
-         text  - filter method
-
-         Filter method will receive data object and must return true or false
-         */
+		Filter datasource
+		
+		text - property, by which filter
+		value - filter mask
+		
+		or
+		
+		text  - filter method
+		
+		Filter method will receive data object and must return true or false
+	*/
         _filter_reset: function (preserve) {
             //remove previous filtering , if any
             if (this._filter_order && !preserve) {
@@ -2283,8 +2281,8 @@
             this.callEvent("onAfterFilter", []);
         },
         /*
-         Iterate through collection
-         */
+		Iterate through collection
+	*/
         each: function (method, master) {
             for (var i = 0; i < this.order.length; i++)
                 method.call((master || this), this.item(this.order[i]));
@@ -2324,8 +2322,8 @@
             return (obj && obj[mark]);
         },
         /*
-         map inner methods to some distant object
-         */
+		map inner methods to some distant object
+	*/
         provideApi: function (target, eventable) {
             this.debug_bind_master = target;
 
@@ -2338,8 +2336,8 @@
                     onbeforedelete: target,
                     onafterdelete: target,
                     onbeforeupdate: target/*,
-                     onafterfilter:	target,
-                     onbeforefilter:	target*/
+				onafterfilter:	target,
+				onbeforefilter:	target*/
                 });
             }
 
@@ -2349,8 +2347,8 @@
 
         },
         /*
-         serializes data to a json object
-         */
+		serializes data to a json object
+	*/
         serialize: function () {
             var ids = this.order;
             var result = [];
@@ -2414,6 +2412,8 @@
             }
         }
     };
+
+
 
 
 //UI interface

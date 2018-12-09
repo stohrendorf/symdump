@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
 
     <title>Form linked to datastore</title>
@@ -14,13 +14,14 @@
 <div id="gridbox" style="width:600px; height:270px; background-color:white;"></div>
 <div id="gridbox2" style="width:600px; height:170px; background-color:white;"></div>
 <div style='clear:both'></div>
-<input type="button" value="save" onclick="myform.save()">
+<input onclick="myform.save()" type="button" value="save">
 
 <script>
     var data = new dhtmlXDataStore({
         url: "../common/data/data.json",
         datatype: "json"
     });
+
 
 
     mygrid = new dhtmlXGridObject('gridbox');

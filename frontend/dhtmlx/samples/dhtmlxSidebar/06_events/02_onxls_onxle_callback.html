@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>onXLS / onXLE / callback</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#sidebarObj {
@@ -35,6 +35,7 @@
         var mySidebar;
         var eLog;
         var eCount = 0;
+
         function doOnLoad() {
             eLog = document.getElementById("eLog");
             mySidebar = new dhtmlXSideBar({
@@ -52,6 +53,7 @@
                 logEvent("callback");
             });
         }
+
         function logEvent(name, itemId) {
             eLog.innerHTML = (++eCount) + ") event fired: " + name + "<br>" + eLog.innerHTML;
             eLog.scrollTop = 0;

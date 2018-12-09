@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Tips 'n tricks: customized form in window</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#vp {
@@ -22,6 +22,7 @@
     <script>
         var myForm, formData;
         var dhxWins, w1;
+
         function doOnLoad() {
 
             // init windows
@@ -40,53 +41,53 @@
                 {
                     type: "block", inputWidth: 414, className: "myBlock", list: [
 
-                    {
-                        type: "radio",
-                        name: "type",
-                        label: "Already have account",
-                        labelWidth: "auto",
-                        position: "label-right",
-                        checked: true,
-                        list: [
-                            {type: "input", label: "Login", value: "p_rossi"},
-                            {type: "password", label: "Password", value: "123"},
-                            {type: "checkbox", label: "Remember me", checked: true}
-                        ]
-                    },
-                    {
-                        type: "radio",
-                        name: "type",
-                        label: "Not registered yet",
-                        labelWidth: "auto",
-                        position: "label-right",
-                        list: [
-                            {type: "input", label: "Full Name", value: "Patricia D. Rossi"},
-                            {type: "input", label: "E-mail Address", value: "p_rossi@example.com"},
-                            {type: "input", label: "Login", value: "p_rossi"},
-                            {type: "password", label: "Password", value: "123"},
-                            {type: "password", label: "Confirm Password", value: "123"},
-                            {type: "checkbox", label: "Subscribe on news"}
-                        ]
-                    },
-                    {
-                        type: "radio",
-                        name: "type",
-                        label: "Guest login",
-                        labelWidth: "auto",
-                        position: "label-right",
-                        list: [
-                            {
-                                type: "select", label: "Account type", options: [
-                                {text: "Admin", value: "admin"},
-                                {text: "Organiser", value: "org"},
-                                {text: "Power User", value: "poweruser"},
-                                {text: "User", value: "user"}
+                        {
+                            type: "radio",
+                            name: "type",
+                            label: "Already have account",
+                            labelWidth: "auto",
+                            position: "label-right",
+                            checked: true,
+                            list: [
+                                {type: "input", label: "Login", value: "p_rossi"},
+                                {type: "password", label: "Password", value: "123"},
+                                {type: "checkbox", label: "Remember me", checked: true}
                             ]
-                            },
-                            {type: "checkbox", label: "Show logs window"}
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            type: "radio",
+                            name: "type",
+                            label: "Not registered yet",
+                            labelWidth: "auto",
+                            position: "label-right",
+                            list: [
+                                {type: "input", label: "Full Name", value: "Patricia D. Rossi"},
+                                {type: "input", label: "E-mail Address", value: "p_rossi@example.com"},
+                                {type: "input", label: "Login", value: "p_rossi"},
+                                {type: "password", label: "Password", value: "123"},
+                                {type: "password", label: "Confirm Password", value: "123"},
+                                {type: "checkbox", label: "Subscribe on news"}
+                            ]
+                        },
+                        {
+                            type: "radio",
+                            name: "type",
+                            label: "Guest login",
+                            labelWidth: "auto",
+                            position: "label-right",
+                            list: [
+                                {
+                                    type: "select", label: "Account type", options: [
+                                        {text: "Admin", value: "admin"},
+                                        {text: "Organiser", value: "org"},
+                                        {text: "Power User", value: "poweruser"},
+                                        {text: "User", value: "user"}
+                                    ]
+                                },
+                                {type: "checkbox", label: "Show logs window"}
+                            ]
+                        }
+                    ]
                 },
                 {type: "button", position: "absolute", inputTop: 276, inputLeft: 143, value: "Proceed"}
             ];

@@ -2,26 +2,27 @@
 <html>
 <head>
     <title>Options for combo</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myForm, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-left", labelWidth: 100, inputWidth: 200},
                 {
                     type: "fieldset", label: "Welcome", inputWidth: "auto", list: [
-                    {
-                        type: "combo",
-                        label: "Package",
-                        filtering: true,
-                        connector: "../../dhtmlxCombo/common/data2.json",
-                        value: ""
-                    }
-                ]
+                        {
+                            type: "combo",
+                            label: "Package",
+                            filtering: true,
+                            connector: "../../dhtmlxCombo/common/data2.json",
+                            value: ""
+                        }
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);

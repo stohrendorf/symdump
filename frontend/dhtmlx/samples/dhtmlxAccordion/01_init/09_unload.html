@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Unloading accordion</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -21,6 +21,7 @@
     <script>
         var myAcc;
         var accObj;
+
         function initAcc() {
             if (myAcc == null) {
                 if (accObj == null) accObj = document.getElementById("accObj");
@@ -29,6 +30,7 @@
                 myAcc.loadStruct("../common/acc.json");
             }
         }
+
         function unloadAcc() {
             if (myAcc != null) {
                 myAcc.unload();
@@ -40,7 +42,7 @@
 </head>
 <body onload="initAcc();">
 <div id="accObj"></div>
-<input type="button" value="init" onclick="initAcc();" style="margin-top:20px;">
-<input type="button" value="unload" onclick="unloadAcc();" style="margin-top:20px;">
+<input onclick="initAcc();" style="margin-top:20px;" type="button" value="init">
+<input onclick="unloadAcc();" style="margin-top:20px;" type="button" value="unload">
 </body>
 </html>

@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Init from object</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
 
     <script>
@@ -16,22 +16,22 @@
             items: [
                 {
                     type: 'block', text: 'Block 1', mode: 'rows', list: [
-                    {type: 'button', text: 'new', img: "18/new.gif"},
-                    {type: 'slider', text: "slider 1", size: 50},
-                    {type: "newLevel"},
-                    {
-                        type: "group", list: [
-                        {type: 'button', text: 'open', img: "18/open.gif"},
-                        {type: 'slider', text: "slider 1", size: 50}
+                        {type: 'button', text: 'new', img: "18/new.gif"},
+                        {type: 'slider', text: "slider 1", size: 50},
+                        {type: "newLevel"},
+                        {
+                            type: "group", list: [
+                                {type: 'button', text: 'open', img: "18/open.gif"},
+                                {type: 'slider', text: "slider 1", size: 50}
+                            ]
+                        }
                     ]
-                    }
-                ]
                 },
                 {
                     type: 'block', text: 'Block 2', mode: 'cols', list: [
-                    {type: 'slider', text: "slider 1", size: 50},
-                    {type: 'slider', size: 70, isbig: true, vertical: true}
-                ]
+                        {type: 'slider', text: "slider 1", size: 50},
+                        {type: 'slider', size: 70, isbig: true, vertical: true}
+                    ]
                 }
             ]
         };

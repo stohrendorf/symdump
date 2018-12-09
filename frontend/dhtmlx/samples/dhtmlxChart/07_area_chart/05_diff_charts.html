@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Combination</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         .dhx_axis_item_x {
@@ -30,6 +30,7 @@
             {sales: 4.8, sales2: 12.0, year: "2012"}
         ];
         var myAreaChart;
+
         function doOnLoad() {
             myAreaChart = new dhtmlXChart({
                 view: "bar",
@@ -90,9 +91,11 @@
             });
             myAreaChart.parse(data, "json");
         }
+
         function getAny(property, data) {
             return data[0][property];
         }
+
         function getAverage(property, data) {
             var count = 0;
             var summ = 0;

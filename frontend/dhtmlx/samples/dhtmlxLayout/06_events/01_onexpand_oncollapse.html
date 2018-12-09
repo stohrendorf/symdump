@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>onCollapse / onExpand events</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#layoutObj {
@@ -37,6 +37,7 @@
     </style>
     <script>
         var mainLayout, layout2E;
+
         function doOnLoad() {
             mainLayout = new dhtmlXLayoutObject({
                 parent: "layoutObj",
@@ -63,10 +64,12 @@
                 writeLog("event onExpand called for layout2E, cell " + id);
             });
         }
+
         function writeLog(text) {
             document.getElementById("logsHere").innerHTML += "<br>" + text;
             document.getElementById("logsHere").scrollTop = document.getElementById("logsHere").scrollHeight;
         }
+
         function doOnUnload() {
             if (mainLayout != null && mainLayout.unload != null) {
                 mainLayout.unload();

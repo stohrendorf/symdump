@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Show / hide week numbers</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myCalendar;
+
         function doOnLoad() {
             myCalendar = new dhtmlXCalendarObject("calendarHere");
             myCalendar.setDate(new Date(2013, 5, 6, 16, 0));
@@ -19,8 +20,8 @@
 </head>
 <body onload="doOnLoad();">
 <div style="margin-bottom:20px;">
-    <input type="button" value="show" onclick="myCalendar.showWeekNumbers();">
-    <input type="button" value="hide" onclick="myCalendar.hideWeekNumbers();">
+    <input onclick="myCalendar.showWeekNumbers();" type="button" value="show">
+    <input onclick="myCalendar.hideWeekNumbers();" type="button" value="hide">
 </div>
 <div id="calendarHere" style="position:relative;height:350px;"></div>
 </body>

@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>onClick from init</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#logs_here {
@@ -25,54 +25,54 @@
             items: [
                 {
                     type: 'block', text: 'Block 1', mode: 'rows', list: [
-                    {type: 'button', text: 'new', img: "18/new.gif"},
-                    {
-                        type: 'slider', text: "slider 1", size: 50,
-                        onclick: function (value) {
-                            setNoteToLog({
-                                eventNme: "slider 1",
-                                arg: [value]
-                            });
-                        }
-                    },
-                    {type: "newLevel"},
-                    {
-                        type: "group", list: [
-                        {type: 'button', text: 'open', img: "18/open.gif"},
+                        {type: 'button', text: 'new', img: "18/new.gif"},
                         {
                             type: 'slider', text: "slider 1", size: 50,
                             onclick: function (value) {
                                 setNoteToLog({
-                                    eventNme: "slider 2",
+                                    eventNme: "slider 1",
+                                    arg: [value]
+                                });
+                            }
+                        },
+                        {type: "newLevel"},
+                        {
+                            type: "group", list: [
+                                {type: 'button', text: 'open', img: "18/open.gif"},
+                                {
+                                    type: 'slider', text: "slider 1", size: 50,
+                                    onclick: function (value) {
+                                        setNoteToLog({
+                                            eventNme: "slider 2",
+                                            arg: [value]
+                                        });
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    type: 'block', text: 'Block 2', mode: 'cols', list: [
+                        {
+                            type: 'slider', text: "slider 1", size: 50,
+                            onclick: function (value) {
+                                setNoteToLog({
+                                    eventNme: "slider 3",
+                                    arg: [value]
+                                });
+                            }
+                        },
+                        {
+                            type: 'slider', size: 70, isbig: true, vertical: true,
+                            onclick: function (value) {
+                                setNoteToLog({
+                                    eventNme: "slider 4",
                                     arg: [value]
                                 });
                             }
                         }
                     ]
-                    }
-                ]
-                },
-                {
-                    type: 'block', text: 'Block 2', mode: 'cols', list: [
-                    {
-                        type: 'slider', text: "slider 1", size: 50,
-                        onclick: function (value) {
-                            setNoteToLog({
-                                eventNme: "slider 3",
-                                arg: [value]
-                            });
-                        }
-                    },
-                    {
-                        type: 'slider', size: 70, isbig: true, vertical: true,
-                        onclick: function (value) {
-                            setNoteToLog({
-                                eventNme: "slider 4",
-                                arg: [value]
-                            });
-                        }
-                    }
-                ]
                 }
             ]
         };

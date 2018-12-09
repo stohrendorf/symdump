@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXCellObject(idd, css) {
 
@@ -62,14 +62,14 @@ function dhtmlXCellObject(idd, css) {
     this._adjustAttached = function () {
         // mtb/ribbon
         for (var a in this.dataNodes) {
-            if (this.dataNodes[a] != null && typeof(this.dataNodes[a].setSizes) == "function") {
+            if (this.dataNodes[a] != null && typeof (this.dataNodes[a].setSizes) == "function") {
                 this.dataNodes[a].setSizes();
             }
         }
         // attached node
-        if (this.dataObj != null && typeof(this.dataObj.setSizes) == "function") {
+        if (this.dataObj != null && typeof (this.dataObj.setSizes) == "function") {
             // check if dataObj is layuot which was attached separately
-            if (this.dataType == "layout" && typeof(window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell && this.dataObj._getMainInst() != this.layout._getMainInst()) {
+            if (this.dataType == "layout" && typeof (window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell && this.dataObj._getMainInst() != this.layout._getMainInst()) {
                 this.dataObj.setSizes();
                 return;
             }
@@ -110,7 +110,7 @@ function dhtmlXCellObject(idd, css) {
         var t = this.cell.childNodes[this.conf.idx.cont];
 
         // attempt to adjust cell in collapsed layout
-        if (typeof(window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell && this.conf.collapsed == true) {
+        if (typeof (window.dhtmlXLayoutCell) == "function" && this instanceof window.dhtmlXLayoutCell && this.conf.collapsed == true) {
             t.style.left = t.style.top = "0px";
             t.style.width = t.style.height = "200px";
             t = null;
@@ -217,7 +217,7 @@ function dhtmlXCellObject(idd, css) {
         for (var a in this.dataNodes) {
 
             for (var b in this.conf.ofs_nodes) {
-                if (typeof(this.conf.ofs_nodes[b][a]) != "undefined") {
+                if (typeof (this.conf.ofs_nodes[b][a]) != "undefined") {
                     this.views[name].ofs_nodes[b][a] = this.conf.ofs_nodes[b][a];
                     this.conf.ofs_nodes[b][a] = null;
                     delete this.conf.ofs_nodes[b][a];
@@ -336,7 +336,7 @@ dhtmlXCellObject.prototype.showView = function (name) {
 
     this.conf.view = name;
 
-    var t = (typeof(this.conf.views_loaded[this.conf.view]) == "undefined");
+    var t = (typeof (this.conf.views_loaded[this.conf.view]) == "undefined");
     this.conf.views_loaded[this.conf.view] = true;
 
     return t;
@@ -358,9 +358,9 @@ dhtmlXCellObject.prototype.unloadView = function (name) {
         this.conf.unloading = true;
 
         // remove content
-        if (typeof(this.detachMenu) == "function") this.detachMenu();
-        if (typeof(this.detachToolbar) == "function") this.detachToolbar();
-        if (typeof(this.detachRibbon) == "function") this.detachRibbon();
+        if (typeof (this.detachMenu) == "function") this.detachMenu();
+        if (typeof (this.detachToolbar) == "function") this.detachToolbar();
+        if (typeof (this.detachRibbon) == "function") this.detachRibbon();
         this.detachStatusBar();
         this._detachObject(null, true);
 
@@ -375,7 +375,7 @@ dhtmlXCellObject.prototype.unloadView = function (name) {
 
     var v = this.views[name];
     for (var a in v.dataNodes) {
-        if (typeof(v.dataNodes[a].unload) == "function") v.dataNodes[a].unload();
+        if (typeof (v.dataNodes[a].unload) == "function") v.dataNodes[a].unload();
         v.dataNodes[a] = null;
         v.dataNodesCont[a] = null;
     }
@@ -384,9 +384,9 @@ dhtmlXCellObject.prototype.unloadView = function (name) {
             this._detachURLEvents(v.cellCont[0]);
         }
     } else if (v.dataObj != null) {
-        if (typeof(v.dataObj.unload) == "function") {
+        if (typeof (v.dataObj.unload) == "function") {
             v.dataObj.unload();
-        } else if (typeof(v.dataObj.destructor) == "function") {
+        } else if (typeof (v.dataObj.destructor) == "function") {
             v.dataObj.destructor();
         }
         v.dataObj = null;
@@ -395,10 +395,10 @@ dhtmlXCellObject.prototype.unloadView = function (name) {
 
     this._viewDelete(name);
 
-    if (typeof(this.conf.views_loaded[name]) != "undefined") {
+    if (typeof (this.conf.views_loaded[name]) != "undefined") {
         delete this.conf.views_loaded[name];
     }
-
+	
 };
 
 
@@ -502,7 +502,7 @@ dhtmlXCellObject.prototype._hideCellCover = function () {
     this._updateIdx();
 
     this.conf.cover = false;
-
+	
 };
 
 // borders
@@ -536,7 +536,7 @@ dhtmlXCellObject.prototype._hideBorders = function (noAdjust) {
     this.callEvent("_onBorderChange", [false]);
 
     if (noAdjust !== true) this._adjustCont(this._idd);
-
+	
 };
 
 // basic width/height
@@ -579,18 +579,18 @@ dhtmlXCellObject.prototype._unload = function () {
 
     // others
     for (var a in this) this[a] = null; // no mercy
-
+	
 };
 
 
 dhtmlXCellObject.prototype.attachObject = function (obj, adjust) {
 
     // adjust - for windows only
-    if (window.dhx4.s2b(adjust) && !(typeof(window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell)) {
+    if (window.dhx4.s2b(adjust) && !(typeof (window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell)) {
         adjust = false;
     }
 
-    if (typeof(obj) == "string") obj = document.getElementById(obj);
+    if (typeof (obj) == "string") obj = document.getElementById(obj);
 
     // already attached
     if (obj.parentNode == this.cell.childNodes[this.conf.idx.cont]) {
@@ -615,7 +615,7 @@ dhtmlXCellObject.prototype.attachObject = function (obj, adjust) {
 
 dhtmlXCellObject.prototype.appendObject = function (obj) {
 
-    if (typeof(obj) == "string") obj = document.getElementById(obj);
+    if (typeof (obj) == "string") obj = document.getElementById(obj);
 
     // already attached
     if (obj.parentNode == this.cell.childNodes[this.conf.idx.cont]) {
@@ -655,7 +655,7 @@ dhtmlXCellObject.prototype.attachURL = function (url, useAjax, postData) {
 
     // prepare POST if any, postData should be true or {} otherwise GET
     if (postData == true) postData = {};
-    var postReq = (typeof(postData) != "undefined" && postData != false && postData != null);
+    var postReq = (typeof (postData) != "undefined" && postData != false && postData != null);
 
     if (this.conf.url_data == null) this.conf.url_data = {};
     this.conf.url_data.url = url;
@@ -679,18 +679,18 @@ dhtmlXCellObject.prototype.attachURL = function (url, useAjax, postData) {
             for (var a in postData) params += "&" + encodeURIComponent(a) + "=" + encodeURIComponent(postData[a]);
 
             this.conf.url_data.xml_doc = dhx4.ajax.post(url, params, function (r) {
-                if (t.attachHTMLString != null && typeof(r.xmlDoc.responseText) == "string") {
+                if (t.attachHTMLString != null && typeof (r.xmlDoc.responseText) == "string") {
                     t.attachHTMLString("<div style='position:relative;width:100%;height:100%;overflow:auto;'>" + r.xmlDoc.responseText + "</div>");
-                    if (typeof(t._doOnFrameContentLoaded) == "function") t._doOnFrameContentLoaded();
+                    if (typeof (t._doOnFrameContentLoaded) == "function") t._doOnFrameContentLoaded();
                     t.dataType = "url-ajax";
                 }
                 t = r = null;
             });
         } else {
             this.conf.url_data.xml_doc = dhx4.ajax.get(url, function (r) {
-                if (t.attachHTMLString != null && typeof(r.xmlDoc.responseText) == "string") {
+                if (t.attachHTMLString != null && typeof (r.xmlDoc.responseText) == "string") {
                     t.attachHTMLString("<div style='position:relative;width:100%;height:100%;overflow:auto;'>" + r.xmlDoc.responseText + "</div>");
-                    if (typeof(t._doOnFrameContentLoaded) == "function") t._doOnFrameContentLoaded();
+                    if (typeof (t._doOnFrameContentLoaded) == "function") t._doOnFrameContentLoaded();
                     t.dataType = "url-ajax";
                 }
                 t = r = null;
@@ -712,7 +712,7 @@ dhtmlXCellObject.prototype.attachURL = function (url, useAjax, postData) {
             this._attachURLEvents();
         }
         if (postReq) {
-            var firstLoad = (typeof(this.conf.url_data.post_ifr) == "undefined");
+            var firstLoad = (typeof (this.conf.url_data.post_ifr) == "undefined");
             this.conf.url_data.post_ifr = true; // load later
             if (firstLoad) this._attachURLEvents();
             fr.src = "about:blank";
@@ -808,18 +808,18 @@ dhtmlXCellObject.prototype.attachMap = function (opts) {
     this.callEvent("_onContentAttach", []);
 
     return this.dataObj;
-
+	
 };
 
 // status bar
 dhtmlXCellObject.prototype._createNode_sb = function (obj, type, htmlString, append, node) {
     // type -> (object) conf={text:string,height:number}
-    if (typeof(node) != "undefined") {
+    if (typeof (node) != "undefined") {
         obj = node;
     } else {
         var conf = type || {};
-        var text = (typeof(conf.text) == "string" && conf.text.length > 0 ? conf.text : "&nbsp;");
-        var h = (typeof(conf.height) == "number" ? conf.height : false);
+        var text = (typeof (conf.text) == "string" && conf.text.length > 0 ? conf.text : "&nbsp;");
+        var h = (typeof (conf.height) == "number" ? conf.height : false);
         var obj = document.createElement("DIV");
 
         obj.className = "dhx_cell_statusbar_def";
@@ -849,7 +849,7 @@ dhtmlXCellObject.prototype.attachStatusBar = function (conf) { // args-optinal, 
 
     if (conf != null && window.dhx4.s2b(conf.paging) == true) conf.height = null; // will set by css
 
-    if (this.conf.skin == "dhx_skyblue" && typeof(window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
+    if (this.conf.skin == "dhx_skyblue" && typeof (window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
         this.cell.childNodes[this.conf.idx.cont].className += " dhx_cell_statusbar_attached";
     }
     this.dataNodes.sb = this._attachObject("sb", conf);
@@ -872,7 +872,7 @@ dhtmlXCellObject.prototype.detachStatusBar = function () {
 
     if (!this.dataNodes.sb) return;
 
-    if (this.conf.skin == "dhx_skyblue" && typeof(window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
+    if (this.conf.skin == "dhx_skyblue" && typeof (window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
         this.cell.childNodes[this.conf.idx.cont].className = this.cell.childNodes[this.conf.idx.cont].className.replace(/\s{0,}dhx_cell_statusbar_attached/, "");
     }
 
@@ -915,21 +915,21 @@ dhtmlXCellObject.prototype._attachURLEvents = function () {
     var cId = this._idd;
     var fr = this.cell.childNodes[this.conf.idx.cont].firstChild;
 
-    if (typeof(this._doOnFrameMouseDown) != "function") {
+    if (typeof (this._doOnFrameMouseDown) != "function") {
         this._doOnFrameMouseDown = function (e) {
             // console.log("frame mouse down"); // needed for windows to activate window
             t.callEvent("_onContentMouseDown", [cId, e || event]);
         }
     }
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         fr.onload = function () {
             try {
-                if (typeof(t._doOnFrameMouseDown) == "function") this.contentWindow.document.body.addEventListener("mousedown", t._doOnFrameMouseDown, false);
+                if (typeof (t._doOnFrameMouseDown) == "function") this.contentWindow.document.body.addEventListener("mousedown", t._doOnFrameMouseDown, false);
             } catch (e) {
             }
             try {
-                if (typeof(t._doOnFrameContentLoaded) == "function") t._doOnFrameContentLoaded();
+                if (typeof (t._doOnFrameContentLoaded) == "function") t._doOnFrameContentLoaded();
             } catch (e) {
             }
         }
@@ -938,11 +938,11 @@ dhtmlXCellObject.prototype._attachURLEvents = function () {
         fr.onreadystatechange = function (a) {
             if (this.readyState == "complete") {
                 try {
-                    if (typeof(t._doOnFrameMouseDown) == "function") this.contentWindow.document.body.attachEvent("onmousedown", t._doOnFrameMouseDown);
+                    if (typeof (t._doOnFrameMouseDown) == "function") this.contentWindow.document.body.attachEvent("onmousedown", t._doOnFrameMouseDown);
                 } catch (e) {
                 }
                 try {
-                    if (typeof(t._doOnFrameContentLoaded) == "function") t._doOnFrameContentLoaded();
+                    if (typeof (t._doOnFrameContentLoaded) == "function") t._doOnFrameContentLoaded();
                 } catch (e) {
                 }
             }
@@ -984,7 +984,7 @@ dhtmlXCellObject.prototype._detachURLEvents = function (fr) {
     }
     if (!fr) return;
 
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         fr.onload = null;
         try {
             fr.contentWindow.document.body.removeEventListener("mousedown", this._doOnFrameMouseDown, false);
@@ -1003,13 +1003,13 @@ dhtmlXCellObject.prototype._detachURLEvents = function (fr) {
 
 dhtmlXCellObject.prototype._attachObject = function (obj, type, htmlString, append, node) {
 
-    if (typeof(obj) == "string" && {menu: 1, toolbar: 1, ribbon: 1, sb: 1}[obj] == 1) {
+    if (typeof (obj) == "string" && {menu: 1, toolbar: 1, ribbon: 1, sb: 1}[obj] == 1) {
         return this["_createNode_" + obj].apply(this, arguments);
     }
 
     if (append != true) this._detachObject(null, true, null);
 
-    if (typeof(htmlString) == "string") {
+    if (typeof (htmlString) == "string") {
         this.cell.childNodes[this.conf.idx.cont].innerHTML = htmlString;
     } else {
         this.cell.childNodes[this.conf.idx.cont].appendChild(obj);
@@ -1039,10 +1039,10 @@ dhtmlXCellObject.prototype._detachObject = function (obj, remove, moveTo) {
     if (remove == true) {
         moveTo = false;
     } else {
-        if (typeof(moveTo) == "undefined") {
+        if (typeof (moveTo) == "undefined") {
             moveTo = document.body;
         } else {
-            if (typeof(moveTo) == "string") moveTo = document.getElementById(moveTo);
+            if (typeof (moveTo) == "string") moveTo = document.getElementById(moveTo);
         }
     }
 
@@ -1063,9 +1063,9 @@ dhtmlXCellObject.prototype._detachObject = function (obj, remove, moveTo) {
         if (this.dataType == "url") {
             this._detachURLEvents();
         } else if (this.dataObj != null) {
-            if (typeof(this.dataObj.unload) == "function") {
+            if (typeof (this.dataObj.unload) == "function") {
                 this.dataObj.unload();
-            } else if (typeof(this.dataObj.destructor) == "function") {
+            } else if (typeof (this.dataObj.destructor) == "function") {
                 this.dataObj.destructor(); // at least for grid
             }
         }
@@ -1098,7 +1098,7 @@ dhtmlXCellObject.prototype._detachObject = function (obj, remove, moveTo) {
         this.showHeader(true);
         this._showBorders();
     }
-
+	
 };
 
 // for dock/undock
@@ -1108,17 +1108,17 @@ dhtmlXCellObject.prototype._attachFromCell = function (cell) {
     this.detachObject(true);
 
     var mode = "layout";
-    if (typeof(window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
+    if (typeof (window.dhtmlXWindowsCell) == "function" && this instanceof window.dhtmlXWindowsCell) {
         mode = "window";
     }
 
     // check opacity:
     // 1) detach from window cell, opacity set to 0.4
-    if (typeof(window.dhtmlXWindowsCell) == "function" && cell instanceof window.dhtmlXWindowsCell && cell.wins.w[cell._idd].conf.parked == true) {
+    if (typeof (window.dhtmlXWindowsCell) == "function" && cell instanceof window.dhtmlXWindowsCell && cell.wins.w[cell._idd].conf.parked == true) {
         cell.wins._winCellSetOpacity(cell._idd, "open", false);
     }
     // 2) acc-cell collapsed
-    if (typeof(window.dhtmlXAccordionCell) == "function" && cell instanceof window.dhtmlXAccordionCell && cell.conf.opened == false) {
+    if (typeof (window.dhtmlXAccordionCell) == "function" && cell instanceof window.dhtmlXAccordionCell && cell.conf.opened == false) {
         cell._cellSetOpacity("open", false);
     }
 
@@ -1189,7 +1189,7 @@ dhtmlXCellObject.prototype._attachFromCell = function (cell) {
     if (mode == "window" && this.wins.w[this._idd].conf.parked) {
         this.wins._winCellSetOpacity(this._idd, "close", false);
     }
-
+	
 };
 
 /*
@@ -1220,12 +1220,12 @@ dhtmlXCellObject.prototype._attachFromCell = function (cell) {
  |   +-----------------------------------------------+    |
  |                                                        |
  +--------------------------------------------------------+
-
- */
+ 
+*/
 
 function dhtmlXCellTop(base, offsets) {
 
-    if (arguments.length == 0 || typeof(base) == "undefined") return;
+    if (arguments.length == 0 || typeof (base) == "undefined") return;
 
     var that = this;
 
@@ -1258,7 +1258,7 @@ function dhtmlXCellTop(base, offsets) {
         }
 
     } else {
-        this.base = (typeof(base) == "string" ? document.getElementById(base) : base);
+        this.base = (typeof (base) == "string" ? document.getElementById(base) : base);
     }
 
     this.base.className += " " + this.conf.css + "_base_" + this.conf.skin;
@@ -1312,7 +1312,7 @@ function dhtmlXCellTop(base, offsets) {
             that.setSizes();
         };
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             window.addEventListener("resize", this._doOnResizeStart, false);
         } else {
             window.attachEvent("onresize", this._doOnResizeStart);
@@ -1331,7 +1331,7 @@ function dhtmlXCellTop(base, offsets) {
         this.detachFooter();
 
         if (this.conf.fs_mode == true) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 window.removeEventListener("resize", this._doOnResizeStart, false);
             } else {
                 window.detachEvent("onresize", this._doOnResizeStart);
@@ -1353,12 +1353,12 @@ dhtmlXCellTop.prototype.setOffsets = function (data, upd) { // set 'upd' to fals
     var t = false;
     for (var a in data) {
         var k = a.charAt(0);
-        if (typeof(this.conf.ofs[k]) != "undefined" && !isNaN(data[a])) {
+        if (typeof (this.conf.ofs[k]) != "undefined" && !isNaN(data[a])) {
             this.conf.ofs[k] = parseInt(data[a]);
             t = true;
         }
     }
-    if (upd !== false && typeof(this.setSizes) == "function" && t == true) this.setSizes();
+    if (upd !== false && typeof (this.setSizes) == "function" && t == true) this.setSizes();
 };
 
 
@@ -1374,7 +1374,7 @@ dhtmlXCellTop.prototype.attachMenu = function (conf) {
 
     this.base.insertBefore(this.dataNodes.menuObj, this.dataNodes.toolbarObj || this.dataNodes.ribbonObj || this.cont);
 
-    if (typeof(conf) != "object" || conf == null) conf = {};
+    if (typeof (conf) != "object" || conf == null) conf = {};
     conf.skin = this.conf.skin;
     conf.parent = this.dataNodes.menuObj;
 
@@ -1434,7 +1434,7 @@ dhtmlXCellTop.prototype.attachToolbar = function (conf) {
     this.base.insertBefore(this.dataNodes.toolbarObj, this.cont);
     this.dataNodes.toolbarObj.appendChild(document.createElement("DIV"));
 
-    if (typeof(conf) != "object" || conf == null) conf = {};
+    if (typeof (conf) != "object" || conf == null) conf = {};
     conf.skin = this.conf.skin;
     conf.parent = this.dataNodes.toolbarObj.firstChild;
 
@@ -1495,7 +1495,7 @@ dhtmlXCellTop.prototype.attachRibbon = function (conf) {
     this.base.insertBefore(this.dataNodes.ribbonObj, this.cont);
     this.dataNodes.ribbonObj.appendChild(document.createElement("DIV"));
 
-    if (typeof(conf) != "object" || conf == null) conf = {};
+    if (typeof (conf) != "object" || conf == null) conf = {};
     conf.skin = this.conf.skin;
     conf.parent = this.dataNodes.ribbonObj.firstChild;
 
@@ -1552,7 +1552,7 @@ dhtmlXCellTop.prototype.attachStatusBar = function (conf) { // arg-optional, new
 
     if (this.dataNodes.sbObj) return;
 
-    if (typeof(conf) == "undefined") conf = {};
+    if (typeof (conf) == "undefined") conf = {};
 
     this.dataNodes.sbObj = document.createElement("DIV");
     this.dataNodes.sbObj.className = "dhxcelltop_statusbar";
@@ -1563,8 +1563,8 @@ dhtmlXCellTop.prototype.attachStatusBar = function (conf) { // arg-optional, new
         this.base.appendChild(this.dataNodes.sbObj);
     }
 
-    this.dataNodes.sbObj.innerHTML = "<div class='dhxcont_statusbar'>" + (typeof(conf.text) == "string" && conf.text.length > 0 ? conf.text : "&nbsp;") + "</div>";
-    if (typeof(conf.height) == "number") this.dataNodes.sbObj.firstChild.style.height = this.dataNodes.sbObj.firstChild.style.lineHeight = conf.height + "px";
+    this.dataNodes.sbObj.innerHTML = "<div class='dhxcont_statusbar'>" + (typeof (conf.text) == "string" && conf.text.length > 0 ? conf.text : "&nbsp;") + "</div>";
+    if (typeof (conf.height) == "number") this.dataNodes.sbObj.firstChild.style.height = this.dataNodes.sbObj.firstChild.style.lineHeight = conf.height + "px";
 
     this.dataNodes.sbObj.setText = function (text) {
         this.childNodes[0].innerHTML = text;
@@ -1610,7 +1610,7 @@ dhtmlXCellTop.prototype.detachStatusBar = function () {
     delete this.dataNodes.sbEv;
 
     if (!this.conf.unloading) this.setSizes();
-
+	
 };
 
 // show/hide
@@ -1704,7 +1704,7 @@ dhtmlXCellTop.prototype.progressOff = function () {
 
     var p = {dhxcelltop_progress: true, dhxcelltop_progress_img: true, dhxcelltop_progress_svg: true};
     for (var q = 0; q < this.base.childNodes.length; q++) {
-        if (typeof(this.base.childNodes[q].className) != "undefined" && p[this.base.childNodes[q].className] == true) {
+        if (typeof (this.base.childNodes[q].className) != "undefined" && p[this.base.childNodes[q].className] == true) {
             p[this.base.childNodes[q].className] = this.base.childNodes[q];
         }
     }
@@ -1716,7 +1716,7 @@ dhtmlXCellTop.prototype.progressOff = function () {
 
     this.conf.progress = false;
     p = null;
-
+	
 };
 
 // fullscreen header-footer
@@ -1729,7 +1729,7 @@ dhtmlXCellTop.prototype.attachHeader = function (obj, height) {
 
     if (this.dataNodes.haObj != null) return; // already attached
 
-    if (typeof(obj) != "object") obj = document.getElementById(obj);
+    if (typeof (obj) != "object") obj = document.getElementById(obj);
 
     this.dataNodes.haObj = document.createElement("DIV");
     this.dataNodes.haObj.className = "dhxcelltop_hdr";
@@ -1780,7 +1780,7 @@ dhtmlXCellTop.prototype.attachFooter = function (obj, height) {
 
     if (this.dataNodes.faObj != null) return;
 
-    if (typeof(obj) != "object") obj = document.getElementById(obj);
+    if (typeof (obj) != "object") obj = document.getElementById(obj);
 
     this.dataNodes.faObj = document.createElement("DIV");
     this.dataNodes.faObj.className = "dhxcelltop_ftr";
@@ -1829,6 +1829,6 @@ dhtmlXCellTop.prototype.detachFooter = function () {
     delete this.dataNodes.faObj;
 
     if (!this.conf.unloading) this.setSizes();
-
+	
 };
 

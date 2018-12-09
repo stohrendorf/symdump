@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Switch to next/prev item</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#sidebarObj {
@@ -33,6 +33,7 @@
     </style>
     <script>
         var mySidebar;
+
         function doOnLoad() {
             mySidebar = new dhtmlXSideBar({
                 parent: "sidebarObj",
@@ -41,6 +42,7 @@
                 json: "../common/sidebar.json"
             });
         }
+
         function changeSelectedItem(dir) {
             if (dir > 0) {
                 mySidebar.goToNextItem();

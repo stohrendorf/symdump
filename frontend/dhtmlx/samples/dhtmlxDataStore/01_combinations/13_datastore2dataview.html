@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <title>DataView linked to Datatore</title>
 </head>
 
 <body>
 <div id="gridbox2" style="width:600px; height:270px; background-color:white;"></div>
-<input type="button" value='next' onclick='show_next()'>
+<input onclick='show_next()' type="button" value='next'>
 
 <script>
     var data = new dhtmlXDataStore({
@@ -21,6 +21,7 @@
         },
         datatype: "json"
     });
+
     function show_next() {
         data.setCursor(data.next(data.getCursor()));
     }
@@ -38,7 +39,7 @@
         return filter.Version == master.Version;
     });
     data1.load("../common/data/data.json", "json");
-
+	
 </script>
 
 

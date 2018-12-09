@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Cells progress control</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#layoutObj {
@@ -29,6 +29,7 @@
     <script>
         var myLayout;
         var sel;
+
         function doOnLoad() {
             myLayout = new dhtmlXLayoutObject({
                 parent: "layoutObj",
@@ -40,11 +41,13 @@
                 sel.options.add(new Option(item.getId(), item.getId()));
             });
         }
+
         function getId() {
             var sel = document.getElementById("sel");
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function progressOn(fullLayout) {
             if (fullLayout) {
                 myLayout.progressOn();
@@ -52,6 +55,7 @@
                 myLayout.cells(getId()).progressOn();
             }
         }
+
         function progressOff(fullLayout) {
             if (fullLayout) {
                 myLayout.progressOff();
@@ -67,17 +71,13 @@
     <table>
         <tr>
             <td>Cell&nbsp;&nbsp;<select id="sel"></select>&nbsp;</td>
-            <td><input type="button" value="Progress On" onclick="progressOn(false);">&nbsp;<input type="button"
-                                                                                                   value="Progress Off"
-                                                                                                   onclick="progressOff(false);">
-            </td>
+            <td><input onclick="progressOn(false);" type="button" value="Progress On">&nbsp;<input
+                    onclick="progressOff(false);" type="button" value="Progress Off"></td>
         </tr>
         <tr>
             <td>Full Layout</td>
-            <td><input type="button" value="Progress On" onclick="progressOn(true);">&nbsp;<input type="button"
-                                                                                                  value="Progress Off"
-                                                                                                  onclick="progressOff(true);">
-            </td>
+            <td><input onclick="progressOn(true);" type="button" value="Progress On">&nbsp;<input
+                    onclick="progressOff(true);" type="button" value="Progress Off"></td>
         </tr>
     </table>
 </div>

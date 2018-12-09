@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Listed option iterator</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var sel2;
         var myToolbar;
+
         function doOnLoad() {
             sel2 = document.getElementById("sel2");
             myToolbar = new dhtmlXToolbarObject({
@@ -19,10 +20,12 @@
                 onload: updateList
             });
         }
+
         function getId() {
             var id = sel2.options[sel2.selectedIndex].value;
             return id;
         }
+
         function updateText(text) {
             var id = getId();
             var txt = document.getElementById("txt").value;
@@ -30,6 +33,7 @@
                 myToolbar.setListOptionText(id, listId, txt);
             });
         }
+
         function updateList() {
             sel2.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -44,7 +48,7 @@
 <div id="toolbarObj"></div>
 <div style="margin-top: 200px;">
     <select id="sel2"></select>
-    <input type="button" value="Update Text" onclick="updateText();">
+    <input onclick="updateText();" type="button" value="Update Text">
     <input id="txt" type="text" value="New Text">
 </div>
 </body>

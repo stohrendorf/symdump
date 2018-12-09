@@ -16,7 +16,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         transform: rotate(360deg);
     }
 }
-
 @keyframes dhx_loader_dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -31,17 +30,14 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
         stroke-dashoffset: -124px;
     }
 }
-
 .dhxlayout_base_material {
     position: relative;
     cursor: default;
     overflow: visible !important;
 }
-
 .dhxlayout_base_material div.dhxlayout_cont {
     position: absolute;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout {
     position: absolute;
     background-color: white;
@@ -51,7 +47,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     z-index: 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.12);
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_cover {
     position: absolute;
     left: 0px;
@@ -73,7 +68,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_progress_bar {
     position: absolute;
     left: 0px;
@@ -91,7 +85,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_progress_img {
     position: absolute;
     left: 0px;
@@ -110,7 +103,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_progress_svg {
     border: 1px solid #e4e4e4;
     z-index: 2;
@@ -126,7 +118,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_progress_svg .dhx_cell_prsvg {
     position: absolute;
     top: 0;
@@ -139,7 +130,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     animation: dhx_loader_rotate 2s linear infinite;
     transform-origin: center center;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_progress_svg .dhx_cell_prsvg .dhx_cell_prcircle {
     fill: none;
     stroke: #3399cc;
@@ -150,7 +140,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     stroke-linecap: round;
     animation: dhx_loader_dash 1.5s ease-in-out infinite;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_menu_def {
     position: relative;
     overflow: hidden;
@@ -158,32 +147,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-width: 0px 1px 1px 1px;
     border-color: #dfdfdf;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_toolbar_def {
     position: relative;
     overflow: hidden;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_toolbar_def .dhx_toolbar_material {
     border-width: 0px 1px 1px 1px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_ribbon_def {
     position: relative;
     overflow: hidden;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_ribbon_def div.dhxrb_with_tabbar.dhxtabbar_base_material {
     border-top-width: 0px;
     margin-top: -1px;
     width: auto;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_ribbon_def div.dhtmlxribbon_material.dhxrb_without_tabbar {
     border-top-width: 0px;
     width: auto;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_statusbar_def {
     position: absolute;
     bottom: 0px;
@@ -194,7 +177,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text {
     position: relative;
     font: inherit;
@@ -208,12 +190,10 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0px 12px;
     color: #737373;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhx_cell_nested_layout {
     box-shadow: none !important;
     background: none !important;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_cont_layout,
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_menu_def,
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_toolbar_def,
@@ -226,7 +206,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_h div.dhx_cell_statusbar_def {
     display: none;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_cont_layout {
     position: absolute;
     border-color: #dfdfdf;
@@ -234,12 +213,10 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-width: 0px 1px 1px 1px;
     z-index: 0;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_cont_layout.dhx_cell_cont_no_borders {
     border-width: 0px;
     padding: 0px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr {
     position: relative;
     height: 42px;
@@ -257,21 +234,18 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr.dhx_cell_hdr_hidden {
     height: 0px;
     line-height: 0px;
     border-top: 1px solid #dfdfdf;
     overflow: hidden;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr.dhx_cell_hdr_hidden_no_borders {
     height: 0px;
     line-height: 0px;
     border-width: 0px;
     overflow: hidden;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr div.dhx_cell_hdr_text {
     position: relative;
     margin: 0px 39px 0px 14px;
@@ -279,7 +253,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     white-space: nowrap;
     cursor: default;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr div.dhxlayout_arrow {
     position: absolute;
     right: 13px;
@@ -290,23 +263,18 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-repeat: no-repeat;
     cursor: pointer;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr div.dhxlayout_arrow.dhxlayout_arrow_va {
     background-position: -16px 0px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr div.dhxlayout_arrow.dhxlayout_arrow_vb {
     background-position: -48px 0px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr div.dhxlayout_arrow.dhxlayout_arrow_ha {
     background-position: -32px 0px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout div.dhx_cell_hdr div.dhxlayout_arrow.dhxlayout_arrow_hb {
     background-position: 0px 0px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_h div.dhx_cell_hdr {
     font-size: 15px;
     height: 28px;
@@ -314,32 +282,26 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: white;
     font-weight: normal;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_h div.dhx_cell_hdr div.dhxlayout_arrow.dhxlayout_arrow_ha {
     background-position: 0px 0px;
     top: 6px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_h div.dhx_cell_hdr div.dhxlayout_arrow.dhxlayout_arrow_hb {
     background-position: -32px 0px;
     top: 6px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr {
     font-size: 15px;
     width: 28px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhxlayout_arrow.dhxlayout_arrow_va {
     background-position: -48px 0px;
     right: 6px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhxlayout_arrow.dhxlayout_arrow_vb {
     background-position: -16px 0px;
     right: 6px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text {
     position: absolute;
     left: 0px;
@@ -350,57 +312,47 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-weight: normal;
     text-overflow: ellipsis;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_ie6 {
     left: -7px;
     line-height: 27px;
     padding-bottom: 10px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_ie6 span {
     float: left;
     filter: progid:DXImageTransform.Microsoft.Matrix(M11='6.123031769111886e-17', M12='1', M21='-1', M22='6.123031769111886e-17', sizingMethod='auto expand');
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_ie7 {
     left: -7px;
     line-height: 27px;
     padding-bottom: 10px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_ie7 span {
     float: left;
     filter: progid:DXImageTransform.Microsoft.Matrix(M11='6.123031769111886e-17', M12='1', M21='-1', M22='6.123031769111886e-17', sizingMethod='auto expand');
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_ie8 {
     left: -6px;
     line-height: 27px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_ie8 span {
     float: left;
     filter: progid:DXImageTransform.Microsoft.Matrix(M11='6.123031769111886e-17', M12='1', M21='-1', M22='6.123031769111886e-17', sizingMethod='auto expand');
     margin-bottom: 95%;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_ie9 {
     left: 0px;
     line-height: 27px;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_ie9 span {
     float: left;
     filter: none;
     margin-bottom: 95%;
 }
-
 .dhxlayout_base_material div.dhx_cell_layout.dhxlayout_collapsed_v div.dhx_cell_hdr div.dhx_cell_hdr_text.dhx_cell_hdr_text_chrome {
     left: 3px;
     -webkit-transform: rotate(270deg);
     -webkit-transform-origin: left center;
 }
-
 .dhxlayout_base_material div.dhxlayout_sep {
     position: absolute;
     font-size: 1px;
@@ -419,21 +371,17 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhxlayout_sep.dhxlayout_sep_resize_v {
     cursor: w-resize;
     background-image: url('../imgs/dhxlayout_material/dhxlayout_sep_ver.gif');
 }
-
 .dhxlayout_base_material div.dhxlayout_sep.dhxlayout_sep_resize_h {
     cursor: n-resize;
     background-image: url('../imgs/dhxlayout_material/dhxlayout_sep_hor.gif');
 }
-
 .dhxlayout_base_material div.dhxlayout_sep.dhxlayout_sep_resize_actv {
     background-color: #f2f2f2;
 }
-
 .dhxlayout_base_material div.dhxlayout_resize_area {
     position: absolute;
     background-color: #cfcfcf;
@@ -443,7 +391,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border: 1px dashed black;
     cursor: inherit;
 }
-
 .dhxlayout_base_material div.dhxlayout_resize_sep {
     position: absolute;
     background-color: #3399cc;
@@ -454,15 +401,12 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     z-index: 2;
     cursor: inherit;
 }
-
 .dhxlayout_base_material div.dhxcelltop_hdr {
     position: relative;
 }
-
 .dhxlayout_base_material div.dhxcelltop_ftr {
     position: absolute;
 }
-
 .dhxlayout_base_material div.dhxcelltop_progress {
     position: absolute;
     left: 0px;
@@ -480,7 +424,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhxcelltop_progress_img {
     position: absolute;
     left: 0px;
@@ -498,7 +441,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhxcelltop_progress_svg {
     z-index: 4;
     position: absolute;
@@ -513,7 +455,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-user-select: none;
     user-select: none;
 }
-
 .dhxlayout_base_material div.dhxcelltop_progress_svg .dhx_cell_prsvg {
     position: absolute;
     top: 0;
@@ -526,7 +467,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     animation: dhx_loader_rotate 2s linear infinite;
     transform-origin: center center;
 }
-
 .dhxlayout_base_material div.dhxcelltop_progress_svg .dhx_cell_prsvg .dhx_cell_prcircle {
     fill: none;
     stroke: #3399cc;
@@ -537,7 +477,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     stroke-linecap: round;
     animation: dhx_loader_dash 1.5s ease-in-out infinite;
 }
-
 .dhxlayout_base_material div.dhxcelltop_menu {
     position: relative;
     overflow: hidden;
@@ -545,30 +484,24 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-style: solid;
     border-color: #dfdfdf;
 }
-
 .dhxlayout_base_material div.dhxcelltop_toolbar {
     position: relative;
     overflow: hidden;
 }
-
 .dhxlayout_base_material div.dhxcelltop_toolbar div.dhx_toolbar_material {
     border-width: 1px 1px 0px 1px;
 }
-
 .dhxlayout_base_material div.dhxcelltop_ribbon {
     position: relative;
     overflow: hidden;
 }
-
 .dhxlayout_base_material div.dhxcelltop_ribbon div.dhtmlxribbon_material.dhxrb_without_tabbar {
     border-bottom-width: 0px;
     width: auto;
 }
-
 .dhxlayout_base_material div.dhxcelltop_ribbon div.dhtmlxribbon_material div.dhxrb_with_tabbar.dhxtabbar_base_material div.dhxtabbar_tabs_top div.dhx_cell_tabbar div.dhx_cell_cont_tabbar {
     border-bottom-width: 0px;
 }
-
 .dhxlayout_base_material div.dhxcelltop_statusbar {
     position: absolute;
     overflow: hidden;
@@ -577,7 +510,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     font-family: Roboto, Arial, Helvetica;
     color: #404040;
 }
-
 .dhxlayout_base_material div.dhxcelltop_statusbar div.dhxcont_statusbar {
     position: relative;
     background-color: #fafafa;
@@ -592,39 +524,31 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     white-space: nowrap;
     overflow: hidden;
 }
-
 .dhxlayout_base_material div.dhxcelltop_menu {
     border-width: 0px;
     padding-bottom: 4px;
     background: none !important;
 }
-
 .dhxlayout_base_material div.dhxcelltop_toolbar {
     padding-bottom: 10px;
 }
-
 .dhxlayout_base_material div.dhxcelltop_ribbon {
     padding-bottom: 10px;
 }
-
 .dhxlayout_base_material div.dhxcelltop_ribbon div.dhtmlxribbon_material {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
-
 .dhxlayout_base_material div.dhxcelltop_ribbon div.dhtmlxribbon_material.dhxrb_without_tabbar {
     border-bottom-width: 0px;
 }
-
 .dhxlayout_base_material div.dhxcelltop_statusbar {
     padding-top: 10px;
     overflow: visible;
 }
-
 .dhxlayout_base_material div.dhxcelltop_statusbar div.dhxcont_statusbar {
     border-width: 0px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
-
 .dhxlayout_base_material.dhxlayout_collapsed_height {
     position: absolute;
     left: 0px;
@@ -636,7 +560,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0px;
     overflow: hidden;
 }
-
 div.dhxlayout_sep_sw_material {
     position: absolute;
     left: 0px;
@@ -648,7 +571,6 @@ div.dhxlayout_sep_sw_material {
     padding: 0px;
     overflow: hidden;
 }
-
 body.dhxlayout_resize_v,
 body.dhxlayout_resize_v * {
     -webkit-user-select: none;
@@ -659,7 +581,6 @@ body.dhxlayout_resize_v * {
     user-select: none;
     cursor: w-resize !important;
 }
-
 body.dhxlayout_resize_h,
 body.dhxlayout_resize_h * {
     -webkit-user-select: none;
@@ -670,12 +591,10 @@ body.dhxlayout_resize_h * {
     user-select: none;
     cursor: n-resize !important;
 }
-
 html.dhxlayout_base_material,
 body.dhxlayout_base_material {
     overflow: hidden !important;
 }
-
 .dhxlayout_skin_detect {
     position: absolute;
     left: 0px;

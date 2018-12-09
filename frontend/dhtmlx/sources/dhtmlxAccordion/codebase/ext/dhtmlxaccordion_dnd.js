@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 dhtmlXAccordion.prototype.enableDND = function () {
 
@@ -20,7 +20,7 @@ dhtmlXAccordion.prototype.enableDND = function () {
     this._dndAttachEvent = function (id) {
         var t = this.t[id].cell;
         if (t.conf.dnd_inited != true) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 t.cell.childNodes[t.conf.idx.hdr].addEventListener("mousedown", this._dndOnMouseDown, false);
             } else {
                 t.cell.childNodes[t.conf.idx.hdr].attachEvent("onmousedown", this._dndOnMouseDown);
@@ -33,7 +33,7 @@ dhtmlXAccordion.prototype.enableDND = function () {
     this._dndDetachEvent = function (id) {
         var t = this.t[id].cell;
         if (t.conf.dnd_inited == true) {
-            if (typeof(window.addEventListener) == "function") {
+            if (typeof (window.addEventListener) == "function") {
                 t.cell.childNodes[t.conf.idx.hdr].removeEventListener("mousedown", this._dndOnMouseDown, false);
             } else {
                 t.cell.childNodes[t.conf.idx.hdr].detachEvent("onmousedown", this._dndOnMouseDown);
@@ -64,7 +64,7 @@ dhtmlXAccordion.prototype.enableDND = function () {
 
         if (this.callEvent("onBeforeDrag", [t._accId, ind0]) !== true) return; // added in 4.2
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             document.body.addEventListener("mousemove", this._dndOnMouseMove, false);
             document.body.addEventListener("mouseup", this._dndOnMouseUp, false);
         } else {
@@ -257,7 +257,7 @@ dhtmlXAccordion.prototype.enableDND = function () {
             this.callEvent("_onDropCancel", [id]);
         }
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             document.body.removeEventListener("mousemove", this._dndOnMouseMove, false);
             document.body.removeEventListener("mouseup", this._dndOnMouseUp, false);
         } else {
@@ -346,7 +346,7 @@ dhtmlXAccordion.prototype.enableDND = function () {
 
         // functions
         for (var a in this) {
-            if (String(a).indexOf("_dnd") == 0 && typeof(this[a]) == "function") this[a] = null;
+            if (String(a).indexOf("_dnd") == 0 && typeof (this[a]) == "function") this[a] = null;
         }
 
         // cell-clear will called from removeItem()
@@ -356,6 +356,6 @@ dhtmlXAccordion.prototype.enableDND = function () {
 
     // update cells
     for (var a in this.t) this._dndAttachEvent(a);
-
+	
 };
 

@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Clear all (remove all items)</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myToolbar;
         var isLoading;
+
         function doOnLoad() {
             myToolbar = new dhtmlXToolbarObject({
                 parent: "toolbarObj",
@@ -17,6 +18,7 @@
                 xml: "../common/dhxtoolbar.xml"
             });
         }
+
         function load(xml) {
             if (isLoading) return;
             isLoading = true;
@@ -31,7 +33,7 @@
 <div style="height: 150px;">
     <div id="toolbarObj"></div>
 </div>
-<input type="button" value="load xml1" onclick="load('dhxtoolbar.xml');">
-<input type="button" value="load xml2" onclick="load('dhxtoolbar_button.xml');">
+<input onclick="load('dhxtoolbar.xml');" type="button" value="load xml1">
+<input onclick="load('dhxtoolbar_button.xml');" type="button" value="load xml2">
 </body>
 </html>

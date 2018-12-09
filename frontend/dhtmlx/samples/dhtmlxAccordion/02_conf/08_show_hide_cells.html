@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Showing Hiding Items</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#accObj {
@@ -18,6 +18,7 @@
     <script>
         var sel;
         var myAcc;
+
         function doOnLoad() {
             myAcc = new dhtmlXAccordion({
                 parent: "accObj",
@@ -32,13 +33,16 @@
                 sel.options.add(new Option(cell.getText(), cell.getId()));
             });
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function show() {
             myAcc.cells(getId()).show();
         }
+
         function hide() {
             myAcc.cells(getId()).hide();
         }
@@ -47,9 +51,9 @@
 <body onload="doOnLoad();">
 <div id="accObj"></div>
 <div style="margin: 50px 0px 20px 0px;">
-    Select Item <select id="sel"></select> <input type="button" value="Show" onclick="show();"> <input type="button"
-                                                                                                       value="Hide"
-                                                                                                       onclick="hide();">
+    Select Item <select id="sel"></select> <input onclick="show();" type="button" value="Show"> <input onclick="hide();"
+                                                                                                       type="button"
+                                                                                                       value="Hide">
 </div>
 </body>
 </html>

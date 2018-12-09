@@ -1,10 +1,10 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function dhtmlXWindows(params) {
 
@@ -17,13 +17,13 @@ function dhtmlXWindows(params) {
     var that = this;
 
     var conf = {};
-    if (typeof(params) != "undefined") {
+    if (typeof (params) != "undefined") {
         for (var a in params) conf[a] = params[a];
     }
     params = null;
 
     this.conf = {
-        skin: window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxwins") || "material",
+        skin: window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxwins") || "material",
         // viewport conf
         vp_pos_ofs: 20, // windows-veieport overlay (left, right, bottom) and 0 for top
         vp_custom: false,
@@ -74,7 +74,7 @@ function dhtmlXWindows(params) {
     this.createWindow = function (id, x, y, width, height) {
 
         var r = {};
-        if (arguments.length == 1 && typeof(id) == "object") {
+        if (arguments.length == 1 && typeof (id) == "object") {
             r = id;
         } else {
             r.id = id;
@@ -82,7 +82,7 @@ function dhtmlXWindows(params) {
             r.top = y;
             r.width = width;
             r.height = height;
-            if (typeof(r.id) == "undefined" || r.id == null) r.id = window.dhx4.newId();
+            if (typeof (r.id) == "undefined" || r.id == null) r.id = window.dhx4.newId();
             while (this.w[r.id] != null) r.id = window.dhx4.newId();
         }
 
@@ -187,7 +187,7 @@ function dhtmlXWindows(params) {
         this.w[r.id].win.insertBefore(cell.cell, fr_cover);
         this.w[r.id].cell = cell;
 
-        if (typeof(window.addEventListener) == "function") {
+        if (typeof (window.addEventListener) == "function") {
             this.w[r.id].win.addEventListener("mousedown", this._winOnMouseDown, false);
             this.w[r.id].win.addEventListener("mouseup", this._winOnMouseDown, false);
             if (this.conf.dblclick_ev) this.w[r.id].win.addEventListener("dblclick", this._winOnMouseDown, false);
@@ -238,8 +238,8 @@ function dhtmlXWindows(params) {
 
 
         while (t != null && t._isWindow != true) {
-            if (typeof(t.className) != "undefined" && data.mode == null) {
-                if (typeof(t._buttonName) != "undefined") {
+            if (typeof (t.className) != "undefined" && data.mode == null) {
+                if (typeof (t._buttonName) != "undefined") {
                     data.mode = "button";
                     data.button_name = t._buttonName;
                 } else if (t._isWinHdr == true) {
@@ -294,7 +294,7 @@ function dhtmlXWindows(params) {
         this.w = null;
 
         // context menu
-        if (this.cm != null && typeof(this._unloadContextMenu) == "function") this._unloadContextMenu();
+        if (this.cm != null && typeof (this._unloadContextMenu) == "function") this._unloadContextMenu();
 
         // events
         window.dhx4._eventable(this, "clear");
@@ -459,7 +459,7 @@ dhtmlXWindows.prototype._winMakeActive = function (id, force) {
     if (id != null && this.conf.last_active != id) this._callMainEvent("onFocus", id);
 
     this.conf.last_active = id;
-
+	
 };
 
 // z-index order, from top to bottom,
@@ -553,7 +553,7 @@ dhtmlXWindows.prototype.attachViewportTo = function (id) {
 
     } else {
 
-        this.vp = (typeof(id) == "string" ? document.getElementById(id) : id);
+        this.vp = (typeof (id) == "string" ? document.getElementById(id) : id);
         var skin = "dhxwins_vp_" + this.conf.skin;
         if (this.vp.className.indexOf(skin) < 0) this.vp.className += " " + skin;
         id = null;
@@ -583,9 +583,9 @@ dhtmlXWindows.prototype.setViewport = function (x, y, width, height, parentObj) 
     t.style.width = width + "px";
     t.style.height = height + "px";
 
-    if (typeof(parentObj) == "undefined" || parentObj == null) {
+    if (typeof (parentObj) == "undefined" || parentObj == null) {
         parentObj = document.body;
-    } else if (typeof(parentObj) == "string") {
+    } else if (typeof (parentObj) == "string") {
         parentObj = document.getElementById(parentObj);
     }
     parentObj.appendChild(t);
@@ -594,7 +594,7 @@ dhtmlXWindows.prototype.setViewport = function (x, y, width, height, parentObj) 
     this.conf.vp_custom = true;
 
     parentObj = t = null;
-
+	
 };
 
 // position
@@ -624,8 +624,8 @@ dhtmlXWindows.prototype._winAdjustPosition = function (id, x, y) { // check if w
     var w = this.w[id];
 
     // if called from cell's adjustPosition, just make sure window position is okey
-    if (typeof(x) == "undefined") x = w.conf.x;
-    if (typeof(y) == "undefined") y = w.conf.y;
+    if (typeof (x) == "undefined") x = w.conf.x;
+    if (typeof (y) == "undefined") y = w.conf.y;
 
     var minX = (w.conf.keep_in_vp ? 0 : -w.conf.w + this.conf.vp_pos_ofs);
     var maxX = (w.conf.keep_in_vp ? this.vp.clientWidth - w.conf.w : this.vp.clientWidth - this.conf.vp_pos_ofs);
@@ -696,7 +696,7 @@ dhtmlXWindows.prototype._winSetSize = function (id, width, height, skipAdjust, f
 // minmax
 dhtmlXWindows.prototype._winMinmax = function (id, mode) {
 
-    if (typeof(mode) != "undefined" && this.w[id].conf.maxed == mode) return; // already requested state
+    if (typeof (mode) != "undefined" && this.w[id].conf.maxed == mode) return; // already requested state
     if (this.w[id].conf.allow_resize == false) return;
 
     var w = this.w[id];
@@ -846,7 +846,7 @@ dhtmlXWindows.prototype._winCellClearOpacity = function (id) {
 // stick
 dhtmlXWindows.prototype._winStick = function (id, mode) {
 
-    if (typeof(mode) != "undefined" && this.w[id].conf.sticked == mode) return; // already requested state
+    if (typeof (mode) != "undefined" && this.w[id].conf.sticked == mode) return; // already requested state
 
     this.w[id].conf.sticked = !this.w[id].conf.sticked;
     this.w[id].b.stick.setCss(this.w[id].conf.sticked ? "sticked" : "stick");
@@ -877,7 +877,7 @@ dhtmlXWindows.prototype._winClose = function (id) {
     }
 
     // header click/dblclick events
-    if (typeof(window.addEventListener) == "function") {
+    if (typeof (window.addEventListener) == "function") {
         w.win.removeEventListener("mousedown", this._winOnMouseDown, false);
         w.win.removeEventListener("mouseup", this._winOnMouseDown, false);
         if (this.conf.dblclick_ev) w.win.removeEventListener("dblclick", this._winOnMouseDown, false);
@@ -943,7 +943,7 @@ dhtmlXWindows.prototype._winClose = function (id) {
 
     // activate topmost window
     if (!this.conf.unloading) this._winMakeActive(null, true);
-
+	
 };
 
 // modal
@@ -951,7 +951,7 @@ dhtmlXWindows.prototype._winSetModal = function (id, modal, removeCover) {
 
     if (this.w[id].conf.modal == modal) return; // already have specified modal state
 
-    if (typeof(removeCover) == "undefined") removeCover = true;
+    if (typeof (removeCover) == "undefined") removeCover = true;
 
     var w = this.w[id];
 
@@ -1078,11 +1078,11 @@ dhtmlXWindows.prototype._winDoHeaderDblClick = function (id) {
         return;
     }
     // use action if any
-    if (typeof(this.conf.dblclick_mode) == "function") {
+    if (typeof (this.conf.dblclick_mode) == "function") {
         this.conf.dblclick_mode.apply(window, [id]);
         return;
     }
-    if (typeof(window[this.conf.dblclick_mode]) == "function") {
+    if (typeof (window[this.conf.dblclick_mode]) == "function") {
         window[this.conf.dblclick_mode].apply(window, [id]);
 
     }
@@ -1282,17 +1282,17 @@ function dhtmlXWindowsCell(id, wins) {
 
     if (this.conf.tr.prop != false) {
         /* 
-         this.attachEvent("_onIdxUpdated", function(){
-         // if cell hidden - update opacity for menu/toolbar/status which attached to parked window
-         if (this.wins.w[this._idd].conf.parked) {
-         for (var a in this.conf.idx) {
-         if ({hdr:true,pr1:true,pr2:true}[a] != true) { // skip hdr and progress
-         this.wins._winCellSetOpacity(this._idd, "close", false);
-         }
-         }
-         }
-         });
-         */
+        this.attachEvent("_onIdxUpdated", function(){
+            // if cell hidden - update opacity for menu/toolbar/status which attached to parked window
+            if (this.wins.w[this._idd].conf.parked) {
+                for (var a in this.conf.idx) {
+                    if ({hdr:true,pr1:true,pr2:true}[a] != true) { // skip hdr and progress
+                        this.wins._winCellSetOpacity(this._idd, "close", false);
+                    }
+                }
+            }
+        });
+        */
     }
 
 
@@ -1497,7 +1497,7 @@ dhtmlXWindowsCell.prototype.centerOnScreen = function () {
 
     this.wins._winAdjustPosition(this._idd, x - vx, y - vy);
     d = w = null;
-
+	
 };
 
 // z-index
@@ -1612,7 +1612,7 @@ dhtmlXWindowsCell.prototype.setToFullScreen = function (mode) {
 
     w.conf.fs_mode = mode;
     w = null;
-
+	
 };
 
 // buttons

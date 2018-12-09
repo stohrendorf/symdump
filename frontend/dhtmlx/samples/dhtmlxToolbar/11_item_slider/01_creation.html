@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Slider creation</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div#toolbarObj {
@@ -15,6 +15,7 @@
     <script>
         var sel;
         var myToolbar;
+
         function doOnLoad() {
             sel = document.getElementById("sel");
             myToolbar = new dhtmlXToolbarObject({
@@ -24,6 +25,7 @@
                 onload: updateList
             });
         }
+
         function add() {
             var id = String(new Date().getTime());
             var pos = Number(document.getElementById("txt1").value);
@@ -37,10 +39,12 @@
             myToolbar.addSlider(id, pos, len, valueMin, valueMax, valueNow, textMin, textMax, tip);
             updateList();
         }
+
         function getId() {
             var id = sel.options[sel.selectedIndex].value;
             return id;
         }
+
         function removeItem() {
             if (sel.options.length == 0) {
                 return;
@@ -48,6 +52,7 @@
             myToolbar.removeItem(getId());
             updateList();
         }
+
         function updateList() {
             sel.options.length = 0;
             myToolbar.forEachItem(function (itemId) {
@@ -61,14 +66,14 @@
 <body onload="doOnLoad()">
 <div id="toolbarObj"></div>
 <div style="margin-top: 30px;">
-    <table cellspacing="0" cellpadding="2" border="0">
+    <table border="0" cellpadding="2" cellspacing="0">
         <tr>
             <td style="padding-right: 5px;">Position</td>
-            <td><input id="txt1" type="text" value="1" style="width: 30px;"></td>
+            <td><input id="txt1" style="width: 30px;" type="text" value="1"></td>
         </tr>
         <tr>
             <td style="padding-right: 5px;">Width</td>
-            <td><input id="txt2" type="text" value="60" style="width: 50px;"></td>
+            <td><input id="txt2" style="width: 50px;" type="text" value="60"></td>
         </tr>
         <tr>
             <td style="padding-right: 5px;">Tooltip Template</td>
@@ -77,30 +82,30 @@
         <tr>
             <td style="padding-right: 5px;">Min Text/Value</td>
             <td>
-                <input id="txt4" type="text" value="Min" style="width: 50px;">
-                <input id="txt5" type="text" value="100" style="width: 30px;">
+                <input id="txt4" style="width: 50px;" type="text" value="Min">
+                <input id="txt5" style="width: 30px;" type="text" value="100">
             </td>
         </tr>
         <tr>
             <td style="padding-right: 5px;">Max Text/Value</td>
             <td>
-                <input id="txt6" type="text" value="Max" style="width: 50px;">
-                <input id="txt7" type="text" value="200" style="width: 30px;">
+                <input id="txt6" style="width: 50px;" type="text" value="Max">
+                <input id="txt7" style="width: 30px;" type="text" value="200">
             </td>
         </tr>
         <tr>
             <td style="padding-right: 5px;">Init Value</td>
-            <td><input id="txt8" type="text" value="150" style="width: 30px;"></td>
+            <td><input id="txt8" style="width: 30px;" type="text" value="150"></td>
         </tr>
         <tr>
             <td style="padding-right: 5px;">Add?</td>
-            <td><input type="button" value="Add" onclick="add();"></td>
+            <td><input onclick="add();" type="button" value="Add"></td>
         </tr>
     </table>
-    <table cellspacing="0" cellpadding="2" border="0" style="margin-top: 10px;">
+    <table border="0" cellpadding="2" cellspacing="0" style="margin-top: 10px;">
         <tr>
             <td style="padding-right: 5px;"><select id="sel"></select></td>
-            <td><input type="button" value="Remove" onclick="removeItem();"></td>
+            <td><input onclick="removeItem();" type="button" value="Remove"></td>
         </tr>
     </table>
 </div>

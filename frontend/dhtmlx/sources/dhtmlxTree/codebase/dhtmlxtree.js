@@ -1,25 +1,26 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 /*_TOPICS_
- @0:Initialization
- @1:Selection control
- @2:Add/delete
- @3:Private
- @4:Node/level control
- @5:Checkboxes/user data manipulation
- @6:Appearence control
- @7: Handlers
- */
+@0:Initialization
+@1:Selection control
+@2:Add/delete
+@3:Private
+@4:Node/level control
+@5:Checkboxes/user data manipulation
+@6:Appearence control
+@7: Handlers
+*/
 
 function xmlPointer(data) {
     this.d = data;
 }
+
 xmlPointer.prototype = {
     text: function () {
         if (!_isFF) return this.d.xml;
@@ -74,7 +75,7 @@ xmlPointer.prototype = {
     through: function (name, rule, v, f, t) {
         var a = this.d.childNodes;
         if (a.length) for (var i = 0; i < a.length; i++) {
-            if (a[i].tagName == name && a[i].getAttribute(rule) != null && a[i].getAttribute(rule) != "" && (!v || a[i].getAttribute(rule) == v )) {
+            if (a[i].tagName == name && a[i].getAttribute(rule) != null && a[i].getAttribute(rule) != "" && (!v || a[i].getAttribute(rule) == v)) {
                 var c = new xmlPointer(a[i]);
                 f.apply(t, [c, i]);
             }
@@ -85,6 +86,7 @@ xmlPointer.prototype = {
         }
     }
 };
+
 
 
 /**
@@ -104,7 +106,7 @@ function dhtmlXTreeObject(htmlObject, width, height, rootId) {
         document.execCommand("BackgroundImageCache", false, true);
     } catch (e) {
     }
-    if (typeof(htmlObject) != "object")
+    if (typeof (htmlObject) != "object")
         this.parentObject = document.getElementById(htmlObject);
     else
         this.parentObject = htmlObject;
@@ -225,7 +227,7 @@ function dhtmlXTreeObject(htmlObject, width, height, rootId) {
     this.setImagesPath = this.setImagePath;
     this.setIconsPath = this.setIconPath;
 
-    this.setSkin(window.dhx4.skin || (typeof(dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxtree") || "material");
+    this.setSkin(window.dhx4.skin || (typeof (dhtmlx) != "undefined" ? dhtmlx.skin : null) || window.dhx4.skinDetect("dhxtree") || "material");
     if (dhtmlx.image_path) {
         var path = dhtmlx.image_path;
         var sk = this.parentObject.className.match(/dhxtree_dhx_([a-z_]*)/i);
@@ -277,8 +279,8 @@ dhtmlXTreeObject.prototype._doContClick = function (ev, force) {
     this._acMenu = (obj.cMenu || this.cMenu);
     if (this._acMenu) {
         if (!(this.callEvent("onBeforeContextMenu", [
-                obj.id
-            ]))) return true;
+            obj.id
+        ]))) return true;
         if (!_isMacOS)
             (ev.srcElement || ev.target).oncontextmenu = function (e) {
                 (e || event).cancelBubble = true;
@@ -372,7 +374,7 @@ dhtmlXTreeObject.prototype.destructor = function () {
         this._idpull[a] = null;
     }
     this.parentObject.innerHTML = "";
-
+    
     this.allTree.onselectstart = null;
     this.allTree.oncontextmenu = null;
     this.allTree.onmousedown = null;
@@ -385,6 +387,7 @@ dhtmlXTreeObject.prototype.destructor = function () {
 function cObject() {
     return this;
 }
+
 cObject.prototype = {};
 cObject.prototype.clone = function () {
     function _dummy() {
@@ -431,7 +434,7 @@ function dhtmlXTreeItemObject(itemId, itemText, parentObject, treeObject, action
 
     this.id = treeObject._globalIdStorageAdd(itemId, this);
     if (this.treeNod.checkBoxOff) this.htmlNode = this.treeNod._createItem(1, this, mode);
-    else  this.htmlNode = this.treeNod._createItem(0, this, mode);
+    else this.htmlNode = this.treeNod._createItem(0, this, mode);
 
     this.htmlNode.objBelong = this;
     return this;
@@ -817,8 +820,7 @@ dhtmlXTreeObject.prototype._attachChildNode = function (parentObject, itemId, it
     if (afterNode && afterNode.tr.previousSibling) {
         if (afterNode.tr.previousSibling.previousSibling) {
             beforeNode = afterNode.tr.previousSibling.nodem;
-        }
-        else
+        } else
             optionStr = optionStr.replace("TOP", "") + ",TOP";
     }
 
@@ -879,8 +881,7 @@ dhtmlXTreeObject.prototype._attachChildNode = function (parentObject, itemId, it
         parentObject.htmlNode.childNodes[0].insertBefore(tr, beforeNode.tr.nextSibling);
     else if (this.parsingOn == parentObject.id) {
         this.parsedArray[this.parsedArray.length] = tr;
-    }
-    else
+    } else
         parentObject.htmlNode.childNodes[0].appendChild(tr);
 
 
@@ -951,8 +952,7 @@ dhtmlXTreeObject.prototype._attachChildNode = function (parentObject, itemId, it
                     this._onradh(itemId);
                     if (old) old(id);
                 }
-            }
-            else
+            } else
                 this._onradh(itemId);
         }
 
@@ -1064,13 +1064,13 @@ dhtmlXTreeObject.prototype._parseItem = function (c, temp, preNode, befNode) {
 
     var a = c.get_all();
 
-    if ((typeof(this.waitUpdateXML) == "object") && (!this.waitUpdateXML[a.id])) {
+    if ((typeof (this.waitUpdateXML) == "object") && (!this.waitUpdateXML[a.id])) {
         this._parse(c, a.id, 1);
         return;
-    }
+    }    
 
 //#__pro_feature:01112006{
-    if ((a.text === null) || (typeof(a.text) == "undefined")) {
+    if ((a.text === null) || (typeof (a.text) == "undefined")) {
         a.text = c.sub("itemtext");
         if (a.text) a.text = a.text.content();
     }
@@ -1096,8 +1096,7 @@ dhtmlXTreeObject.prototype._parseItem = function (c, temp, preNode, befNode) {
             a.id = newNode.id;
             preNode = null;
         }
-    }
-    else
+    } else
         var newNode = this._attachChildNode(temp, a.id, a.text, 0, a.im0, a.im1, a.im2, zST.join(","), a.child, (befNode || 0), preNode);
     if (a.tooltip)
         newNode.span.parentNode.parentNode.title = a.tooltip;
@@ -1132,7 +1131,7 @@ dhtmlXTreeObject.prototype._parseItem = function (c, temp, preNode, befNode) {
     if ((a.closeable == "0") || (a.closeable == "1")) this.setItemCloseable(newNode, a.closeable);
     var zcall = "";
     if (a.topoffset) this.setItemTopOffset(newNode, a.topoffset);
-    if ((!this.slowParse) || (typeof(this.waitUpdateXML) == "object")) {
+    if ((!this.slowParse) || (typeof (this.waitUpdateXML) == "object")) {
         if (c.sub_exists("item"))
             zcall = this._parse(c, a.id, 1);
     }
@@ -1211,8 +1210,8 @@ dhtmlXTreeObject.prototype._parse = function (p, parentId, level, start) {
 
         temp.XMLload = 1;
 
-        this._parseItem(c, temp, 0, preNode);
-
+        this._parseItem(c, temp, 0, preNode); 
+ 	  	  
 //#__pro_feature:01112006{
 //#distributed_load:01112006{
         if ((this._edsbps) && (this.npl == this._edsbpsC)) {
@@ -1315,7 +1314,7 @@ dhtmlXTreeObject.prototype._parse = function (p, parentId, level, start) {
 dhtmlXTreeObject.prototype._branchUpdateNext = function (p) {
     p.each("item", function (c) {
         var nid = c.get("id");
-        if (this._idpull[nid] && (!this._idpull[nid].XMLload))  return;
+        if (this._idpull[nid] && (!this._idpull[nid].XMLload)) return;
         this._branchUpdate++;
         this.smartRefreshItem(c.get("id"), c);
     }, this);
@@ -1343,8 +1342,7 @@ dhtmlXTreeObject.prototype._redrawFrom = function (dhtmlObject, itemObject, star
         var tempx = dhtmlObject._globalIdStorageFind(dhtmlObject.lastLoadedXMLId);
         dhtmlObject.lastLoadedXMLId = -1;
         if (!tempx) return 0;
-    }
-    else tempx = itemObject;
+    } else tempx = itemObject;
     var acc = 0;
     for (var i = (start ? start - 1 : 0); i < tempx.childsCount; i++) {
         if ((!this._branchUpdate) || (this._getOpenState(tempx) == 1))
@@ -1384,8 +1382,7 @@ dhtmlXTreeObject.prototype._redrawFrom = function (dhtmlObject, itemObject, star
                     if (zCount)
                         tempx.childNodes[i].span.innerHTML = tempx.childNodes[i].label + this.htmlcA + zCount + this.htmlcB;
                 }
-            }
-            else if (this.childCalc == 4) {
+            } else if (this.childCalc == 4) {
                 acc++;
             }
 
@@ -1476,7 +1473,7 @@ dhtmlXTreeObject.prototype._correctPlus = function (itemObject) {
         this._setSrc(imsrc2, this.iconURL + itemObject.images[2]);
         if (this._txtimg) return (imsrc.innerHTML = "[+]");
     } else if ((itemObject.childsCount) || (itemObject.unParsed)) {
-        if ((itemObject.htmlNode.childNodes[0].childNodes[1]) && ( itemObject.htmlNode.childNodes[0].childNodes[1].style.display != "none" )) {
+        if ((itemObject.htmlNode.childNodes[0].childNodes[1]) && (itemObject.htmlNode.childNodes[0].childNodes[1].style.display != "none")) {
             if (!itemObject.wsign) var workArray = this.minusArray;
             this._setSrc(imsrc2, this.iconURL + itemObject.images[1]);
             if (this._txtimg) return (imsrc.innerHTML = "[-]");
@@ -1531,7 +1528,7 @@ dhtmlXTreeObject.prototype._correctLine = function (itemObject) {
  */
 dhtmlXTreeObject.prototype._getCountStatus = function (itemId, itemObject) {
     if (itemObject.childsCount <= 1) {
-        if (itemObject.id == this.rootId) return 4; else  return 0;
+        if (itemObject.id == this.rootId) return 4; else return 0;
     }
 
     if (itemObject.childNodes[0].id == itemId) if (itemObject.id == this.rootId) return 2; else return 1;
@@ -1574,13 +1571,12 @@ dhtmlXTreeObject.prototype._HideShow = function (itemObject, mode) {
     var Nodes = itemObject.htmlNode.childNodes[0].childNodes;
     var Count = Nodes.length;
     if (Count > 1) {
-        if (( (Nodes[1].style.display != "none") || (mode == 1) ) && (mode != 2)) {
+        if (((Nodes[1].style.display != "none") || (mode == 1)) && (mode != 2)) {
 //nb:solves standard doctype prb in IE
             this.allTree.childNodes[0].border = "1";
             this.allTree.childNodes[0].border = "0";
             nodestyle = "none";
-        }
-        else  nodestyle = "";
+        } else nodestyle = "";
 
         for (var i = 1; i < Count; i++)
             Nodes[i].style.display = nodestyle;
@@ -1719,8 +1715,7 @@ dhtmlXTreeObject.prototype._selectItem = function (node, e) {
             for (var i = a; i <= b; i++)
                 if (!node.parentObject.childNodes[i].i_sel)
                     this._markItem(node.parentObject.childNodes[i]);
-        }
-        else
+        } else
 //#}
 //#}
             this._markItem(node);
@@ -1852,7 +1847,7 @@ dhtmlXTreeObject.prototype._correctCheckStates = function (dhtmlObject) {
 
     if ((flag1) && (flag2)) this._setCheck(dhtmlObject, "unsure");
     else if (flag1) this._setCheck(dhtmlObject, false);
-    else  this._setCheck(dhtmlObject, true);
+    else this._setCheck(dhtmlObject, true);
 
     this._correctCheckStates(dhtmlObject.parentObject);
 };
@@ -1957,8 +1952,7 @@ dhtmlXTreeObject.prototype._createItem = function (acheck, itemObject, mode) {
     if (this.timgen) {
         td12.style.width = img.style.width = this.def_img_x;
         img.style.height = this.def_img_y;
-    }
-    else {
+    } else {
         img.style.width = "0px";
         img.style.height = "0px";
         if (_isOpera || window._KHTMLrv) td12.style.display = "none";
@@ -1974,8 +1968,7 @@ dhtmlXTreeObject.prototype._createItem = function (acheck, itemObject, mode) {
         itemObject.span.style.width = this.mlitems;
         //	if (!_isIE)
         itemObject.span.style.display = "block";
-    }
-    else td2.noWrap = true;
+    } else td2.noWrap = true;
     if (dhx4.isIE8) td2.style.width = "99999px";
     else if (!window._KHTMLrv) td2.style.width = "100%";
 
@@ -2036,7 +2029,7 @@ dhtmlXTreeObject.prototype.setImagePath = function (newPath) {
  */
 dhtmlXTreeObject.prototype.setIconPath = function (path) {
     this.iconURL = path;
-};
+};	   
 
 //#__pro_feature:01112006{
 //#child_calc:01112006{
@@ -2125,8 +2118,7 @@ dhtmlXTreeObject.prototype._fixChildCountLabel = function (itemNode, index) {
 
                 itemNode.span.innerHTML = itemNode.label + this.htmlcA + bcc + this.htmlcB;
                 itemNode._acc = bcc;
-            }
-            else {
+            } else {
                 itemNode.span.innerHTML = itemNode.label;
                 itemNode._acc = 0;
             }
@@ -2143,8 +2135,7 @@ dhtmlXTreeObject.prototype._fixChildCountLabel = function (itemNode, index) {
 
                 itemNode.span.innerHTML = itemNode.label + this.htmlcA + bcc + this.htmlcB;
                 itemNode._acc = bcc;
-            }
-            else {
+            } else {
                 itemNode.span.innerHTML = itemNode.label;
                 itemNode._acc = 1;
             }
@@ -2396,7 +2387,7 @@ dhtmlXTreeObject.prototype.setUserData = function (itemId, name, value) {
     if (!sNode) return;
     if (name == "hint")
         sNode.htmlNode.childNodes[0].childNodes[0].title = value;
-    if (typeof(sNode.userData["t_" + name]) == "undefined") {
+    if (typeof (sNode.userData["t_" + name]) == "undefined") {
         if (!sNode._userdatalist) sNode._userdatalist = name;
         else sNode._userdatalist += "," + name;
     }
@@ -2451,8 +2442,7 @@ dhtmlXTreeObject.prototype.setItemColor = function (itemId, defaultColor, select
     else {
         if (temp.i_sel) {
             if (selectedColor || defaultColor) temp.span.style.color = selectedColor || defaultColor;
-        }
-        else {
+        } else {
             if (defaultColor) temp.span.style.color = defaultColor;
         }
 
@@ -2584,12 +2574,10 @@ dhtmlXTreeObject.prototype._moveNode = function (itemObject, targetObject) {
             var nodeA = z;
             var nodeB = targetObject;
 
-        }
-        else {
+        } else {
             if ((z.tr) && (z.tr.nextSibling) && (z.tr.nextSibling.nodem) && (this._getOpenState(z) < 1)) {
                 z = z.tr.nextSibling.nodem;
-            }
-            else {
+            } else {
                 if (this._getOpenState(z) < 1)
                     z = this.htmlNode;
                 else {
@@ -2611,14 +2599,12 @@ dhtmlXTreeObject.prototype._moveNode = function (itemObject, targetObject) {
                 return this._moveNodeTo(itemObject, nodeB.parentObject, nodeB);
             else
                 return this._moveNodeTo(itemObject, this.htmlNode, null);
-        }
-        else {
+        } else {
             return this._moveNodeTo(itemObject, nodeB.parentObject, nodeB);
         }
 
 
-    }
-    else
+    } else
 //#}
 //#}
         return this._moveNodeTo(itemObject, targetObject);
@@ -2653,8 +2639,7 @@ dhtmlXTreeObject.prototype._fixNodesCollection = function (target, zParent) {
             var temp = Nodes[i];
             Nodes[i] = flag;
             flag = temp;
-        }
-        else if (Nodes[i] == zParent) {
+        } else if (Nodes[i] == zParent) {
             flag = Nodes[i];
             Nodes[i] = Nodes[Count];
         }
@@ -2713,7 +2698,7 @@ dhtmlXTreeObject.prototype._recreateBranch = function (itemObject, targetObject,
     else newNode.unParsed = itemObject.unParsed;
     this._correctPlus(newNode);
     //this._correctLine(newNode);
-
+   
 //#}
 //#}
     for (var i = 0; i < itemObject.childsCount; i++)
@@ -2766,8 +2751,7 @@ dhtmlXTreeObject.prototype._moveNodeTo = function (itemObject, targetObject, bef
         var _otiid = itemObject.id;
         itemObject = this._recreateBranch(itemObject, targetObject, beforeNode);
         if (!oldTree.dpcpy) oldTree.deleteItem(_otiid);
-    }
-    else {
+    } else {
 
         var Count = targetObject.childsCount;
         var Nodes = targetObject.childNodes;
@@ -2782,8 +2766,7 @@ dhtmlXTreeObject.prototype._moveNodeTo = function (itemObject, targetObject, bef
         if (!beforeNode) {
             targetObject.htmlNode.childNodes[0].appendChild(tr);
             if (this.dadmode == 1) this._fixNodesCollection(targetObject, beforeNode);
-        }
-        else {
+        } else {
             targetObject.htmlNode.childNodes[0].insertBefore(tr, beforeNode.tr);
             this._fixNodesCollection(targetObject, beforeNode);
             Nodes = targetObject.childNodes;
@@ -2799,8 +2782,7 @@ dhtmlXTreeObject.prototype._moveNodeTo = function (itemObject, targetObject, bef
             window.setTimeout(function () {
                 zir.parentNode.removeChild(zir);
             }, 250);
-        }
-        else   //if (zir.parentNode) zir.parentNode.removeChild(zir,true);
+        } else   //if (zir.parentNode) zir.parentNode.removeChild(zir,true);
 
             itemObject.parentObject.htmlNode.childNodes[0].removeChild(itemObject.tr);
 
@@ -2812,8 +2794,7 @@ dhtmlXTreeObject.prototype._moveNodeTo = function (itemObject, targetObject, bef
                     break;
                 }
             }
-        }
-        else z.childNodes[z.childsCount - 1] = 0;
+        } else z.childNodes[z.childsCount - 1] = 0;
 
         oldTree._compressChildList(z.childsCount, z.childNodes);
         z.childsCount--;
@@ -2842,8 +2823,7 @@ dhtmlXTreeObject.prototype._moveNodeTo = function (itemObject, targetObject, bef
 
             this._correctPlus(beforeNode);
             //this._correctLine(beforeNode);
-        }
-        else if (targetObject.childsCount >= 2) {
+        } else if (targetObject.childsCount >= 2) {
 
             this._correctPlus(Nodes[targetObject.childsCount - 2]);
             this._correctLine(Nodes[targetObject.childsCount - 2]);
@@ -2880,6 +2860,7 @@ dhtmlXTreeObject.prototype._moveNodeTo = function (itemObject, targetObject, bef
     return itemObject.id;
 };
 
+   
 
 /**
  *     @desc: recursive set default styles for node
@@ -2902,8 +2883,7 @@ dhtmlXTreeObject.prototype._clearStyles = function (itemObject) {
         td1.childNodes[0].style.display = "";
         td1.childNodes[0].onclick = this.onCheckBoxClick;
         this._setSrc(td1.childNodes[0], this.imPath + this.checkArray[itemObject.checkstate]);
-    }
-    else td1.style.display = "none";
+    } else td1.style.display = "none";
     td1.childNodes[0].treeNod = this;
 
     this.dragger.removeDraggableItem(td3);
@@ -2978,6 +2958,9 @@ dhtmlXTreeObject.prototype.setOnMouseOutHandler = function (func) {
     this.ehlt = true;
     this.attachEvent("onMouseOut", func);
 };
+
+
+
 
 
 //#__pro_feature:01112006{
@@ -3292,8 +3275,7 @@ dhtmlXTreeObject.prototype.setItemImage = function (itemId, image1, image2) {
     if (image2) {
         temp.images[1] = image1;
         temp.images[2] = image2;
-    }
-    else temp.images[0] = image1;
+    } else temp.images[0] = image1;
     this._correctPlus(temp);
 };
 
@@ -3344,8 +3326,7 @@ dhtmlXTreeObject.prototype._getAllScraggyItems = function (node) {
             if (zb)
                 if (z) z += this.dlmtr + zb;
                 else z = zb;
-        }
-        else if (!z) z = "" + node.childNodes[i].id;
+        } else if (!z) z = "" + node.childNodes[i].id;
         else z += this.dlmtr + node.childNodes[i].id;
     }
     return z;
@@ -3599,7 +3580,7 @@ dhtmlXTreeObject.prototype._setSubChecked = function (state, sNode) {
     var z = sNode.htmlNode.childNodes[0].childNodes[0].childNodes[1].childNodes[0];
 
     if (state) sNode.checkstate = 1;
-    else    sNode.checkstate = 0;
+    else sNode.checkstate = 0;
     if (sNode.dscheck) sNode.checkstate = sNode.dscheck;
 
 
@@ -3817,15 +3798,14 @@ dhtmlXTreeObject.prototype.enableDragAndDrop = function (mode, rmode) {
     if (mode == "temporary_disabled") {
         this.dADTempOff = false;
         mode = true;
-    }
-    else
+    } else
         this.dADTempOff = true;
 
     this.dragAndDropOff = dhx4.s2b(mode);
     if (this.dragAndDropOff) this.dragger.addDragLanding(this.allTree, this);
     if (arguments.length > 1)
         this._ddronr = (!dhx4.s2b(rmode));
-};
+};   
 
 /**
  *     @desc: set selection on node
@@ -3851,8 +3831,7 @@ dhtmlXTreeObject.prototype._setMove = function (htmlNode, x, y) {
                 //sibbling zone
                 if (z < 0)
                     this.dadmodefix = 0 - htmlNode.offsetHeight;
-            }
-            else this.dadmodec = 0;
+            } else this.dadmodec = 0;
 
         }
         if (this.dadmodec == 0) {
@@ -3864,8 +3843,7 @@ dhtmlXTreeObject.prototype._setMove = function (htmlNode, x, y) {
             this._lastMark = zN;
 //#__pro_feature:01112006{
 //#complex_move:01112006{
-        }
-        else {
+        } else {
             this._clearMove();
             this.selectionBar.style.top = (a1 - a2 + ((parseInt(htmlNode.parentObject.span.parentNode.parentNode.offsetHeight) || 18) - 1) + this.dadmodefix) + "px";
             this.selectionBar.style.left = "5px";
@@ -4090,6 +4068,7 @@ dhtmlXTreeObject.prototype._getPrevNode = function (node, mode) {
 };
 
 
+
 //#find_item:01112006{
 
 /**
@@ -4108,8 +4087,7 @@ dhtmlXTreeObject.prototype.findItem = function (searchStr, direction, top) {
         this.selectItem(z.id, true);
         this._focusNode(z);
         return z.id;
-    }
-    else return null;
+    } else return null;
 };
 
 /**
@@ -4194,15 +4172,13 @@ dhtmlXTreeObject.prototype._findNodeByLabel = function (searchStr, direction, fr
             this.reParse(fromNode);
         fromNode = this._getNextNode(startNode);
         if (fromNode == -1) fromNode = this.htmlNode.childNodes[0];
-    }
-    else {
+    } else {
         var z2 = this._getPrevNode(startNode);
         if (z2 == -1) z2 = this._lastChild(this.htmlNode);
         if ((z2.unParsed) && (this.findStrInXML(z2.unParsed.d, "text", searchStr))) {
             this.reParse(z2);
             fromNode = this._getPrevNode(startNode);
-        }
-        else fromNode = z2;
+        } else fromNode = z2;
         if (fromNode == -1) fromNode = this._lastChild(this.htmlNode);
     }
 
@@ -4220,15 +4196,13 @@ dhtmlXTreeObject.prototype._findNodeByLabel = function (searchStr, direction, fr
                 this.reParse(fromNode);
             fromNode = this._getNextNode(fromNode);
             if (fromNode == -1) fromNode = this.htmlNode;
-        }
-        else {
+        } else {
             var z2 = this._getPrevNode(fromNode);
             if (z2 == -1) z2 = this._lastChild(this.htmlNode);
             if ((z2.unParsed) && (this.findStrInXML(z2.unParsed.d, "text", searchStr))) {
                 this.reParse(z2);
                 fromNode = this._getPrevNode(fromNode);
-            }
-            else fromNode = z2;
+            } else fromNode = z2;
             if (fromNode == -1) fromNode = this._lastChild(this.htmlNode);
         }
     }
@@ -4306,8 +4280,7 @@ dhtmlXTreeObject.prototype.moveItem = function (itemId, mode, targetId, targetTr
                 var z = this._getNextNode(z);
             if (z == -1) {
                 resultId = this._moveNodeTo(sNode, sNode.parentObject);
-            }
-            else {
+            } else {
                 if ((z == -1) || (!z.parentObject)) return;
                 resultId = this._moveNodeTo(sNode, z.parentObject, z);
             }
@@ -4346,6 +4319,8 @@ dhtmlXTreeObject.prototype.setDragBehavior = function (mode, select) {
 };
 
 
+
+
 //#}
 //#}
 
@@ -4364,8 +4339,7 @@ dhtmlXTreeObject.prototype._loadDynXML = function (id, src) {
 //#__pro_feature:01112006{
     if (this.xmlalb == "function") {
         if (src) src(this._escape(id));
-    }
-    else if (this.xmlalb == "name")
+    } else if (this.xmlalb == "name")
         this.load(src + this._escape(id));
     else if (this.xmlalb == "xmlname")
         this.load(src + this._escape(id) + ".xml?uid=" + sn);
@@ -4547,7 +4521,7 @@ dhtmlXTreeObject.prototype.preventIECashing = dhtmlXTreeObject.prototype.prevent
  *     @topic: 5
  */
 dhtmlXTreeObject.prototype.disableCheckbox = function (itemId, mode) {
-    if (typeof(itemId) != "object")
+    if (typeof (itemId) != "object")
         var sNode = this._globalIdStorageFind(itemId, 0, 1);
     else
         var sNode = itemId;
@@ -4688,6 +4662,7 @@ dhtmlXTreeObject.prototype.setOnLoadingEnd = function (func) {
 };
 
 
+
 /**
  *     @desc: define which script be called on dynamic loading
  *     @param: mode - id for some_script?id=item_id ;  name for  some_scriptitem_id, xmlname for  some_scriptitem_id.xml ; function for calling user defined handler
@@ -4732,7 +4707,7 @@ dhtmlXTreeObject.prototype.getXMLState = function () {
  */
 dhtmlXTreeObject.prototype.setItemTopOffset = function (itemId, value) {
     var node;
-    if (typeof(itemId) != "object")
+    if (typeof (itemId) != "object")
         node = this._globalIdStorageFind(itemId);
     else
         node = itemId;
@@ -4747,8 +4722,7 @@ dhtmlXTreeObject.prototype.setItemTopOffset = function (itemId, value) {
                 z.childNodes[i].style.paddingTop = parseInt(value) + "px";
             } else
                 z.childNodes[i].style.height = 18 + parseInt(value) + "px";
-        }
-        else {
+        } else {
             var w = z.childNodes[i].firstChild;
             if (z.childNodes[i].firstChild.tagName != 'DIV') {
                 w = document.createElement("DIV");
@@ -4760,7 +4734,7 @@ dhtmlXTreeObject.prototype.setItemTopOffset = function (itemId, value) {
             }
             w.innerHTML = "&nbsp;";
             w.style.overflow = 'hidden';
-
+            
         }
 
         w.style.verticalAlign = z.childNodes[i].style.verticalAlign = "bottom";
@@ -4797,8 +4771,7 @@ dhtmlXTreeObject.prototype.setIconSize = function (newWidth, newHeight, itemId) 
             img.style.height = newHeight + "px";
             if (window._KHTMLrv) img.parentNode.style.height = newHeight + "px";
         }
-    }
-    else {
+    } else {
         this.def_img_x = newWidth + "px";
         this.def_img_y = newHeight + "px";
     }
@@ -4935,8 +4908,7 @@ dhtmlXTreeObject.prototype.showItemSign = function (itemId, state) {
         this._openItem(temp);
         temp.closeble = false;
         temp.wsign = true;
-    }
-    else {
+    } else {
         temp.closeble = true;
         temp.wsign = false;
     }
@@ -4955,7 +4927,7 @@ dhtmlXTreeObject.prototype.showItemCheckbox = function (itemId, state) {
         for (var a in this._idpull)
             this.showItemCheckbox(this._idpull[a], state);
 
-    if (typeof(itemId) != "object")
+    if (typeof (itemId) != "object")
         itemId = this._globalIdStorageFind(itemId, 0, 0);
 
     if (!itemId) return 0;
@@ -5096,8 +5068,7 @@ dhtmlXTreeObject.prototype._getAllScraggyItems = function (node) {
             if (zb)
                 if (z) z += this.dlmtr + zb;
                 else z = zb;
-        }
-        else if (!z) z = "" + node.childNodes[i].id;
+        } else if (!z) z = "" + node.childNodes[i].id;
         else z += this.dlmtr + node.childNodes[i].id;
     }
     return z;
@@ -5230,7 +5201,7 @@ dhtmlXTreeObject.prototype.setItemStyle = function (itemId, style_string, resetC
     if (!temp.span.style.cssText)
         temp.span.setAttribute("style", temp.span.getAttribute("style") + "; " + style_string);
     else
-        temp.span.style.cssText = resetCss ? style_string : temp.span.style.cssText + ";" + style_string;
+        temp.span.style.cssText = resetCss ? style_string : temp.span.style.cssText + ";" + style_string; 
 };
 
 /**
@@ -5321,7 +5292,7 @@ dhtmlXTreeObject.prototype.setSkin = function (name) {
         xml: "loadXML",
         skin: "setSkin"
     }, {});
-
+	
 })();
 
 dhtmlXTreeObject.prototype._dp_init = function (dp) {
@@ -5393,7 +5364,7 @@ dhtmlXTreeObject.prototype._dp_init = function (dp) {
             data[z2[i]] = z.userData["t_" + z2[i]];
 
         return data;
-    };
+    };	
 };
 
 //(c)dhtmlx ltd. www.dhtmlx.com
@@ -5427,6 +5398,6 @@ if (typeof(window.dhtmlXCellObject) != "undefined") {
         return this.dataObj;
 
     };
-
+	
 }
 

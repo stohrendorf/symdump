@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Filtering</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script src="../common/testdata.js"></script>
     <script>
         var myBarChart;
+
         function doOnLoad() {
             myBarChart = new dhtmlXChart({
                 view: "bar",
@@ -35,11 +36,13 @@
             });
             myBarChart.parse(dataset_colors, "json");
         }
+
         function filter1() {
             myBarChart.filter(function (obj) {
                 return obj.sales > 50;
             });
         }
+
         function filter2() {
             myBarChart.filter(function (obj) {
                 return obj.sales < 70;
@@ -49,8 +52,8 @@
 </head>
 <body onload="doOnLoad();">
 <div id="chartDiv" style="width:600px;height:250px;border:1px solid #c0c0c0;"></div>
-<input type="button" value="show all" onclick="myBarChart.filter();">
-<input type="button" value="show sales > 50" onclick="filter1()">
-<input type="button" value="show sales < 70" onclick="filter2()">
+<input onclick="myBarChart.filter();" type="button" value="show all">
+<input onclick="filter1()" type="button" value="show sales > 50">
+<input onclick="filter2()" type="button" value="show sales < 70">
 </body>
 </html>

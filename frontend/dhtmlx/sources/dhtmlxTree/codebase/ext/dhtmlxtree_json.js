@@ -1,15 +1,16 @@
 /*
- Product Name: dhtmlxSuite 
- Version: 5.1.0 
- Edition: Standard 
- License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
- Copyright UAB Dinamenta http://www.dhtmlx.com
- */
+Product Name: dhtmlxSuite 
+Version: 5.1.0 
+Edition: Standard 
+License: content of this file is covered by DHTMLX Commercial or enterpri. Usage outside GPL terms is prohibited. To obtain Commercial or Enterprise license contact sales@dhtmlx.com
+Copyright UAB Dinamenta http://www.dhtmlx.com
+*/
 
 function jsonPointer(data, parent) {
     this.d = data;
     this.dp = parent;
 }
+
 jsonPointer.prototype = {
     text: function () {
         var afff = function (n) {
@@ -19,7 +20,7 @@ jsonPointer.prototype = {
         };
         var sfff = function (n) {
             var p = [];
-            for (var a in n) if (typeof(n[a]) == "object") {
+            for (var a in n) if (typeof (n[a]) == "object") {
                 if (a.length) p.push('"' + a + '":[' + afff(n[a]) + "]"); else p.push('"' + a + '":{' + sfff(n[a]) + "}");
             } else p.push('"' + a + '":"' + n[a] + '"');
             return p.join(",");
@@ -72,7 +73,7 @@ jsonPointer.prototype = {
     through: function (name, rule, v, f, t) {
         var a = this.d[name];
         if (a.length) for (var i = 0; i < a.length; i++) {
-            if (a[i][rule] != null && a[i][rule] != "" && (!v || a[i][rule] == v )) {
+            if (a[i][rule] != null && a[i][rule] != "" && (!v || a[i][rule] == v)) {
                 var c = new jsonPointer(a[i], this.d);
                 f.apply(t, [c, i]);
             }
@@ -298,9 +299,9 @@ dhtmlXTreeObject.prototype._serializeItemJSON = function (itemNode) {
     text = text.replace(/\"/g, "\\\"", text);
 
     if (!this._xfullXML)
-        out.push('{ "id":"' + itemNode.id + '", ' + (this._getOpenState(itemNode) == 1 ? ' "open":"1", ' : '') + (lid == itemNode.id ? ' "select":"1",' : '') + ' "text":"' + text + '"' + ( ((this.XMLsource) && (itemNode.XMLload == 0)) ? ', "child":"1" ' : ''));
+        out.push('{ "id":"' + itemNode.id + '", ' + (this._getOpenState(itemNode) == 1 ? ' "open":"1", ' : '') + (lid == itemNode.id ? ' "select":"1",' : '') + ' "text":"' + text + '"' + (((this.XMLsource) && (itemNode.XMLload == 0)) ? ', "child":"1" ' : ''));
     else
-        out.push('{ "id":"' + itemNode.id + '", ' + (this._getOpenState(itemNode) == 1 ? ' "open":"1", ' : '') + (lid == itemNode.id ? ' "select":"1",' : '') + ' "text":"' + text + '", "im0":"' + itemNode.images[0] + '", "im1":"' + itemNode.images[1] + '", "im2":"' + itemNode.images[2] + '" ' + (itemNode.acolor ? (', "aCol":"' + itemNode.acolor + '" ') : '') + (itemNode.scolor ? (', "sCol":"' + itemNode.scolor + '" ') : '') + (itemNode.checkstate == 1 ? ', "checked":"1" ' : (itemNode.checkstate == 2 ? ', "checked":"-1"' : '')) + (itemNode.closeable ? ', "closeable":"1" ' : '') + ( ((this.XMLsource) && (itemNode.XMLload == 0)) ? ', "child":"1" ' : ''));
+        out.push('{ "id":"' + itemNode.id + '", ' + (this._getOpenState(itemNode) == 1 ? ' "open":"1", ' : '') + (lid == itemNode.id ? ' "select":"1",' : '') + ' "text":"' + text + '", "im0":"' + itemNode.images[0] + '", "im1":"' + itemNode.images[1] + '", "im2":"' + itemNode.images[2] + '" ' + (itemNode.acolor ? (', "aCol":"' + itemNode.acolor + '" ') : '') + (itemNode.scolor ? (', "sCol":"' + itemNode.scolor + '" ') : '') + (itemNode.checkstate == 1 ? ', "checked":"1" ' : (itemNode.checkstate == 2 ? ', "checked":"-1"' : '')) + (itemNode.closeable ? ', "closeable":"1" ' : '') + (((this.XMLsource) && (itemNode.XMLload == 0)) ? ', "child":"1" ' : ''));
 
     if ((this._xuserData) && (itemNode._userdatalist)) {
         out.push(', "userdata":[');
@@ -323,5 +324,5 @@ dhtmlXTreeObject.prototype._serializeItemJSON = function (itemNode) {
 
     out.push("}\n");
     return out.join("");
-};
+};   
 //(c)dhtmlx ltd. www.dhtmlx.com

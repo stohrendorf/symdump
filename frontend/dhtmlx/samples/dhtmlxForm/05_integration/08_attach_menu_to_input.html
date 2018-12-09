@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Attach menu to input</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         /* for menu proper showing */
@@ -15,6 +15,7 @@
     </style>
     <script>
         var myForm, formData, menu;
+
         function doOnLoad() {
             // init form
             formData = [
@@ -44,6 +45,7 @@
                 menu.addContextZone(id);
             }
         }
+
         // here ids will stored, after form init values will updated
         // will used in loadMenuItems()
         var menuZones = {};
@@ -64,6 +66,7 @@
                 {id: "blue", text: "Blue", icon: null}
             ]
         };
+
         // will generate items based on clicked item
         function loadMenuItems(id) {
             menu.clearAll();

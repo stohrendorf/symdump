@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Popup inside popup</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
 
@@ -26,13 +26,13 @@
                 myForm = myPop.attachForm([
                     {
                         type: "block", style: "margin: 10px 20px 10px 0px;", list: [
-                        {type: "settings", position: "label-left", labelWidth: 130, inputWidth: 150},
-                        {type: "input", name: "server", label: "FTP Server", value: "ftp://ftp.server.com/"},
-                        {type: "input", name: "name", label: "Login", value: "username"},
-                        {type: "password", name: "pwd", label: "Password", value: "12345"},
-                        {type: "checkbox", name: "secure", label: "Secure Connection", value: "1", checked: true},
-                        {type: "button", name: "proceed", value: "Connect", offsetTop: 10, offsetLeft: 165}
-                    ]
+                            {type: "settings", position: "label-left", labelWidth: 130, inputWidth: 150},
+                            {type: "input", name: "server", label: "FTP Server", value: "ftp://ftp.server.com/"},
+                            {type: "input", name: "name", label: "Login", value: "username"},
+                            {type: "password", name: "pwd", label: "Password", value: "12345"},
+                            {type: "checkbox", name: "secure", label: "Secure Connection", value: "1", checked: true},
+                            {type: "button", name: "proceed", value: "Connect", offsetTop: 10, offsetLeft: 165}
+                        ]
                     }
                 ]);
                 myForm.attachEvent("onFocus", function (name) {
@@ -70,7 +70,7 @@
 </head>
 <body>
 <div style="padding: 120px 10px;">
-    <input type="button" onclick="showPopup(this);" value="Show Popup">
+    <input onclick="showPopup(this);" type="button" value="Show Popup">
 </div>
 </body>
 </html>

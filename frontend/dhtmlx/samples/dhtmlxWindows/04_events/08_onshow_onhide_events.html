@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>onShow / onHide events</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <style>
         div.info,
@@ -45,6 +45,7 @@
     </style>
     <script>
         var dhxWins, w1, w2, w3;
+
         function doOnLoad() {
             dhxWins = new dhtmlXWindows();
             dhxWins.attachViewportTo("winVP");
@@ -78,16 +79,20 @@
             });
 
         }
+
         function writeLog(text) {
             document.getElementById("logsHere").innerHTML += "<br>" + text;
             document.getElementById("logsHere").scrollTop = document.getElementById("logsHere").scrollHeight;
         }
+
         function showWindow(id) {
             dhxWins.window(id).show();
         }
+
         function hideWindow(id) {
             dhxWins.window(id).hide();
         }
+
         function doOnUnload() {
             if (dhxWins != null && dhxWins.unload != null) {
                 dhxWins.unload();
@@ -104,11 +109,11 @@
 <div id="winVP"></div>
 <div id="logsHere">logs</div>
 <div class="controls">
-    Window #1 <input type="button" value="show" onclick="showWindow('w1');"> <input type="button" value="hide"
-                                                                                    onclick="hideWindow('w1');"><br>
-    Window #2 <input type="button" value="show" onclick="showWindow('w2');"> <input type="button" value="hide"
-                                                                                    onclick="hideWindow('w2');"><br>
-    Window #3 <input type="button" value="show" onclick="showWindow('w3');"> <input type="button" value="hide"
-                                                                                    onclick="hideWindow('w3');"><br>
+    Window #1 <input onclick="showWindow('w1');" type="button" value="show"> <input onclick="hideWindow('w1');"
+                                                                                    type="button" value="hide"><br>
+    Window #2 <input onclick="showWindow('w2');" type="button" value="show"> <input onclick="hideWindow('w2');"
+                                                                                    type="button" value="hide"><br>
+    Window #3 <input onclick="showWindow('w3');" type="button" value="show"> <input onclick="hideWindow('w3');"
+                                                                                    type="button" value="hide"><br>
 </div>
 </body>

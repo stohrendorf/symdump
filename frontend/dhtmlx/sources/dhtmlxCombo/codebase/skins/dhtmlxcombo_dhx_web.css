@@ -21,7 +21,6 @@ div.dhxcombo_dhx_web {
     height: 22px;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 div.dhxcombo_dhx_web input.dhxcombo_input {
     position: absolute;
     left: 1px;
@@ -40,11 +39,9 @@ div.dhxcombo_dhx_web input.dhxcombo_input {
     color: black;
     vertical-align: top;
 }
-
 div.dhxcombo_dhx_web input.dhxcombo_input::-ms-clear {
     display: none;
 }
-
 div.dhxcombo_dhx_web div.dhxcombo_select_button {
     position: absolute;
     width: 18px;
@@ -62,7 +59,6 @@ div.dhxcombo_dhx_web div.dhxcombo_select_button {
     user-select: none;
     overflow: hidden;
 }
-
 div.dhxcombo_dhx_web div.dhxcombo_select_button div.dhxcombo_select_img {
     position: relative;
     width: 100%;
@@ -71,7 +67,6 @@ div.dhxcombo_dhx_web div.dhxcombo_select_button div.dhxcombo_select_img {
     background-repeat: no-repeat;
     background-position: center center;
 }
-
 div.dhxcombo_dhx_web div.dhxcombo_top_image {
     position: absolute;
     left: 0px;
@@ -87,11 +82,9 @@ div.dhxcombo_dhx_web div.dhxcombo_top_image {
     overflow: hidden;
     cursor: default;
 }
-
 div.dhxcombo_dhx_web div.dhxcombo_top_image div.dhxcombo_image {
     *top: 0px;
 }
-
 div.dhxcombolist_dhx_web {
     position: absolute;
     border: 1px solid #ffffff;
@@ -108,7 +101,6 @@ div.dhxcombolist_dhx_web {
     overflow-y: auto;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option {
     position: relative;
     font-size: inherit;
@@ -121,15 +113,12 @@ div.dhxcombolist_dhx_web div.dhxcombo_option {
     overflow: hidden;
     cursor: default;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option.dhxcombo_option_selected {
     background-color: #85d3ff;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option.dhxcombo_option_selected .dhxcombo_option_text {
     color: #000000;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_option_text {
     position: relative;
     padding: 0px 4px;
@@ -141,7 +130,6 @@ div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_option_text {
     user-select: none;
     white-space: nowrap;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_option_text_chbx {
     position: relative;
     padding: 0px 4px 0px 4px;
@@ -154,7 +142,6 @@ div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_o
     user-select: none;
     white-space: nowrap;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_checkbox {
     position: absolute;
     left: 2px;
@@ -172,15 +159,12 @@ div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_checkbox {
     overflow: hidden;
     cursor: default;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_checkbox.dhxcombo_chbx_0 {
     background-position: 0px 0px;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_checkbox.dhxcombo_chbx_1 {
     background-position: -18px 0px;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_option_text_image {
     position: relative;
     padding: 0px 4px 0px 4px;
@@ -193,11 +177,9 @@ div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_option_text.dhxcombo_o
     user-select: none;
     white-space: nowrap;
 }
-
 div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_image {
     top: 3px;
 }
-
 div.dhxcombo_dhx_web div.dhxcombo_top_image div.dhxcombo_image,
 div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_image {
     position: absolute;
@@ -211,25 +193,20 @@ div.dhxcombolist_dhx_web div.dhxcombo_option div.dhxcombo_image {
     overflow: hidden;
     cursor: default;
 }
-
 div.dhxcombo_dhx_web.dhxcombo_disabled {
     background-color: #fafafa;
 }
-
 div.dhxcombo_dhx_web.dhxcombo_disabled input.dhxcombo_input {
     color: #999999;
     background-color: #fafafa;
 }
-
 div.dhxcombo_dhx_web.dhxcombo_disabled div.dhxcombo_select_button {
     background-color: #a6a6a6;
     cursor: default;
 }
-
 div.dhxcombo_dhx_web.dhxcombo_disabled div.dhxcombo_select_button div.dhxcombo_select_img {
     background-image: url("../imgs/dhxcombo_web/dhxcombo_arrow_down_dis.gif");
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_hdr {
     height: 27px;
     line-height: 27px;
@@ -237,7 +214,6 @@ div.dhxcombolist_dhx_web.dhxcombolist_hdr {
     border-bottom: 2px solid #53abe6;
     box-shadow: none;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext {
     position: relative;
     padding: 0px;
@@ -252,7 +228,6 @@ div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell,
 div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_first {
     float: left;
@@ -264,16 +239,13 @@ div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrc
     padding: 0px;
     margin: 0px;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_first,
 div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell:first-child {
     border-left-width: 0px;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn {
     border-top-width: 0px;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option {
     height: 24px;
     line-height: 24px;
@@ -283,11 +255,9 @@ div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option {
     border-bottom: 1px solid #ededed;
     background-color: white;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_option_text {
     padding: 0px;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell,
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_first {
     float: left;
@@ -298,24 +268,20 @@ div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcom
     padding: 0px;
     margin: 0px;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_first,
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell:first-child {
     border-left-width: 0px;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option.dhxcombo_option_selected {
     z-index: 1;
     background-color: #85d3ff;
     border-top-color: #85d3ff;
     border-bottom-color: #85d3ff;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option.dhxcombo_option_selected div.dhxcombo_cell {
     border-left-color: #85d3ff;
     color: #000000;
 }
-
 div.dhxcombolist_dhx_web.dhxcombolist_multicolumn div.dhxcombo_option div.dhxcombo_cell_text,
 div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrcell_text {
     position: relative;
@@ -325,33 +291,28 @@ div.dhxcombolist_dhx_web.dhxcombolist_hdr div.dhxcombo_hdrtext div.dhxcombo_hdrc
     white-space: nowrap;
     width: auto;
 }
-
 div.dhxcombo_in_grid_parent {
     position: relative;
     height: 100%;
     top: 0px;
 }
-
 div.dhxcombo_in_grid_parent div.dhxcombo_dhx_web {
     position: absolute;
     top: 3px;
     left: 0px;
     border-color: #85d3ff;
 }
-
 div.dhxcombo_in_grid_parent input.dhxcombo_input {
     border-left: 2px solid white;
     font-family: Arial;
     font-size: 12px;
 }
-
 .dhxgrid_combo_icon {
     position: absolute;
     z-index: 1;
     top: 0px;
     right: 0px;
 }
-
 .dhxcombo_skin_detect {
     position: absolute;
     left: 0px;

@@ -16,16 +16,13 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     overflow: hidden;
     background-color: white;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont {
     position: absolute;
     overflow: auto;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area {
     position: relative;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_kids_cont {
     position: relative;
     -webkit-transition: opacity 0.1s;
@@ -34,7 +31,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     -o-transition: opacity 0.1s;
     transition: opacity 0.1s;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item {
     position: relative;
     font-family: Tahoma, Helvetica;
@@ -45,7 +41,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     margin-top: 1px;
     margin-bottom: 1px;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text {
     position: relative;
     padding: 0px;
@@ -63,7 +58,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     user-select: none;
     cursor: default;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_label {
     position: absolute;
     top: 0px;
@@ -74,30 +68,25 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     line-height: inherit;
     font: inherit;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_item_text_selected,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_item_text_selected:hover {
     background-color: #b5deff;
     border-color: #a4bed4;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_item_text_selected div.dhxtreeview_item_label,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_item_text_selected:hover div.dhxtreeview_item_label {
     background-color: #b5deff;
     border-color: #a4bed4;
     color: black;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text:hover {
     background-color: #f1f7ff;
     border-color: #b9cdde;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text:hover div.dhxtreeview_item_label {
     border-color: #b9cdde;
     background-color: #f1f7ff;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon {
     position: absolute;
     width: 20px;
@@ -109,7 +98,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     color: #333333;
     overflow: hidden;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon {
     position: absolute;
     left: 0px;
@@ -119,47 +107,36 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     background-repeat: no-repeat;
     background-position: center center;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_plus {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_plus.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_minus {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_minus.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_file {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_file.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_folder_closed {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_folder_closed.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_folder_opened {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_folder_opened.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_loading {
     background-image: url(../imgs/dhxtreeview_skyblue/loading.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_chbx_0 {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_chbx_0.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_chbx_1 {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_chbx_1.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_chbx_dis_0 {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_chbx_dis_0.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.dhxtreeview_icon.dhxtreeview_icon_chbx_dis_1 {
     background-image: url(../imgs/dhxtreeview_skyblue/icon_chbx_dis_1.gif);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.fa.fa-folder-open-o,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.fa.fa-folder-o {
     position: absolute;
@@ -169,7 +146,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     text-align: left;
     overflow: visible;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.fa.fa-square-o,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.fa.fa-check-square-o {
     position: absolute;
@@ -179,12 +155,10 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     text-align: left;
     overflow: visible;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.fa.fa-square-o.dhx-disabled,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text div.dhxtreeview_item_icon i.fa.fa-check-square-o.dhx-disabled {
     color: #a6a6a6;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_drop_preview {
     display: none;
     position: absolute;
@@ -193,60 +167,49 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     border-bottom: 2px dotted #008dbc;
     z-index: 1;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_drop_preview.dhxtreeview_drop_0 {
     display: block;
     top: -2px;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_drop_preview.dhxtreeview_drop_2 {
     display: block;
     top: 25px;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item.dhxtreeview_item_dragged {
     opacity: 0.3;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=30);
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_drop_1,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_drop_1:hover {
     background-color: #fff0da;
     border-color: #d1c5b5;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_drop_1 div.dhxtreeview_item_label,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_drop_1:hover div.dhxtreeview_item_label {
     background-color: #fff0da;
     border-color: #d1c5b5;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_item_text_selected,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_item_text_selected:hover {
     background-color: #fff0da;
     border-color: #d1c5b5;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_item_text_selected div.dhxtreeview_item_label,
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text.dhxtreeview_item_text_selected:hover div.dhxtreeview_item_label {
     background-color: #fff0da;
     border-color: #d1c5b5;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text:hover {
     background-color: #ffffff;
     border-color: #ffffff;
 }
-
 .dhxtreeview_dhx_skyblue div.dhxtreeview_cont.dhxtreeview_dnd_mode div.dhxtreeview_area div.dhxtreeview_item div.dhxtreeview_item_text:hover div.dhxtreeview_item_label {
     background-color: #ffffff;
     border-color: #ffffff;
 }
-
 .dhxtreeview_dhx_skyblue.dhxtreeview_with_border {
     border: 1px solid #a4bed4;
 }
-
 .dhxtreeview_dhx_skyblue.dhxtreeview_icon_width {
     position: absolute;
     left: 0px;
@@ -258,7 +221,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     padding: 0px;
     overflow: hidden;
 }
-
 .dhxtreeview_dragged_obj_dhx_skyblue {
     position: absolute;
     font-family: Tahoma, Helvetica;
@@ -274,7 +236,6 @@ Copyright UAB Dinamenta http://www.dhtmlx.com
     opacity: 0.9;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=90);
 }
-
 html.dhxtreeview_dnd_mode,
 html.dhxtreeview_dnd_mode *,
 body.dhxtreeview_dnd_mode,
@@ -287,11 +248,9 @@ body.dhxtreeview_dnd_mode * {
     -o-user-select: none;
     user-select: none;
 }
-
 div.dhx_popup_dhx_skyblue div.dhx_popup_area td.dhx_popup_td div.dhxtreeview_dhx_skyblue div.dhxtreeview_item div.dhxtreeview_item_label {
     white-space: nowrap;
 }
-
 .dhxtreeview_skin_detect {
     position: absolute;
     left: 0px;

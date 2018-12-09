@@ -2,21 +2,23 @@
 <html>
 <head>
     <title>Sorting items</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
-    <link rel="STYLESHEET" type="text/css" href="./types/ftypes.css">
+    <link href="./types/ftypes.css" rel="STYLESHEET" type="text/css">
     <script src="./types/ftypes.js" type="text/javascript"></script>
     <script>
         dhtmlx.image_path = "../../../codebase/imgs/";
         var myDataView;
+
         function doOnLoad() {
             myDataView = new dhtmlXDataView("data_container");
             changeType("ficon");
             myDataView.load("../common/files_ext.xml");
         }
+
         function changeType(type) {
             myDataView.types[type].icons_src_dir = "../common/images";
             myDataView.define("type", type);
@@ -26,24 +28,24 @@
 <body onload="doOnLoad();">
 <h1>Sorting Items</h1>
 <div style="position:relative;">
-    <img src="../common/images/samples_frame.gif" width="436" height="513" alt="" border="0">
+    <img alt="" border="0" height="513" src="../common/images/samples_frame.gif" width="436">
     <div id="data_container"
          style="width:396px;height:396px;overflow:hidden;position:absolute;top:65px;left:20px;border:0px solid red;"></div>
 </div>
-Sort by type <span style="cursor:pointer;color:blue;text-decoration:underline;"
-                   onclick="myDataView.sort('#type#','asc');">asc</span> | <span
-        style="cursor:pointer;color:blue;text-decoration:underline;"
-        onclick="myDataView.sort('#type#','desc');">desc</span><br>
-Sort by name <span style="cursor:pointer;color:blue;text-decoration:underline;"
-                   onclick="myDataView.sort('#name#','asc');">asc</span> | <span
-        style="cursor:pointer;color:blue;text-decoration:underline;"
-        onclick="myDataView.sort('#name#','desc');">desc</span><br>
-Sort by size <span style="cursor:pointer;color:blue;text-decoration:underline;"
-                   onclick="myDataView.sort('#filesize#','asc');">asc</span> | <span
-        style="cursor:pointer;color:blue;text-decoration:underline;" onclick="myDataView.sort('#filesize#','desc');">desc</span><br>
+Sort by type <span onclick="myDataView.sort('#type#','asc');"
+                   style="cursor:pointer;color:blue;text-decoration:underline;">asc</span> | <span
+        onclick="myDataView.sort('#type#','desc');"
+        style="cursor:pointer;color:blue;text-decoration:underline;">desc</span><br>
+Sort by name <span onclick="myDataView.sort('#name#','asc');"
+                   style="cursor:pointer;color:blue;text-decoration:underline;">asc</span> | <span
+        onclick="myDataView.sort('#name#','desc');"
+        style="cursor:pointer;color:blue;text-decoration:underline;">desc</span><br>
+Sort by size <span onclick="myDataView.sort('#filesize#','asc');"
+                   style="cursor:pointer;color:blue;text-decoration:underline;">asc</span> | <span
+        onclick="myDataView.sort('#filesize#','desc');" style="cursor:pointer;color:blue;text-decoration:underline;">desc</span><br>
 <h3>Order remains while changing types</h3>
-<input type="radio" name="switch" onclick="changeType(this.value)" value="ficon" checked> F-icon<br>
-<input type="radio" name="switch" onclick="changeType(this.value)" value="ftiles"> F-titles<br>
-<input type="radio" name="switch" onclick="changeType(this.value)" value="ftable"> F-table<br>
+<input checked name="switch" onclick="changeType(this.value)" type="radio" value="ficon"> F-icon<br>
+<input name="switch" onclick="changeType(this.value)" type="radio" value="ftiles"> F-titles<br>
+<input name="switch" onclick="changeType(this.value)" type="radio" value="ftable"> F-table<br>
 </body>
 </html>

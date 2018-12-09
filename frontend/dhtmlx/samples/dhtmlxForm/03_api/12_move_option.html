@@ -2,40 +2,41 @@
 <html>
 <head>
     <title>Move option between selects</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myForm, formData;
+
         function doOnLoad() {
             formData = [
                 {type: "settings", position: "label-top", labelWidth: 160, inputWidth: 160, labelHeight: 20},
                 {
                     type: "multiselect", label: "All Contacts", name: "c_all", size: 8, options: [
-                    {value: "1", text: "Fernando Novick"},
-                    {value: "2", text: "Ted Spengler"},
-                    {value: "3", text: "Lilia Horace"},
-                    {value: "4", text: "Cody Derksen"},
-                    {value: "5", text: "Mathew Musso"},
-                    {value: "6", text: "Nelson Brayboy"}
-                ]
+                        {value: "1", text: "Fernando Novick"},
+                        {value: "2", text: "Ted Spengler"},
+                        {value: "3", text: "Lilia Horace"},
+                        {value: "4", text: "Cody Derksen"},
+                        {value: "5", text: "Mathew Musso"},
+                        {value: "6", text: "Nelson Brayboy"}
+                    ]
                 },
                 {type: "newcolumn"},
                 {
                     type: "block", list: [
-                    {type: "button", name: "add", value: ">>", offsetLeft: 25, offsetTop: 60},
-                    {type: "button", name: "remove", value: "<<", offsetLeft: 25}
-                ]
+                        {type: "button", name: "add", value: ">>", offsetLeft: 25, offsetTop: 60},
+                        {type: "button", name: "remove", value: "<<", offsetLeft: 25}
+                    ]
                 },
                 {type: "newcolumn"},
                 {
                     type: "multiselect", label: "Blocked Contacts", name: "c_blocked", size: 8, options: [
-                    {value: "7", text: "Harriett Wickwire"},
-                    {value: "8", text: "Fernando Frerichs"},
-                    {value: "9", text: "Erik Couey"}
-                ]
+                        {value: "7", text: "Harriett Wickwire"},
+                        {value: "8", text: "Fernando Frerichs"},
+                        {value: "9", text: "Erik Couey"}
+                    ]
                 }
             ];
             myForm = new dhtmlXForm("myForm", formData);

@@ -2,13 +2,14 @@
 <html>
 <head>
     <title>Multilanguage menu example</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/fonts/font_roboto/roboto.css"/>
-    <link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <link href="../../../codebase/fonts/font_roboto/roboto.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../codebase/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <script src="../../../codebase/dhtmlx.js"></script>
     <script>
         var myMenu;
+
         function doOnLoad() {
             myMenu = new dhtmlXMenuObject({
                 parent: "menuObj",
@@ -19,6 +20,7 @@
                 }
             });
         }
+
         dhtmlXMenuObject.prototype.setLanguage = function (lang) {
             if (lang == null || this.strings[lang] == null) lang = "en";
             var menu = this;
@@ -105,8 +107,8 @@
 <div style="height: 250px;">
     <div id="menuObj"></div>
 </div>
-<input type="button" value="en" onclick="myMenu.setLanguage('en');">
-<input type="button" value="ru" onclick="myMenu.setLanguage('ru');">
-<input type="button" value="de" onclick="myMenu.setLanguage('de');">
+<input onclick="myMenu.setLanguage('en');" type="button" value="en">
+<input onclick="myMenu.setLanguage('ru');" type="button" value="ru">
+<input onclick="myMenu.setLanguage('de');" type="button" value="de">
 </body>
 </html>
