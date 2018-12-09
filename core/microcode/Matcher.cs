@@ -221,6 +221,23 @@ namespace core.microcode
             (debugSource, insns, insn1, insn2) =>
             {
                 if (!insn1.Is(MicroOpcode.Copy).Arg<RegisterArg>(out var r0).Arg<ConstValue>(out var c0) ||
+                    !insn2.Is(MicroOpcode.Copy).ArgMemRegIs(r0, out var m0))
+                    return false;
+
+                // copy r0, c0
+                // copy r0(c0), x
+                // -> copy r0, c0
+                // -> copy addr, x
+                insns.Add(insn1);
+                var addr = c0.Value + (ulong) m0.Offset;
+                insns.Add(new CopyInsn(insn1.Args[0],
+                    new AddressValue(addr, debugSource.GetSymbolName((uint) addr), insn1.Args[0].Bits)
+                ));
+                return true;
+            },
+            (debugSource, insns, insn1, insn2) =>
+            {
+                if (!insn1.Is(MicroOpcode.Copy).Arg<RegisterArg>(out var r0).Arg<ConstValue>(out var c0) ||
                     !insn2.Is(MicroOpcode.Add).AnyArg().ArgRegIs(r0).Arg<ConstValue>(out var c1))
                     return false;
 
@@ -245,9 +262,58 @@ namespace core.microcode
                 insns.Add(new MicroInsn(MicroOpcode.Cmp, insn2.Args[0], c0));
                 return true;
             },
+            (debugSource, insns, insn1, insn2) =>
+            {
+                if (!insn1.Is(MicroOpcode.Copy).Arg<RegisterArg>(out var r0).AnyArg() ||
+                    !insn2.Is(MicroOpcode.Copy).ArgRegIs(r0).Arg<ConstValue>())
+                    return false;
+
+                // copy r0, x
+                // copy r0, c0
+                // -> copy r0, c0
+                insns.Add(insn2);
+                return true;
+            },
+            (debugSource, insns, insn1, insn2) =>
+            {
+                if (!insn1.Is(MicroOpcode.Copy).Arg<RegisterArg>(out var r0).AnyArg() ||
+                    !insn2.Is(MicroOpcode.Copy).ArgRegIs(r0).Arg<AddressValue>())
+                    return false;
+
+                // copy r0, x
+                // copy r0, c0
+                // -> copy r0, c0
+                insns.Add(insn2);
+                return true;
+            },
+            (debugSource, insns, insn1, insn2) =>
+            {
+                if (!insn1.Is(MicroOpcode.Copy).Arg<RegisterArg>(out var r0).AnyArg() ||
+                    !insn2.Is(MicroOpcode.Copy).ArgRegIs(r0).Arg<RegisterMemArg>(out var m0) ||
+                    m0.Register == r0.Register)
+                    return false;
+
+                // copy r0, x
+                // copy r0, m0
+                // -> copy r0, m0
+                insns.Add(insn2);
+                return true;
+            },
+            (debugSource, insns, insn1, insn2) =>
+            {
+                if (!insn1.Is(MicroOpcode.Copy).Arg<RegisterArg>(out var r0).Arg<ConstValue>(out var c0) ||
+                    !insn2.Is(MicroOpcode.Not).ArgRegIs(r0))
+                    return false;
+
+                // copy r0, c0
+                // not r0
+                // -> copy r0, ~c0
+                insns.Add(new CopyInsn(r0, new ConstValue(~c0.Value, r0.Bits)));
+                return true;
+            },
         };
 
-        private static bool Substitute([NotNull] MicroInsn insn, IDictionary<uint, ConstValue> registerValues)
+        private static bool Substitute(IDebugSource debugSource, [NotNull] MicroInsn insn, IDictionary<uint, ConstValue> registerValues)
         {
             bool substituted = false;
 
@@ -257,6 +323,13 @@ namespace core.microcode
                     registerValues.TryGetValue(regArg.Register, out var knownArg))
                 {
                     insn.Args[i] = knownArg;
+                    substituted = true;
+                }
+                else if (insn.Args[i] is RegisterMemArg regMemArg &&
+                    registerValues.TryGetValue(regMemArg.Register, out var knownArg2))
+                {
+                    var addr = knownArg2.Value + (ulong) regMemArg.Offset;
+                    insn.Args[i] = new AddressValue(addr, debugSource.GetSymbolName((uint) addr),  regMemArg.Bits);
                     substituted = true;
                 }
             }
@@ -291,7 +364,7 @@ namespace core.microcode
             for (int i = 0; i < tmp.Count; ++i)
             {
                 var insn1 = tmp[i];
-                optimizedAny |= Substitute(insn1, registerValues);
+                optimizedAny |= Substitute(debugSource, insn1, registerValues);
                 bool replaced = false;
 
                 foreach (var po in peephole1)
@@ -305,7 +378,7 @@ namespace core.microcode
                 if (!replaced && i < tmp.Count - 1)
                 {
                     var insn2 = tmp[i + 1];
-                    optimizedAny |= Substitute(insn2, registerValues);
+                    optimizedAny |= Substitute(debugSource, insn2, registerValues);
                     foreach (var po in peephole2)
                         if (po(debugSource, insns, insn1, insn2))
                         {

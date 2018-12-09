@@ -58,21 +58,22 @@ namespace core.microcode
         }
     }
 
-    public class AddressValue : ConstValue
+    public class AddressValue : IMicroArg
     {
         private readonly string _name;
+        public readonly ulong Address;
+        public byte Bits { get; }
 
-        public AddressValue(ulong value, string name, byte bits) : base(value, bits)
+        public AddressValue(ulong address, string name, byte bits)
         {
             _name = name;
+            Address = address;
+            Bits = bits;
         }
 
         public override string ToString()
         {
-            if (_name != null)
-                return $"&{_name}[[0x{Value:X}]]";
-            else
-                return $"&<!unnamed!>[[0x{Value:X}]]";
+            return $"0x{Address:X}[[{_name ?? "?"}]]";
         }
     }
 
@@ -107,7 +108,7 @@ namespace core.microcode
     public class RegisterMemArg : IMicroArg
     {
         public byte Bits { get; }
-        public uint? Register { get; }
+        public uint Register { get; }
 
         public readonly int Offset;
 
