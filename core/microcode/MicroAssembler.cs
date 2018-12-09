@@ -163,17 +163,17 @@ namespace core.microcode
     public class UnsignedCastInsn : MicroInsn
     {
         private readonly byte _fromBits;
-        private readonly byte _toBits;
+        public readonly byte ToBits;
 
         public UnsignedCastInsn(RegisterArg from, RegisterArg to) : base(MicroOpcode.UResize, to, from)
         {
             _fromBits = from.Bits;
-            _toBits = to.Bits;
+            ToBits = to.Bits;
         }
 
         public override string ToString()
         {
-            return base.ToString() + $" <<{_fromBits} -> {_toBits}>>";
+            return base.ToString() + $" <<{_fromBits} -> {ToBits}>>";
         }
     }
 

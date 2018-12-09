@@ -338,7 +338,9 @@ namespace core.microcode
             {
                 if (insn.Opcode == MicroOpcode.Copy && insn.Args[1] is ConstValue v)
                     registerValues[r.Register] = v;
-                else
+                else if (insn.Opcode == MicroOpcode.UResize && insn.Args[1] is ConstValue v2)
+                    registerValues[r.Register] = new ConstValue(v2.Value, ((UnsignedCastInsn)insn).ToBits);
+                else if(insn.Opcode != MicroOpcode.Cmp)
                     registerValues.Remove(r.Register);
             }
 
