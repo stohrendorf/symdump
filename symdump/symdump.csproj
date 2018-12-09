@@ -4,7 +4,7 @@
     <RootNamespace>symdump</RootNamespace>
     <AssemblyName>symdump</AssemblyName>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+      <TargetFramework>netcoreapp2.1</TargetFramework>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>

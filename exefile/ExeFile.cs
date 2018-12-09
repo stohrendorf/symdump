@@ -668,12 +668,14 @@ namespace exefile
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.jr:
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     if (rs1 is RegisterArg r && r.Register == Register.ra.ToUInt())
                         asm.Add(MicroOpcode.Return, rs1);
                     else
                         asm.Add(MicroOpcode.Jmp, rs1);
                     break;
                 case OpcodeFunction.jalr:
+                    DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
                     asm.Add(MicroOpcode.Call, rd, rs1);
                     break;
                 case OpcodeFunction.syscall:

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>symfile</RootNamespace>
     <AssemblyName>symfile</AssemblyName>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+      <TargetFramework>netcoreapp2.1</TargetFramework>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
