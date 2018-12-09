@@ -191,28 +191,28 @@ namespace exefile
             var r = (Register) ((data >> offset) & 0x1f);
             if (r == Register.zero)
                 return new ConstValue(0, 32);
-            return new RegisterArg(RegisterUtil.ToUInt(r), 32);
+            return new RegisterArg(r.ToUInt(), 32);
         }
 
         private static RegisterArg MakeRegisterOperand(uint data, int offset)
         {
             var r = (Register) ((data >> offset) & 0x1f);
-            return new RegisterArg(RegisterUtil.ToUInt(r), 32);
+            return new RegisterArg(r.ToUInt(), 32);
         }
 
         private static RegisterArg MakeC0RegisterOperand(uint data, int offset)
         {
-            return new RegisterArg(RegisterUtil.ToUInt((C0Register) ((data >> offset) & 0x1f)), 32);
+            return new RegisterArg(((C0Register) ((data >> offset) & 0x1f)).ToUInt(), 32);
         }
 
         private static RegisterArg MakeC2RegisterOperand(uint data, int offset)
         {
-            return new RegisterArg(RegisterUtil.ToUInt((C2Register) ((data >> offset) & 0x1f)), 32);
+            return new RegisterArg(((C2Register) ((data >> offset) & 0x1f)).ToUInt(), 32);
         }
 
         private static RegisterMemArg MakeRegisterOffsetArg(uint data, int shift, int offset, byte bits)
         {
-            return new RegisterMemArg(RegisterUtil.ToUInt((Register) ((data >> shift) & 0x1f)), offset, bits);
+            return new RegisterMemArg(((Register) ((data >> shift) & 0x1f)).ToUInt(), offset, bits);
         }
 
         private IMicroArg MakeGpBasedArg(uint data, int shift, int offset, byte bits)
@@ -221,7 +221,7 @@ namespace exefile
             if (_gpBase == null)
                 return regofs;
 
-            if (regofs.Register == RegisterUtil.ToUInt(Register.gp))
+            if (regofs.Register == Register.gp.ToUInt())
             {
                 var absoluteAddress = (uint) (_gpBase.Value + regofs.Offset);
                 return new AddressValue(absoluteAddress, _debugSource.GetSymbolName(absoluteAddress), bits);
@@ -283,7 +283,7 @@ namespace exefile
                     asm.Outs.Add(MakeLocal(absoluteAddress), JumpType.Call);
                     Callees.Add(absoluteAddress);
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4, true);
-                    asm.Add(MicroOpcode.Call, new RegisterArg(RegisterUtil.ToUInt(Register.ra), 32), tgt);
+                    asm.Add(MicroOpcode.Call, new RegisterArg(Register.ra.ToUInt(), 32), tgt);
                 }
                     break;
                 case Opcode.beq:
@@ -668,7 +668,10 @@ namespace exefile
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.jr:
-                    asm.Add(MicroOpcode.Jmp, rs1);
+                    if (rs1 is RegisterArg r && r.Register == Register.ra.ToUInt())
+                        asm.Add(MicroOpcode.Return, rs1);
+                    else
+                        asm.Add(MicroOpcode.Jmp, rs1);
                     break;
                 case OpcodeFunction.jalr:
                     asm.Add(MicroOpcode.Call, rd, rs1);

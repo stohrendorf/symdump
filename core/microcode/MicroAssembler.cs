@@ -10,6 +10,7 @@ namespace core.microcode
         Nop,
         Data,
         Call,
+        Return,
         Jmp,
         JmpIf,
         Cmp,
@@ -443,7 +444,7 @@ namespace core.microcode
                             // -> copy r0, const
                             // -> cmp x, const
                             Add(insn);
-                            Add(new MicroInsn(MicroOpcode.Cmp, r0, c0));
+                            Add(new MicroInsn(MicroOpcode.Cmp, next.Args[0], c0));
                             ++i;
                             changed = true;
                             continue;
