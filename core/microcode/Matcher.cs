@@ -96,7 +96,8 @@ namespace core.microcode
     {
         private delegate bool Peephole1Delegate(IDebugSource debugSource, IList<MicroInsn> insns, MicroInsn insn);
 
-        private delegate bool Peephole2Delegate(IDebugSource debugSource, IList<MicroInsn> insns, MicroInsn insn1, MicroInsn insn2);
+        private delegate bool Peephole2Delegate(IDebugSource debugSource, IList<MicroInsn> insns, MicroInsn insn1,
+            MicroInsn insn2);
 
         private static readonly Peephole1Delegate[] peephole1 =
         {
@@ -167,8 +168,7 @@ namespace core.microcode
             },
             (debugSource, insns, insn) =>
             {
-                if (!insn.Is(MicroOpcode.Add, MicroOpcode.Sub).AnyArg().AnyArg().Arg<ConstValue>(out var c0) ||
-                    c0.Value != 0)
+                if (!insn.Is(MicroOpcode.Add, MicroOpcode.Sub).AnyArg().AnyArg().Arg<ConstValue>(out var c0) || c0.Value != 0)
                     return false;
 
                 insns.Add(new CopyInsn(insn.Args[0], insn.Args[1]));
@@ -176,7 +176,7 @@ namespace core.microcode
             },
             (debugSource, insns, insn) =>
             {
-                if (!insn.Is(MicroOpcode.Sub).AnyArg().Arg<ConstValue>(out var c0) || c0.Value != 0)
+                if (!insn.Is(MicroOpcode.Add).AnyArg().Arg<ConstValue>(out var c0) || c0.Value != 0)
                     return false;
 
                 insns.Add(new CopyInsn(insn.Args[0], insn.Args[2]));
@@ -313,7 +313,8 @@ namespace core.microcode
             },
         };
 
-        private static bool Substitute(IDebugSource debugSource, [NotNull] MicroInsn insn, IDictionary<uint, ConstValue> registerValues)
+        private static bool Substitute(IDebugSource debugSource, [NotNull] MicroInsn insn,
+            IDictionary<uint, ConstValue> registerValues)
         {
             bool substituted = false;
 
@@ -326,10 +327,10 @@ namespace core.microcode
                     substituted = true;
                 }
                 else if (insn.Args[i] is RegisterMemArg regMemArg &&
-                    registerValues.TryGetValue(regMemArg.Register, out var knownArg2))
+                         registerValues.TryGetValue(regMemArg.Register, out var knownArg2))
                 {
                     var addr = knownArg2.Value + (ulong) regMemArg.Offset;
-                    insn.Args[i] = new AddressValue(addr, debugSource.GetSymbolName((uint) addr),  regMemArg.Bits);
+                    insn.Args[i] = new AddressValue(addr, debugSource.GetSymbolName((uint) addr), regMemArg.Bits);
                     substituted = true;
                 }
             }
@@ -339,19 +340,19 @@ namespace core.microcode
                 if (insn.Opcode == MicroOpcode.Copy && insn.Args[1] is ConstValue v)
                     registerValues[r.Register] = v;
                 else if (insn.Opcode == MicroOpcode.UResize && insn.Args[1] is ConstValue v2)
-                    registerValues[r.Register] = new ConstValue(v2.Value, ((UnsignedCastInsn)insn).ToBits);
-                else if(insn.Opcode != MicroOpcode.Cmp)
+                    registerValues[r.Register] = new ConstValue(v2.Value, ((UnsignedCastInsn) insn).ToBits);
+                else if (insn.Opcode != MicroOpcode.Cmp)
                     registerValues.Remove(r.Register);
             }
 
             return substituted;
         }
 
-        public static void Optimize(IList<MicroInsn> insns, IDebugSource debugSource)
+        public static void Optimize(List<MicroInsn> insns, IDebugSource debugSource)
         {
             while (OptimizePass(insns, debugSource))
             {
-                /* continue */
+                DeadWriteRemoval(insns);
             }
         }
 
@@ -397,6 +398,81 @@ namespace core.microcode
             }
 
             return optimizedAny;
+        }
+
+        private static void DeadWriteRemoval(List<MicroInsn> insns)
+        {
+            var reversedInsns = insns.Where(i => i.Opcode != MicroOpcode.Nop).ToList();
+            reversedInsns.Reverse();
+            insns.Clear();
+
+            var registerUsed = new Dictionary<uint, bool>(); // true if read, false if written only
+
+            foreach (var insn in reversedInsns)
+            {
+                switch (insn.Opcode)
+                {
+                    case MicroOpcode.Cmp:
+                    case MicroOpcode.Jmp:
+                    case MicroOpcode.JmpIf:
+                    {
+                        // read-only instructions
+                        foreach (var arg in insn.Args)
+                        {
+                            if (arg is RegisterArg r)
+                                registerUsed[r.Register] = true;
+                            else if (arg is RegisterMemArg rm)
+                                registerUsed[rm.Register] = true;
+                        }
+                        
+                        insns.Add(insn);
+
+                        break;
+                    }
+                    default:
+                    {
+                        var locallyRead = new HashSet<uint>();
+
+                        // process read registers first
+                        for (var i = 1; i < insn.Args.Count; i++)
+                        {
+                            var arg = insn.Args[i];
+                            if (arg is RegisterArg r)
+                                locallyRead.Add(r.Register);
+                            else if (arg is RegisterMemArg rm)
+                                locallyRead.Add(rm.Register);
+                        }
+
+                        {
+                            // check if we can discard this instruction because it's doing a redundant write
+                            bool keep = true;
+                            if (insn.Args[0] is RegisterArg r)
+                            {
+                                if (!locallyRead.Contains(r.Register) && registerUsed.TryGetValue(r.Register, out var isRead) && !isRead)
+                                    keep = false;
+                            }
+                            else if (insn.Args[0] is RegisterMemArg rm)
+                            {
+                                if (!locallyRead.Contains(rm.Register) && registerUsed.TryGetValue(rm.Register, out var isRead) && !isRead)
+                                    keep = false;
+                            }
+
+                            if (keep)
+                            {
+                                insns.Add(insn);
+                                foreach (var lr in locallyRead)
+                                {
+                                    registerUsed[lr] = true;
+                                }
+                            }
+                        }
+                        
+                        break;
+                    }
+                }
+            }
+
+            insns.Reverse();
         }
     }
 }

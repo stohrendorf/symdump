@@ -93,16 +93,6 @@ namespace core.microcode
         {
             return $"$r{Register}";
         }
-
-        public UnsignedCastInsn UCastTo(RegisterArg dst)
-        {
-            return new UnsignedCastInsn(this, dst);
-        }
-
-        public SignedCastInsn SCastTo(RegisterArg dst)
-        {
-            return new SignedCastInsn(this, dst);
-        }
     }
 
     public class RegisterMemArg : IMicroArg
@@ -165,7 +155,7 @@ namespace core.microcode
         private readonly byte _fromBits;
         public readonly byte ToBits;
 
-        public UnsignedCastInsn(RegisterArg from, RegisterArg to) : base(MicroOpcode.UResize, to, from)
+        public UnsignedCastInsn(IMicroArg to, IMicroArg from) : base(MicroOpcode.UResize, to, from)
         {
             _fromBits = from.Bits;
             ToBits = to.Bits;
@@ -182,7 +172,7 @@ namespace core.microcode
         private readonly byte _fromBits;
         private readonly byte _toBits;
 
-        public SignedCastInsn(RegisterArg from, RegisterArg to) : base(MicroOpcode.SResize, to, from)
+        public SignedCastInsn(IMicroArg to, IMicroArg from) : base(MicroOpcode.SResize, to, from)
         {
             _fromBits = from.Bits;
             _toBits = to.Bits;
@@ -221,7 +211,7 @@ namespace core.microcode
     public class MicroAssemblyBlock
     {
         public readonly uint Address;
-        public readonly IList<MicroInsn> Insns = new List<MicroInsn>();
+        public readonly List<MicroInsn> Insns = new List<MicroInsn>();
         public readonly IDictionary<uint, JumpType> Ins = new Dictionary<uint, JumpType>();
         public IDictionary<uint, JumpType> Outs = new Dictionary<uint, JumpType>();
 

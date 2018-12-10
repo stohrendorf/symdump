@@ -421,20 +421,12 @@ namespace exefile
                     asm.Add(MicroOpcode.Data, new ConstValue(data, 32));
                     break;
                 case Opcode.lb:
-                {
-                    var tmp = GetTmpReg(8);
-                    asm.Add(new CopyInsn(tmp, MakeGpBasedArg(data, 21, (short) data, 8)));
-                    asm.Add(tmp.SCastTo(MakeRegisterOperand(data, 8)));
+                    asm.Add(new SignedCastInsn(MakeRegisterOperand(data, 16), MakeGpBasedArg(data, 21, (short) data, 8)));
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
-                }
                     break;
                 case Opcode.lh:
-                {
-                    var tmp = GetTmpReg(16);
-                    asm.Add(new CopyInsn(tmp, MakeGpBasedArg(data, 21, (short) data, 16)));
-                    asm.Add(tmp.SCastTo(MakeRegisterOperand(data, 16)));
+                    asm.Add(new SignedCastInsn(MakeRegisterOperand(data, 16), MakeGpBasedArg(data, 21, (short) data, 16)));
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
-                }
                     break;
                 case Opcode.lwl:
                     asm.Add(new UnsupportedInsn("lwl", MakeZeroRegisterOperand(data, 32),
@@ -446,20 +438,12 @@ namespace exefile
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case Opcode.lbu:
-                {
-                    var tmp = GetTmpReg(8);
-                    asm.Add(new CopyInsn(tmp, MakeGpBasedArg(data, 21, (short) data, 8)));
-                    asm.Add(tmp.UCastTo(MakeRegisterOperand(data, 16)));
+                    asm.Add(new UnsignedCastInsn(MakeRegisterOperand(data, 16), MakeGpBasedArg(data, 21, (short) data, 8)));
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
-                }
                     break;
                 case Opcode.lhu:
-                {
-                    var tmp = GetTmpReg(16);
-                    asm.Add(new CopyInsn(tmp, MakeGpBasedArg(data, 21, (short) data, 16)));
-                    asm.Add(tmp.UCastTo(MakeRegisterOperand(data, 16)));
+                    asm.Add(new UnsignedCastInsn(MakeRegisterOperand(data, 16), MakeGpBasedArg(data, 21, (short) data, 16)));
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
-                }
                     break;
                 case Opcode.lwr:
                     asm.Add(new UnsupportedInsn("lwr", MakeZeroRegisterOperand(data, 16),
@@ -471,9 +455,7 @@ namespace exefile
                     var op = MakeZeroRegisterOperand(data, 16);
                     if (op is RegisterArg r)
                     {
-                        var tmp = GetTmpReg(8);
-                        asm.Add(r.UCastTo(tmp));
-                        asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 8), tmp));
+                        asm.Add(new UnsignedCastInsn(MakeGpBasedArg(data, 21, (short) data, 8), r));
                     }
                     else
                     {
@@ -488,9 +470,7 @@ namespace exefile
                     var op = MakeZeroRegisterOperand(data, 16);
                     if (op is RegisterArg r)
                     {
-                        var tmp = GetTmpReg(16);
-                        asm.Add(r.UCastTo(tmp));
-                        asm.Add(new CopyInsn(MakeGpBasedArg(data, 21, (short) data, 16), tmp));
+                        asm.Add(new UnsignedCastInsn(MakeGpBasedArg(data, 21, (short) data, 16), r));
                     }
                     else
                     {
