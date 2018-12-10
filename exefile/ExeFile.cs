@@ -384,16 +384,24 @@ namespace exefile
                         new ConstValue((ushort) data, 16));
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
-                case Opcode.subi:
-                    asm.Add(MicroOpcode.Sub, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
-                        new ConstValue((ushort) data, 16));
+                case Opcode.slti:
+                {
+                    var tmp = GetTmpReg(32);
+                    asm.Add(new SignedCastInsn(tmp, new ConstValue((ushort) data, 16)));
+                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), tmp);
+                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16));
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
-                case Opcode.subiu:
-                    asm.Add(MicroOpcode.Sub, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
-                        new ConstValue((ushort) data, 16));
+                }
+                case Opcode.sltiu:
+                {
+                    var tmp = GetTmpReg(32);
+                    asm.Add(new SignedCastInsn(tmp, new ConstValue((ushort) data, 16)));
+                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), tmp);
+                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16));
                     asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
+                }
                 case Opcode.andi:
                     asm.Add(MicroOpcode.And, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
                         new ConstValue((ushort) data, 16));
