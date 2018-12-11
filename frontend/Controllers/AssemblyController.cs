@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using core.microcode;
 using frontend.Services;
@@ -19,19 +20,57 @@ namespace frontend.Controllers
             _appState = appState;
         }
 
-        [HttpGet("instructions/{offset}/{length}")]
-        public IEnumerable<LineInfo> Instructions([FromRoute] int offset, [FromRoute] int length)
+        [HttpGet("instructions/{offset}")]
+        public IEnumerable<LineInfo> Instructions([FromRoute] uint offset)
         {
+            offset = _appState.ExeFile.MakeLocal(offset);
+            var firstAddr = _appState.ExeFile.Instructions.Values
+                .Where(kv => kv.Address >= offset)
+                .OrderBy(kv => kv.Address)
+                .First().Address;
+            
+            var q = new Queue<uint>();
+            q.Enqueue(firstAddr);
+
+            var blocks = new SortedDictionary<uint, MicroAssemblyBlock>();
+
+            while (q.Count > 0)
+            {
+                var addr = q.Dequeue();
+                if(blocks.ContainsKey(addr))
+                    continue;
+                
+                var block = _appState.ExeFile.BlockAtLocal(addr);
+                if(block == null)
+                    continue;
+                
+                blocks[addr] = block;
+
+                foreach (var o in block.Outs)
+                {
+                    switch (o.Value)
+                    {
+                        case JumpType.Call:
+                        case JumpType.CallConditional:
+                            break;
+                        case JumpType.Jump:
+                        case JumpType.JumpConditional:
+                        case JumpType.Control:
+                            q.Enqueue(o.Key);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+            
             int i = 0;
-            return _appState.ExeFile.RelocatedInstructions
-                .Where(kv => kv.Key >= offset)
-                .OrderBy(kv => kv.Key)
-                .Take(length)
+            return blocks
                 .SelectMany(kv => kv.Value.Insns.Select(insn => new KeyValuePair<uint, MicroInsn>(kv.Key, insn)))
                 .Select(kv => new LineInfo
                 {
                     Text = kv.Value.ToString(),
-                    Address = $"{kv.Key}/{i++}"
+                    Address = $"{_appState.ExeFile.MakeGlobal(kv.Key)}/{i++}"
                 });
         }
     }

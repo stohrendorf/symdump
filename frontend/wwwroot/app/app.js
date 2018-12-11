@@ -65,7 +65,7 @@ function appInit() {
     var symbolsTree = symbols.attachTreeView();
     symbolsTree.attachEvent("onSelect", function (id, mode) {
         var address = symbolsTree.getUserData(id)["address"];
-        var instructions = dhx.s2j(dhx.ajax.getSync("api/assembly/instructions/" + address + "/200").xmlDoc.responseText);
+        var instructions = dhx.s2j(dhx.ajax.getSync("api/assembly/instructions/" + address).xmlDoc.responseText);
         dataView.beginUpdate();
         dataView.setItems(instructions, 'address');
         dataView.endUpdate();
