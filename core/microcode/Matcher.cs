@@ -191,10 +191,42 @@ namespace core.microcode
             },
             (debugSource, insns, insn) =>
             {
+                if (!insn.Is(MicroOpcode.UResize).Arg<RegisterArg>(out var r0).Arg<ConstValue>(out var c0))
+                    return false;
+
+                insns.Add(new CopyInsn(r0, new ConstValue(c0.Value, r0.Bits)));
+                return true;
+            },
+            (debugSource, insns, insn) =>
+            {
+                if (!insn.Is(MicroOpcode.UResize).Arg<AddressValue>(out var a0).Arg<ConstValue>(out var c0))
+                    return false;
+
+                insns.Add(new CopyInsn(a0, new ConstValue(c0.Value, ((UnsignedCastInsn)insn).ToBits)));
+                return true;
+            },
+            (debugSource, insns, insn) =>
+            {
                 if (!insn.Is(MicroOpcode.SResize).Arg<RegisterMemArg>(out var m0).Arg<ConstValue>(out var c0))
                     return false;
 
                 insns.Add(new CopyInsn(m0, c0.SignedResized(m0.Bits)));
+                return true;
+            },
+            (debugSource, insns, insn) =>
+            {
+                if (!insn.Is(MicroOpcode.SResize).Arg<RegisterArg>(out var r0).Arg<ConstValue>(out var c0))
+                    return false;
+
+                insns.Add(new CopyInsn(r0, c0.SignedResized(r0.Bits)));
+                return true;
+            },
+            (debugSource, insns, insn) =>
+            {
+                if (!insn.Is(MicroOpcode.SResize).Arg<AddressValue>(out var a0).Arg<ConstValue>(out var c0))
+                    return false;
+
+                insns.Add(new CopyInsn(a0, c0.SignedResized(((UnsignedCastInsn)insn).ToBits)));
                 return true;
             },
         };
