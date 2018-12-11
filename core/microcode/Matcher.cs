@@ -96,9 +96,8 @@ namespace core.microcode
     {
         private delegate bool Peephole1Delegate(IDebugSource debugSource, IList<MicroInsn> insns, MicroInsn insn);
 
-        private delegate bool Peephole2Delegate(IDebugSource debugSource, IList<MicroInsn> insns, MicroInsn insn1,
-            MicroInsn insn2);
-
+        private delegate bool Peephole2Delegate(IDebugSource debugSource, IList<MicroInsn> insns, MicroInsn insn1, MicroInsn insn2);
+        
         private static readonly Peephole1Delegate[] peephole1 =
         {
             (debugSource, insns, insn) =>
@@ -182,6 +181,22 @@ namespace core.microcode
                 insns.Add(new CopyInsn(insn.Args[0], insn.Args[2]));
                 return true;
             },
+            (debugSource, insns, insn) =>
+            {
+                if (!insn.Is(MicroOpcode.UResize).Arg<RegisterMemArg>(out var m0).Arg<ConstValue>(out var c0))
+                    return false;
+
+                insns.Add(new CopyInsn(m0, new ConstValue(c0.Value, m0.Bits)));
+                return true;
+            },
+            (debugSource, insns, insn) =>
+            {
+                if (!insn.Is(MicroOpcode.SResize).Arg<RegisterMemArg>(out var m0).Arg<ConstValue>(out var c0))
+                    return false;
+
+                insns.Add(new CopyInsn(m0, c0.SignedResized(m0.Bits)));
+                return true;
+            },
         };
 
         private static readonly Peephole2Delegate[] peephole2 =
@@ -246,20 +261,6 @@ namespace core.microcode
                 // -> copy x, const+const
                 var val = c0.Value + c1.Value;
                 insns.Add(new CopyInsn(insn1.Args[0], new ConstValue(val, 32)));
-                return true;
-            },
-            (debugSource, insns, insn1, insn2) =>
-            {
-                if (!insn1.Is(MicroOpcode.Copy).Arg<RegisterArg>(out var r0).Arg<ConstValue>(out var c0) ||
-                    !insn2.Is(MicroOpcode.Cmp).AnyArg().ArgRegIs(r0))
-                    return false;
-
-                // copy r0, const
-                // cmp x, r0
-                // -> copy r0, const
-                // -> cmp x, const
-                insns.Add(insn1);
-                insns.Add(new MicroInsn(MicroOpcode.Cmp, insn2.Args[0], c0));
                 return true;
             },
             (debugSource, insns, insn1, insn2) =>
@@ -341,7 +342,7 @@ namespace core.microcode
                     registerValues[r.Register] = v;
                 else if (insn.Opcode == MicroOpcode.UResize && insn.Args[1] is ConstValue v2)
                     registerValues[r.Register] = new ConstValue(v2.Value, ((UnsignedCastInsn) insn).ToBits);
-                else if (insn.Opcode != MicroOpcode.Cmp)
+                else
                     registerValues.Remove(r.Register);
             }
 
@@ -412,7 +413,6 @@ namespace core.microcode
             {
                 switch (insn.Opcode)
                 {
-                    case MicroOpcode.Cmp:
                     case MicroOpcode.Jmp:
                     case MicroOpcode.JmpIf:
                     {
@@ -446,13 +446,16 @@ namespace core.microcode
                         {
                             // check if we can discard this instruction because it's doing a redundant write
                             bool keep = true;
+                            uint? written = null;
                             if (insn.Args[0] is RegisterArg r)
                             {
+                                written = r.Register;
                                 if (!locallyRead.Contains(r.Register) && registerUsed.TryGetValue(r.Register, out var isRead) && !isRead)
                                     keep = false;
                             }
                             else if (insn.Args[0] is RegisterMemArg rm)
                             {
+                                written = rm.Register;
                                 if (!locallyRead.Contains(rm.Register) && registerUsed.TryGetValue(rm.Register, out var isRead) && !isRead)
                                     keep = false;
                             }
@@ -460,6 +463,10 @@ namespace core.microcode
                             if (keep)
                             {
                                 insns.Add(insn);
+                                if (written.HasValue)
+                                {
+                                    registerUsed[written.Value] = false;
+                                }
                                 foreach (var lr in locallyRead)
                                 {
                                     registerUsed[lr] = true;

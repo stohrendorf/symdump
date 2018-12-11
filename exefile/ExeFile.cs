@@ -317,8 +317,7 @@ namespace exefile
                     var r1 = MakeZeroRegisterOperand(data, 21);
                     var r2 = MakeZeroRegisterOperand(data, 16);
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.Cmp, r1, r2);
-                    asm.Add(MicroOpcode.SetEq, tmp);
+                    asm.Add(MicroOpcode.SetEq, tmp, r1, r2);
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -340,9 +339,7 @@ namespace exefile
                     var r1 = MakeZeroRegisterOperand(data, 21);
                     var r2 = MakeZeroRegisterOperand(data, 16);
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.Cmp, r1, r2);
-                    asm.Add(MicroOpcode.SetEq, tmp);
-                    asm.Add(MicroOpcode.LogicalNot, tmp);
+                    asm.Add(MicroOpcode.SetNEq, tmp, r1, r2);
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -363,8 +360,7 @@ namespace exefile
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
                     var r1 = MakeZeroRegisterOperand(data, 21);
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.Cmp, r1, new ConstValue(0, 32));
-                    asm.Add(MicroOpcode.SSetLE, tmp);
+                    asm.Add(MicroOpcode.SSetLE, tmp, r1, new ConstValue(0, 32));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -385,9 +381,7 @@ namespace exefile
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
                     var r1 = MakeZeroRegisterOperand(data, 21);
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.Cmp, r1, new ConstValue(0, 32));
-                    asm.Add(MicroOpcode.SSetLE, tmp);
-                    asm.Add(MicroOpcode.LogicalNot, tmp);
+                    asm.Add(MicroOpcode.SSetL, tmp, new ConstValue(0, 32), r1);
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -409,8 +403,7 @@ namespace exefile
                 {
                     var tmp = GetTmpReg(32);
                     asm.Add(new SignedCastInsn(tmp, new ConstValue((ushort) data, 16)));
-                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), tmp);
-                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16));
+                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21), tmp);
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
@@ -419,8 +412,7 @@ namespace exefile
                 {
                     var tmp = GetTmpReg(32);
                     asm.Add(new SignedCastInsn(tmp, new ConstValue((ushort) data, 16)));
-                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), tmp);
-                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16));
+                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21), tmp);
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
@@ -590,9 +582,8 @@ namespace exefile
                     var tgt = new AddressValue(MakeGlobal(localAddress),
                         _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
-                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), MakeZeroRegisterOperand(data, 16));
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SetEq, tmp);
+                    asm.Add(MicroOpcode.SetEq, tmp, MakeZeroRegisterOperand(data, 21), MakeZeroRegisterOperand(data, 16));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -611,10 +602,8 @@ namespace exefile
                     var tgt = new AddressValue(MakeGlobal(localAddress),
                         _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
-                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), MakeZeroRegisterOperand(data, 16));
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SetEq, tmp);
-                    asm.Add(MicroOpcode.LogicalNot, tmp);
+                    asm.Add(MicroOpcode.SetNEq, tmp, MakeZeroRegisterOperand(data, 21), MakeZeroRegisterOperand(data, 16));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -633,9 +622,8 @@ namespace exefile
                     var tgt = new AddressValue(MakeGlobal(localAddress),
                         _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
-                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), new ConstValue(0, 32));
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SSetLE, tmp);
+                    asm.Add(MicroOpcode.SSetLE, tmp, MakeZeroRegisterOperand(data, 21), new ConstValue(0, 32));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -654,10 +642,8 @@ namespace exefile
                     var tgt = new AddressValue(MakeGlobal(localAddress),
                         _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
-                    asm.Add(MicroOpcode.Cmp, MakeZeroRegisterOperand(data, 21), new ConstValue(0, 32));
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SSetLE, tmp);
-                    asm.Add(MicroOpcode.LogicalNot, tmp);
+                    asm.Add(MicroOpcode.SSetL, tmp, new ConstValue(0, 32), MakeZeroRegisterOperand(data, 21));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -722,7 +708,11 @@ namespace exefile
                     if (rs1 is RegisterArg r && r.Register == Register.ra.ToUInt())
                         asm.Add(MicroOpcode.Return, rs1);
                     else
+                    {
+                        logger.Info($"Possible switch statement at 0x{MakeGlobal(nextInsnAddressLocal-4):x8}");
                         asm.Add(MicroOpcode.Jmp, rs1);
+                    }
+
                     break;
                 case OpcodeFunction.jalr:
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
@@ -821,14 +811,12 @@ namespace exefile
                 }
                     break;
                 case OpcodeFunction.slt:
-                    asm.Add(MicroOpcode.Cmp, rs1, rs2);
-                    asm.Add(MicroOpcode.SSetL, rd);
+                    asm.Add(MicroOpcode.SSetL, rd, rs1, rs2);
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
                 case OpcodeFunction.sltu:
-                    asm.Add(MicroOpcode.Cmp, rs1, rs2);
-                    asm.Add(MicroOpcode.USetL, rd);
+                    asm.Add(MicroOpcode.USetL, rd, rs1, rs2);
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
@@ -942,9 +930,8 @@ namespace exefile
                 case 0: // bltz
                 {
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
-                    asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
                     var tmpReg = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SSetL, tmpReg);
+                    asm.Add(MicroOpcode.SSetL, tmpReg, rs, new ConstValue(0, 32));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
@@ -953,10 +940,8 @@ namespace exefile
                 case 1: // bgez
                 {
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
-                    asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
                     var tmpReg = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SSetL, tmpReg);
-                    asm.Add(MicroOpcode.LogicalNot, tmpReg);
+                    asm.Add(MicroOpcode.SSetLE, tmpReg, new ConstValue(0, 32), rs);
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
@@ -965,9 +950,8 @@ namespace exefile
                 case 16: // bltzal
                 {
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
-                    asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
                     var tmpReg = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SSetL, tmpReg);
+                    asm.Add(MicroOpcode.SSetL, tmpReg, rs, new ConstValue(0, 32));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmpReg, offset);
@@ -976,10 +960,8 @@ namespace exefile
                 case 17: // bgezal
                 {
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
-                    asm.Add(MicroOpcode.Cmp, rs, new ConstValue(0, 32));
                     var tmpReg = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SSetL, tmpReg);
-                    asm.Add(MicroOpcode.LogicalNot, tmpReg);
+                    asm.Add(MicroOpcode.SSetLE, tmpReg, new ConstValue(0, 32), rs);
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmpReg, offset);

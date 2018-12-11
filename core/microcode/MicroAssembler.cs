@@ -11,13 +11,12 @@ namespace core.microcode
         Return,
         Jmp,
         JmpIf,
-        Cmp,
         SSetL,
         SSetLE,
         USetL,
         USetLE,
         SetEq,
-        LogicalNot,
+        SetNEq,
         SHL,
         SRL,
         SRA,
@@ -48,13 +47,25 @@ namespace core.microcode
 
         public ConstValue(ulong value, byte bits)
         {
-            Value = value;
+            ulong mask = (1ul << bits) - 1;
+            Value = value & mask;
             Bits = bits;
         }
 
         public override string ToString()
         {
             return $"0x{Value:X}<<{Bits}>>";
+        }
+
+        public bool Signed => (Value & (1ul << (Bits-1))) != 0;
+
+        public ConstValue SignedResized(byte toBits)
+        {
+            if(toBits <= Bits)
+                return new ConstValue(Value, toBits);
+
+            var ext = Signed ? ulong.MaxValue << (toBits-1) : 0;
+            return new ConstValue(Value | ext, toBits);
         }
     }
 
