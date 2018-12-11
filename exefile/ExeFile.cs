@@ -150,6 +150,7 @@ namespace exefile
             }
 
             logger.Info("Collapsing basic assembly blocks");
+            var oldSize = Instructions.Count;
             var tmp = new SortedDictionary<uint, MicroAssemblyBlock>(Instructions);
             Instructions.Clear();
             MicroAssemblyBlock basicBlock = null;
@@ -183,11 +184,60 @@ namespace exefile
                     basicBlock = null;
                 }
             }
+            logger.Info($"Collapsed {oldSize} blocks into {Instructions.Count} blocks");
 
+            logger.Info("Building function ownerships");
+            foreach (var callee in Callees)
+            {
+                CollectFunctionBlocks(MakeLocal(callee));
+            }
+            
             logger.Info("Peephole optimization");
+            long before = 0, after = 0;
             foreach (var asm in Instructions.Values)
             {
-                asm.Optimize(_debugSource);
+                asm.Optimize(_debugSource, ref before, ref after);
+            }
+
+            logger.Info($"Reduced instruction count from {before} to {after} ({100 * after / before}%)");
+        }
+
+        private void CollectFunctionBlocks(uint functionAddr)
+        {
+            var q = new Queue<uint>();
+            q.Enqueue(functionAddr);
+
+            var blocks = new HashSet<uint>();
+
+            while (q.Count > 0)
+            {
+                var blockAddr = q.Dequeue();
+                if(blocks.Contains(blockAddr))
+                    continue;
+                
+                var block = Instructions.TryGetValue(blockAddr, out var x) ? x : null;
+                if(block == null)
+                    continue;
+                
+                blocks.Add(blockAddr);
+                block.OwningFunctions.Add(functionAddr);
+
+                foreach (var o in block.Outs)
+                {
+                    switch (o.Value)
+                    {
+                        case JumpType.Call:
+                        case JumpType.CallConditional:
+                            break;
+                        case JumpType.Jump:
+                        case JumpType.JumpConditional:
+                        case JumpType.Control:
+                            q.Enqueue(o.Key);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
             }
         }
 
@@ -213,6 +263,11 @@ namespace exefile
         private static RegisterArg MakeC2RegisterOperand(uint data, int offset)
         {
             return new RegisterArg(((C2Register) ((data >> offset) & 0x1f)).ToUInt(), 32);
+        }
+
+        private static RegisterArg MakeC2ControlRegisterOperand(uint data, int offset)
+        {
+            return new RegisterArg(((C2ControlRegister) ((data >> offset) & 0x1f)).ToUInt(), 32);
         }
 
         private static RegisterMemArg MakeRegisterOffsetArg(uint data, int shift, int offset, byte bits)
@@ -403,7 +458,8 @@ namespace exefile
                 {
                     var tmp = GetTmpReg(32);
                     asm.Add(new SignedCastInsn(tmp, new ConstValue((ushort) data, 16)));
-                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21), tmp);
+                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
+                        tmp);
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
@@ -412,7 +468,8 @@ namespace exefile
                 {
                     var tmp = GetTmpReg(32);
                     asm.Add(new SignedCastInsn(tmp, new ConstValue((ushort) data, 16)));
-                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21), tmp);
+                    asm.Add(MicroOpcode.SSetL, MakeZeroRegisterOperand(data, 16), MakeZeroRegisterOperand(data, 21),
+                        tmp);
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
@@ -583,7 +640,8 @@ namespace exefile
                         _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SetEq, tmp, MakeZeroRegisterOperand(data, 21), MakeZeroRegisterOperand(data, 16));
+                    asm.Add(MicroOpcode.SetEq, tmp, MakeZeroRegisterOperand(data, 21),
+                        MakeZeroRegisterOperand(data, 16));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -603,7 +661,8 @@ namespace exefile
                         _debugSource.GetSymbolName(MakeGlobal(localAddress)), 0);
                     asm.Outs.Add(localAddress, JumpType.JumpConditional);
                     var tmp = GetTmpReg(1);
-                    asm.Add(MicroOpcode.SetNEq, tmp, MakeZeroRegisterOperand(data, 21), MakeZeroRegisterOperand(data, 16));
+                    asm.Add(MicroOpcode.SetNEq, tmp, MakeZeroRegisterOperand(data, 21),
+                        MakeZeroRegisterOperand(data, 16));
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.ContinueControl);
                     asm.Add(MicroOpcode.JmpIf, tmp, tgt);
@@ -706,10 +765,12 @@ namespace exefile
                     DecodeInstruction(asm, WordAtLocal(nextInsnAddressLocal), nextInsnAddressLocal + 4,
                         DelaySlotMode.AbortControl);
                     if (rs1 is RegisterArg r && r.Register == Register.ra.ToUInt())
+                    {
                         asm.Add(MicroOpcode.Return, rs1);
+                    }
                     else
                     {
-                        logger.Info($"Possible switch statement at 0x{MakeGlobal(nextInsnAddressLocal-4):x8}");
+                        logger.Info($"Possible switch statement at 0x{MakeGlobal(nextInsnAddressLocal - 4):x8}");
                         asm.Add(MicroOpcode.Jmp, rs1);
                     }
 
@@ -986,27 +1047,23 @@ namespace exefile
             var cf = (opc >> 21) & 0x1F;
             switch (cf)
             {
-                case 0:
-                    asm.Add(new UnsupportedInsn("mfc2", MakeZeroRegisterOperand(opc, 16),
-                        new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
+                case 0: // mfc2
+                    asm.Add(new CopyInsn( MakeRegisterOperand(opc, 16), MakeC2RegisterOperand(opc, 11)));
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
-                case 2:
-                    asm.Add(new UnsupportedInsn("cfc2", MakeZeroRegisterOperand(opc, 16),
-                        new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
+                case 2: // cfc2
+                    asm.Add(new CopyInsn( MakeRegisterOperand(opc, 16), MakeC2ControlRegisterOperand(opc, 11)));
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
-                case 4:
-                    asm.Add(new UnsupportedInsn("mtc2", MakeZeroRegisterOperand(opc, 16),
-                        new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
+                case 4: // mtc2
+                    asm.Add(new CopyInsn( MakeC2RegisterOperand(opc, 11), MakeRegisterOperand(opc, 16)));
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
-                case 6:
-                    asm.Add(new UnsupportedInsn("ctc2", MakeZeroRegisterOperand(opc, 16),
-                        new ConstValue((ushort) opc, 16), MakeC2RegisterOperand(opc, 21)));
+                case 6: // ctc2
+                    asm.Add(new CopyInsn( MakeC2ControlRegisterOperand(opc, 11), MakeRegisterOperand(opc, 16)));
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;
@@ -1039,6 +1096,11 @@ namespace exefile
                     break;
                 case 0x170000C:
                     asm.Add(new UnsupportedInsn("op", new ConstValue(data >> 19 & 1, 1)));
+                    if (delaySlotMode != DelaySlotMode.AbortControl)
+                        asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
+                    break;
+                case 0x1400006:
+                    asm.Add(new UnsupportedInsn("nclip", new ConstValue(data >> 19 & 1, 1)));
                     if (delaySlotMode != DelaySlotMode.AbortControl)
                         asm.Outs.Add(nextInsnAddressLocal, JumpType.Control);
                     break;

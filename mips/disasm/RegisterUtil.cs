@@ -19,6 +19,11 @@ namespace mips.disasm
             return ToUInt(C0Register.Sentinel) + (uint) r;
         }
 
+        public static uint ToUInt(this C2ControlRegister r)
+        {
+            return ToUInt(C2Register.Sentinel) + (uint) r;
+        }
+
         public static Register? RegisterFromInt(int i)
         {
             if (i < 0 || i >= (int) Register.Sentinel)
@@ -47,6 +52,16 @@ namespace mips.disasm
             return (C2Register) i;
         }
 
+        public static C2ControlRegister? C2ControlRegisterFromInt(int i)
+        {
+            i -= (int) Register.Sentinel + (int) C0Register.Sentinel + (int)C2Register.Sentinel;
+
+            if (i < 0 || i >= (int) C2ControlRegister.Sentinel)
+                return null;
+
+            return (C2ControlRegister) i;
+        }
+
         public static string RegisterStringFromInt(int registerId)
         {
             var tmp = RegisterFromInt(registerId);
@@ -60,6 +75,10 @@ namespace mips.disasm
             var tmp3 = C2RegisterFromInt(registerId);
             if (tmp3 != null)
                 return tmp3.Value.ToString();
+
+            var tmp4 = C2ControlRegisterFromInt(registerId);
+            if (tmp4 != null)
+                return tmp4.Value.ToString();
 
             throw new ArgumentOutOfRangeException(nameof(registerId));
         }
