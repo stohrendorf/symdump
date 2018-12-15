@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using core.microcode;
 
-namespace exefile
+namespace core.disasm
 {
     public class TextSection
     {
@@ -11,6 +11,8 @@ namespace exefile
         private readonly byte[] _data;
 
         public readonly IDictionary<uint, ISet<uint>> CalleesBySource = new Dictionary<uint, ISet<uint>>();
+        
+        public readonly IDictionary<uint, FunctionProperties> FunctionProperties = new Dictionary<uint, FunctionProperties>();
 
         public readonly IDictionary<uint, MicroAssemblyBlock> Instructions =
             new SortedDictionary<uint, MicroAssemblyBlock>();
@@ -90,8 +92,8 @@ namespace exefile
                 blocks.Add(blockAddr);
                 block.OwningFunctions.Add(functionAddr);
 
-                foreach (var o in block.Outs)
-                    switch (o.Value)
+                foreach (var (addr, type) in block.Outs)
+                    switch (type)
                     {
                         case JumpType.Call:
                         case JumpType.CallConditional:
@@ -99,7 +101,7 @@ namespace exefile
                         case JumpType.Jump:
                         case JumpType.JumpConditional:
                         case JumpType.Control:
-                            q.Enqueue(o.Key);
+                            q.Enqueue(addr);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();

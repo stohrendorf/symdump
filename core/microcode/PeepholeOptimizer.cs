@@ -283,7 +283,22 @@ namespace core.microcode
 
             if (insn.Opcode == MicroOpcode.Call || insn.Opcode == MicroOpcode.Syscall)
             {
-                registerValues.Clear();
+                if (insn.Args[0] is FunctionRefArg fn)
+                {
+                    foreach (var fnReg in fn.FunctionProperties.OutRegs)
+                    {
+                        registerValues.Remove(fnReg);
+                    }
+                    foreach (var fnReg in fn.FunctionProperties.SpoiledRegs)
+                    {
+                        registerValues.Remove(fnReg);
+                    }
+                }
+                else
+                {
+                    registerValues.Clear();
+                }
+
                 return substituted;
             }
 
@@ -296,14 +311,21 @@ namespace core.microcode
                 return substituted;
             }
 
-            if (insn.Opcode == MicroOpcode.Copy)
-                registerValues[r.Register] = c;
-            else if (insn.Opcode == MicroOpcode.UResize)
-                registerValues[r.Register] = new ConstValue(c.Value, ((UnsignedCastInsn) insn).ToBits);
-            else if (insn.Opcode == MicroOpcode.SResize)
-                registerValues[r.Register] = c.SignedResized(((SignedCastInsn) insn).ToBits);
-            else
-                registerValues.Remove(r.Register);
+            switch (insn.Opcode)
+            {
+                case MicroOpcode.Copy:
+                    registerValues[r.Register] = c;
+                    break;
+                case MicroOpcode.UResize:
+                    registerValues[r.Register] = new ConstValue(c.Value, ((UnsignedCastInsn) insn).ToBits);
+                    break;
+                case MicroOpcode.SResize:
+                    registerValues[r.Register] = c.SignedResized(((SignedCastInsn) insn).ToBits);
+                    break;
+                default:
+                    registerValues.Remove(r.Register);
+                    break;
+            }
 
             return substituted;
         }

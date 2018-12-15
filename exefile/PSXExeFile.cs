@@ -3,16 +3,17 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using core;
+using core.disasm;
 using core.microcode;
 using core.util;
-using exefile.processor;
+using mips.processor;
 
 namespace exefile
 {
     public class PSXExeFile
     {
         private readonly uint _entrypoint;
-        private readonly R3000 _r3000;
+        private readonly IDisassembler _r3000;
 
         public PSXExeFile(EndianBinaryReader reader, IDebugSource debugSource)
         {

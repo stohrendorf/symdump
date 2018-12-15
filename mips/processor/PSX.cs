@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using core;
+using core.disasm;
 using core.microcode;
 using JetBrains.Annotations;
 using mips.disasm;
 using NLog;
 
-namespace exefile.processor
+namespace mips.processor
 {
     public class PSX
     {
@@ -57,11 +58,11 @@ namespace exefile.processor
             {0x27, new SyscallInfo("bcopy", 3)},
             {0x28, new SyscallInfo("bzero", 2)},
             {0x29, new SyscallInfo(true, "bcmp", 3)},
-            {0x2a, new SyscallInfo("memcpy", 3)},
-            {0x2b, new SyscallInfo("memset", 3)},
-            {0x2c, new SyscallInfo("memmove", 3)},
+            {0x2a, new SyscallInfo(true, "memcpy", 3)},
+            {0x2b, new SyscallInfo(true, "memset", 3)},
+            {0x2c, new SyscallInfo(true, "memmove", 3)},
             {0x2d, new SyscallInfo(true, "memcmp", 3)},
-            {0x2e, new SyscallInfo("memchr", 3)},
+            {0x2e, new SyscallInfo(true, "memchr", 3)},
             {0x2f, new SyscallInfo(true, "rand")},
             {0x30, new SyscallInfo("srand", 1)},
             {0x31, new SyscallInfo("qsort", 4)},
@@ -80,23 +81,24 @@ namespace exefile.processor
             {0x3e, new SyscallInfo("puts", 1)},
             {0x3f, new SyscallInfo("printf", 1)},
             // TODO syscall A0 0x40
-            {0x41, new SyscallInfo("LoadTest", 2)},
-            {0x42, new SyscallInfo("Load", 2)},
+            {0x41, new SyscallInfo(true, "Format", 1)},
+            {0x42, new SyscallInfo(true, "Load", 2)},
             {0x43, new SyscallInfo("Exec", 3)},
             {0x44, new SyscallInfo("FlushCache")},
             {0x45, new SyscallInfo("InstallInterruptHandler")},
-            {0x46, new SyscallInfo("GPU_dw")},
-            // TODO syscall A0 0x47
-            {0x48, new SyscallInfo(true, "SetGPUStatus")},
-            {0x49, new SyscallInfo("GPU_cw")}, // TODO ... or GPU_sync?
-            {0x4a, new SyscallInfo("GPU_cwb")},
+            {0x46, new SyscallInfo("GPU_dw", 4)},
+            {0x47, new SyscallInfo("mem2vram", 5)},
+            {0x48, new SyscallInfo("SendGPU", 1)},
+            {0x49, new SyscallInfo("GPU_cw", 1)},
+            {0x4a, new SyscallInfo("GPU_cwb", 1)},
+            {0x4b, new SyscallInfo("GPU_SendPackets")},
             // TODO syscall A0 0x4b
             // TODO syscall A0 0x4c
             {0x4d, new SyscallInfo(true, "GetGPUStatus")},
             // TODO syscall A0 0x4e
             // TODO syscall A0 0x4f
             // TODO syscall A0 0x50
-            {0x51, new SyscallInfo("LoadExec", 2)},
+            {0x51, new SyscallInfo("LoadExec", 3)},
             {0x52, new SyscallInfo("GetSysSP")},
             // TODO syscall A0 0x53
             {0x54, new SyscallInfo("_96_init")},
@@ -141,7 +143,7 @@ namespace exefile.processor
             {0x99, new SyscallInfo("EnableKernelIORedirection")},
             {0x9c, new SyscallInfo("GetConf", 3)},
             {0x9d, new SyscallInfo("GetConf", 3)}, // TODO duplicated signature with A0 0x9c
-            {0x9f, new SyscallInfo("SetMem")},
+            {0x9f, new SyscallInfo("SetMem", 2)},
             {0xa0, new SyscallInfo("_boot")},
             {0xa1, new SyscallInfo("SystemError")},
             {0xa2, new SyscallInfo("EnqueueCdIntr")},
@@ -152,8 +154,8 @@ namespace exefile.processor
             {0xa8, new SyscallInfo("bufs_cb_1")},
             {0xa9, new SyscallInfo("bufs_cb_2")},
             {0xaa, new SyscallInfo("bufs_cb_3")},
-            {0xab, new SyscallInfo("_card_info")},
-            {0xac, new SyscallInfo("_card_load")},
+            {0xab, new SyscallInfo(true, "_card_info", 1)},
+            {0xac, new SyscallInfo(true, "_card_load", 1)},
             {0xad, new SyscallInfo("_card_auto")},
             {0xae, new SyscallInfo("bufs_cb_4")},
             {0xb2, new SyscallInfo("do_a_long_jmp")}
@@ -162,24 +164,29 @@ namespace exefile.processor
         private static readonly IReadOnlyDictionary<byte, SyscallInfo> syscallsB0 = new Dictionary<byte, SyscallInfo>
         {
             {0x00, new SyscallInfo("SysMalloc", 1)},
+            {0x02, new SyscallInfo("SetRCnt", 3)},
+            {0x03, new SyscallInfo(true, "GetRCnt", 1)},
+            {0x04, new SyscallInfo(true, "StartRCnt", 1)},
+            {0x05, new SyscallInfo("StopRCnt", 1)},
+            {0x06, new SyscallInfo("ResetRCnt", 1)},
             {0x07, new SyscallInfo("DeliverEvent", 2)},
-            {0x08, new SyscallInfo("OpenEvent", 4)},
-            {0x09, new SyscallInfo("CloseEvent", 1)},
-            {0x0a, new SyscallInfo("WaitEvent", 1)},
-            {0x0b, new SyscallInfo("TestEvent", 1)},
-            {0x0c, new SyscallInfo("EnableEvent", 1)},
-            {0x0d, new SyscallInfo("DisableEvent", 1)},
-            {0x0e, new SyscallInfo("OpenTh")},
-            {0x0f, new SyscallInfo("CloseTh")},
-            {0x10, new SyscallInfo("ChangeTh")},
-            {0x12, new SyscallInfo("InitPad")},
+            {0x08, new SyscallInfo(true, "OpenEvent", 4)},
+            {0x09, new SyscallInfo(true, "CloseEvent", 1)},
+            {0x0a, new SyscallInfo(true, "WaitEvent", 1)},
+            {0x0b, new SyscallInfo(true, "TestEvent", 1)},
+            {0x0c, new SyscallInfo(true, "EnableEvent", 1)},
+            {0x0d, new SyscallInfo(true, "DisableEvent", 1)},
+            {0x0e, new SyscallInfo(true, "OpenTh", 3)},
+            {0x0f, new SyscallInfo(true, "CloseTh", 1)},
+            {0x10, new SyscallInfo(true, "ChangeTh", 1)},
+            {0x12, new SyscallInfo("InitPad", 4)},
             {0x13, new SyscallInfo("StartPad")},
             {0x14, new SyscallInfo("StopPAD")},
             {0x15, new SyscallInfo("PAD_Init")},
-            {0x16, new SyscallInfo(true, "PAD_dr")},
+            {0x16, new SyscallInfo(true, "PAD_dr", 2)},
             {0x17, new SyscallInfo("ReturnFromException")},
             {0x18, new SyscallInfo("ResetEntryInt")},
-            {0x19, new SyscallInfo("HookEntryInt")},
+            {0x19, new SyscallInfo("HookEntryInt", 1)},
             {0x20, new SyscallInfo("UnDeliverEvent", 2)},
             {0x32, new SyscallInfo(true, "open", 2)},
             {0x33, new SyscallInfo(true, "lseek", 3)},
@@ -196,10 +203,10 @@ namespace exefile.processor
             {0x3f, new SyscallInfo("puts", 1)},
             {0x40, new SyscallInfo("cd")},
             {0x41, new SyscallInfo("format")},
-            {0x42, new SyscallInfo("firstfile")},
-            {0x43, new SyscallInfo("nextfile")},
-            {0x44, new SyscallInfo("rename")},
-            {0x45, new SyscallInfo("delete")},
+            {0x42, new SyscallInfo(true, "firstfile", 2)},
+            {0x43, new SyscallInfo(true, "nextfile", 1)},
+            {0x44, new SyscallInfo(true, "rename", 2)},
+            {0x45, new SyscallInfo(true, "delete", 1)},
             {0x46, new SyscallInfo("undelete")},
             {0x47, new SyscallInfo("AddDevice")},
             {0x48, new SyscallInfo("RemoveDevice")},
@@ -207,17 +214,17 @@ namespace exefile.processor
             {0x4a, new SyscallInfo("InitCARD")},
             {0x4b, new SyscallInfo("StartCARD")},
             {0x4c, new SyscallInfo("StopCARD")},
-            {0x4e, new SyscallInfo("_card_write")},
-            {0x4f, new SyscallInfo("_card_read")},
+            {0x4e, new SyscallInfo(true, "_card_write", 2)},
+            {0x4f, new SyscallInfo(true, "_card_read", 2)},
             {0x50, new SyscallInfo("_new_card")},
-            {0x51, new SyscallInfo("Krom2RawAdd")},
+            {0x51, new SyscallInfo(true, "Krom2RawAdd", 1)},
             {0x54, new SyscallInfo(true, "_get_errno")},
             {0x55, new SyscallInfo(true, "_get_error", 1)},
-            {0x56, new SyscallInfo("GetC0Table")},
-            {0x57, new SyscallInfo("GetB0Table")},
-            {0x58, new SyscallInfo("_card_chan")},
+            {0x56, new SyscallInfo(true, "GetC0Table")},
+            {0x57, new SyscallInfo(true, "GetB0Table")},
+            {0x58, new SyscallInfo(true, "_card_chan")},
             {0x5b, new SyscallInfo("ChangeClearPad", 1)},
-            {0x5c, new SyscallInfo("_card_status")},
+            {0x5c, new SyscallInfo(true, "_card_status")},
             {0x5d, new SyscallInfo("_card_wait")}
         };
 
@@ -225,15 +232,15 @@ namespace exefile.processor
         {
             {0x00, new SyscallInfo("InitRCnt")},
             {0x01, new SyscallInfo("InitException")},
-            {0x02, new SyscallInfo("SysEnqIntRP", 2)},
-            {0x03, new SyscallInfo("SysDeqIntRP", 2)},
+            {0x02, new SyscallInfo(true, "SysEnqIntRP", 2)},
+            {0x03, new SyscallInfo(true, "SysDeqIntRP", 2)},
             {0x04, new SyscallInfo("get_free_EvCB_slot")},
             {0x05, new SyscallInfo("get_free_TCB_slot")},
             {0x06, new SyscallInfo("ExceptionHandler")},
             {0x07, new SyscallInfo("InstallExceptionHandler")},
             {0x08, new SyscallInfo("SysInitMemory")},
             {0x09, new SyscallInfo("SysInitKMem")},
-            {0x0a, new SyscallInfo("ChangeClearRCnt")},
+            {0x0a, new SyscallInfo(true, "ChangeClearRCnt", 2)},
             {0x0b, new SyscallInfo("SystemError")},
             {0x0c, new SyscallInfo("InitDefInt")},
             {0x12, new SyscallInfo("InstallDevices")},
@@ -431,34 +438,25 @@ namespace exefile.processor
             _registerArgs = registerArgs;
         }
 
+        public FunctionProperties ToProperties()
+        {
+            var fn = new FunctionProperties(_name);
+            if (_hasReturn)
+                fn.OutRegs.Add(Register.v0.ToUInt());
+            if (_registerArgs >= 1)
+                fn.InRegs.Add(Register.a0.ToUInt());
+            if (_registerArgs >= 2)
+                fn.InRegs.Add(Register.a1.ToUInt());
+            if (_registerArgs >= 3)
+                fn.InRegs.Add(Register.a2.ToUInt());
+            if (_registerArgs >= 4)
+                fn.InRegs.Add(Register.a3.ToUInt());
+            return fn;
+        }
+
         public MicroInsn ToInsn()
         {
-#if false
-                var args = new List<IMicroArg>
-                {
-                    HasReturn
-                        ? new RegisterArg(Register.v0.ToUInt(), 32)
-                        : new RegisterArg(Register.zero.ToUInt(), 0) // FIXME
-                    ,
-                    new AddressValue(0, $"syscall!{Name}")
-                };
-#else
-            var args = new List<IMicroArg>
-            {
-                new AddressValue(0, $"syscall!{_name}")
-            };
-#endif
-
-            if (_registerArgs >= 1)
-                args.Add(new RegisterArg(Register.a0.ToUInt(), 32));
-            if (_registerArgs >= 2)
-                args.Add(new RegisterArg(Register.a1.ToUInt(), 32));
-            if (_registerArgs >= 3)
-                args.Add(new RegisterArg(Register.a2.ToUInt(), 32));
-            if (_registerArgs >= 4)
-                args.Add(new RegisterArg(Register.a3.ToUInt(), 32));
-
-            return new MicroInsn(MicroOpcode.Syscall, args.ToArray());
+            return new MicroInsn(MicroOpcode.Call, new FunctionRefArg(ToProperties()));
         }
     }
 
@@ -488,32 +486,23 @@ namespace exefile.processor
             _registerArgs = registerArgs;
         }
 
+        public FunctionProperties ToProperties()
+        {
+            var fn = new FunctionProperties(_name);
+            if (_hasReturn)
+                fn.OutRegs.Add(Register.v0.ToUInt());
+            if (_registerArgs >= 1)
+                fn.InRegs.Add(Register.a1.ToUInt());
+            if (_registerArgs >= 2)
+                fn.InRegs.Add(Register.a2.ToUInt());
+            if (_registerArgs >= 3)
+                fn.InRegs.Add(Register.a3.ToUInt());
+            return fn;
+        }
+
         public MicroInsn ToInsn()
         {
-#if false
-                var args = new List<IMicroArg>
-                {
-                    HasReturn
-                        ? new RegisterArg(Register.v0.ToUInt(), 32)
-                        : new RegisterArg(Register.zero.ToUInt(), 0) // FIXME
-                    ,
-                    new AddressValue(0, $"syscall!{Name}")
-                };
-#else
-            var args = new List<IMicroArg>
-            {
-                new AddressValue(0, $"syscall!{_name}")
-            };
-#endif
-
-            if (_registerArgs >= 1)
-                args.Add(new RegisterArg(Register.a1.ToUInt(), 32));
-            if (_registerArgs >= 2)
-                args.Add(new RegisterArg(Register.a2.ToUInt(), 32));
-            if (_registerArgs >= 3)
-                args.Add(new RegisterArg(Register.a3.ToUInt(), 32));
-
-            return new MicroInsn(MicroOpcode.Syscall, args.ToArray());
+            return new MicroInsn(MicroOpcode.Call, new FunctionRefArg(ToProperties()));
         }
     }
 }

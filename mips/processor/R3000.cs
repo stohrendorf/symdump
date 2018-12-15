@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using core;
+using core.disasm;
 using core.microcode;
 using JetBrains.Annotations;
 using mips.disasm;
 using NLog;
 
-namespace exefile.processor
+namespace mips.processor
 {
-    public class R3000
+    public class R3000 : IDisassembler
     {
         internal const uint SyscallTypeBreak = 0;
         internal const uint SyscallTypeSyscall = 1;
@@ -29,6 +30,77 @@ namespace exefile.processor
             _gpBase = gpBase;
             _debugSource = debugSource;
             _psx = new PSX(this);
+        }
+
+        public void Disassemble(uint entrypoint)
+        {
+            _tmpRegId = 1000;
+
+            logger.Info("Disassembly started");
+
+            var analysisQueue = new Queue<uint>();
+            analysisQueue.Enqueue(_textSection.MakeLocal(entrypoint));
+
+            foreach (var addr in _debugSource.Functions.Select(f => _textSection.MakeLocal(f.GlobalAddress)))
+                analysisQueue.Enqueue(addr);
+
+            while (analysisQueue.Count != 0)
+                DisassembleInsn(analysisQueue.Dequeue(), analysisQueue);
+
+            logger.Info("Reversing control flow");
+            foreach (var asm in _textSection.Instructions)
+            foreach (var @out in asm.Value.Outs)
+            {
+                var addr = @out.Key;
+                if (!_textSection.Instructions.TryGetValue(addr, out var target))
+                {
+                    logger.Warn($"Target address 0x{addr:x8} not in local address space");
+                    continue;
+                }
+
+                target.Ins.Add(asm.Key, @out.Value);
+            }
+
+            logger.Info("Collapsing basic assembly blocks");
+            var oldSize = _textSection.Instructions.Count;
+            var tmp = new SortedDictionary<uint, MicroAssemblyBlock>(_textSection.Instructions);
+            _textSection.Instructions.Clear();
+            MicroAssemblyBlock basicBlock = null;
+            foreach (var addrAsm in tmp)
+            {
+                if (basicBlock == null)
+                {
+                    basicBlock = addrAsm.Value;
+                    Debug.Assert(basicBlock.Address == addrAsm.Key);
+                    _textSection.Instructions.Add(basicBlock.Address, basicBlock);
+                    continue;
+                }
+
+                if (addrAsm.Value.Ins.Values.Any(x => x != JumpType.Control))
+                {
+                    // start a new basic block if we have an incoming edge that is no pure control flow
+                    basicBlock = addrAsm.Value;
+                    Debug.Assert(basicBlock.Address == addrAsm.Key);
+                    _textSection.Instructions.Add(basicBlock.Address, basicBlock);
+                    continue;
+                }
+
+                // replace the current's outgoing edges, and append the assembly
+                basicBlock.Outs = addrAsm.Value.Outs;
+                foreach (var insn in addrAsm.Value.Insns)
+                    basicBlock.Insns.Add(insn);
+
+                if (basicBlock.Outs.Count == 0 || basicBlock.Outs.Values.Any(x => x != JumpType.Control))
+                    basicBlock = null;
+            }
+
+            logger.Info($"Collapsed {oldSize} blocks into {_textSection.Instructions.Count} blocks");
+
+            logger.Info("Building function ownerships");
+            foreach (var callee in _textSection.CalleesBySource.Values.SelectMany(x => x).ToHashSet())
+                _textSection.CollectFunctionBlocks(_textSection.MakeLocal(callee));
+
+            _psx.PeepholeOptimize(_textSection, _debugSource);
         }
 
         private static void DecodeTlb(MicroAssemblyBlock asm, uint nextInsnAddressLocal, uint data,
@@ -1216,7 +1288,7 @@ namespace exefile.processor
             }
         }
 
-        private void DisassembleInsn(uint localAddress, Queue<uint> analysisQueue)
+        private void DisassembleInsn(uint localAddress, [NotNull] Queue<uint> analysisQueue)
         {
             if (localAddress >= _textSection.Size)
                 return;
@@ -1228,84 +1300,14 @@ namespace exefile.processor
                 DecodeInstruction(asm, _textSection.WordAtLocal(localAddress), localAddress + 4, DelaySlotMode.None);
             }
 
-            foreach (var addr in asm.Outs)
+            foreach (var addr in asm.Outs.Keys)
             {
-                if (addr.Key >= _textSection.Size)
+                if (addr >= _textSection.Size)
                     continue;
 
-                if (!_textSection.Instructions.ContainsKey(addr.Key))
-                    analysisQueue.Enqueue(addr.Key);
+                if (!_textSection.Instructions.ContainsKey(addr))
+                    analysisQueue.Enqueue(addr);
             }
-        }
-
-        public void Disassemble(uint entrypoint)
-        {
-            _tmpRegId = 1000;
-
-            logger.Info("Disassembly started");
-
-            var analysisQueue = new Queue<uint>();
-            analysisQueue.Enqueue(_textSection.MakeLocal(entrypoint));
-
-            foreach (var addr in _debugSource.Functions.Select(f => _textSection.MakeLocal(f.GlobalAddress)))
-                analysisQueue.Enqueue(addr);
-
-            while (analysisQueue.Count != 0) DisassembleInsn(analysisQueue.Dequeue(), analysisQueue);
-
-            logger.Info("Reversing control flow");
-            foreach (var asm in _textSection.Instructions)
-            foreach (var @out in asm.Value.Outs)
-            {
-                var addr = @out.Key;
-                if (!_textSection.Instructions.TryGetValue(addr, out var target))
-                {
-                    logger.Warn($"Target address 0x{addr:x8} not in local address space");
-                    continue;
-                }
-
-                target.Ins.Add(asm.Key, @out.Value);
-            }
-
-            logger.Info("Collapsing basic assembly blocks");
-            var oldSize = _textSection.Instructions.Count;
-            var tmp = new SortedDictionary<uint, MicroAssemblyBlock>(_textSection.Instructions);
-            _textSection.Instructions.Clear();
-            MicroAssemblyBlock basicBlock = null;
-            foreach (var addrAsm in tmp)
-            {
-                if (basicBlock == null)
-                {
-                    basicBlock = addrAsm.Value;
-                    Debug.Assert(basicBlock.Address == addrAsm.Key);
-                    _textSection.Instructions.Add(basicBlock.Address, basicBlock);
-                    continue;
-                }
-
-                if (addrAsm.Value.Ins.Values.Any(x => x != JumpType.Control))
-                {
-                    // start a new basic block if we have an incoming edge that is no pure control flow
-                    basicBlock = addrAsm.Value;
-                    Debug.Assert(basicBlock.Address == addrAsm.Key);
-                    _textSection.Instructions.Add(basicBlock.Address, basicBlock);
-                    continue;
-                }
-
-                // replace the current's outgoing edges, and append the assembly
-                basicBlock.Outs = addrAsm.Value.Outs;
-                foreach (var insn in addrAsm.Value.Insns)
-                    basicBlock.Insns.Add(insn);
-
-                if (basicBlock.Outs.Count == 0 || basicBlock.Outs.Values.Any(x => x != JumpType.Control))
-                    basicBlock = null;
-            }
-
-            logger.Info($"Collapsed {oldSize} blocks into {_textSection.Instructions.Count} blocks");
-
-            logger.Info("Building function ownerships");
-            foreach (var callee in _textSection.CalleesBySource.Values.SelectMany(x => x).ToHashSet())
-                _textSection.CollectFunctionBlocks(_textSection.MakeLocal(callee));
-
-            _psx.PeepholeOptimize(_textSection, _debugSource);
         }
 
         internal RegisterArg GetTmpReg(byte bits)

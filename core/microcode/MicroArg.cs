@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using core.disasm;
 
 namespace core.microcode
 {
@@ -116,6 +117,22 @@ namespace core.microcode
 
             var ext = Signed ? ulong.MaxValue << (toBits - 1) : 0;
             return new ConstValue(Value | ext, toBits);
+        }
+    }
+
+    public sealed class FunctionRefArg : IMicroArg
+    {
+        public readonly FunctionProperties FunctionProperties;
+        public byte Bits => 32;
+
+        public FunctionRefArg(FunctionProperties functionProperties)
+        {
+            FunctionProperties = functionProperties;
+        }
+
+        public override string ToString()
+        {
+            return FunctionProperties.ToString();
         }
     }
 }
