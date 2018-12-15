@@ -17,14 +17,14 @@ namespace core.cfg
 
         public abstract IEdge CloneTyped(INode from, INode to);
 
-        public override string ToString()
-        {
-            return $"-- {From.Id} -- {GetType().Name} -- {To.Id} -->";
-        }
-
         public bool Equals(Edge other)
         {
             return ReferenceEquals(From, other.From) && ReferenceEquals(To, other.To);
+        }
+
+        public override string ToString()
+        {
+            return $"-- {From.Id} -- {GetType().Name} -- {To.Id} -->";
         }
 
         public override bool Equals(object obj)

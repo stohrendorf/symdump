@@ -31,7 +31,7 @@ namespace core.microcode
         }
 
         public void Optimize(IDebugSource debugSource, ref long before, ref long after,
-            IEnumerable<Peephole1Delegate> customPeephole1, IEnumerable<Peephole2Delegate> customPeephole2)
+            ICollection<Peephole1Delegate> customPeephole1, ICollection<Peephole2Delegate> customPeephole2)
         {
             before += Insns.Count;
             PeepholeOptimizer.Optimize(Insns, debugSource, customPeephole1, customPeephole2);

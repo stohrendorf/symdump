@@ -309,9 +309,10 @@ namespace core.microcode
         }
 
         public static void Optimize(List<MicroInsn> insns, IDebugSource debugSource,
-            IEnumerable<Peephole1Delegate> customPeephole1, IEnumerable<Peephole2Delegate> customPeephole2)
+            ICollection<Peephole1Delegate> customPeephole1, ICollection<Peephole2Delegate> customPeephole2)
         {
-            while (OptimizePass(insns, debugSource, customPeephole1, customPeephole2)) DeadWriteRemoval(insns);
+            while (OptimizePass(insns, debugSource, customPeephole1, customPeephole2))
+                DeadWriteRemoval(insns);
         }
 
         private static void PropagateConstants(List<MicroInsn> insns, IDebugSource debugSource)
@@ -321,7 +322,8 @@ namespace core.microcode
 
             IDictionary<uint, ConstValue> registerValues = new Dictionary<uint, ConstValue>();
 
-            foreach (var insn in tmp) PropagateConstants(debugSource, insn, registerValues);
+            foreach (var insn in tmp)
+                PropagateConstants(debugSource, insn, registerValues);
 
             DeadWriteRemoval(insns);
         }

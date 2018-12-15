@@ -36,7 +36,7 @@ namespace symdump
 
             using (var fs = new EndianBinaryReader(new FileStream(exeFilename, FileMode.Open)))
             {
-                var exeFile = new ExeFile(fs, symFile);
+                var exeFile = new PSXExeFile(fs, symFile);
                 exeFile.Disassemble();
                 //exeFile.Decompile(symFile.Functions.Skip(200).First().Address);
             }

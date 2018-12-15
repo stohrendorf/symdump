@@ -7,10 +7,6 @@ namespace core.cfg
 {
     public class InstructionCollection : Node
     {
-        public override string Id => $"insncoll_{InstructionList.First().Key:x8}";
-
-        [NotNull] public IList<KeyValuePair<uint, MicroInsn>> InstructionList { get; }
-
         public InstructionCollection([NotNull] IGraph graph)
             : base(graph)
         {
@@ -22,6 +18,10 @@ namespace core.cfg
         {
             InstructionList = new List<KeyValuePair<uint, MicroInsn>>(sequence.InstructionList);
         }
+
+        public override string Id => $"insncoll_{InstructionList.First().Key:x8}";
+
+        [NotNull] public IList<KeyValuePair<uint, MicroInsn>> InstructionList { get; }
 
         public override IEnumerable<MicroInsn> Instructions => InstructionList.Select(i => i.Value);
 

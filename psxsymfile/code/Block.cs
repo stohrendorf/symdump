@@ -12,35 +12,6 @@ namespace symfile.code
 {
     public class Block
     {
-        public class VarInfo
-        {
-            public readonly string Name;
-            public readonly TypeDecoration TypeDecoration;
-            public readonly FileEntry FileEntry;
-
-            public VarInfo(string name, TypeDecoration typeDecoration, FileEntry fileEntry)
-            {
-                Name = name;
-                TypeDecoration = typeDecoration;
-                FileEntry = fileEntry;
-            }
-
-            public override string ToString()
-            {
-                switch (TypeDecoration.ClassType)
-                {
-                    case ClassType.AutoVar:
-                        return $"{TypeDecoration.AsDeclaration(Name)}; /* sp {FileEntry.Value} */";
-                    case ClassType.Register:
-                        return $"{TypeDecoration.AsDeclaration(Name)}; /* ${(Register) FileEntry.Value} */";
-                    case ClassType.Static:
-                        return $"static {TypeDecoration.AsDeclaration(Name)}; // offset 0x{FileEntry.Value:x}";
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
-
         public readonly uint EndLine;
         public readonly uint EndOffset;
 
@@ -77,7 +48,8 @@ namespace symfile.code
                 switch (typedValue.Type & 0x7f)
                 {
                     case 16:
-                        SubBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), Function, debugSource));
+                        SubBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), Function,
+                            debugSource));
                         break;
                     case 18:
                         EndOffset = (uint) typedValue.Value;
@@ -104,6 +76,7 @@ namespace symfile.code
                             default:
                                 throw new Exception($"Unexpected class type {ti.ClassType}");
                         }
+
                         break;
                     }
                     case 22:
@@ -127,6 +100,7 @@ namespace symfile.code
                             default:
                                 throw new Exception($"Unexpected class type {ti.ClassType}");
                         }
+
                         break;
                     }
                 }
@@ -146,6 +120,35 @@ namespace symfile.code
             SubBlocks.ForEach(b => b.Dump(writer));
             --writer.Indent;
             writer.WriteLine($"}} // line {EndLine}, offset 0x{EndOffset:x}");
+        }
+
+        public class VarInfo
+        {
+            public readonly FileEntry FileEntry;
+            public readonly string Name;
+            public readonly TypeDecoration TypeDecoration;
+
+            public VarInfo(string name, TypeDecoration typeDecoration, FileEntry fileEntry)
+            {
+                Name = name;
+                TypeDecoration = typeDecoration;
+                FileEntry = fileEntry;
+            }
+
+            public override string ToString()
+            {
+                switch (TypeDecoration.ClassType)
+                {
+                    case ClassType.AutoVar:
+                        return $"{TypeDecoration.AsDeclaration(Name)}; /* sp {FileEntry.Value} */";
+                    case ClassType.Register:
+                        return $"{TypeDecoration.AsDeclaration(Name)}; /* ${(Register) FileEntry.Value} */";
+                    case ClassType.Static:
+                        return $"static {TypeDecoration.AsDeclaration(Name)}; // offset 0x{FileEntry.Value:x}";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
     }
 }

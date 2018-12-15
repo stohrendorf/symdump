@@ -26,6 +26,7 @@ namespace core.util
                 for (var i = 0; i < Indent; ++i)
                     _inner.Write("  ");
             }
+
             _inner.Write(ch);
             if (ch == '\n')
                 _indent = true;

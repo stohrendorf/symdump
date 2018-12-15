@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using core.microcode;
-using core.util;
 using JetBrains.Annotations;
 
 namespace core.cfg
@@ -11,8 +10,6 @@ namespace core.cfg
     public class NotNode : Node
     {
         [NotNull] private readonly INode _inner;
-
-        public override string Id => "not_" + _inner.Id;
 
         public NotNode([NotNull] INode inner) : base(inner.Graph)
         {
@@ -22,7 +19,7 @@ namespace core.cfg
 
             _inner = inner;
             Graph.ReplaceNode(inner, this);
-            
+
             var edges = Outs.ToList();
             foreach (var e in edges)
             {
@@ -41,9 +38,13 @@ namespace core.cfg
             }
         }
 
-        public override bool ContainsAddress(uint address)
-            => _inner.ContainsAddress(address);
+        public override string Id => "not_" + _inner.Id;
 
         public override IEnumerable<MicroInsn> Instructions => _inner.Instructions;
+
+        public override bool ContainsAddress(uint address)
+        {
+            return _inner.ContainsAddress(address);
+        }
     }
 }

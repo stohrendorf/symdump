@@ -6,25 +6,19 @@ using System.Text.RegularExpressions;
 using core;
 using symfile.memory;
 using symfile.util;
+using Array = symfile.memory.Array;
 
 namespace symfile.type
 {
     public class TypeDecoration : IEquatable<TypeDecoration>
     {
+        private readonly DerivedType[] _derivedTypes = new DerivedType[6];
+
+        public readonly BaseType BaseType;
         public readonly ClassType ClassType;
         public readonly uint[] Dimensions;
         public readonly uint Size;
         public readonly string Tag;
-
-        public readonly BaseType BaseType;
-
-        public IMemoryLayout MemoryLayout { get; }
-
-        private readonly DerivedType[] _derivedTypes = new DerivedType[6];
-
-        public bool IsFake => Tag != null && new Regex(@"^\.\d+fake$").IsMatch(Tag);
-
-        public bool IsFunctionReturnType { get; }
 
         public TypeDecoration(BinaryReader reader, bool extended, IDebugSource debugSource)
         {
@@ -130,11 +124,10 @@ namespace symfile.type
             var dimIdx = 0;
 
             foreach (var derivedType in _derivedTypes.Where(dt => dt != DerivedType.None))
-            {
                 switch (derivedType)
                 {
                     case DerivedType.Array:
-                        MemoryLayout = new memory.Array(Dimensions[dimIdx], MemoryLayout);
+                        MemoryLayout = new Array(Dimensions[dimIdx], MemoryLayout);
                         ++dimIdx;
                         break;
                     case DerivedType.FunctionReturnType:
@@ -147,7 +140,29 @@ namespace symfile.type
                     default:
                         throw new ArgumentOutOfRangeException(nameof(derivedType));
                 }
-            }
+        }
+
+        public IMemoryLayout MemoryLayout { get; }
+
+        public bool IsFake => Tag != null && new Regex(@"^\.\d+fake$").IsMatch(Tag);
+
+        public bool IsFunctionReturnType { get; }
+
+        public bool Equals(TypeDecoration other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            if (IsFake != other.IsFake)
+                return false;
+
+            if (!IsFake && !string.Equals(Tag, other.Tag))
+                return false;
+
+            return ClassType == other.ClassType && Dimensions.SequenceEqual(other.Dimensions) && Size == other.Size &&
+                   BaseType == other.BaseType &&
+                   _derivedTypes.SequenceEqual(other._derivedTypes) && Equals(MemoryLayout, other.MemoryLayout) &&
+                   IsFunctionReturnType == other.IsFunctionReturnType;
         }
 
         public override string ToString()
@@ -158,12 +173,7 @@ namespace symfile.type
 
         public string AsDeclaration(string name, string argList = null)
         {
-            if (MemoryLayout == null)
-            {
-                // FIXME can happen if a struct uses itself, e.g.:
-                // struct Foo { struct Foo* next }
-                return name;
-            }
+            if (MemoryLayout == null) return name;
 
             return MemoryLayout.FundamentalType + " " +
                    MemoryLayout.AsIncompleteDeclaration(string.IsNullOrEmpty(name) ? "__NAME__" : name, argList);
@@ -191,23 +201,6 @@ namespace symfile.type
                 hashCode = (hashCode * 397) ^ IsFunctionReturnType.GetHashCode();
                 return hashCode;
             }
-        }
-
-        public bool Equals(TypeDecoration other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            if (IsFake != other.IsFake)
-                return false;
-
-            if (!IsFake && !string.Equals(Tag, other.Tag))
-                return false;
-            
-            return ClassType == other.ClassType && Dimensions.SequenceEqual(other.Dimensions) && Size == other.Size &&
-                   BaseType == other.BaseType &&
-                   _derivedTypes.SequenceEqual(other._derivedTypes) && Equals(MemoryLayout, other.MemoryLayout) &&
-                   IsFunctionReturnType == other.IsFunctionReturnType;
         }
     }
 }

@@ -8,19 +8,16 @@ namespace core.cfg
 {
     public class DoWhileNode : Node
     {
+        [NotNull] private readonly INode _body;
         [NotNull] private readonly INode _condition;
 
-        [NotNull] private readonly INode _body;
-
         private readonly bool _invertedCondition;
-
-        public override string Id => "dowhile_" + _body.Id;
 
         public DoWhileNode([NotNull] INode body)
             : base(body.Graph)
         {
             Debug.Assert(IsCandidate(body));
-            
+
             Debug.Assert(body.Outs.Count() == 1);
             Debug.Assert(body.Outs.All(e => e is AlwaysEdge));
 
@@ -39,7 +36,7 @@ namespace core.cfg
 
             _condition = condition;
             _body = body;
-            
+
             var loop = _condition.Outs.First(e => e.To.Equals(_body));
             Graph.RemoveEdge(loop);
 
@@ -52,6 +49,8 @@ namespace core.cfg
             Graph.RemoveNode(_condition);
         }
 
+        public override string Id => "dowhile_" + _body.Id;
+
         public override IEnumerable<MicroInsn> Instructions
         {
             get
@@ -61,33 +60,35 @@ namespace core.cfg
             }
         }
 
-        public override bool ContainsAddress(uint address) =>
-            _condition.ContainsAddress(address) || _body.ContainsAddress(address);
+        public override bool ContainsAddress(uint address)
+        {
+            return _condition.ContainsAddress(address) || _body.ContainsAddress(address);
+        }
 
         public static bool IsCandidate([NotNull] INode body)
         {
             if (body is EntryNode || body is ExitNode)
                 return false;
-            
+
             if (body.Outs.Count() != 1)
                 return false;
 
             var condition = body.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
             if (condition == null)
                 return false;
-                
-            if(condition.Ins.Count() != 1)
+
+            if (condition.Ins.Count() != 1)
                 return false;
 
-            if(condition.Outs.Count() != 2)
+            if (condition.Outs.Count() != 2)
                 return false;
 
             var trueEdge = condition.Outs.FirstOrDefault(e => e is TrueEdge);
-            if(trueEdge == null)
+            if (trueEdge == null)
                 return false;
-                
+
             var falseEdge = condition.Outs.FirstOrDefault(e => e is FalseEdge);
-            if(falseEdge == null)
+            if (falseEdge == null)
                 return false;
 
             return trueEdge.To.Equals(body) || falseEdge.To.Equals(body);

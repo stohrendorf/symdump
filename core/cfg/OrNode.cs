@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using core.microcode;
-using core.util;
 using JetBrains.Annotations;
 
 namespace core.cfg
@@ -10,8 +9,6 @@ namespace core.cfg
     public class OrNode : Node
     {
         private readonly IList<INode> _nodes;
-
-        public override string Id => "or_" + _nodes[0].Id;
 
         public OrNode([NotNull] INode c0) : base(c0.Graph)
         {
@@ -48,6 +45,10 @@ namespace core.cfg
             Graph.AddEdge(new FalseEdge(this, sFalse));
         }
 
+        public override string Id => "or_" + _nodes[0].Id;
+
+        public override IEnumerable<MicroInsn> Instructions => _nodes.SelectMany(n => n.Instructions);
+
         public static bool IsCandidate([NotNull] INode c0)
         {
             if (c0.Outs.Count() != 2)
@@ -70,20 +71,20 @@ namespace core.cfg
             var sTrue = c0.Outs.First(e => e is TrueEdge).To;
             if (!c1.Outs.First(e => e is TrueEdge).To.Equals(sTrue))
                 return false;
-            
+
             var sFalse = c1.Outs.First(e => e is FalseEdge).To;
             if (sFalse.Equals(sTrue))
                 return false;
 
             if (sFalse.Equals(c0))
                 return false;
-            
+
             return !sFalse.Equals(c1);
         }
 
         public override bool ContainsAddress(uint address)
-            => _nodes.Any(n => n.ContainsAddress(address));
-
-        public override IEnumerable<MicroInsn> Instructions => _nodes.SelectMany(n => n.Instructions);
+        {
+            return _nodes.Any(n => n.ContainsAddress(address));
+        }
     }
 }

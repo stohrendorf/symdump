@@ -13,7 +13,7 @@ namespace core.util
         {
         }
 
-        public EndianBinaryReader(BinaryReader stream)
+        private EndianBinaryReader(BinaryReader stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -34,31 +34,10 @@ namespace core.util
             return _stream.ReadBytes(n);
         }
 
-        public byte ReadByte()
-        {
-            return _stream.ReadByte();
-        }
-
-        public sbyte ReadSByte()
-        {
-            return _stream.ReadSByte();
-        }
-
-        public short ReadInt16()
-        {
-            var tmp = _stream.ReadBytes(2);
-            return (short) ((tmp[1] << 8) | tmp[0]);
-        }
-
-        public int ReadInt32()
+        private int ReadInt32()
         {
             var tmp = _stream.ReadBytes(4);
             return (tmp[3] << 24) | (tmp[2] << 16) | (tmp[1] << 8) | tmp[0];
-        }
-
-        public ushort ReadUInt16()
-        {
-            return (ushort) ReadInt16();
         }
 
         public uint ReadUInt32()

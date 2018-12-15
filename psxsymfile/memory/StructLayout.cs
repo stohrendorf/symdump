@@ -2,30 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using core;
 using core.util;
 using symfile.type;
 
 namespace symfile.memory
 {
-    public class UnionLayout : CompoundLayout, IEquatable<UnionLayout>
+    public sealed class StructLayout : CompoundLayout, IEquatable<StructLayout>
     {
-        public readonly List<CompoundMember> Members = new List<CompoundMember>();
+        private readonly List<CompoundMember> _members = new List<CompoundMember>();
 
-        public override string FundamentalType => $"union {Name}";
-
-        public override uint DataSize { get; }
-
-        public override int Precedence => int.MinValue;
-
-        public override IMemoryLayout Pointee => null;
-
-        public override string AsIncompleteDeclaration(string identifier, string argList)
-        {
-            return identifier;
-        }
-
-        public UnionLayout(BinaryReader stream, string name, SymFile debugSource)
+        public StructLayout(BinaryReader stream, string name, SymFile debugSource)
             : base(name)
         {
             debugSource.CurrentlyDefining.Add(name, this);
@@ -45,7 +31,7 @@ namespace symfile.memory
                             break;
                         }
 
-                        Members.Add(m);
+                        _members.Add(m);
                     }
                     else if (typedValue.Type == (0x80 | 22))
                     {
@@ -57,11 +43,11 @@ namespace symfile.memory
                             break;
                         }
 
-                        Members.Add(m);
+                        _members.Add(m);
                     }
                     else
                     {
-                        throw new Exception("Unexcpected entry");
+                        throw new Exception("Unexpected entry");
                     }
                 }
             }
@@ -71,26 +57,59 @@ namespace symfile.memory
             }
         }
 
+        public override string FundamentalType => $"struct {Name}";
+
+        public override uint DataSize { get; }
+
+        public override int Precedence => int.MinValue;
+
+        public bool Equals(StructLayout other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return base.Equals(other) && _members.SequenceEqual(other._members) && DataSize == other.DataSize;
+        }
+
+        public override string AsIncompleteDeclaration(string identifier, string argList)
+        {
+            return identifier;
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public void Dump(IndentedTextWriter writer)
         {
-            writer.WriteLine($"union {Name} {{");
+            writer.WriteLine($"struct {Name} {{");
             ++writer.Indent;
-            foreach (var m in Members)
+            foreach (var m in _members)
                 writer.WriteLine(m);
             --writer.Indent;
             writer.WriteLine("};");
         }
 
-        public override string GetAccessPathTo(uint offset)
+        public override string GetAccessPathTo(uint ofs)
         {
-            throw new NotImplementedException();
-        }
+            var member = _members
+                .LastOrDefault(m => m.TypeDecoration.ClassType != ClassType.Bitfield && m.FileEntry.Value <= ofs);
 
-        public bool Equals(UnionLayout other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return base.Equals(other) && Members.SequenceEqual(other.Members) && DataSize == other.DataSize;
+            if (member == null)
+                return null;
+
+            if (member.MemoryLayout == null)
+                return member.Name;
+
+            ofs -= (uint) member.FileEntry.Value;
+            var memberAccessPath = member.MemoryLayout.GetAccessPathTo(ofs);
+            if (memberAccessPath == null)
+                return member.Name;
+
+            if (member.MemoryLayout is Array)
+                return member.Name + memberAccessPath;
+
+            return member.Name + "." + memberAccessPath;
         }
 
         public override bool Equals(object obj)
@@ -98,15 +117,15 @@ namespace symfile.memory
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((UnionLayout) obj);
+            return Equals((StructLayout) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                int hashCode = base.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Members != null ? Members.GetHashCode() : 0);
+                var hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ (_members != null ? _members.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (int) DataSize;
                 return hashCode;
             }

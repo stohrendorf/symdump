@@ -38,13 +38,14 @@ namespace frontend.Controllers
         [HttpGet("callees")]
         public IEnumerable<TreeViewItem> Callees()
         {
-            return _appState.ExeFile?.CalleesBySource.Values.SelectMany(x => x).ToImmutableSortedSet().Select(address =>
-                new TreeViewItem
-                {
-                    Id = (int) address,
-                    Text = $"0x{address:x8} " + _appState.SymFile.GetSymbolName(address),
-                    Userdata = new Dictionary<string, string> {{"address", address.ToString()}}
-                });
+            return _appState.PSXExeFile?.TextSection.CalleesBySource.Values.SelectMany(x => x).ToImmutableSortedSet()
+                .Select(address =>
+                    new TreeViewItem
+                    {
+                        Id = (int) address,
+                        Text = $"0x{address:x8} " + _appState.SymFile.GetSymbolName(address),
+                        Userdata = new Dictionary<string, string> {{"address", address.ToString()}}
+                    });
         }
     }
 }

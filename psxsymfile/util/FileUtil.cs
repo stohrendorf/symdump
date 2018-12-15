@@ -20,7 +20,8 @@ namespace symfile.util
             return result;
         }
 
-        public static TypeDecoration ReadTypeDecoration(this BinaryReader s, bool withDimensions, IDebugSource debugSource)
+        public static TypeDecoration ReadTypeDecoration(this BinaryReader s, bool withDimensions,
+            IDebugSource debugSource)
         {
             return new TypeDecoration(s, withDimensions, debugSource);
         }

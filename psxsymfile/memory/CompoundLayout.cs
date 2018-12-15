@@ -6,21 +6,14 @@ namespace symfile.memory
 {
     public abstract class CompoundLayout : IMemoryLayout, IEquatable<CompoundLayout>
     {
-        public readonly string Name;
-
-        public bool IsAnonymous => new Regex(@"^\.\d+fake$").IsMatch(Name);
-
-        public abstract uint DataSize { get; }
-        public abstract int Precedence { get; }
-        public abstract string FundamentalType { get; }
-        public abstract string AsIncompleteDeclaration(string identifier, string argList);
-        public abstract string GetAccessPathTo(uint offset);
-        public abstract IMemoryLayout Pointee { get; }
+        protected readonly string Name;
 
         protected CompoundLayout(string name)
         {
             Name = name;
         }
+
+        public bool IsAnonymous => new Regex(@"^\.\d+fake$").IsMatch(Name);
 
         public bool Equals(CompoundLayout other)
         {
@@ -33,6 +26,12 @@ namespace symfile.memory
             return IsAnonymous || string.Equals(Name, other.Name);
         }
 
+        public abstract uint DataSize { get; }
+        public abstract int Precedence { get; }
+        public abstract string FundamentalType { get; }
+        public abstract string AsIncompleteDeclaration(string identifier, string argList);
+        public abstract string GetAccessPathTo(uint offset);
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -43,7 +42,7 @@ namespace symfile.memory
 
         public override int GetHashCode()
         {
-            return (Name != null && !IsAnonymous ? Name.GetHashCode() : 0);
+            return Name != null && !IsAnonymous ? Name.GetHashCode() : 0;
         }
     }
 }

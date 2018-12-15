@@ -5,6 +5,8 @@ namespace core
 {
     public class NamedLocation
     {
+        public readonly uint GlobalAddress;
+
         public NamedLocation(uint globalAddress, [NotNull] string name)
         {
             Debug.Assert(!string.IsNullOrEmpty(name));
@@ -13,10 +15,7 @@ namespace core
             Name = name;
         }
 
-        public readonly uint GlobalAddress;
-
-        [NotNull]
-        public string Name { get; }
+        [NotNull] public string Name { get; }
 
         public override string ToString()
         {

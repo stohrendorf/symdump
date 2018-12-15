@@ -36,7 +36,7 @@ namespace frontend.Controllers
                 }
 
                 logger.Info("Loading SYM file");
-                
+
                 var project = db.Projects.First();
                 project.Exe = null;
                 project.Sym = new BinaryFile
@@ -44,11 +44,11 @@ namespace frontend.Controllers
                     Name = file.FileName,
                     Data = new BinaryReader(file.OpenReadStream()).ReadBytes((int) file.Length)
                 };
-                
+
                 logger.Info("Storing SYM file in database");
-                
+
                 db.SaveChanges();
-                
+
                 _appState.SymFile = new SymFile(new BinaryReader(new MemoryStream(project.Sym.Data)));
             }
         }
@@ -63,24 +63,25 @@ namespace frontend.Controllers
                     logger.Info("No SYM file loaded, skipping import of EXE file");
                     return;
                 }
-                
+
                 logger.Info("Loading EXE file");
-                
+
                 var project = db.Projects.First();
                 project.Exe = new BinaryFile
                 {
                     Name = file.FileName,
                     Data = new BinaryReader(file.OpenReadStream()).ReadBytes((int) file.Length)
                 };
-                
+
                 logger.Info("Storing EXE file in database");
-                
+
                 db.SaveChanges();
 
                 logger.Info("Analyzing EXE file");
-                
-                _appState.ExeFile = new ExeFile(new EndianBinaryReader(new MemoryStream(project.Exe.Data)), _appState.SymFile);
-                _appState.ExeFile.Disassemble();
+
+                _appState.PSXExeFile = new PSXExeFile(new EndianBinaryReader(new MemoryStream(project.Exe.Data)),
+                    _appState.SymFile);
+                _appState.PSXExeFile.Disassemble();
             }
         }
     }

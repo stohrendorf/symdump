@@ -67,11 +67,6 @@ namespace core.microcode
             return Next();
         }
 
-        public ArgMatcher ArgMemRegIs(RegisterArg r)
-        {
-            return ArgMemRegIs(r, out _);
-        }
-
         private bool Matches()
         {
             return _insn != null;

@@ -27,7 +27,7 @@
   <ItemGroup>
       <ProjectReference Include="..\core\core.csproj"/>
       <ProjectReference Include="..\exefile\exefile.csproj"/>
-      <ProjectReference Include="..\symfile\symfile.csproj"/>
+      <ProjectReference Include="..\psxsymfile\psxsymfile.csproj"/>
   </ItemGroup>
   <ItemGroup>
       <PackageReference Include="NLog" Version="4.5.11"/>

@@ -13,66 +13,21 @@ namespace symfile.code
 {
     public class Function : IFunction
     {
-        public class ArgumentInfo : IDeclaration
-        {
-            public string Name { get; }
-
-            public IMemoryLayout MemoryLayout => TypeDecoration.MemoryLayout;
-
-            public readonly TypeDecoration TypeDecoration;
-            public readonly Register StackBase;
-            public readonly uint? StackOffset;
-            public readonly Register? Register;
-
-            public ArgumentInfo(string name, TypeDecoration typeDecoration, Register stackBase, uint? stackOffset, Register? register)
-            {
-                Name = name;
-                TypeDecoration = typeDecoration;
-                StackBase = stackBase;
-                StackOffset = stackOffset;
-                Register = register;
-            }
-
-            public override string ToString()
-            {
-                switch (TypeDecoration.ClassType)
-                {
-                    case ClassType.Argument:
-                        Debug.Assert(StackOffset != null);
-                        return $"{TypeDecoration.AsDeclaration(Name)} /*${StackBase} {StackOffset}*/";
-                    case ClassType.RegParam:
-                        Debug.Assert(Register != null);
-                        return $"{TypeDecoration.AsDeclaration(Name)} /*${Register}*/";
-                    default:
-                        throw new Exception("Meh");
-                }
-            }
-        }
-
-        public uint GlobalAddress { get; }
-        public IMemoryLayout ReturnType => _returnType.MemoryLayout;
         private readonly Block _body;
         private readonly string _file;
         private readonly uint _line;
         private readonly uint _mask;
         private readonly int _maskOffs;
-        public string Name { get; }
 
         private readonly IDictionary<Register, ArgumentInfo> _registerParameters =
             new SortedDictionary<Register, ArgumentInfo>();
 
-        public IEnumerable<KeyValuePair<uint, IDeclaration>> RegisterParameters =>
-            _registerParameters.Select(p => new KeyValuePair<uint, IDeclaration>(RegisterUtil.ToUInt(p.Key), p.Value));
-
-        private readonly IDictionary<int, ArgumentInfo> _stackParameters = new SortedDictionary<int, ArgumentInfo>();
-        
-        public IEnumerable<KeyValuePair<int, IDeclaration>> StackParameters =>
-            _stackParameters.Select(p => new KeyValuePair<int, IDeclaration>(p.Key, p.Value));
-        
         private readonly Register _returnAddressRegister;
         private readonly TypeDecoration _returnType;
         private readonly Register _stackBase;
         private readonly uint _stackFrameSize;
+
+        private readonly IDictionary<int, ArgumentInfo> _stackParameters = new SortedDictionary<int, ArgumentInfo>();
 
         public Function(BinaryReader reader, uint ofs, SymFile symFile)
         {
@@ -129,11 +84,13 @@ namespace symfile.code
                 {
                     case ClassType.Argument:
                         //Debug.Assert(m_registerParameters.Count >= 4);
-                        _stackParameters[_stackParameters.Count * 4] = new ArgumentInfo(memberName, ti, _stackBase, (uint) (_stackParameters.Count * 4), null);
+                        _stackParameters[_stackParameters.Count * 4] = new ArgumentInfo(memberName, ti, _stackBase,
+                            (uint) (_stackParameters.Count * 4), null);
                         break;
                     case ClassType.RegParam:
                         Debug.Assert(_registerParameters.Count < 4);
-                        _registerParameters[Register.a0 + _registerParameters.Count] = new ArgumentInfo(memberName, ti, _stackBase, null, Register.a0 + _registerParameters.Count);
+                        _registerParameters[Register.a0 + _registerParameters.Count] = new ArgumentInfo(memberName, ti,
+                            _stackBase, null, Register.a0 + _registerParameters.Count);
                         break;
                     default:
                         _body.Vars.Add(memberName, new Block.VarInfo(memberName, ti, typedValue));
@@ -147,6 +104,16 @@ namespace symfile.code
         private IEnumerable<Register> SavedRegisters => Enumerable.Range(0, 32)
             .Where(i => ((1 << i) & _mask) != 0)
             .Select(i => (Register) i);
+
+        public uint GlobalAddress { get; }
+        public IMemoryLayout ReturnType => _returnType.MemoryLayout;
+        public string Name { get; }
+
+        public IEnumerable<KeyValuePair<uint, IDeclaration>> RegisterParameters =>
+            _registerParameters.Select(p => new KeyValuePair<uint, IDeclaration>(p.Key.ToUInt(), p.Value));
+
+        public IEnumerable<KeyValuePair<int, IDeclaration>> StackParameters =>
+            _stackParameters.Select(p => new KeyValuePair<int, IDeclaration>(p.Key, p.Value));
 
         public void Dump(IndentedTextWriter writer)
         {
@@ -169,6 +136,44 @@ namespace symfile.code
             var parameters = _registerParameters.Values.Concat(_stackParameters.Values);
             Debug.Assert(_returnType != null);
             return _returnType?.AsDeclaration(Name, string.Join(", ", parameters));
+        }
+
+        public class ArgumentInfo : IDeclaration
+        {
+            public readonly Register? Register;
+            public readonly Register StackBase;
+            public readonly uint? StackOffset;
+
+            public readonly TypeDecoration TypeDecoration;
+
+            public ArgumentInfo(string name, TypeDecoration typeDecoration, Register stackBase, uint? stackOffset,
+                Register? register)
+            {
+                Name = name;
+                TypeDecoration = typeDecoration;
+                StackBase = stackBase;
+                StackOffset = stackOffset;
+                Register = register;
+            }
+
+            public string Name { get; }
+
+            public IMemoryLayout MemoryLayout => TypeDecoration.MemoryLayout;
+
+            public override string ToString()
+            {
+                switch (TypeDecoration.ClassType)
+                {
+                    case ClassType.Argument:
+                        Debug.Assert(StackOffset != null);
+                        return $"{TypeDecoration.AsDeclaration(Name)} /*${StackBase} {StackOffset}*/";
+                    case ClassType.RegParam:
+                        Debug.Assert(Register != null);
+                        return $"{TypeDecoration.AsDeclaration(Name)} /*${Register}*/";
+                    default:
+                        throw new Exception("Meh");
+                }
+            }
         }
     }
 }

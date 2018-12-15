@@ -9,22 +9,19 @@ namespace frontend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BinaryFile",
-                columns: table => new
+                "BinaryFile",
+                table => new
                 {
                     Id = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
                     Data = table.Column<byte[]>(),
                     Name = table.Column<string>()
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BinaryFile", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_BinaryFile", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "Projects",
-                columns: table => new
+                "Projects",
+                table => new
                 {
                     Id = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
@@ -35,37 +32,37 @@ namespace frontend.Migrations
                 {
                     table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Projects_BinaryFile_ExeId",
-                        column: x => x.ExeId,
-                        principalTable: "BinaryFile",
-                        principalColumn: "Id",
+                        "FK_Projects_BinaryFile_ExeId",
+                        x => x.ExeId,
+                        "BinaryFile",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Projects_BinaryFile_SymId",
-                        column: x => x.SymId,
-                        principalTable: "BinaryFile",
-                        principalColumn: "Id",
+                        "FK_Projects_BinaryFile_SymId",
+                        x => x.SymId,
+                        "BinaryFile",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_ExeId",
-                table: "Projects",
-                column: "ExeId");
+                "IX_Projects_ExeId",
+                "Projects",
+                "ExeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_SymId",
-                table: "Projects",
-                column: "SymId");
+                "IX_Projects_SymId",
+                "Projects",
+                "SymId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Projects");
+                "Projects");
 
             migrationBuilder.DropTable(
-                name: "BinaryFile");
+                "BinaryFile");
         }
     }
 }

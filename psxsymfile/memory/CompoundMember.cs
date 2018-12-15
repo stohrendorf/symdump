@@ -8,10 +8,9 @@ namespace symfile.memory
 {
     public class CompoundMember : IEquatable<CompoundMember>
     {
-        public readonly string Name;
         public readonly FileEntry FileEntry;
+        public readonly string Name;
         public readonly TypeDecoration TypeDecoration;
-        public IMemoryLayout MemoryLayout => TypeDecoration.MemoryLayout;
 
         public CompoundMember(FileEntry fileEntry, BinaryReader reader, bool extended, IDebugSource debugSource)
         {
@@ -23,6 +22,16 @@ namespace symfile.memory
                 TypeDecoration.ClassType != ClassType.UnionMember && TypeDecoration.ClassType != ClassType.EndOfStruct)
                 throw new ArgumentOutOfRangeException(nameof(TypeDecoration.ClassType),
                     $"Unexpected class {TypeDecoration.ClassType}");
+        }
+
+        public IMemoryLayout MemoryLayout => TypeDecoration.MemoryLayout;
+
+        public bool Equals(CompoundMember other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(Name, other.Name) && Equals(FileEntry, other.FileEntry) &&
+                   Equals(TypeDecoration, other.TypeDecoration);
         }
 
         public override string ToString()
@@ -39,14 +48,6 @@ namespace symfile.memory
                 default:
                     throw new Exception($"Unexpected class {TypeDecoration.ClassType}");
             }
-        }
-
-        public bool Equals(CompoundMember other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return string.Equals(Name, other.Name) && Equals(FileEntry, other.FileEntry) &&
-                   Equals(TypeDecoration, other.TypeDecoration);
         }
 
         public override bool Equals(object obj)

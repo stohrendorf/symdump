@@ -73,12 +73,12 @@ namespace core.microcode
 
     public sealed class Deref : IMicroArg
     {
-        public readonly AddressValue Address;
+        private readonly AddressValue _address;
 
         public Deref(AddressValue address, byte bits)
         {
             Debug.Assert(bits > 0);
-            Address = address;
+            _address = address;
             Bits = bits;
         }
 
@@ -86,7 +86,7 @@ namespace core.microcode
 
         public override string ToString()
         {
-            return $"*{Address}<<{Bits}>>";
+            return $"*{_address}<<{Bits}>>";
         }
     }
 

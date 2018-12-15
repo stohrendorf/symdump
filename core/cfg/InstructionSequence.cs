@@ -2,21 +2,20 @@
 using System.Diagnostics;
 using System.Linq;
 using core.microcode;
-using core.util;
 using JetBrains.Annotations;
 
 namespace core.cfg
 {
     public class InstructionSequence : Node
     {
-        public override string Id => $"insnseq_{InstructionList.Keys.First():x8}";
-
-        public SortedDictionary<uint, MicroInsn> InstructionList { get; } = new SortedDictionary<uint, MicroInsn>();
-
         public InstructionSequence([NotNull] IGraph graph)
             : base(graph)
         {
         }
+
+        public override string Id => $"insnseq_{InstructionList.Keys.First():x8}";
+
+        public SortedDictionary<uint, MicroInsn> InstructionList { get; } = new SortedDictionary<uint, MicroInsn>();
 
         public override IEnumerable<MicroInsn> Instructions => InstructionList.Values;
 
@@ -34,14 +33,9 @@ namespace core.cfg
 
             var result = new InstructionSequence(Graph);
             foreach (var split in InstructionList.Where(i => i.Key >= from))
-            {
                 result.InstructionList.Add(split.Key, split.Value);
-            }
 
-            foreach (var rm in result.InstructionList.Keys)
-            {
-                InstructionList.Remove(rm);
-            }
+            foreach (var rm in result.InstructionList.Keys) InstructionList.Remove(rm);
 
             Debug.Assert(!ContainsAddress(from));
             Debug.Assert(result.ContainsAddress(from));

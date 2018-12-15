@@ -54,7 +54,7 @@ namespace mips.disasm
 
         public static C2ControlRegister? C2ControlRegisterFromInt(int i)
         {
-            i -= (int) Register.Sentinel + (int) C0Register.Sentinel + (int)C2Register.Sentinel;
+            i -= (int) Register.Sentinel + (int) C0Register.Sentinel + (int) C2Register.Sentinel;
 
             if (i < 0 || i >= (int) C2ControlRegister.Sentinel)
                 return null;

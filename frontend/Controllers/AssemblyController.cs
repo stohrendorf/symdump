@@ -23,12 +23,12 @@ namespace frontend.Controllers
         [HttpGet("instructions/{offset}")]
         public IEnumerable<LineInfo> Instructions([FromRoute] uint offset)
         {
-            offset = _appState.ExeFile.MakeLocal(offset);
-            var firstAddr = _appState.ExeFile.Instructions.Values
+            offset = _appState.PSXExeFile.TextSection.MakeLocal(offset);
+            var firstAddr = _appState.PSXExeFile.TextSection.Instructions.Values
                 .Where(kv => kv.Address >= offset)
                 .OrderBy(kv => kv.Address)
                 .First().Address;
-            
+
             var q = new Queue<uint>();
             q.Enqueue(firstAddr);
 
@@ -37,17 +37,16 @@ namespace frontend.Controllers
             while (q.Count > 0)
             {
                 var addr = q.Dequeue();
-                if(blocks.ContainsKey(addr))
+                if (blocks.ContainsKey(addr))
                     continue;
-                
-                var block = _appState.ExeFile.BlockAtLocal(addr);
-                if(block == null)
+
+                var block = _appState.PSXExeFile.BlockAtLocal(addr);
+                if (block == null)
                     continue;
-                
+
                 blocks[addr] = block;
 
                 foreach (var o in block.Outs)
-                {
                     switch (o.Value)
                     {
                         case JumpType.Call:
@@ -61,16 +60,15 @@ namespace frontend.Controllers
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                }
             }
-            
-            int i = 0;
+
+            var i = 0;
             return blocks
                 .SelectMany(kv => kv.Value.Insns.Select(insn => new KeyValuePair<uint, MicroInsn>(kv.Key, insn)))
                 .Select(kv => new LineInfo
                 {
                     Text = kv.Value.ToString(),
-                    Address = $"{_appState.ExeFile.MakeGlobal(kv.Key)}/{i++}"
+                    Address = $"{_appState.PSXExeFile.TextSection.MakeGlobal(kv.Key)}/{i++}"
                 });
         }
     }

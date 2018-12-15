@@ -10,8 +10,6 @@ namespace core.cfg
     {
         public readonly IList<INode> Nodes = new List<INode>();
 
-        public override string Id => "seq_" + Nodes[0].Id;
-
         public SequenceNode(INode first) : base(first.Graph)
         {
             Debug.Assert(IsCandidate(first));
@@ -35,16 +33,17 @@ namespace core.cfg
 
             var toReplace = next.Outs.ToList();
             Graph.RemoveNode(next);
-            foreach (var e in toReplace)
-            {
-                Graph.AddEdge(e.CloneTyped(sequence, e.To));
-            }
+            foreach (var e in toReplace) Graph.AddEdge(e.CloneTyped(sequence, e.To));
 
             Debug.Assert(!Graph.Nodes.Contains(next));
         }
 
+        public override string Id => "seq_" + Nodes[0].Id;
+
+        public override IEnumerable<MicroInsn> Instructions => Nodes.SelectMany(node => node.Instructions);
+
         /// <summary>
-        /// Joins adjoining instruction sequences. Assumes that only the last node needs to be joined. 
+        ///     Joins adjoining instruction sequences. Assumes that only the last node needs to be joined.
         /// </summary>
         private void Simplify()
         {
@@ -58,24 +57,21 @@ namespace core.cfg
 
                 Nodes[Nodes.Count - 2] = new InstructionCollection(tmp);
             }
+
             var first = Nodes[Nodes.Count - 2] as InstructionCollection;
             Debug.Assert(first != null);
 
             switch (Nodes[Nodes.Count - 1])
             {
                 case InstructionSequence sequence:
-                    foreach (var insn in sequence.InstructionList)
-                    {
-                        first.InstructionList.Add(insn);
-                    }
+                    foreach (var insn in sequence.InstructionList) first.InstructionList.Add(insn);
+
                     Nodes.RemoveAt(Nodes.Count - 1);
                     return;
 
                 case InstructionCollection collection:
-                    foreach (var insn in collection.InstructionList)
-                    {
-                        first.InstructionList.Add(insn);
-                    }
+                    foreach (var insn in collection.InstructionList) first.InstructionList.Add(insn);
+
                     Nodes.RemoveAt(Nodes.Count - 1);
                     return;
             }
@@ -85,8 +81,6 @@ namespace core.cfg
         {
             return Nodes.Any(n => n.ContainsAddress(address));
         }
-
-        public override IEnumerable<MicroInsn> Instructions => Nodes.SelectMany(node => node.Instructions);
 
         public static bool IsCandidate([NotNull] INode seq)
         {

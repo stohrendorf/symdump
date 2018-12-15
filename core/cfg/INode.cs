@@ -12,10 +12,10 @@ namespace core.cfg
 
         [NotNull] IEnumerable<IEdge> Outs { get; }
 
-        bool ContainsAddress(uint address);
-
         [NotNull] IEnumerable<MicroInsn> Instructions { get; }
 
         string Id { get; }
+
+        bool ContainsAddress(uint address);
     }
 }

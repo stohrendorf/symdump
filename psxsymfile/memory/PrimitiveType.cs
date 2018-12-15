@@ -6,14 +6,6 @@ namespace symfile.memory
 {
     public class PrimitiveType : IMemoryLayout, IEquatable<PrimitiveType>
     {
-        public uint DataSize { get; }
-
-        public int Precedence => int.MinValue;
-
-        public string FundamentalType { get; }
-
-        public IMemoryLayout Pointee => null;
-
         public PrimitiveType(BaseType baseType)
         {
             switch (baseType)
@@ -66,7 +58,20 @@ namespace symfile.memory
                     throw new ArgumentOutOfRangeException(nameof(baseType), baseType, null);
             }
         }
-        
+
+        public bool Equals(PrimitiveType other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(FundamentalType, other.FundamentalType) && DataSize == other.DataSize;
+        }
+
+        public uint DataSize { get; }
+
+        public int Precedence => int.MinValue;
+
+        public string FundamentalType { get; }
+
         public string AsIncompleteDeclaration(string identifier, string argList)
         {
             return identifier;
@@ -74,17 +79,10 @@ namespace symfile.memory
 
         public string GetAccessPathTo(uint offset)
         {
-            if(offset != 0)
+            if (offset != 0)
                 throw new UnalignedAccessException(offset, DataSize);
 
             return null;
-        }
-
-        public bool Equals(PrimitiveType other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return string.Equals(FundamentalType, other.FundamentalType) && DataSize == other.DataSize;
         }
 
         public override bool Equals(object obj)

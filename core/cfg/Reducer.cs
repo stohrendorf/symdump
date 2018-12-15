@@ -18,35 +18,33 @@ namespace core.cfg
         {
             Graph = graph;
             Debug.Assert(Graph.Validate());
-            
+
             {
                 var nops = Graph.Nodes
                     .Where(n => n.Outs.Count() == 1 && n.Outs.First() is AlwaysEdge)
                     .Where(n => n.Instructions.Any() && n.Instructions.All(i => i.Opcode == MicroOpcode.Nop))
                     .ToList();
-                    
-                if(nops.Count > 0)
+
+                if (nops.Count > 0)
                     logger.Debug($"Removing {nops.Count} nop-only nodes");
                 foreach (var nop in nops)
                 {
                     var next = nop.Outs.First().To;
-                    foreach (var e in nop.Ins.ToList())
-                    {
-                        Graph.AddEdge(e.CloneTyped(e.From, next));
-                    }
+                    foreach (var e in nop.Ins.ToList()) Graph.AddEdge(e.CloneTyped(e.From, next));
 
                     Graph.RemoveNode(nop);
                 }
             }
-            
+
             Debug.Assert(Graph.Validate());
         }
 
-        private bool Reduce(string name, List<INode> candidates, Func<INode, bool> predicate, Func<INode, INode> converter)
+        private bool Reduce(string name, List<INode> candidates, Func<INode, bool> predicate,
+            Func<INode, INode> converter)
         {
             candidates = candidates.Where(predicate).ToList();
             logger.Debug($" - {candidates.Count} {name} candidates");
-            bool reduced = false;
+            var reduced = false;
             while (candidates.Count > 0)
             {
                 var candidate = candidates.First();
@@ -55,22 +53,24 @@ namespace core.cfg
                     candidates.Remove(candidate);
                     continue;
                 }
+
                 logger.Debug($"Doing {name} with: {candidate.Id}");
 
                 converter(candidate);
                 candidates.Remove(candidate);
                 reduced = true;
             }
+
             return reduced;
         }
-        
+
         public void Reduce()
         {
             bool reduced;
             do
             {
                 reduced = false;
-                
+
                 Debug.Assert(Graph.Validate());
 
                 logger.Debug($"Analysis cycle ({Graph.Nodes.Count()} nodes, {Graph.Edges.Count()} edges)...");
@@ -82,30 +82,27 @@ namespace core.cfg
 
                 reduced |= Reduce("and clause", candidates, AndNode.IsCandidate, n => new AndNode(n));
                 reduced |= Reduce("or clause", candidates, OrNode.IsCandidate, n => new OrNode(n));
-                if(reduced)
+                if (reduced)
                     continue;
-                
+
                 // prefer loops over ifs
                 reduced |= Reduce("while", candidates, WhileNode.IsCandidate, n => new WhileNode(n));
                 reduced |= Reduce("do-while", candidates, DoWhileNode.IsCandidate, n => new DoWhileNode(n));
                 reduced |= Reduce("while-true", candidates, WhileTrueNode.IsCandidate, n => new WhileTrueNode(n));
                 reduced |= Reduce("if", candidates, IfNode.IsCandidate, n => new IfNode(n));
                 reduced |= Reduce("if-else", candidates, IfElseNode.IsCandidate, n => new IfElseNode(n));
-                if(reduced)
+                if (reduced)
                     continue;
 
                 // only join as a last resort
                 reduced |= Reduce("sequence", candidates, SequenceNode.IsCandidate, n => new SequenceNode(n));
             } while (reduced);
-            
+
             var doms = new TarjanLengauer(Graph).Dominators.Values.Distinct().ToList();
-            if (doms.Count > 0)
-            {
-                logger.Debug($"Dominators left: {string.Join(", ", doms.Select(c => c.Id))}");
-            }
+            if (doms.Count > 0) logger.Debug($"Dominators left: {string.Join(", ", doms.Select(c => c.Id))}");
         }
     }
-    
+
 #if false
     public static class ReducerTest
     {

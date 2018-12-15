@@ -11,8 +11,8 @@ namespace frontend.Services
 {
     public class AppState
     {
+        public PSXExeFile PSXExeFile;
         public SymFile SymFile;
-        public ExeFile ExeFile;
 
         public AppState()
         {
@@ -22,17 +22,17 @@ namespace frontend.Services
 
                 if (!db.Projects.Any())
                     return;
-                
+
                 var project = db.Projects.Include(p => p.Exe).Include(p => p.Sym).First();
                 if (project.Sym == null)
                     return;
-                
+
                 SymFile = new SymFile(new BinaryReader(new MemoryStream(project.Sym.Data)));
 
                 if (project.Exe != null)
                 {
-                    ExeFile = new ExeFile(new EndianBinaryReader(new MemoryStream(project.Exe.Data)), SymFile);
-                    ExeFile.Disassemble();
+                    PSXExeFile = new PSXExeFile(new EndianBinaryReader(new MemoryStream(project.Exe.Data)), SymFile);
+                    PSXExeFile.Disassemble();
                 }
             }
         }

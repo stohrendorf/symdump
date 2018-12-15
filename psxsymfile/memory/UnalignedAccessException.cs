@@ -8,7 +8,7 @@ namespace symfile.memory
             : base($"Offset {offset} is not aligned with {alignment}")
         {
         }
-        
+
         public UnalignedAccessException(uint offset, string message)
             : base($"Offset {offset} is not aligned: {message}")
         {

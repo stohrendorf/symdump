@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "symdump", "symdump\symdump.csproj", "{2A30AF6A-8A4D-4727-A8BB-106930F5CD02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "symfile", "symfile\symfile.csproj", "{22C10A54-EE26-42FA-A5F0-79555E724160}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "psxsymfile", "psxsymfile\psxsymfile.csproj", "{22C10A54-EE26-42FA-A5F0-79555E724160}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "core", "core\core.csproj", "{802128C7-4615-4296-89AF-313CD450C639}"
 EndProject

@@ -4,10 +4,8 @@ namespace core
 {
     public interface IDeclaration
     {
-        [NotNull]
-        string Name { get; }
+        [NotNull] string Name { get; }
 
-        [NotNull]
-        IMemoryLayout MemoryLayout { get; }
+        [NotNull] IMemoryLayout MemoryLayout { get; }
     }
 }

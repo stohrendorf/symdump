@@ -15,25 +15,24 @@ namespace symfile
     public class SymFile : IDebugSource
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        
+
         private readonly Dictionary<string, EnumDef> _enums = new Dictionary<string, EnumDef>();
         private readonly Dictionary<string, TypeDecoration> _externs = new Dictionary<string, TypeDecoration>();
-        public IList<IFunction> Functions { get; } = new List<IFunction>();
-        public readonly Dictionary<string, TypeDecoration> FuncTypes = new Dictionary<string, TypeDecoration>();
-        public SortedDictionary<uint, IList<NamedLocation>> Labels { get; } = new SortedDictionary<uint, IList<NamedLocation>>();
         private readonly Dictionary<string, StructLayout> _structs = new Dictionary<string, StructLayout>();
         private readonly byte _targetUnit;
         private readonly Dictionary<string, TypeDecoration> _typedefs = new Dictionary<string, TypeDecoration>();
         private readonly Dictionary<string, UnionLayout> _unions = new Dictionary<string, UnionLayout>();
         private readonly byte _version;
+        public readonly Dictionary<string, CompoundLayout> CurrentlyDefining = new Dictionary<string, CompoundLayout>();
+        public readonly Dictionary<string, TypeDecoration> FuncTypes = new Dictionary<string, TypeDecoration>();
+
         // ReSharper disable once NotAccessedField.Local
         private string _mxInfo;
-        public readonly Dictionary<string, CompoundLayout> CurrentlyDefining = new Dictionary<string, CompoundLayout>();
 
         public SymFile(BinaryReader reader)
         {
             logger.Info("Loading SYM file");
-            
+
             reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
             reader.Skip(3);
@@ -49,6 +48,63 @@ namespace symfile
             }
 
             logger.Info($"Loaded {n} top-level entries");
+        }
+
+        public IList<IFunction> Functions { get; } = new List<IFunction>();
+
+        public SortedDictionary<uint, IList<NamedLocation>> Labels { get; } =
+            new SortedDictionary<uint, IList<NamedLocation>>();
+
+        public IMemoryLayout FindTypeDefinition(string tag)
+        {
+            IMemoryLayout def = FindStructDef(tag);
+            def = def ?? FindUnionDef(tag);
+            def = def ?? CurrentlyDefining.FirstOrDefault(kv => kv.Key == tag).Value;
+            return def;
+        }
+
+        public IMemoryLayout FindTypeDefinitionForLabel(string label)
+        {
+            if (string.IsNullOrEmpty(label))
+                return null;
+
+            return !_externs.TryGetValue(label, out var ti) ? null : FindTypeDefinition(ti.Tag);
+        }
+
+        public IFunction FindFunction(uint globalAddress)
+        {
+            return Functions.FirstOrDefault(f => f.GlobalAddress == globalAddress);
+        }
+
+        public IFunction FindFunction(string name)
+        {
+            return Functions.FirstOrDefault(f => f.Name.Equals(name));
+        }
+
+        public string GetSymbolName(uint absoluteAddress)
+        {
+            // first try to find a memory layout which contains this address
+            var typedLabel = Labels.LastOrDefault(kv => kv.Key <= absoluteAddress).Value.First();
+            var memoryLayout = FindTypeDefinitionForLabel(typedLabel.Name);
+            if (memoryLayout == null)
+                return !Labels.TryGetValue(absoluteAddress, out var lbls)
+                    ? $"lbl_{absoluteAddress:X}"
+                    : lbls.First().Name;
+
+            try
+            {
+                var path = memoryLayout.GetAccessPathTo(absoluteAddress - typedLabel.GlobalAddress);
+                if (path != null)
+                    return typedLabel.Name + "." + path;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return !Labels.TryGetValue(absoluteAddress, out var lbls2)
+                ? $"lbl_{absoluteAddress:X}"
+                : lbls2.First().Name;
         }
 
         private StructLayout FindStructDef(string tag)
@@ -67,22 +123,6 @@ namespace symfile
             return !_unions.TryGetValue(tag, out var result) ? null : result;
         }
 
-        public IMemoryLayout FindTypeDefinition(string tag)
-        {
-            IMemoryLayout def = FindStructDef(tag);
-            def = def ?? FindUnionDef(tag);
-            def = def ?? CurrentlyDefining.FirstOrDefault(kv => kv.Key == tag).Value;
-            return def;
-        }
-        
-        public IMemoryLayout FindTypeDefinitionForLabel(string label)
-        {
-            if (string.IsNullOrEmpty(label))
-                return null;
-
-            return !_externs.TryGetValue(label, out var ti) ? null : FindTypeDefinition(ti.Tag);
-        }
-        
         public void Dump(TextWriter output)
         {
             var writer = new IndentedTextWriter(output);
@@ -136,7 +176,7 @@ namespace symfile
 
             if (fileEntry.IsLabel)
             {
-                var lbl = new NamedLocation((uint)fileEntry.Value, reader.ReadPascalString());
+                var lbl = new NamedLocation((uint) fileEntry.Value, reader.ReadPascalString());
 
                 if (!Labels.ContainsKey(lbl.GlobalAddress))
                     Labels.Add(lbl.GlobalAddress, new List<NamedLocation>());
@@ -150,12 +190,12 @@ namespace symfile
                 case 0:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum");
-                #endif
+#endif
                     break;
                 case 2:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {stream.ReadU1()}");
-                #else
+#else
                     reader.Skip(1);
 #endif
                     break;
@@ -257,10 +297,7 @@ namespace symfile
                 if (e.Equals(already))
                     return;
 
-                if (!e.IsAnonymous)
-                {
-                    logger.Warn($"WARNING: Non-uniform definitions of struct {name}");
-                }
+                if (!e.IsAnonymous) logger.Warn($"WARNING: Non-uniform definitions of struct {name}");
 
                 // generate new "fake fake" name
                 var n = 0;
@@ -324,38 +361,6 @@ namespace symfile
                 default:
                     throw new Exception("Gomorrha");
             }
-        }
-
-        public IFunction FindFunction(uint globalAddress)
-        {
-            return Functions.FirstOrDefault(f => f.GlobalAddress == globalAddress);
-        }
-
-        public IFunction FindFunction(string name)
-        {
-            return Functions.FirstOrDefault(f => f.Name.Equals(name));
-        }
-        
-        public string GetSymbolName(uint absoluteAddress)
-        {
-            // first try to find a memory layout which contains this address
-            var typedLabel = Labels.LastOrDefault(kv => kv.Key <= absoluteAddress).Value.First();
-            var memoryLayout = FindTypeDefinitionForLabel(typedLabel.Name);
-            if (memoryLayout == null)
-                return !Labels.TryGetValue(absoluteAddress, out var lbls) ? $"lbl_{absoluteAddress:X}" : lbls.First().Name;
-            
-            try
-            {
-                var path = memoryLayout.GetAccessPathTo(absoluteAddress - typedLabel.GlobalAddress);
-                if (path != null)
-                    return typedLabel.Name + "." + path;
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return !Labels.TryGetValue(absoluteAddress, out var lbls2) ? $"lbl_{absoluteAddress:X}" : lbls2.First().Name;
         }
     }
 }

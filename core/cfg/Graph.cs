@@ -14,14 +14,13 @@ namespace core.cfg
         public IEnumerable<IEdge> Edges => _edges;
 
         public IEnumerable<IEdge> GetIns(INode node)
-            => _edges.Where(e => ReferenceEquals(e.To, node));
+        {
+            return _edges.Where(e => ReferenceEquals(e.To, node));
+        }
 
         public IEnumerable<IEdge> GetOuts(INode node)
-            => _edges.Where(e => ReferenceEquals(e.From, node));
-
-        public void AddNode(INode node)
         {
-            _nodes.Add(node);
+            return _edges.Where(e => ReferenceEquals(e.From, node));
         }
 
         public void RemoveNode(INode node)
@@ -32,9 +31,7 @@ namespace core.cfg
             var old = _edges;
             _edges = new HashSet<IEdge>();
             foreach (var e in old.Where(e => !ReferenceEquals(e.To, node) && !ReferenceEquals(e.From, node)))
-            {
                 _edges.Add(e);
-            }
 
             Debug.Assert(!_nodes.Contains(node));
         }
@@ -43,7 +40,7 @@ namespace core.cfg
         {
             if (!_nodes.Contains(oldNode))
                 return;
-            
+
             _nodes.Remove(oldNode);
             AddNode(newNode);
 
@@ -72,7 +69,15 @@ namespace core.cfg
             _edges.Remove(edge);
         }
 
-        public bool Contains(INode node) => _nodes.Contains(node);
+        public bool Contains(INode node)
+        {
+            return _nodes.Contains(node);
+        }
+
+        public void AddNode(INode node)
+        {
+            _nodes.Add(node);
+        }
 
         public bool Validate()
         {
@@ -82,15 +87,15 @@ namespace core.cfg
         }
 
         /// <summary>
-        /// Ensures that each conditional node has the same type of incoming conditional edges,
-        /// i.e. all incoming boolean edges are either <see cref="TrueEdge"/> or <see cref="FalseEdge"/>,
-        /// but not both.  Note that <see cref="AlwaysEdge"/> are not considered here.
+        ///     Ensures that each conditional node has the same type of incoming conditional edges,
+        ///     i.e. all incoming boolean edges are either <see cref="TrueEdge" /> or <see cref="FalseEdge" />,
+        ///     but not both.  Note that <see cref="AlwaysEdge" /> are not considered here.
         /// </summary>
         public void MakeUniformBooleanEdges()
         {
             var nodes = GetTopologicallyOrdered();
             // can't use foreach because we're modifying the collection in the loop.
-            for (int i = 0; i < nodes.Count; ++i)
+            for (var i = 0; i < nodes.Count; ++i)
             {
                 var node = nodes[i];
                 var incoming = node.Ins.ToList();
@@ -100,7 +105,7 @@ namespace core.cfg
 
                 // either use the color of an incoming edge that has a source node that's already inverted,
                 // or make all edges a FalseEdge
-                bool color = incoming.FirstOrDefault(e => e.From is NotNode) is TrueEdge;
+                var color = incoming.FirstOrDefault(e => e.From is NotNode) is TrueEdge;
 
                 foreach (var e in incoming)
                 {
@@ -110,12 +115,13 @@ namespace core.cfg
 
                     nodes[nodes.IndexOf(e.From)] = new NotNode(e.From);
                 }
+
                 Debug.Assert(node.Ins.All(e => e is TrueEdge) || node.Ins.All(e => e is FalseEdge));
             }
         }
 
         /// <summary>
-        /// Re-orders edges so that <see cref="TrueEdge"/>s are first, then <see cref="FalseEdge"/>s, then all other types.
+        ///     Re-orders edges so that <see cref="TrueEdge" />s are first, then <see cref="FalseEdge" />s, then all other types.
         /// </summary>
         /// <param name="edges">The edges to reorder.</param>
         /// <returns>The topologically ordered edges.</returns>
@@ -127,14 +133,14 @@ namespace core.cfg
                 .Concat(edges.Where(e => !(e is TrueEdge || e is FalseEdge)));
         }
 
-        /// <inheritdoc cref="GetTopologicallyOrdered(System.Collections.Generic.ICollection{core.cfg.IEdge})"/>
+        /// <inheritdoc cref="GetTopologicallyOrdered(System.Collections.Generic.ICollection{core.cfg.IEdge})" />
         private static IEnumerable<IEdge> GetTopologicallyOrdered(IEnumerable<IEdge> edges)
         {
             return GetTopologicallyOrdered(edges.ToList());
         }
 
         /// <summary>
-        /// Creates a topologically ordered list of nodes of the graph.
+        ///     Creates a topologically ordered list of nodes of the graph.
         /// </summary>
         /// <returns>The topologically ordered node list.</returns>
         private IList<INode> GetTopologicallyOrdered()
@@ -153,9 +159,8 @@ namespace core.cfg
             if (!seen.Add(node))
                 return;
             foreach (var successor in GetTopologicallyOrdered(node.Outs).Select(e => e.To))
-            {
                 GetTopologicallyOrdered(successor, seen, result);
-            }
+
             result.Add(node);
         }
     }

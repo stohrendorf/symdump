@@ -5,11 +5,9 @@ namespace core
 {
     public interface IDebugSource
     {
-        [ItemNotNull]
-        IList<IFunction> Functions { get; }
+        [ItemNotNull] IList<IFunction> Functions { get; }
 
-        [NotNull]
-        SortedDictionary<uint, IList<NamedLocation>> Labels { get; }
+        [NotNull] SortedDictionary<uint, IList<NamedLocation>> Labels { get; }
 
         [CanBeNull]
         IFunction FindFunction(uint globalAddress);

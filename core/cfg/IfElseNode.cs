@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using core.microcode;
-using core.util;
 using JetBrains.Annotations;
 
 namespace core.cfg
@@ -10,11 +9,9 @@ namespace core.cfg
     public class IfElseNode : Node
     {
         [NotNull] private readonly INode _condition;
-
-        [NotNull] private readonly INode _trueBody;
         [NotNull] private readonly INode _falseBody;
 
-        public override string Id => "ifelse_" + _condition.Id;
+        [NotNull] private readonly INode _trueBody;
 
         public IfElseNode([NotNull] INode condition) : base(condition.Graph)
         {
@@ -36,7 +33,7 @@ namespace core.cfg
             Debug.Assert(!_trueBody.Equals(_falseBody));
             Debug.Assert(_trueBody.Ins.Count() == 1);
             Debug.Assert(_falseBody.Ins.Count() == 1);
-            
+
             Debug.Assert(_trueBody.Outs.Count() == 1);
             Debug.Assert(_falseBody.Outs.Count() == 1);
 
@@ -45,12 +42,14 @@ namespace core.cfg
             Debug.Assert(common.Equals(_falseBody.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To));
 
             _condition = condition;
-            
+
             Graph.ReplaceNode(_condition, this);
             Graph.RemoveNode(_trueBody);
             Graph.RemoveNode(_falseBody);
             Graph.AddEdge(new AlwaysEdge(this, common));
         }
+
+        public override string Id => "ifelse_" + _condition.Id;
 
         public override IEnumerable<MicroInsn> Instructions
         {
@@ -62,15 +61,17 @@ namespace core.cfg
             }
         }
 
-        public override bool ContainsAddress(uint address) =>
-            _condition.ContainsAddress(address) || _trueBody.ContainsAddress(address) ||
-            _falseBody.ContainsAddress(address);
+        public override bool ContainsAddress(uint address)
+        {
+            return _condition.ContainsAddress(address) || _trueBody.ContainsAddress(address) ||
+                   _falseBody.ContainsAddress(address);
+        }
 
         public static bool IsCandidate([NotNull] INode condition)
         {
             if (condition is EntryNode || condition is ExitNode)
                 return false;
-            
+
             if (condition.Outs.Count() != 2)
                 return false;
 
@@ -82,22 +83,22 @@ namespace core.cfg
             if (falseNode == null)
                 return false;
 
-            if(trueNode.Ins.Count() != 1 || falseNode.Ins.Count() != 1)
+            if (trueNode.Ins.Count() != 1 || falseNode.Ins.Count() != 1)
                 return false;
-                
-            if(trueNode.Outs.Count() != 1 || falseNode.Outs.Count() != 1)
+
+            if (trueNode.Outs.Count() != 1 || falseNode.Outs.Count() != 1)
                 return false;
 
             if (trueNode.Equals(falseNode))
                 return false;
 
             var common1 = trueNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-            if(common1 == null)
+            if (common1 == null)
                 return false;
             var common2 = falseNode.Outs.FirstOrDefault(e => e is AlwaysEdge)?.To;
-            if(common2 == null)
+            if (common2 == null)
                 return false;
-                
+
             return common1.Equals(common2);
         }
     }
