@@ -1,11 +1,10 @@
 namespace core.microcode
 {
-    internal sealed class ArgMatcher
+    public sealed class ArgMatcher
     {
-        private readonly MicroInsn _insn;
-        private readonly int _index;
-
         public static readonly ArgMatcher NotMatched = new ArgMatcher(null, -1);
+        private readonly int _index;
+        private readonly MicroInsn _insn;
 
         public ArgMatcher(MicroInsn insn) : this(insn, 0)
         {
@@ -40,7 +39,12 @@ namespace core.microcode
 
         public ArgMatcher ArgRegIs(RegisterArg r)
         {
-            if (!Arg<RegisterArg>(out var tmp).Matches() || r.Register != tmp.Register)
+            return ArgRegIs(r.Register);
+        }
+
+        public ArgMatcher ArgRegIs(uint r)
+        {
+            if (!Arg<RegisterArg>(out var tmp).Matches() || r != tmp.Register)
                 return NotMatched;
             return Next();
         }
@@ -61,6 +65,11 @@ namespace core.microcode
             if (!Arg(out result) || r.Register != result.Register)
                 return NotMatched;
             return Next();
+        }
+
+        public ArgMatcher ArgMemRegIs(RegisterArg r)
+        {
+            return ArgMemRegIs(r, out _);
         }
 
         private bool Matches()

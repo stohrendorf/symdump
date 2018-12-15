@@ -39,6 +39,8 @@ namespace mips.disasm
         sp = 29,
         fp = 30,
         ra = 31,
+        CmpResult,
+        DivMulResult, // 64 bits
         Sentinel
     }
 }

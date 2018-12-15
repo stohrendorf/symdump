@@ -5,9 +5,9 @@ namespace core.microcode
     public sealed class MicroAssemblyBlock
     {
         public readonly uint Address;
-        public readonly ISet<uint> OwningFunctions = new HashSet<uint>();
-        public readonly List<MicroInsn> Insns = new List<MicroInsn>();
         public readonly IDictionary<uint, JumpType> Ins = new Dictionary<uint, JumpType>();
+        public readonly List<MicroInsn> Insns = new List<MicroInsn>();
+        public readonly ISet<uint> OwningFunctions = new HashSet<uint>();
         public IDictionary<uint, JumpType> Outs = new Dictionary<uint, JumpType>();
 
         public MicroAssemblyBlock(uint address)
@@ -30,10 +30,11 @@ namespace core.microcode
             return string.Join("\n", Insns);
         }
 
-        public void Optimize(IDebugSource debugSource, ref long before, ref long after)
+        public void Optimize(IDebugSource debugSource, ref long before, ref long after,
+            IEnumerable<Peephole1Delegate> customPeephole1, IEnumerable<Peephole2Delegate> customPeephole2)
         {
             before += Insns.Count;
-            PeepholeOptimizer.Optimize(Insns, debugSource);
+            PeepholeOptimizer.Optimize(Insns, debugSource, customPeephole1, customPeephole2);
             after += Insns.Count;
         }
     }

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace core.microcode
 {
-    internal static class MatcherMixin
+    public static class MatcherMixin
     {
         public static ArgMatcher Is(this MicroInsn insn, params MicroOpcode[] opcode)
         {

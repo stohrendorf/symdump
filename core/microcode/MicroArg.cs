@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace core.microcode
 {
     public interface IMicroArg
@@ -48,12 +50,35 @@ namespace core.microcode
     public sealed class AddressValue : IMicroArg
     {
         private readonly string _name;
-        private readonly ulong _address;
+        public readonly ulong Address;
 
-        public AddressValue(ulong address, string name, byte bits)
+        public AddressValue(ulong address, string name)
         {
             _name = name;
-            _address = address;
+            Address = address;
+        }
+
+        public byte Bits => 32;
+
+        public override string ToString()
+        {
+            return $"0x{Address:X}[[{_name ?? "?"}]]";
+        }
+
+        public Deref Deref(byte bits)
+        {
+            return new Deref(this, bits);
+        }
+    }
+
+    public sealed class Deref : IMicroArg
+    {
+        public readonly AddressValue Address;
+
+        public Deref(AddressValue address, byte bits)
+        {
+            Debug.Assert(bits > 0);
+            Address = address;
             Bits = bits;
         }
 
@@ -61,7 +86,7 @@ namespace core.microcode
 
         public override string ToString()
         {
-            return $"0x{_address:X}[[{_name ?? "?"}]]";
+            return $"*{Address}<<{Bits}>>";
         }
     }
 

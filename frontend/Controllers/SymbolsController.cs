@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using frontend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace frontend.Controllers
         [HttpGet]
         public IEnumerable<TreeViewItem> Get()
         {
-            int id = 0;
+            var id = 0;
             return _appState.SymFile?.Labels
                 .Select(byAddress => new TreeViewItem
                 {
@@ -37,12 +38,13 @@ namespace frontend.Controllers
         [HttpGet("callees")]
         public IEnumerable<TreeViewItem> Callees()
         {
-            return _appState.ExeFile?.Callees.Select(address => new TreeViewItem
-            {
-                Id = (int) address,
-                Text = $"0x{address:x8} " + _appState.SymFile.GetSymbolName(address),
-                Userdata = new Dictionary<string, string> {{"address", address.ToString()}}
-            });
+            return _appState.ExeFile?.CalleesBySource.Values.SelectMany(x => x).ToImmutableSortedSet().Select(address =>
+                new TreeViewItem
+                {
+                    Id = (int) address,
+                    Text = $"0x{address:x8} " + _appState.SymFile.GetSymbolName(address),
+                    Userdata = new Dictionary<string, string> {{"address", address.ToString()}}
+                });
         }
     }
 }

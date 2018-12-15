@@ -9,8 +9,10 @@ namespace core.microcode
         Nop,
         Data,
         Call,
+        Syscall,
         Return,
         Jmp,
+        DynamicJmp,
         JmpIf,
         SSetL,
         SSetLE,
@@ -27,6 +29,12 @@ namespace core.microcode
         Not,
         Sub,
         Add,
+        SMul,
+        UMul,
+        SDiv,
+        UDiv,
+        SMod,
+        UMod,
         Copy,
         UResize,
         SResize
@@ -56,7 +64,7 @@ namespace core.microcode
         public CopyInsn(IMicroArg dest, IMicroArg src) : base(MicroOpcode.Copy, dest, src)
         {
             if (dest.Bits != src.Bits)
-                throw new ArgumentException($"Parameter bit size mismatch (dest={dest.Bits} vs. src={src.Bits})");
+                throw new ArgumentException($"Parameter bit size mismatch (dest={dest} vs. src={src})");
 
             _bits = dest.Bits;
         }
