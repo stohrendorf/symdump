@@ -246,6 +246,22 @@ namespace core.microcode
                 // -> <op> r0, a, b
                 insns.Add(new MicroInsn(insn2.Opcode, r0, insn1.Args[1], insn2.Args[2]));
                 return true;
+            },
+            (debugSource, insns, insn1, insn2) =>
+            {
+                if (!insn1.Is(MicroOpcode.Add).Arg<RegisterArg>(out var r0).Arg<ConstValue>(out var c0)
+                        .Arg<RegisterArg>(out var r1) ||
+                    !insn2.Is(MicroOpcode.Copy).ArgRegIs(r1).ArgMemRegIs(r0, out var m0))
+                    return false;
+
+                // add r0, const, r1
+                // copy r1, r0(ofs)
+                // -> add r0, const, r1
+                // -> copy r1, r1(ofs+const)
+                insns.Add(insn1);
+                insns.Add(new CopyInsn(r1,
+                    new RegisterMemArg(r1.Register, (int) (c0.Value + (ulong) m0.Offset), m0.Bits)));
+                return true;
             }
         };
 
@@ -285,14 +301,8 @@ namespace core.microcode
             {
                 if (insn.Args[0] is FunctionRefArg fn)
                 {
-                    foreach (var fnReg in fn.FunctionProperties.OutRegs)
-                    {
-                        registerValues.Remove(fnReg);
-                    }
-                    foreach (var fnReg in fn.FunctionProperties.SpoiledRegs)
-                    {
-                        registerValues.Remove(fnReg);
-                    }
+                    foreach (var fnReg in fn.FunctionProperties.OutRegs) registerValues.Remove(fnReg);
+                    foreach (var fnReg in fn.FunctionProperties.SpoiledRegs) registerValues.Remove(fnReg);
                 }
                 else
                 {
@@ -335,19 +345,6 @@ namespace core.microcode
         {
             while (OptimizePass(insns, debugSource, customPeephole1, customPeephole2))
                 DeadWriteRemoval(insns);
-        }
-
-        private static void PropagateConstants(List<MicroInsn> insns, IDebugSource debugSource)
-        {
-            var tmp = insns.Where(i => i.Opcode != MicroOpcode.Nop).ToList();
-            insns.Clear();
-
-            IDictionary<uint, ConstValue> registerValues = new Dictionary<uint, ConstValue>();
-
-            foreach (var insn in tmp)
-                PropagateConstants(debugSource, insn, registerValues);
-
-            DeadWriteRemoval(insns);
         }
 
         private static bool OptimizePass(IList<MicroInsn> insns, IDebugSource debugSource,
@@ -398,21 +395,13 @@ namespace core.microcode
 
             var registerUsed = new Dictionary<uint, bool>(); // true if read, false if written only
 
-            var seenUndefinedCall = false;
-
             foreach (var insn in reversedInsns)
-            {
-                if (seenUndefinedCall)
-                {
-                    insns.Add(insn);
-                    continue;
-                }
-
                 switch (insn.Opcode)
                 {
                     case MicroOpcode.Jmp:
                     case MicroOpcode.JmpIf:
                     case MicroOpcode.DynamicJmp:
+                    case MicroOpcode.Return:
                     {
                         // read-only instructions
                         foreach (var arg in insn.Args)
@@ -432,7 +421,7 @@ namespace core.microcode
                     }
                     case MicroOpcode.Call:
                     case MicroOpcode.Syscall:
-                        seenUndefinedCall = true; // assume anything is used
+                        registerUsed.Clear();
                         insns.Add(insn);
                         break;
                     default:
@@ -478,7 +467,6 @@ namespace core.microcode
                         break;
                     }
                 }
-            }
 
             insns.Reverse();
         }

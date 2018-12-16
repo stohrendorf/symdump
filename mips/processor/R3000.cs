@@ -38,27 +38,33 @@ namespace mips.processor
 
             logger.Info("Disassembly started");
 
-            var analysisQueue = new Queue<uint>();
-            analysisQueue.Enqueue(_textSection.MakeLocal(entrypoint));
+            var calls = new Dictionary<ulong, uint>(); // TODO: use this information to re-analyze functions
+            var callQueue = new Queue<ulong>();
+            callQueue.Enqueue(entrypoint);
+            foreach (var addr in _debugSource.Functions.Select(f => f.GlobalAddress))
+                callQueue.Enqueue(addr);
 
-            foreach (var addr in _debugSource.Functions.Select(f => _textSection.MakeLocal(f.GlobalAddress)))
-                analysisQueue.Enqueue(addr);
+            while (callQueue.Count > 0)
+            {
+                var addr = (uint) callQueue.Dequeue();
+                if (_textSection.Instructions.ContainsKey(_textSection.MakeLocal(addr)))
+                    continue;
 
-            while (analysisQueue.Count != 0)
-                DisassembleInsn(analysisQueue.Dequeue(), analysisQueue);
+                DisassembleFunction(addr, calls, callQueue);
+            }
 
             logger.Info("Reversing control flow");
-            foreach (var asm in _textSection.Instructions)
-            foreach (var @out in asm.Value.Outs)
+            foreach (var (blockAddress, block) in _textSection.Instructions)
+            foreach (var (targetAddr, jumpType) in block.Outs)
             {
-                var addr = @out.Key;
-                if (!_textSection.Instructions.TryGetValue(addr, out var target))
+                if (!_textSection.Instructions.TryGetValue(targetAddr, out var target))
                 {
-                    logger.Warn($"Target address 0x{addr:x8} not in local address space");
+                    logger.Error(
+                        $"Target address 0x{targetAddr:x8} of type '{jumpType}' not in disassembled address space; assembly block:\n{block}");
                     continue;
                 }
 
-                target.Ins.Add(asm.Key, @out.Value);
+                target.Ins.Add(blockAddress, jumpType);
             }
 
             logger.Info("Collapsing basic assembly blocks");
@@ -101,6 +107,15 @@ namespace mips.processor
                 _textSection.CollectFunctionBlocks(_textSection.MakeLocal(callee));
 
             _psx.PeepholeOptimize(_textSection, _debugSource);
+        }
+
+        private void DisassembleFunction(uint entrypoint, [NotNull] IDictionary<ulong, uint> calls,
+            Queue<ulong> callQueue)
+        {
+            var analysisQueue = new Queue<uint>();
+            analysisQueue.Enqueue(_textSection.MakeLocal(entrypoint));
+            while (analysisQueue.Count != 0)
+                DisassembleInsn(analysisQueue.Dequeue(), analysisQueue, calls, callQueue);
         }
 
         private static void DecodeTlb(MicroAssemblyBlock asm, uint nextInsnAddressLocal, uint data,
@@ -1288,7 +1303,8 @@ namespace mips.processor
             }
         }
 
-        private void DisassembleInsn(uint localAddress, [NotNull] Queue<uint> analysisQueue)
+        private void DisassembleInsn(uint localAddress, [NotNull] Queue<uint> analysisQueue,
+            [NotNull] IDictionary<ulong, uint> calls, Queue<ulong> callQueue)
         {
             if (localAddress >= _textSection.Size)
                 return;
@@ -1300,13 +1316,39 @@ namespace mips.processor
                 DecodeInstruction(asm, _textSection.WordAtLocal(localAddress), localAddress + 4, DelaySlotMode.None);
             }
 
-            foreach (var addr in asm.Outs.Keys)
+            foreach (var (addr, type) in asm.Outs)
             {
                 if (addr >= _textSection.Size)
                     continue;
 
-                if (!_textSection.Instructions.ContainsKey(addr))
+                if (_textSection.Instructions.ContainsKey(addr))
+                    continue;
+
+                if (type != JumpType.Call)
                     analysisQueue.Enqueue(addr);
+                else
+                    callQueue.Enqueue(_textSection.MakeGlobal(addr));
+            }
+
+            foreach (var insn in asm.Insns)
+            {
+                if (insn.Opcode != MicroOpcode.Call)
+                    continue;
+
+                if (!(insn.Args[0] is RegisterArg retReg))
+                    continue;
+
+                if (!(insn.Args[1] is AddressValue callTarget))
+                    continue;
+
+                if (calls.TryGetValue(callTarget.Address, out var existing) && existing != retReg.Register)
+                {
+                    logger.Error(
+                        $"Mismatching return address registers for call to {callTarget} ($r{existing} != $r{retReg.Register})");
+                    continue;
+                }
+
+                calls[callTarget.Address] = retReg.Register;
             }
         }
 
