@@ -11,14 +11,15 @@ namespace symdump.symfile
     {
         private readonly Dictionary<string, EnumDef> _enums = new Dictionary<string, EnumDef>();
         private readonly SortedSet<string> _externs = new SortedSet<string>();
-        public readonly List<Function> Functions = new List<Function>();
         private readonly Dictionary<string, string> _funcTypes = new Dictionary<string, string>();
-        internal readonly Dictionary<uint, List<Label>> Labels = new Dictionary<uint, List<Label>>();
+        private readonly SortedSet<string> _overlays = new SortedSet<string>();
         private readonly Dictionary<string, StructDef> _structs = new Dictionary<string, StructDef>();
         private readonly byte _targetUnit;
         private readonly Dictionary<string, TypeInfo> _typedefs = new Dictionary<string, TypeInfo>();
         private readonly Dictionary<string, UnionDef> _unions = new Dictionary<string, UnionDef>();
         private readonly byte _version;
+        public readonly List<Function> Functions = new List<Function>();
+        internal readonly Dictionary<uint, List<Label>> Labels = new Dictionary<uint, List<Label>>();
         private string _mxInfo;
 
         public SymFile(BinaryReader stream)
@@ -74,6 +75,11 @@ namespace symdump.symfile
             writer.WriteLine($"// {Functions.Count} functions");
             foreach (var f in Functions)
                 f.Dump(writer);
+
+            writer.WriteLine();
+            writer.WriteLine($"// {_overlays.Count} overlays");
+            foreach (var o in _overlays)
+                writer.WriteLine(o);
         }
 
         private void DumpEntry(BinaryReader stream)
@@ -101,12 +107,12 @@ namespace symdump.symfile
                 case 0:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum");
-                #endif
+#endif
                     break;
                 case 2:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {stream.ReadU1()}");
-                #else
+#else
                     stream.Skip(1);
 #endif
                     break;
@@ -147,8 +153,11 @@ namespace symdump.symfile
                 case 22:
                     DumpType22(stream, typedValue.Value);
                     break;
+                case 24:
+                    DumpType24(stream, typedValue.Value);
+                    break;
                 default:
-                    throw new Exception("Sodom");
+                    throw new Exception($"Unhandled debug type 0x{typedValue.Type:X}");
             }
         }
 
@@ -295,6 +304,12 @@ namespace symdump.symfile
                     _externs.Add($"static {ti.AsCode(name)}; // offset 0x{offset:X}");
             else
                 throw new Exception("Gomorrha");
+        }
+
+        private void DumpType24(BinaryReader stream, int offset)
+        {
+            var overlay = new Overlay(stream);
+            _overlays.Add($"Overlay {overlay} // offset 0x{offset:X}");
         }
 
         public Function FindFunction(uint addr)
