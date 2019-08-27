@@ -9,7 +9,6 @@ namespace symdump.symfile
 {
     public class Function
     {
-        public readonly uint Address;
         private readonly List<Block> _blocks = new List<Block>();
         private readonly string _file;
         private readonly uint _lastLine;
@@ -23,6 +22,7 @@ namespace symdump.symfile
         private readonly string _returnType;
         private readonly Register _stackBase;
         private readonly uint _stackFrameSize;
+        public readonly uint Address;
 
         public Function(BinaryReader reader, uint ofs, IReadOnlyDictionary<string, string> funcTypes)
         {
@@ -48,35 +48,35 @@ namespace symdump.symfile
                 if (reader.SkipSld(typedValue))
                     continue;
 
-                TypeInfo ti;
+                TaggedSymbol taggedSymbol;
                 string memberName;
                 switch (typedValue.Type & 0x7f)
                 {
-                    case 14: // end of function
+                    case TypedValue.FunctionEnd:
                         _lastLine = reader.ReadUInt32();
                         return;
-                    case 16: // begin of block
+                    case TypedValue.Block:
                         _blocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), this));
                         continue;
-                    case 20:
-                        ti = reader.ReadTypeInfo(false);
+                    case TypedValue.Definition:
+                        taggedSymbol = reader.ReadTaggedSymbol(false);
                         memberName = reader.ReadPascalString();
                         break;
-                    case 22:
-                        ti = reader.ReadTypeInfo(true);
+                    case TypedValue.ArrayDefinition:
+                        taggedSymbol = reader.ReadTaggedSymbol(true);
                         memberName = reader.ReadPascalString();
                         break;
                     default:
                         throw new Exception("Nope");
                 }
 
-                if (ti == null || memberName == null)
+                if (taggedSymbol == null || memberName == null)
                     break;
 
-                if (ti.ClassType == ClassType.Argument)
-                    _parameters.Add($"{ti.AsCode(memberName)} /*stack {typedValue.Value}*/");
-                else if (ti.ClassType == ClassType.RegParam)
-                    _parameters.Add($"{ti.AsCode(memberName)} /*${(Register) typedValue.Value}*/");
+                if (taggedSymbol.Type == SymbolType.Argument)
+                    _parameters.Add($"{taggedSymbol.AsCode(memberName)} /*stack {typedValue.Value}*/");
+                else if (taggedSymbol.Type == SymbolType.RegParam)
+                    _parameters.Add($"{taggedSymbol.AsCode(memberName)} /*${(Register) typedValue.Value}*/");
             }
         }
 

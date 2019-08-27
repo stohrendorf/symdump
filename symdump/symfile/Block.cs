@@ -18,7 +18,7 @@ namespace symdump.symfile
 
         private readonly uint _startOffset;
         private readonly List<Block> _subBlocks = new List<Block>();
-        private readonly Dictionary<string, TypeInfo> _typedefs = new Dictionary<string, TypeInfo>();
+        private readonly Dictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
         private readonly List<string> _vars = new List<string>();
 
         public Block(BinaryReader reader, uint ofs, uint ln, Function f)
@@ -36,65 +36,68 @@ namespace symdump.symfile
 
                 switch (typedValue.Type & 0x7f)
                 {
-                    case 16:
+                    case TypedValue.Block:
                         _subBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), _function));
                         break;
-                    case 18:
+                    case TypedValue.BlockEnd:
                         _endOffset = (uint) typedValue.Value;
                         _endLine = reader.ReadUInt32();
                         return;
-                    case 20:
+                    case TypedValue.Definition:
                     {
-                        var ti = reader.ReadTypeInfo(false);
+                        var taggedSymbol = reader.ReadTaggedSymbol(false);
                         var memberName = reader.ReadPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
-                        switch (ti.ClassType)
+                        switch (taggedSymbol.Type)
                         {
-                            case ClassType.AutoVar:
-                                _vars.Add($"{ti.AsCode(memberName)}; // stack offset {typedValue.Value}");
+                            case SymbolType.AutoVar:
+                                _vars.Add($"{taggedSymbol.AsCode(memberName)}; // stack offset {typedValue.Value}");
                                 break;
-                            case ClassType.Register:
-                                _vars.Add($"{ti.AsCode(memberName)}; // ${(Register) typedValue.Value}");
+                            case SymbolType.Register:
+                                _vars.Add($"{taggedSymbol.AsCode(memberName)}; // ${(Register) typedValue.Value}");
                                 break;
-                            case ClassType.Static:
-                                _vars.Add($"static {ti.AsCode(memberName)}; // offset 0x{typedValue.Value:x}");
+                            case SymbolType.Static:
+                                _vars.Add(
+                                    $"static {taggedSymbol.AsCode(memberName)}; // offset 0x{typedValue.Value:x}");
                                 break;
-                            case ClassType.Typedef:
-                                _typedefs.Add(memberName, ti);
+                            case SymbolType.Typedef:
+                                _typedefs.Add(memberName, taggedSymbol);
                                 break;
-                            case ClassType.Label:
+                            case SymbolType.Label:
                                 _labels.Add(new Label(typedValue, memberName));
                                 break;
                             default:
-                                throw new Exception($"Unexpected class type {ti.ClassType}");
+                                throw new Exception($"Unexpected {nameof(TaggedSymbol)} {taggedSymbol.Type}");
                         }
 
                         break;
                     }
-                    case 22:
+
+                    case TypedValue.ArrayDefinition:
                     {
-                        var ti = reader.ReadTypeInfo(true);
+                        var taggedSymbol = reader.ReadTaggedSymbol(true);
                         var memberName = reader.ReadPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
-                        switch (ti.ClassType)
+                        switch (taggedSymbol.Type)
                         {
-                            case ClassType.AutoVar:
-                                _vars.Add($"{ti.AsCode(memberName)}; // stack offset {typedValue.Value}");
+                            case SymbolType.AutoVar:
+                                _vars.Add($"{taggedSymbol.AsCode(memberName)}; // stack offset {typedValue.Value}");
                                 break;
-                            case ClassType.Register:
-                                _vars.Add($"{ti.AsCode(memberName)}; // ${(Register) typedValue.Value}");
+                            case SymbolType.Register:
+                                _vars.Add($"{taggedSymbol.AsCode(memberName)}; // ${(Register) typedValue.Value}");
                                 break;
-                            case ClassType.Static:
-                                _vars.Add($"static {ti.AsCode(memberName)}; // offset 0x{typedValue.Value:x}");
+                            case SymbolType.Static:
+                                _vars.Add(
+                                    $"static {taggedSymbol.AsCode(memberName)}; // offset 0x{typedValue.Value:x}");
                                 break;
-                            case ClassType.Typedef:
-                                _typedefs.Add(memberName, ti);
+                            case SymbolType.Typedef:
+                                _typedefs.Add(memberName, taggedSymbol);
                                 break;
-                            case ClassType.Label:
+                            case SymbolType.Label:
                                 _labels.Add(new Label(typedValue, memberName));
                                 break;
                             default:
-                                throw new Exception($"Unexpected class type {ti.ClassType}");
+                                throw new Exception($"Unexpected {nameof(TaggedSymbol)} {taggedSymbol.Type}");
                         }
 
                         break;

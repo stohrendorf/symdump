@@ -10,7 +10,7 @@ namespace symdump.symfile
         public Overlay(BinaryReader fs)
         {
             Length = fs.ReadInt32();
-            Id = fs.ReadByte();
+            Id = fs.ReadInt32();
         }
 
         public override string ToString()

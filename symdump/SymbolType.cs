@@ -1,6 +1,6 @@
 ﻿namespace symdump
 {
-    public enum ClassType
+    public enum SymbolType
     {
         Null = 0,
 

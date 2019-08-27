@@ -18,20 +18,20 @@ namespace symdump.symfile
             while (true)
             {
                 var typedValue = new TypedValue(stream);
-                if (typedValue.Type == (0x80 | 20))
+                if (typedValue.Type == (0x80 | TypedValue.Definition))
                 {
                     var m = new StructMember(typedValue, stream, false);
 
-                    if (m.TypeInfo.ClassType == ClassType.EndOfStruct)
+                    if (m.MemberType.Type == SymbolType.EndOfStruct)
                         break;
 
                     _members.Add(m);
                 }
-                else if (typedValue.Type == (0x80 | 22))
+                else if (typedValue.Type == (0x80 | TypedValue.ArrayDefinition))
                 {
                     var m = new StructMember(typedValue, stream, true);
 
-                    if (m.TypeInfo.ClassType == ClassType.EndOfStruct)
+                    if (m.MemberType.Type == SymbolType.EndOfStruct)
                         break;
 
                     _members.Add(m);

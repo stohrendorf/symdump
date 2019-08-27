@@ -6,15 +6,15 @@ using symdump.symfile;
 
 namespace symdump
 {
-    public class TypeDef : IEquatable<TypeDef>
+    public class DerivedTypeDef : IEquatable<DerivedTypeDef>
     {
-        public readonly BaseType BaseType;
         private readonly DerivedType[] _derivedTypes = new DerivedType[6];
+        public readonly PrimitiveType Type;
 
-        public TypeDef(BinaryReader fs)
+        public DerivedTypeDef(BinaryReader fs)
         {
             var val = fs.ReadUInt16();
-            BaseType = (BaseType) (val & 0x0f);
+            Type = (PrimitiveType) (val & 0x0f);
             for (var i = 0; i < 6; ++i)
             {
                 var x = (val >> (i * 2 + 4)) & 3;
@@ -24,73 +24,73 @@ namespace symdump
 
         public bool IsFunctionReturnType => _derivedTypes.Contains(DerivedType.FunctionReturnType);
 
-        public bool Equals(TypeDef other)
+        public bool Equals(DerivedTypeDef other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return BaseType == other.BaseType && _derivedTypes.SequenceEqual(other._derivedTypes);
+            return Type == other.Type && _derivedTypes.SequenceEqual(other._derivedTypes);
         }
 
         public override string ToString()
         {
             var attributes = string.Join(",", _derivedTypes.Where(e => e != DerivedType.None));
-            return attributes.Length == 0 ? BaseType.ToString() : $"{BaseType}({attributes})";
+            return attributes.Length == 0 ? Type.ToString() : $"{Type}({attributes})";
         }
 
-        public string AsCode(string name, TypeInfo typeInfo)
+        public string AsCode(string name, TaggedSymbol taggedSymbol)
         {
             var dimIdx = 0;
 
             string cType;
-            switch (BaseType)
+            switch (Type)
             {
-                case BaseType.StructDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.Tag));
-                    cType = $"struct {typeInfo.Tag}";
+                case PrimitiveType.StructDef:
+                    Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
+                    cType = $"struct {taggedSymbol.Tag}";
                     break;
-                case BaseType.UnionDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.Tag));
-                    cType = $"union {typeInfo.Tag}";
+                case PrimitiveType.UnionDef:
+                    Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
+                    cType = $"union {taggedSymbol.Tag}";
                     break;
-                case BaseType.EnumDef:
-                    Debug.Assert(!string.IsNullOrEmpty(typeInfo.Tag));
-                    cType = $"enum {typeInfo.Tag}";
+                case PrimitiveType.EnumDef:
+                    Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
+                    cType = $"enum {taggedSymbol.Tag}";
                     break;
-                case BaseType.Char:
+                case PrimitiveType.Char:
                     cType = "char";
                     break;
-                case BaseType.Short:
+                case PrimitiveType.Short:
                     cType = "short";
                     break;
-                case BaseType.Int:
+                case PrimitiveType.Int:
                     cType = "int";
                     break;
-                case BaseType.Long:
+                case PrimitiveType.Long:
                     cType = "long";
                     break;
-                case BaseType.Float:
+                case PrimitiveType.Float:
                     cType = "float";
                     break;
-                case BaseType.Double:
+                case PrimitiveType.Double:
                     cType = "double";
                     break;
-                case BaseType.UChar:
+                case PrimitiveType.UChar:
                     cType = "unsigned char";
                     break;
-                case BaseType.UShort:
+                case PrimitiveType.UShort:
                     cType = "unsigned short";
                     break;
-                case BaseType.UInt:
+                case PrimitiveType.UInt:
                     cType = "unsigned int";
                     break;
-                case BaseType.ULong:
+                case PrimitiveType.ULong:
                     cType = "unsigned long";
                     break;
-                case BaseType.Void:
+                case PrimitiveType.Void:
                     cType = "void";
                     break;
                 default:
-                    throw new Exception($"Unexpected base type {BaseType}");
+                    throw new Exception($"Unexpected base type {Type}");
             }
 
             var needsParens = false;
@@ -101,7 +101,7 @@ namespace symdump
                         continue;
                     case DerivedType.Array:
                         Debug.Assert(name != null);
-                        name += $"[{typeInfo.Dims[dimIdx]}]";
+                        name += $"[{taggedSymbol.Extents[dimIdx]}]";
                         ++dimIdx;
                         needsParens = true;
                         break;
@@ -127,14 +127,14 @@ namespace symdump
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((TypeDef) obj);
+            return Equals((DerivedTypeDef) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((int) BaseType * 397) ^ (_derivedTypes != null ? _derivedTypes.GetHashCode() : 0);
+                return ((int) Type * 397) ^ (_derivedTypes != null ? _derivedTypes.GetHashCode() : 0);
             }
         }
     }

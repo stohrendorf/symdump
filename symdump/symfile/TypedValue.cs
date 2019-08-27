@@ -5,6 +5,20 @@ namespace symdump.symfile
 {
     public class TypedValue : IEquatable<TypedValue>
     {
+        public const int IncSLD = 0;
+        public const int AddSLD1 = 2;
+        public const int AddSLD2 = 4;
+        public const int SetSLD = 6;
+        public const int SetSLDFile = 8;
+        public const int EndSLDInfo = 10;
+        public const int Function = 12;
+        public const int FunctionEnd = 14;
+        public const int Block = 16;
+        public const int BlockEnd = 18;
+        public const int Definition = 20;
+        public const int ArrayDefinition = 22;
+        public const int Overlay = 24;
+        public const int SetOverlay = 26;
         public readonly byte Type;
         public readonly int Value;
 

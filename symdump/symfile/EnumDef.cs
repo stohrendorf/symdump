@@ -19,39 +19,41 @@ namespace symdump.symfile
             while (true)
             {
                 var typedValue = new TypedValue(stream);
-                if (typedValue.Type == (0x80 | 20))
+                if (typedValue.Type == (0x80 | TypedValue.Definition))
                 {
-                    var ti = stream.ReadTypeInfo(false);
+                    var taggedSymbol = stream.ReadTaggedSymbol(false);
                     var memberName = stream.ReadPascalString();
 
-                    if (ti.ClassType == ClassType.EndOfStruct)
+                    if (taggedSymbol.Type == SymbolType.EndOfStruct)
                         break;
 
-                    if (ti.ClassType != ClassType.EnumMember)
-                        throw new Exception("Unexpected class");
+                    if (taggedSymbol.Type != SymbolType.EnumMember)
+                        throw new Exception($"Unexpected {nameof(SymbolType)}");
 
                     _members.Add(memberName, typedValue.Value);
                 }
-                else if (typedValue.Type == (0x80 | 22))
+                else if (typedValue.Type == (0x80 | TypedValue.ArrayDefinition))
                 {
-                    var ti = stream.ReadTypeInfo(true);
-                    if (ti.TypeDef.BaseType != BaseType.Null)
-                        throw new Exception($"Expected baseType={BaseType.Null}, but it's {ti.TypeDef.BaseType}");
+                    var taggedSymbol = stream.ReadTaggedSymbol(true);
+                    if (taggedSymbol.DerivedTypeDef.Type != PrimitiveType.Null)
+                        throw new Exception(
+                            $"Expected baseType={PrimitiveType.Null}, but it's {taggedSymbol.DerivedTypeDef.Type}");
 
-                    if (ti.Dims.Length != 0)
-                        throw new Exception($"Expected dims=0, but it's {ti.Dims.Length}");
+                    if (taggedSymbol.Extents.Length != 0)
+                        throw new Exception($"Expected dims=0, but it's {taggedSymbol.Extents.Length}");
 
-                    if (ti.Tag != name)
-                        throw new Exception($"Expected name={name}, but it's {ti.Tag}");
+                    if (taggedSymbol.Tag != name)
+                        throw new Exception($"Expected name={name}, but it's {taggedSymbol.Tag}");
 
                     var tag = stream.ReadPascalString();
                     if (tag != ".eos")
                         throw new Exception($"Expected tag=.eos, but it's {tag}");
 
-                    if (ti.ClassType != ClassType.EndOfStruct)
-                        throw new Exception($"Expected classType={ClassType.EndOfStruct}, but it's {ti.ClassType}");
+                    if (taggedSymbol.Type != SymbolType.EndOfStruct)
+                        throw new Exception(
+                            $"Expected {nameof(SymbolType)}={SymbolType.EndOfStruct}, but it's {taggedSymbol.Type}");
 
-                    _size = ti.Size;
+                    _size = taggedSymbol.Size;
                     break;
                 }
                 else
@@ -99,7 +101,7 @@ namespace symdump.symfile
                     cType = "int";
                     break;
                 default:
-                    throw new Exception("$Cannot determine primitive type for size {size}");
+                    throw new Exception($"Cannot determine primitive type for size {_size}");
             }
 
             writer.WriteLine($"enum {_name} : {cType} {{");

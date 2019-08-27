@@ -13,9 +13,10 @@ namespace symdump.symfile
         private readonly SortedSet<string> _externs = new SortedSet<string>();
         private readonly Dictionary<string, string> _funcTypes = new Dictionary<string, string>();
         private readonly SortedSet<string> _overlays = new SortedSet<string>();
+        private readonly SortedSet<string> _setOverlays = new SortedSet<string>();
         private readonly Dictionary<string, StructDef> _structs = new Dictionary<string, StructDef>();
         private readonly byte _targetUnit;
-        private readonly Dictionary<string, TypeInfo> _typedefs = new Dictionary<string, TypeInfo>();
+        private readonly Dictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
         private readonly Dictionary<string, UnionDef> _unions = new Dictionary<string, UnionDef>();
         private readonly byte _version;
         public readonly List<Function> Functions = new List<Function>();
@@ -80,6 +81,11 @@ namespace symdump.symfile
             writer.WriteLine($"// {_overlays.Count} overlays");
             foreach (var o in _overlays)
                 writer.WriteLine(o);
+
+            writer.WriteLine();
+            writer.WriteLine($"// {_setOverlays.Count} set overlays");
+            foreach (var o in _setOverlays)
+                writer.WriteLine(o);
         }
 
         private void DumpEntry(BinaryReader stream)
@@ -104,33 +110,33 @@ namespace symdump.symfile
 
             switch (typedValue.Type & 0x7f)
             {
-                case 0:
+                case TypedValue.IncSLD:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum");
 #endif
                     break;
-                case 2:
+                case TypedValue.AddSLD1:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {stream.ReadU1()}");
 #else
                     stream.Skip(1);
 #endif
                     break;
-                case 4:
+                case TypedValue.AddSLD2:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by word {stream.ReadUInt16()}");
 #else
                     stream.Skip(2);
 #endif
                     break;
-                case 6:
+                case TypedValue.SetSLD:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Set SLD linenum to {stream.ReadUInt32()}");
 #else
                     stream.Skip(4);
 #endif
                     break;
-                case 8:
+                case TypedValue.SetSLDFile:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} Set SLD to line {stream.ReadUInt32()} of file " +
                     stream.readPascalString());
@@ -139,29 +145,32 @@ namespace symdump.symfile
                     stream.Skip(stream.ReadByte());
 #endif
                     break;
-                case 10:
+                case TypedValue.EndSLDInfo:
 #if WITH_SLD
                 writer.WriteLine($"${typedValue.value:X} End SLD info");
 #endif
                     break;
-                case 12:
-                    DumpType12(stream, typedValue.Value);
+                case TypedValue.Function:
+                    ReadFunction(stream, typedValue.Value);
                     break;
-                case 20:
-                    DumpType20(stream, typedValue.Value);
+                case TypedValue.Definition:
+                    ReadTopLevelDef(stream, typedValue.Value);
                     break;
-                case 22:
-                    DumpType22(stream, typedValue.Value);
+                case TypedValue.ArrayDefinition:
+                    ReadTopLevelArrayDef(stream, typedValue.Value);
                     break;
-                case 24:
-                    DumpType24(stream, typedValue.Value);
+                case TypedValue.Overlay:
+                    ReadOverlayDef(stream, typedValue.Value);
+                    break;
+                case TypedValue.SetOverlay:
+                    ReadSetOverlay(typedValue.Value);
                     break;
                 default:
                     throw new Exception($"Unhandled debug type 0x{typedValue.Type:X}");
             }
         }
 
-        private void DumpType12(BinaryReader stream, int offset)
+        private void ReadFunction(BinaryReader stream, int offset)
         {
             Functions.Add(new Function(stream, (uint) offset, _funcTypes));
             //writer.WriteLine("{");
@@ -172,8 +181,7 @@ namespace symdump.symfile
         {
             var e = new EnumDef(reader, name);
 
-            EnumDef already;
-            if (_enums.TryGetValue(name, out already))
+            if (_enums.TryGetValue(name, out var already))
             {
                 if (!e.Equals(already))
                     throw new Exception($"Non-uniform definitions of enum {name}");
@@ -188,8 +196,7 @@ namespace symdump.symfile
         {
             var e = new UnionDef(reader, name);
 
-            UnionDef already;
-            if (_unions.TryGetValue(name, out already))
+            if (_unions.TryGetValue(name, out var already))
             {
                 if (e.Equals(already))
                     return;
@@ -214,14 +221,24 @@ namespace symdump.symfile
         {
             var e = new StructDef(reader, name);
 
-            StructDef already;
-            if (_structs.TryGetValue(name, out already))
+            if (_structs.TryGetValue(name, out var already))
             {
                 if (e.Equals(already))
                     return;
 
                 if (!e.IsFake)
-                    Console.WriteLine($"WARNING: Non-uniform definitions of struct {name}");
+                {
+                    var writer = new IndentedTextWriter(Console.Out);
+                    writer.WriteLine($"WARNING: Non-uniform definitions of struct {name}");
+                    writer.WriteLine("This is the definition already present:");
+                    writer.Indent++;
+                    already.Dump(writer);
+                    writer.Indent--;
+                    writer.WriteLine("This is the new definition:");
+                    writer.Indent++;
+                    e.Dump(writer);
+                    writer.Indent--;
+                }
 
                 // generate new "fake fake" name
                 var n = 0;
@@ -236,80 +253,96 @@ namespace symdump.symfile
             _structs.Add(name, e);
         }
 
-        private void AddTypedef(string name, TypeInfo typeInfo)
+        private void AddTypedef(string name, TaggedSymbol taggedSymbol)
         {
-            TypeInfo already;
-            if (_typedefs.TryGetValue(name, out already))
+            if (_typedefs.TryGetValue(name, out var already))
             {
-                if (!typeInfo.Equals(already))
+                if (!taggedSymbol.Equals(already))
                     throw new Exception($"Non-uniform definitions of typedef for {name}");
 
                 return;
             }
 
-            _typedefs.Add(name, typeInfo);
+            _typedefs.Add(name, taggedSymbol);
         }
 
-        private void DumpType20(BinaryReader stream, int offset)
+        private void ReadTopLevelDef(BinaryReader stream, int offset)
         {
-            var ti = stream.ReadTypeInfo(false);
+            var taggedSymbol = stream.ReadTaggedSymbol(false);
             var name = stream.ReadPascalString();
 
-            if (ti.ClassType == ClassType.Enum && ti.TypeDef.BaseType == BaseType.EnumDef)
+            switch (taggedSymbol.Type)
             {
-                ReadEnum(stream, name);
-                return;
+                case SymbolType.Enum when taggedSymbol.DerivedTypeDef.Type == PrimitiveType.EnumDef:
+                    ReadEnum(stream, name);
+                    return;
+                case SymbolType.FileName:
+                    return;
+                case SymbolType.Struct when taggedSymbol.DerivedTypeDef.Type == PrimitiveType.StructDef:
+                    ReadStruct(stream, name);
+                    break;
+                case SymbolType.Union when taggedSymbol.DerivedTypeDef.Type == PrimitiveType.UnionDef:
+                    ReadUnion(stream, name);
+                    break;
+                case SymbolType.Typedef:
+                    AddTypedef(name, taggedSymbol);
+                    break;
+                case SymbolType.External when taggedSymbol.DerivedTypeDef.IsFunctionReturnType:
+                    _funcTypes[name] = taggedSymbol.AsCode("").Trim();
+                    break;
+                case SymbolType.External:
+                    _externs.Add($"extern {taggedSymbol.AsCode(name)}; // offset 0x{offset:X}");
+                    break;
+                case SymbolType.Static when taggedSymbol.DerivedTypeDef.IsFunctionReturnType:
+                    _funcTypes[name] = taggedSymbol.AsCode("").Trim();
+                    break;
+                case SymbolType.Static:
+                    _externs.Add($"static {taggedSymbol.AsCode(name)}; // offset 0x{offset:X}");
+                    break;
+                default:
+                    throw new Exception($"Failed to handle {nameof(TaggedSymbol)}");
             }
-
-            if (ti.ClassType == ClassType.FileName)
-                return;
-            if (ti.ClassType == ClassType.Struct && ti.TypeDef.BaseType == BaseType.StructDef)
-                ReadStruct(stream, name);
-            else if (ti.ClassType == ClassType.Union && ti.TypeDef.BaseType == BaseType.UnionDef)
-                ReadUnion(stream, name);
-            else if (ti.ClassType == ClassType.Typedef)
-                AddTypedef(name, ti);
-            else if (ti.ClassType == ClassType.External)
-                if (ti.TypeDef.IsFunctionReturnType)
-                    _funcTypes[name] = ti.AsCode("").Trim();
-                else
-                    _externs.Add($"extern {ti.AsCode(name)}; // offset 0x{offset:X}");
-            else if (ti.ClassType == ClassType.Static)
-                if (ti.TypeDef.IsFunctionReturnType)
-                    _funcTypes[name] = ti.AsCode("").Trim();
-                else
-                    _externs.Add($"static {ti.AsCode(name)}; // offset 0x{offset:X}");
-            else
-                throw new Exception("Gomorrha");
         }
 
-        private void DumpType22(BinaryReader stream, int offset)
+        private void ReadTopLevelArrayDef(BinaryReader stream, int offset)
         {
-            var ti = stream.ReadTypeInfo(true);
+            var taggedSymbol = stream.ReadTaggedSymbol(true);
             var name = stream.ReadPascalString();
 
-            if (ti.ClassType == ClassType.Enum && ti.TypeDef.BaseType == BaseType.EnumDef)
-                ReadEnum(stream, name);
-            else if (ti.ClassType == ClassType.Typedef)
-                AddTypedef(name, ti);
-            else if (ti.ClassType == ClassType.External)
-                if (ti.TypeDef.IsFunctionReturnType)
-                    _funcTypes[name] = ti.AsCode("").Trim();
-                else
-                    _externs.Add($"extern {ti.AsCode(name)}; // offset 0x{offset:X}");
-            else if (ti.ClassType == ClassType.Static)
-                if (ti.TypeDef.IsFunctionReturnType)
-                    _funcTypes[name] = ti.AsCode("").Trim();
-                else
-                    _externs.Add($"static {ti.AsCode(name)}; // offset 0x{offset:X}");
-            else
-                throw new Exception("Gomorrha");
+            switch (taggedSymbol.Type)
+            {
+                case SymbolType.Enum when taggedSymbol.DerivedTypeDef.Type == PrimitiveType.EnumDef:
+                    ReadEnum(stream, name);
+                    break;
+                case SymbolType.Typedef:
+                    AddTypedef(name, taggedSymbol);
+                    break;
+                case SymbolType.External when taggedSymbol.DerivedTypeDef.IsFunctionReturnType:
+                    _funcTypes[name] = taggedSymbol.AsCode("").Trim();
+                    break;
+                case SymbolType.External:
+                    _externs.Add($"extern {taggedSymbol.AsCode(name)}; // offset 0x{offset:X}");
+                    break;
+                case SymbolType.Static when taggedSymbol.DerivedTypeDef.IsFunctionReturnType:
+                    _funcTypes[name] = taggedSymbol.AsCode("").Trim();
+                    break;
+                case SymbolType.Static:
+                    _externs.Add($"static {taggedSymbol.AsCode(name)}; // offset 0x{offset:X}");
+                    break;
+                default:
+                    throw new Exception($"Failed to handle {nameof(TaggedSymbol)}");
+            }
         }
 
-        private void DumpType24(BinaryReader stream, int offset)
+        private void ReadOverlayDef(BinaryReader stream, int offset)
         {
             var overlay = new Overlay(stream);
             _overlays.Add($"Overlay {overlay} // offset 0x{offset:X}");
+        }
+
+        private void ReadSetOverlay(int offset)
+        {
+            _setOverlays.Add($"Set overlay 0x{offset:X}");
         }
 
         public Function FindFunction(uint addr)

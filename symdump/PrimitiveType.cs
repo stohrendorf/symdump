@@ -1,6 +1,6 @@
 ﻿namespace symdump
 {
-    public enum BaseType
+    public enum PrimitiveType
     {
         Null = 0,
         Void = 1,

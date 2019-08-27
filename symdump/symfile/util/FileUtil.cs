@@ -14,45 +14,52 @@ namespace symdump.symfile.util
             var length = fs.ReadByte();
             var result = "";
             while (length-- > 0)
-                result += fs.ReadChar();
+            {
+                var b = fs.ReadByte();
+                if (b >= 0x20 && b < 0x80)
+                    result += (char) b;
+                else
+                    result += $"\\x{b:x2}";
+            }
+
             return result;
         }
 
-        public static TypeDef ReadTypeDef(this BinaryReader s)
+        public static DerivedTypeDef ReadDerivedTypeDef(this BinaryReader s)
         {
-            return new TypeDef(s);
+            return new DerivedTypeDef(s);
         }
 
-        public static TypeInfo ReadTypeInfo(this BinaryReader s, bool withDimensions)
+        public static TaggedSymbol ReadTaggedSymbol(this BinaryReader s, bool isArray)
         {
-            return new TypeInfo(s, withDimensions);
+            return new TaggedSymbol(s, isArray);
         }
 
-        public static ClassType ReadClassType(this BinaryReader s)
+        public static SymbolType ReadSymbolType(this BinaryReader s)
         {
-            return (ClassType) s.ReadUInt16();
+            return (SymbolType) s.ReadUInt16();
         }
 
         public static bool SkipSld(this BinaryReader reader, TypedValue typedValue)
         {
             switch (typedValue.Type & 0x7f)
             {
-                case 0:
+                case TypedValue.IncSLD:
                     return true;
-                case 2:
+                case TypedValue.AddSLD1:
                     reader.Skip(1);
                     return true;
-                case 4:
+                case TypedValue.AddSLD2:
                     reader.Skip(2);
                     return true;
-                case 6:
+                case TypedValue.SetSLD:
                     reader.Skip(4);
                     return true;
-                case 8:
+                case TypedValue.SetSLDFile:
                     reader.Skip(4);
                     reader.Skip(reader.ReadByte());
                     return true;
-                case 10:
+                case TypedValue.EndSLDInfo:
                     return true;
             }
 
