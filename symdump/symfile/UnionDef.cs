@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using symdump.symfile.util;
 using symdump.util;
 
 namespace symdump.symfile
@@ -10,11 +10,11 @@ namespace symdump.symfile
     public class UnionDef : IEquatable<UnionDef>
     {
         private readonly List<StructMember> _members = new List<StructMember>();
-        private readonly string _name;
+        public string Name;
 
         public UnionDef(BinaryReader stream, string name)
         {
-            _name = name;
+            Name = name;
             while (true)
             {
                 var typedValue = new TypedValue(stream);
@@ -43,23 +43,32 @@ namespace symdump.symfile
             }
         }
 
-        public bool IsFake => new Regex(@"^\.\d+fake$").IsMatch(_name);
+        public bool IsFake => Name.IsFake();
 
         public bool Equals(UnionDef other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return _members.SequenceEqual(other._members) && string.Equals(_name, other._name);
+            return _members.SequenceEqual(other._members) && string.Equals(Name, other.Name);
         }
 
-        public void Dump(IndentedTextWriter writer)
+        public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,
+            IDictionary<string, UnionDef> unions)
         {
-            writer.WriteLine($"union {_name} {{");
+            foreach (var member in _members) member.ApplyInline(enums, structs, unions);
+        }
+
+        public void Dump(IndentedTextWriter writer, bool forInline)
+        {
+            writer.WriteLine(forInline ? "union {" : $"union {Name} {{");
             ++writer.Indent;
             foreach (var m in _members)
                 writer.WriteLine(m);
             --writer.Indent;
-            writer.WriteLine("};");
+            if (forInline)
+                writer.Write("}");
+            else
+                writer.WriteLine("};");
         }
 
         public override bool Equals(object obj)
@@ -75,7 +84,7 @@ namespace symdump.symfile
             unchecked
             {
                 return ((_members != null ? _members.GetHashCode() : 0) * 397) ^
-                       (_name != null ? _name.GetHashCode() : 0);
+                       (Name != null ? Name.GetHashCode() : 0);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using symdump.symfile.util;
 
@@ -16,8 +17,10 @@ namespace symdump.symfile
             _name = reader.ReadPascalString();
             TypedValue = tv;
 
-            if (MemberType.Type != SymbolType.Bitfield && MemberType.Type != SymbolType.StructMember &&
-                MemberType.Type != SymbolType.UnionMember && MemberType.Type != SymbolType.EndOfStruct)
+            if (MemberType.Type != SymbolType.Bitfield
+                && MemberType.Type != SymbolType.StructMember
+                && MemberType.Type != SymbolType.UnionMember
+                && MemberType.Type != SymbolType.EndOfStruct)
                 throw new Exception($"Unexpected {nameof(SymbolType)} {MemberType.Type}");
         }
 
@@ -25,8 +28,15 @@ namespace symdump.symfile
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(_name, other._name) && MemberType.Equals(other.MemberType) &&
-                   TypedValue.Equals(other.TypedValue);
+            return string.Equals(_name, other._name)
+                   && (MemberType.Equals(other.MemberType) || MemberType.Size == 0 || other.MemberType.Size == 0)
+                   && TypedValue.Equals(other.TypedValue);
+        }
+
+        public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,
+            IDictionary<string, UnionDef> unions)
+        {
+            MemberType.ApplyInline(enums, structs, unions);
         }
 
         public override string ToString()

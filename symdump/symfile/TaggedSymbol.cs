@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text;
 using symdump.symfile.util;
+using symdump.util;
 
 namespace symdump.symfile
 {
@@ -36,7 +38,9 @@ namespace symdump.symfile
             }
         }
 
-        private bool IsFake => Tag != null && new Regex(@"^\.\d+fake$").IsMatch(Tag);
+        public string InnerCode { get; set; }
+
+        public bool IsFake => Tag?.IsFake() ?? false;
 
         public bool Equals(TaggedSymbol other)
         {
@@ -49,9 +53,37 @@ namespace symdump.symfile
                    Extents.SequenceEqual(other.Extents) && sameTag;
         }
 
+        public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,
+            IDictionary<string, UnionDef> unions)
+        {
+            if (!IsFake || Type == SymbolType.EndOfStruct)
+                return;
+
+            var sb = new StringBuilder();
+            var writer = new IndentedTextWriter(new StringWriter(sb));
+            switch (DerivedTypeDef.Type)
+            {
+                case PrimitiveType.StructDef:
+                    structs[Tag].Dump(writer, true);
+                    break;
+                case PrimitiveType.UnionDef:
+                    unions[Tag].Dump(writer, true);
+                    break;
+                case PrimitiveType.EnumDef:
+                    enums[Tag].Dump(writer, true);
+                    break;
+                default:
+                    throw new Exception($"Cannot de-fake {DerivedTypeDef.Type} (Tag {Tag})");
+            }
+
+            InnerCode = sb.ToString();
+            if (string.IsNullOrEmpty(InnerCode)) InnerCode = null;
+        }
+
         public override string ToString()
         {
-            return $"classType={Type} typeDef={DerivedTypeDef} size={Size}, dims=[{string.Join(",", Extents)}]";
+            return
+                $"{nameof(Type)}={Type} {nameof(DerivedTypeDef)}={DerivedTypeDef} {nameof(Size)}={Size}, {nameof(Extents)}=[{string.Join(",", Extents)}]";
         }
 
         public string AsCode(string name)

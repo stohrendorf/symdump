@@ -67,16 +67,28 @@ namespace symdump.symfile
                         memberName = reader.ReadPascalString();
                         break;
                     default:
-                        throw new Exception("Nope");
+                        throw new Exception($"Unexpected function definition type {typedValue.Type}");
                 }
 
                 if (taggedSymbol == null || memberName == null)
                     break;
 
-                if (taggedSymbol.Type == SymbolType.Argument)
-                    _parameters.Add($"{taggedSymbol.AsCode(memberName)} /*stack {typedValue.Value}*/");
-                else if (taggedSymbol.Type == SymbolType.RegParam)
-                    _parameters.Add($"{taggedSymbol.AsCode(memberName)} /*${(Register) typedValue.Value}*/");
+                if (taggedSymbol.IsFake)
+                    throw new Exception("Functions cannot have fake types");
+
+                switch (taggedSymbol.Type)
+                {
+                    case SymbolType.AutoVar:
+                    case SymbolType.Argument:
+                        _parameters.Add($"{taggedSymbol.AsCode(memberName)} /*stack {typedValue.Value}*/");
+                        break;
+                    case SymbolType.RegParam:
+                    case SymbolType.Register:
+                        _parameters.Add($"{taggedSymbol.AsCode(memberName)} /*${(Register) typedValue.Value}*/");
+                        break;
+                    default:
+                        throw new Exception($"Unexpected parameter type {taggedSymbol.Type}");
+                }
             }
         }
 

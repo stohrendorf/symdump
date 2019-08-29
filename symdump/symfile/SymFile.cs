@@ -1,4 +1,6 @@
-﻿using System;
+﻿// #define WITH_SLD
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,15 +11,15 @@ namespace symdump.symfile
 {
     public class SymFile
     {
-        private readonly Dictionary<string, EnumDef> _enums = new Dictionary<string, EnumDef>();
+        private readonly IDictionary<string, EnumDef> _enums = new Dictionary<string, EnumDef>();
         private readonly SortedSet<string> _externs = new SortedSet<string>();
         private readonly Dictionary<string, string> _funcTypes = new Dictionary<string, string>();
         private readonly SortedSet<string> _overlays = new SortedSet<string>();
         private readonly SortedSet<string> _setOverlays = new SortedSet<string>();
-        private readonly Dictionary<string, StructDef> _structs = new Dictionary<string, StructDef>();
+        private readonly IDictionary<string, StructDef> _structs = new Dictionary<string, StructDef>();
         private readonly byte _targetUnit;
-        private readonly Dictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
-        private readonly Dictionary<string, UnionDef> _unions = new Dictionary<string, UnionDef>();
+        private readonly IDictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
+        private readonly IDictionary<string, UnionDef> _unions = new Dictionary<string, UnionDef>();
         private readonly byte _version;
         public readonly List<Function> Functions = new List<Function>();
         internal readonly Dictionary<uint, List<Label>> Labels = new Dictionary<uint, List<Label>>();
@@ -33,33 +35,48 @@ namespace symdump.symfile
 
             stream.Skip(3);
             while (stream.BaseStream.Position < stream.BaseStream.Length)
-                DumpEntry(stream);
+                ReadEntry(stream);
+        }
+
+        private void ApplyInline()
+        {
+            foreach (var s in _structs.Values) s.ApplyInline(_enums, _structs, _unions);
+
+            foreach (var s in _unions.Values) s.ApplyInline(_enums, _structs, _unions);
         }
 
         public void Dump(TextWriter output)
         {
+            ApplyInline();
+
+            foreach (var k in _structs.Keys.Where(_ => _.IsFake()).ToList()) _structs.Remove(k);
+
+            foreach (var k in _unions.Keys.Where(_ => _.IsFake()).ToList()) _unions.Remove(k);
+
+            foreach (var k in _enums.Keys.Where(_ => _.IsFake()).ToList()) _enums.Remove(k);
+
             var writer = new IndentedTextWriter(output);
             writer.WriteLine($"Version = {_version}, targetUnit = {_targetUnit}");
 
             writer.WriteLine();
             writer.WriteLine($"// {_enums.Count} enums");
             foreach (var e in _enums.Values)
-                e.Dump(writer);
+                e.Dump(writer, false);
 
             writer.WriteLine();
             writer.WriteLine($"// {_unions.Count} unions");
             foreach (var e in _unions.Values)
-                e.Dump(writer);
+                e.Dump(writer, false);
 
             writer.WriteLine();
             writer.WriteLine($"// {_structs.Count} structs");
             foreach (var e in _structs.Values)
-                e.Dump(writer);
+                e.Dump(writer, false);
 
             writer.WriteLine();
             writer.WriteLine($"// {_typedefs.Count} typedefs");
-            foreach (var t in _typedefs)
-                writer.WriteLine($"typedef {t.Value.AsCode(t.Key)};");
+            foreach (var (key, value) in _typedefs)
+                writer.WriteLine($"typedef {value.AsCode(key)};");
 
             writer.WriteLine();
             writer.WriteLine($"// {Labels.Count} labels");
@@ -88,7 +105,7 @@ namespace symdump.symfile
                 writer.WriteLine(o);
         }
 
-        private void DumpEntry(BinaryReader stream)
+        private void ReadEntry(BinaryReader stream)
         {
             var typedValue = new TypedValue(stream);
             if (typedValue.Type == 8)
@@ -112,34 +129,35 @@ namespace symdump.symfile
             {
                 case TypedValue.IncSLD:
 #if WITH_SLD
-                writer.WriteLine($"${typedValue.value:X} Inc SLD linenum");
+                    Console.WriteLine($"${typedValue.Value:X} Inc SLD linenum");
 #endif
                     break;
                 case TypedValue.AddSLD1:
 #if WITH_SLD
-                writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by byte {stream.ReadU1()}");
+                    Console.WriteLine($"${typedValue.Value:X} Inc SLD linenum by byte {stream.ReadByte()}");
 #else
                     stream.Skip(1);
 #endif
                     break;
                 case TypedValue.AddSLD2:
 #if WITH_SLD
-                writer.WriteLine($"${typedValue.value:X} Inc SLD linenum by word {stream.ReadUInt16()}");
+                    Console.WriteLine($"${typedValue.Value:X} Inc SLD linenum by word {stream.ReadUInt16()}");
 #else
                     stream.Skip(2);
 #endif
                     break;
                 case TypedValue.SetSLD:
 #if WITH_SLD
-                writer.WriteLine($"${typedValue.value:X} Set SLD linenum to {stream.ReadUInt32()}");
+                    Console.WriteLine($"${typedValue.Value:X} Set SLD linenum to {stream.ReadUInt32()}");
 #else
                     stream.Skip(4);
 #endif
                     break;
                 case TypedValue.SetSLDFile:
+                    ApplyInline();
 #if WITH_SLD
-                writer.WriteLine($"${typedValue.value:X} Set SLD to line {stream.ReadUInt32()} of file " +
-                    stream.readPascalString());
+                    Console.WriteLine($"${typedValue.Value:X} Set SLD to line {stream.ReadUInt32()} of file " +
+                                      stream.ReadPascalString());
 #else
                     stream.Skip(4);
                     stream.Skip(stream.ReadByte());
@@ -147,7 +165,7 @@ namespace symdump.symfile
                     break;
                 case TypedValue.EndSLDInfo:
 #if WITH_SLD
-                writer.WriteLine($"${typedValue.value:X} End SLD info");
+                    Console.WriteLine($"${typedValue.Value:X} End SLD info");
 #endif
                     break;
                 case TypedValue.Function:
@@ -173,94 +191,85 @@ namespace symdump.symfile
         private void ReadFunction(BinaryReader stream, int offset)
         {
             Functions.Add(new Function(stream, (uint) offset, _funcTypes));
-            //writer.WriteLine("{");
-            //++writer.Indent;
         }
 
         private void ReadEnum(BinaryReader reader, string name)
         {
-            var e = new EnumDef(reader, name);
+            var enumDef = new EnumDef(reader, name);
 
-            if (_enums.TryGetValue(name, out var already))
-            {
-                if (!e.Equals(already))
-                    throw new Exception($"Non-uniform definitions of enum {name}");
+            if (!enumDef.IsFake && _enums.TryGetValue(name, out var already) && !enumDef.Equals(already))
+                throw new Exception($"Non-uniform definition of enum {name}");
 
-                return;
-            }
-
-            _enums.Add(name, e);
+            _enums[name] = enumDef;
         }
 
         private void ReadUnion(BinaryReader reader, string name)
         {
-            var e = new UnionDef(reader, name);
+            var unionDef = new UnionDef(reader, name);
 
-            if (_unions.TryGetValue(name, out var already))
-            {
-                if (e.Equals(already))
-                    return;
+            if (!unionDef.IsFake && _unions.TryGetValue(name, out var already) && !unionDef.Equals(already))
+                throw new Exception($"Non-uniform definition of union {name}");
 
-                if (!e.IsFake)
-                    throw new Exception($"Non-uniform definitions of union {name}");
-
-                // generate new "fake fake" name
-                var n = 0;
-                while (_unions.ContainsKey($"{name}.{n}"))
-                    ++n;
-
-                _unions.Add($"{name}.{n}", e);
-
-                return;
-            }
-
-            _unions.Add(name, e);
+            _unions[name] = unionDef;
         }
 
         private void ReadStruct(BinaryReader reader, string name)
         {
-            var e = new StructDef(reader, name);
+            var structDef = new StructDef(reader, name);
 
-            if (_structs.TryGetValue(name, out var already))
-            {
-                if (e.Equals(already))
-                    return;
+            if (!structDef.IsFake && _structs.TryGetValue(name, out var already) && !structDef.Equals(already))
+                throw new Exception($"Non-uniform definition of struct {name}");
 
-                if (!e.IsFake)
-                {
-                    var writer = new IndentedTextWriter(Console.Out);
-                    writer.WriteLine($"WARNING: Non-uniform definitions of struct {name}");
-                    writer.WriteLine("This is the definition already present:");
-                    writer.Indent++;
-                    already.Dump(writer);
-                    writer.Indent--;
-                    writer.WriteLine("This is the new definition:");
-                    writer.Indent++;
-                    e.Dump(writer);
-                    writer.Indent--;
-                }
-
-                // generate new "fake fake" name
-                var n = 0;
-                while (_structs.ContainsKey($"{name}.{n}"))
-                    ++n;
-
-                _structs.Add($"{name}.{n}", e);
-
-                return;
-            }
-
-            _structs.Add(name, e);
+            _structs[name] = structDef;
         }
 
         private void AddTypedef(string name, TaggedSymbol taggedSymbol)
         {
             if (_typedefs.TryGetValue(name, out var already))
             {
-                if (!taggedSymbol.Equals(already))
-                    throw new Exception($"Non-uniform definitions of typedef for {name}");
+                if (taggedSymbol.Equals(already))
+                    return;
 
-                return;
+                var writer = new IndentedTextWriter(Console.Out);
+                writer.WriteLine($"WARNING: Non-uniform definitions of typedef {name}");
+                writer.WriteLine("This is the definition already present:");
+                writer.Indent++;
+                writer.WriteLine(already.ToString());
+                writer.WriteLine(already.AsCode(name));
+                switch (already.DerivedTypeDef.Type)
+                {
+                    case PrimitiveType.StructDef:
+                        _structs[already.Tag].Dump(writer, false);
+                        break;
+                    case PrimitiveType.UnionDef:
+                        _unions[already.Tag].Dump(writer, false);
+                        break;
+                    case PrimitiveType.EnumDef:
+                        _enums[already.Tag].Dump(writer, false);
+                        break;
+                }
+
+                writer.Indent--;
+                writer.WriteLine("This is the new definition:");
+                writer.Indent++;
+                writer.WriteLine(taggedSymbol.ToString());
+                writer.WriteLine(taggedSymbol.AsCode(name));
+                switch (taggedSymbol.DerivedTypeDef.Type)
+                {
+                    case PrimitiveType.StructDef:
+                        _structs[taggedSymbol.Tag].Dump(writer, false);
+                        break;
+                    case PrimitiveType.UnionDef:
+                        _unions[taggedSymbol.Tag].Dump(writer, false);
+                        break;
+                    case PrimitiveType.EnumDef:
+                        _enums[taggedSymbol.Tag].Dump(writer, false);
+                        break;
+                }
+
+                writer.Indent--;
+
+                throw new Exception($"Non-uniform definition of typedef {name}");
             }
 
             _typedefs.Add(name, taggedSymbol);
@@ -275,9 +284,10 @@ namespace symdump.symfile
             {
                 case SymbolType.Enum when taggedSymbol.DerivedTypeDef.Type == PrimitiveType.EnumDef:
                     ReadEnum(stream, name);
-                    return;
+                    break;
                 case SymbolType.FileName:
-                    return;
+                    ApplyInline();
+                    break;
                 case SymbolType.Struct when taggedSymbol.DerivedTypeDef.Type == PrimitiveType.StructDef:
                     ReadStruct(stream, name);
                     break;

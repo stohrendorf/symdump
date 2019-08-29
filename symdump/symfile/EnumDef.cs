@@ -63,6 +63,8 @@ namespace symdump.symfile
             }
         }
 
+        public bool IsFake => _name.IsFake();
+
         public bool Equals(EnumDef other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -86,7 +88,7 @@ namespace symdump.symfile
             }
         }
 
-        public void Dump(IndentedTextWriter writer)
+        public void Dump(IndentedTextWriter writer, bool forInline)
         {
             string cType;
             switch (_size)
@@ -104,12 +106,15 @@ namespace symdump.symfile
                     throw new Exception($"Cannot determine primitive type for size {_size}");
             }
 
-            writer.WriteLine($"enum {_name} : {cType} {{");
+            writer.WriteLine(forInline ? $"enum : {cType} {{" : $"enum {_name} : {cType} {{");
             ++writer.Indent;
-            foreach (var kvp in _members)
-                writer.WriteLine($"{kvp.Key} = {kvp.Value},");
+            foreach (var (key, value) in _members)
+                writer.WriteLine($"{key} = {value},");
             --writer.Indent;
-            writer.WriteLine("};");
+            if (forInline)
+                writer.Write("}");
+            else
+                writer.WriteLine("};");
         }
     }
 }

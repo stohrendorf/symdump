@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using symdump.symfile.util;
 using symdump.util;
 
 namespace symdump.symfile
@@ -18,32 +18,23 @@ namespace symdump.symfile
             while (true)
             {
                 var typedValue = new TypedValue(stream);
+
+                StructMember member;
                 if (typedValue.Type == (0x80 | TypedValue.Definition))
-                {
-                    var m = new StructMember(typedValue, stream, false);
-
-                    if (m.MemberType.Type == SymbolType.EndOfStruct)
-                        break;
-
-                    _members.Add(m);
-                }
+                    member = new StructMember(typedValue, stream, false);
                 else if (typedValue.Type == (0x80 | TypedValue.ArrayDefinition))
-                {
-                    var m = new StructMember(typedValue, stream, true);
-
-                    if (m.MemberType.Type == SymbolType.EndOfStruct)
-                        break;
-
-                    _members.Add(m);
-                }
+                    member = new StructMember(typedValue, stream, true);
                 else
-                {
                     throw new Exception("Unexpected entry");
-                }
+
+                if (member.MemberType.Type == SymbolType.EndOfStruct)
+                    break;
+
+                _members.Add(member);
             }
         }
 
-        public bool IsFake => new Regex(@"^\.\d+fake$").IsMatch(_name);
+        public bool IsFake => _name.IsFake();
 
         public bool Equals(StructDef other)
         {
@@ -52,14 +43,23 @@ namespace symdump.symfile
             return _members.SequenceEqual(other._members) && string.Equals(_name, other._name);
         }
 
-        public void Dump(IndentedTextWriter writer)
+        public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,
+            IDictionary<string, UnionDef> unions)
         {
-            writer.WriteLine($"struct {_name} {{");
+            foreach (var member in _members) member.ApplyInline(enums, structs, unions);
+        }
+
+        public void Dump(IndentedTextWriter writer, bool forInline)
+        {
+            writer.WriteLine(forInline ? "struct {" : $"struct {_name} {{");
             ++writer.Indent;
             foreach (var m in _members)
                 writer.WriteLine(m);
             --writer.Indent;
-            writer.WriteLine("};");
+            if (forInline)
+                writer.Write("}");
+            else
+                writer.WriteLine("};");
         }
 
         public override bool Equals(object obj)
@@ -74,8 +74,7 @@ namespace symdump.symfile
         {
             unchecked
             {
-                return ((_members != null ? _members.GetHashCode() : 0) * 397) ^
-                       (_name != null ? _name.GetHashCode() : 0);
+                return ((_members != null ? _members.GetHashCode() : 0) * 397) ^ (_name?.GetHashCode() ?? 0);
             }
         }
 

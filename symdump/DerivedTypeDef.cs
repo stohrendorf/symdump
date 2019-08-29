@@ -46,15 +46,15 @@ namespace symdump
             {
                 case PrimitiveType.StructDef:
                     Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
-                    cType = $"struct {taggedSymbol.Tag}";
+                    cType = taggedSymbol.InnerCode ?? $"struct {taggedSymbol.Tag}";
                     break;
                 case PrimitiveType.UnionDef:
                     Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
-                    cType = $"union {taggedSymbol.Tag}";
+                    cType = taggedSymbol.InnerCode ?? $"union {taggedSymbol.Tag}";
                     break;
                 case PrimitiveType.EnumDef:
                     Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
-                    cType = $"enum {taggedSymbol.Tag}";
+                    cType = taggedSymbol.InnerCode ?? $"enum {taggedSymbol.Tag}";
                     break;
                 case PrimitiveType.Char:
                     cType = "char";

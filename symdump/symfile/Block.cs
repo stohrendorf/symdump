@@ -34,6 +34,7 @@ namespace symdump.symfile
                 if (reader.SkipSld(typedValue))
                     continue;
 
+                // FIXME: fake type resolution
                 switch (typedValue.Type & 0x7f)
                 {
                     case TypedValue.Block:
