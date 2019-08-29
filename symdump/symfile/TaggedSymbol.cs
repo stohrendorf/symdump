@@ -49,8 +49,11 @@ namespace symdump.symfile
 
             var sameTag = Tag == other.Tag || IsFake || other.IsFake;
 
-            return Type == other.Type && DerivedTypeDef.Equals(other.DerivedTypeDef) && Size == other.Size &&
-                   Extents.SequenceEqual(other.Extents) && sameTag;
+            return Type == other.Type
+                   && DerivedTypeDef.Equals(other.DerivedTypeDef)
+                   && (Size == other.Size || Type == SymbolType.Typedef || Size == 0 || other.Size == 0)
+                   && Extents.SequenceEqual(other.Extents)
+                   && sameTag;
         }
 
         public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,

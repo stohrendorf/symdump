@@ -100,7 +100,7 @@ namespace symdump.symfile
         {
             writer.WriteLine("/*");
             writer.WriteLine($" * Offset 0x{Address:X}");
-            writer.WriteLine($" * {_file} (line {_line})");
+            writer.WriteLine($" * {_file} (lines {_line}..{_lastLine})");
             writer.WriteLine($" * Stack frame base ${_stackBase}, size {_stackFrameSize}");
             if (_mask != 0)
                 writer.WriteLine($" * Saved registers at offset {_maskOffs}: {string.Join(" ", SavedRegisters)}");

@@ -29,7 +29,7 @@ namespace symdump.symfile
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return string.Equals(_name, other._name)
-                   && (MemberType.Equals(other.MemberType) || MemberType.Size == 0 || other.MemberType.Size == 0)
+                   && MemberType.Equals(other.MemberType)
                    && TypedValue.Equals(other.TypedValue);
         }
 
