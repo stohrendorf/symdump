@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,18 +9,22 @@ namespace symdump
 {
     public class DerivedTypeDef : IEquatable<DerivedTypeDef>
     {
-        private readonly DerivedType[] _derivedTypes = new DerivedType[6];
+        private readonly IReadOnlyList<DerivedType> _derivedTypes;
         public readonly PrimitiveType Type;
 
         public DerivedTypeDef(BinaryReader fs)
         {
             var val = fs.ReadUInt16();
             Type = (PrimitiveType) (val & 0x0f);
+            var types = new List<DerivedType>();
             for (var i = 0; i < 6; ++i)
             {
-                var x = (val >> (i * 2 + 4)) & 3;
-                _derivedTypes[i] = (DerivedType) x;
+                var x = (DerivedType) ((val >> (i * 2 + 4)) & 3);
+                if (x != DerivedType.None)
+                    types.Add(x);
             }
+
+            _derivedTypes = types;
         }
 
         public bool IsFunctionReturnType => _derivedTypes.Contains(DerivedType.FunctionReturnType);
@@ -33,7 +38,7 @@ namespace symdump
 
         public override string ToString()
         {
-            var attributes = string.Join(",", _derivedTypes.Where(e => e != DerivedType.None));
+            var attributes = string.Join(",", _derivedTypes);
             return attributes.Length == 0 ? Type.ToString() : $"{Type}({attributes})";
         }
 
@@ -97,8 +102,6 @@ namespace symdump
             foreach (var dt in _derivedTypes)
                 switch (dt)
                 {
-                    case DerivedType.None:
-                        continue;
                     case DerivedType.Array:
                         Debug.Assert(name != null);
                         name += $"[{taggedSymbol.Extents[dimIdx]}]";
@@ -106,7 +109,7 @@ namespace symdump
                         needsParens = true;
                         break;
                     case DerivedType.FunctionReturnType:
-                        if (name != "")
+                        if (!string.IsNullOrEmpty(name))
                         {
                             name = needsParens ? $"({name})()" : $"{name}()";
                             needsParens = true;
@@ -117,6 +120,8 @@ namespace symdump
                         name = $"*{name}";
                         needsParens = true;
                         break;
+                    default:
+                        throw new Exception($"Unexpected derived type {dt}");
                 }
 
             return $"{cType} {name}";
@@ -134,7 +139,7 @@ namespace symdump
         {
             unchecked
             {
-                return ((int) Type * 397) ^ (_derivedTypes != null ? _derivedTypes.GetHashCode() : 0);
+                return ((int) Type * 397) ^ (_derivedTypes?.GetHashCode() ?? 0);
             }
         }
     }

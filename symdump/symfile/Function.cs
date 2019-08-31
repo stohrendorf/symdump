@@ -49,7 +49,7 @@ namespace symdump.symfile
                     continue;
 
                 TaggedSymbol taggedSymbol;
-                string memberName;
+                string symbolName;
                 switch (typedValue.Type & 0x7f)
                 {
                     case TypedValue.FunctionEnd:
@@ -60,31 +60,33 @@ namespace symdump.symfile
                         continue;
                     case TypedValue.Definition:
                         taggedSymbol = reader.ReadTaggedSymbol(false);
-                        memberName = reader.ReadPascalString();
+                        symbolName = reader.ReadPascalString();
                         break;
                     case TypedValue.ArrayDefinition:
                         taggedSymbol = reader.ReadTaggedSymbol(true);
-                        memberName = reader.ReadPascalString();
+                        symbolName = reader.ReadPascalString();
                         break;
                     default:
                         throw new Exception($"Unexpected function definition type {typedValue.Type}");
                 }
 
-                if (taggedSymbol == null || memberName == null)
+                if (taggedSymbol == null || symbolName == null)
                     break;
 
                 if (taggedSymbol.IsFake)
-                    throw new Exception("Functions cannot have fake types");
+                    // FIXME sometimes a simple "typedef struct {} foo;" is replaced by the underlying fake struct name,
+                    //       which needs to be resolved here.
+                    throw new Exception("Function parameters cannot have fake types");
 
                 switch (taggedSymbol.Type)
                 {
                     case SymbolType.AutoVar:
                     case SymbolType.Argument:
-                        _parameters.Add($"{taggedSymbol.AsCode(memberName)} /*stack {typedValue.Value}*/");
+                        _parameters.Add($"{taggedSymbol.AsCode(symbolName)} /*stack {typedValue.Value}*/");
                         break;
                     case SymbolType.RegParam:
                     case SymbolType.Register:
-                        _parameters.Add($"{taggedSymbol.AsCode(memberName)} /*${(Register) typedValue.Value}*/");
+                        _parameters.Add($"{taggedSymbol.AsCode(symbolName)} /*${(Register) typedValue.Value}*/");
                         break;
                     default:
                         throw new Exception($"Unexpected parameter type {taggedSymbol.Type}");
