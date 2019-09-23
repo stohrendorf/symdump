@@ -1,21 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using symdump.symfile.util;
 
 namespace symdump.symfile
 {
-    public class StructMember : IEquatable<StructMember>
+    /// <summary>
+    ///     Member field of a struct or union.
+    /// </summary>
+    public class CompoundMember : IEquatable<CompoundMember>
     {
         private readonly string _name;
         public readonly TaggedSymbol MemberType;
         public readonly TypedValue TypedValue;
 
-        public StructMember(TypedValue tv, BinaryReader reader, bool extended)
+        public CompoundMember(TypedValue typedValue, BinaryReader reader, bool isArray)
         {
-            MemberType = reader.ReadTaggedSymbol(extended);
+            MemberType = reader.ReadTaggedSymbol(isArray);
             _name = reader.ReadPascalString();
-            TypedValue = tv;
+            TypedValue = typedValue;
 
             if (MemberType.Type != SymbolType.Bitfield
                 && MemberType.Type != SymbolType.StructMember
@@ -24,19 +26,13 @@ namespace symdump.symfile
                 throw new Exception($"Unexpected {nameof(SymbolType)} {MemberType.Type}");
         }
 
-        public bool Equals(StructMember other)
+        public bool Equals(CompoundMember other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return string.Equals(_name, other._name)
                    && MemberType.Equals(other.MemberType)
                    && TypedValue.Equals(other.TypedValue);
-        }
-
-        public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,
-            IDictionary<string, UnionDef> unions)
-        {
-            MemberType.ApplyInline(enums, structs, unions);
         }
 
         public override string ToString()
@@ -60,7 +56,7 @@ namespace symdump.symfile
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((StructMember) obj);
+            return Equals((CompoundMember) obj);
         }
 
         public override int GetHashCode()
@@ -72,6 +68,11 @@ namespace symdump.symfile
                 hashCode = (hashCode * 397) ^ (TypedValue != null ? TypedValue.GetHashCode() : 0);
                 return hashCode;
             }
+        }
+
+        public void ResolveTypedef(ObjectFile objectFile)
+        {
+            MemberType.ResolveTypedef(objectFile);
         }
     }
 }

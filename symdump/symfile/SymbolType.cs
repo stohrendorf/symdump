@@ -1,7 +1,8 @@
-﻿namespace symdump
+﻿namespace symdump.symfile
 {
-    public enum SymbolType
+    public enum SymbolType : short
     {
+        EndFunction = -1,
         Null = 0,
 
         // ebp relative
@@ -27,17 +28,19 @@
         UndefinedStatic = 14,
         Enum = 15,
 
-        // member value
         EnumMember = 16,
         RegParam = 17,
 
-        // bitmask
         Bitfield = 18,
         AutoArgument = 19,
         LastEntry = 20,
 
-        // struct size
+        Block = 100,
+        Function = 101,
         EndOfStruct = 102,
-        FileName = 103
+        FileName = 103,
+        Line = 104,
+        Alias = 105,
+        Hidden = 106
     }
 }

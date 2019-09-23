@@ -7,10 +7,9 @@ using symdump.util;
 
 namespace symdump.symfile
 {
-    public class UnionDef : IEquatable<UnionDef>
+    public class UnionDef : IEquatable<UnionDef>, IComplexType
     {
-        private readonly List<StructMember> _members = new List<StructMember>();
-        public string Name;
+        private readonly List<CompoundMember> _members = new List<CompoundMember>();
 
         public UnionDef(BinaryReader stream, string name)
         {
@@ -20,7 +19,7 @@ namespace symdump.symfile
                 var typedValue = new TypedValue(stream);
                 if (typedValue.Type == (0x80 | TypedValue.Definition))
                 {
-                    var m = new StructMember(typedValue, stream, false);
+                    var m = new CompoundMember(typedValue, stream, false);
 
                     if (m.MemberType.Type == SymbolType.EndOfStruct)
                         break;
@@ -29,7 +28,7 @@ namespace symdump.symfile
                 }
                 else if (typedValue.Type == (0x80 | TypedValue.ArrayDefinition))
                 {
-                    var m = new StructMember(typedValue, stream, true);
+                    var m = new CompoundMember(typedValue, stream, true);
 
                     if (m.MemberType.Type == SymbolType.EndOfStruct)
                         break;
@@ -43,23 +42,18 @@ namespace symdump.symfile
             }
         }
 
+        public string Name { get; }
         public bool IsFake => Name.IsFake();
-
-        public bool Equals(UnionDef other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return _members.SequenceEqual(other._members) && string.Equals(Name, other.Name);
-        }
-
-        public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,
-            IDictionary<string, UnionDef> unions)
-        {
-            foreach (var member in _members) member.ApplyInline(enums, structs, unions);
-        }
+        public IDictionary<string, TaggedSymbol> Typedefs { get; set; } = new SortedDictionary<string, TaggedSymbol>();
 
         public void Dump(IndentedTextWriter writer, bool forInline)
         {
+            if (forInline && Typedefs.Count > 0)
+            {
+                writer.Write(string.Join(", ", Typedefs.Select(_ => _.Value.AsCode(_.Key, true))));
+                return;
+            }
+
             writer.WriteLine(forInline ? "union {" : $"union {Name} {{");
             ++writer.Indent;
             foreach (var m in _members)
@@ -69,6 +63,18 @@ namespace symdump.symfile
                 writer.Write("}");
             else
                 writer.WriteLine("};");
+        }
+
+        public void ResolveTypedefs(ObjectFile objectFile)
+        {
+            foreach (var member in _members) member.ResolveTypedef(objectFile);
+        }
+
+        public bool Equals(UnionDef other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _members.SequenceEqual(other._members) && string.Equals(Name, other.Name);
         }
 
         public override bool Equals(object obj)

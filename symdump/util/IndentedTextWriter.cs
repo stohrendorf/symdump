@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace symdump.util
@@ -7,13 +8,18 @@ namespace symdump.util
     {
         private readonly TextWriter _inner;
         private bool _indent = true;
+        private int _indentSize;
 
         public IndentedTextWriter(TextWriter inner)
         {
             _inner = inner;
         }
 
-        public int Indent { get; set; }
+        public int Indent
+        {
+            get => _indentSize;
+            set => _indentSize = Math.Max(value, 0);
+        }
 
         public override Encoding Encoding => _inner.Encoding;
 

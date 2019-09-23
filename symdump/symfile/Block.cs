@@ -21,7 +21,7 @@ namespace symdump.symfile
         private readonly Dictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
         private readonly List<string> _vars = new List<string>();
 
-        public Block(BinaryReader reader, uint ofs, uint ln, Function f)
+        public Block(BinaryReader reader, uint ofs, uint ln, Function f, ObjectFile objectFile)
         {
             _startOffset = ofs;
             _startLine = ln;
@@ -38,7 +38,8 @@ namespace symdump.symfile
                 switch (typedValue.Type & 0x7f)
                 {
                     case TypedValue.Block:
-                        _subBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), _function));
+                        _subBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), _function,
+                            objectFile));
                         break;
                     case TypedValue.BlockEnd:
                         _endOffset = (uint) typedValue.Value;
@@ -49,6 +50,7 @@ namespace symdump.symfile
                         var taggedSymbol = reader.ReadTaggedSymbol(false);
                         var memberName = reader.ReadPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
+                        taggedSymbol.ResolveTypedef(objectFile);
                         switch (taggedSymbol.Type)
                         {
                             case SymbolType.AutoVar:
@@ -79,6 +81,7 @@ namespace symdump.symfile
                         var taggedSymbol = reader.ReadTaggedSymbol(true);
                         var memberName = reader.ReadPascalString();
                         Debug.Assert(!string.IsNullOrEmpty(memberName));
+                        taggedSymbol.ResolveTypedef(objectFile);
                         switch (taggedSymbol.Type)
                         {
                             case SymbolType.AutoVar:

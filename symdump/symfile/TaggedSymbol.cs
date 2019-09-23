@@ -1,20 +1,19 @@
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using symdump.symfile.util;
-using symdump.util;
 
 namespace symdump.symfile
 {
     public class TaggedSymbol : IEquatable<TaggedSymbol>
     {
         public readonly DerivedTypeDef DerivedTypeDef;
-        public readonly uint[] Extents;
         public readonly uint Size;
-        public readonly string Tag;
         public readonly SymbolType Type;
+        public uint[] Extents;
+        public bool IsResolvedTypedef;
+        public string Tag;
 
         public TaggedSymbol(BinaryReader reader, bool isArray)
         {
@@ -38,8 +37,7 @@ namespace symdump.symfile
             }
         }
 
-        public string InnerCode { get; set; }
-
+        public string InnerCode { get; private set; }
         public bool IsFake => Tag?.IsFake() ?? false;
 
         public bool Equals(TaggedSymbol other)
@@ -48,39 +46,36 @@ namespace symdump.symfile
             if (ReferenceEquals(this, other)) return true;
 
             var sameTag = Tag == other.Tag || IsFake || other.IsFake;
+            if (!sameTag)
+                return false;
 
-            return Type == other.Type
-                   && DerivedTypeDef.Equals(other.DerivedTypeDef)
-                   && (Size == other.Size || Type == SymbolType.Typedef || Size == 0 || other.Size == 0)
-                   && Extents.SequenceEqual(other.Extents)
-                   && sameTag;
+            if (Type != other.Type && Type != SymbolType.Typedef && other.Type == SymbolType.Typedef)
+                return false;
+
+            if (Size != other.Size && Size != 0 && other.Size != 0)
+                return false;
+
+            return DerivedTypeDef.Equals(other.DerivedTypeDef)
+                   && Extents.SequenceEqual(other.Extents);
         }
 
-        public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,
-            IDictionary<string, UnionDef> unions)
+        public bool IsPartOf(TaggedSymbol other, int dropLast)
         {
-            if (!IsFake || Type == SymbolType.EndOfStruct)
-                return;
+            if (dropLast < 1)
+                throw new ArgumentOutOfRangeException(nameof(dropLast));
 
-            var sb = new StringBuilder();
-            var writer = new IndentedTextWriter(new StringWriter(sb));
-            switch (DerivedTypeDef.Type)
-            {
-                case PrimitiveType.StructDef:
-                    structs[Tag].Dump(writer, true);
-                    break;
-                case PrimitiveType.UnionDef:
-                    unions[Tag].Dump(writer, true);
-                    break;
-                case PrimitiveType.EnumDef:
-                    enums[Tag].Dump(writer, true);
-                    break;
-                default:
-                    throw new Exception($"Cannot de-fake {DerivedTypeDef.Type} (Tag {Tag})");
-            }
+            if (ReferenceEquals(null, other))
+                return false;
 
-            InnerCode = sb.ToString();
-            if (string.IsNullOrEmpty(InnerCode)) InnerCode = null;
+            if (Type != SymbolType.Typedef)
+                throw new Exception("IsPartOf only works for typedefs");
+
+            var sameTag = Tag == other.Tag || IsFake || other.IsFake;
+            if (!sameTag)
+                return false;
+
+            return DerivedTypeDef.IsPartOf(other.DerivedTypeDef, dropLast, out var droppedExtents)
+                   && Extents.SequenceEqual(other.Extents.SkipLast(droppedExtents));
         }
 
         public override string ToString()
@@ -89,9 +84,9 @@ namespace symdump.symfile
                 $"{nameof(Tag)}={Tag} {nameof(Type)}={Type} {nameof(DerivedTypeDef)}={DerivedTypeDef} {nameof(Size)}={Size}, {nameof(Extents)}=[{string.Join(",", Extents)}]";
         }
 
-        public string AsCode(string name)
+        public string AsCode(string name, bool onlyDecorated = false)
         {
-            return DerivedTypeDef.AsCode(name, this);
+            return DerivedTypeDef.AsCode(name, this, onlyDecorated);
         }
 
         public override bool Equals(object obj)
@@ -113,6 +108,25 @@ namespace symdump.symfile
                 hashCode = (hashCode * 397) ^ (!IsFake ? Tag.GetHashCode() : 0);
                 return hashCode;
             }
+        }
+
+        public void ResolveTypedef(ObjectFile objectFile)
+        {
+            if (string.IsNullOrEmpty(Tag) || !IsFake || IsResolvedTypedef)
+                return;
+
+            var resolved = objectFile.ReverseTypedef(this, out var droppedDerived);
+            Debug.Assert(!string.IsNullOrEmpty(resolved));
+
+            Tag = resolved;
+            IsResolvedTypedef = true;
+
+            if (droppedDerived == 0)
+                return;
+
+            var droppedArrays = DerivedTypeDef.RetainDerived(droppedDerived);
+            if (droppedArrays > 0)
+                Extents = Extents.SkipLast(droppedArrays).ToArray();
         }
     }
 }

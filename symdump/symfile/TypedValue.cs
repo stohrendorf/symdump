@@ -9,7 +9,7 @@ namespace symdump.symfile
         public const int AddSLD1 = 2;
         public const int AddSLD2 = 4;
         public const int SetSLD = 6;
-        public const int SetSLDFile = 8;
+        public const int BeginSLD = 8;
         public const int EndSLDInfo = 10;
         public const int Function = 12;
         public const int FunctionEnd = 14;
@@ -19,13 +19,15 @@ namespace symdump.symfile
         public const int ArrayDefinition = 22;
         public const int Overlay = 24;
         public const int SetOverlay = 26;
+        public const int Function2 = 28;
+        public const int MangledName = 30;
         public readonly byte Type;
         public readonly int Value;
 
-        public TypedValue(BinaryReader fs)
+        public TypedValue(BinaryReader stream)
         {
-            Value = fs.ReadInt32();
-            Type = fs.ReadByte();
+            Value = stream.ReadInt32();
+            Type = stream.ReadByte();
         }
 
         public bool IsLabel => (Type & 0x80) == 0;

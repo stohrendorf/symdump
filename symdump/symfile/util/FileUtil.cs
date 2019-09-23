@@ -55,7 +55,7 @@ namespace symdump.symfile.util
                 case TypedValue.SetSLD:
                     reader.Skip(4);
                     return true;
-                case TypedValue.SetSLDFile:
+                case TypedValue.BeginSLD:
                     reader.Skip(4);
                     reader.Skip(reader.ReadByte());
                     return true;

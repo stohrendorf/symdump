@@ -7,15 +7,14 @@ using symdump.util;
 
 namespace symdump.symfile
 {
-    public class EnumDef : IEquatable<EnumDef>
+    public class EnumDef : IEquatable<EnumDef>, IComplexType
     {
         private readonly Dictionary<string, int> _members = new Dictionary<string, int>();
-        private readonly string _name;
         private readonly uint _size;
 
         public EnumDef(BinaryReader stream, string name)
         {
-            _name = name;
+            Name = name;
             while (true)
             {
                 var typedValue = new TypedValue(stream);
@@ -63,33 +62,18 @@ namespace symdump.symfile
             }
         }
 
-        public bool IsFake => _name.IsFake();
-
-        public bool Equals(EnumDef other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return _members.SequenceEqual(other._members) && string.Equals(_name, other._name);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((EnumDef) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (_members.GetHashCode() * 397) ^ _name.GetHashCode();
-            }
-        }
+        public string Name { get; }
+        public bool IsFake => Name.IsFake();
+        public IDictionary<string, TaggedSymbol> Typedefs { get; set; } = new SortedDictionary<string, TaggedSymbol>();
 
         public void Dump(IndentedTextWriter writer, bool forInline)
         {
+            if (forInline && Typedefs.Count > 0)
+            {
+                writer.Write(string.Join(", ", Typedefs.Select(_ => _.Value.AsCode(_.Key, true))));
+                return;
+            }
+
             string cType;
             switch (_size)
             {
@@ -106,7 +90,7 @@ namespace symdump.symfile
                     throw new Exception($"Cannot determine primitive type for size {_size}");
             }
 
-            writer.WriteLine(forInline ? $"enum : {cType} {{" : $"enum {_name} : {cType} {{");
+            writer.WriteLine(forInline ? $"enum : {cType} {{" : $"enum {Name} : {cType} {{");
             ++writer.Indent;
             foreach (var (key, value) in _members)
                 writer.WriteLine($"{key} = {value},");
@@ -115,6 +99,33 @@ namespace symdump.symfile
                 writer.Write("}");
             else
                 writer.WriteLine("};");
+        }
+
+        public void ResolveTypedefs(ObjectFile objectFile)
+        {
+        }
+
+        public bool Equals(EnumDef other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _members.SequenceEqual(other._members) && string.Equals(Name, other.Name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((EnumDef) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (_members.GetHashCode() * 397) ^ Name.GetHashCode();
+            }
         }
     }
 }

@@ -24,7 +24,7 @@ namespace symdump.symfile
         private readonly uint _stackFrameSize;
         public readonly uint Address;
 
-        public Function(BinaryReader reader, uint ofs, IReadOnlyDictionary<string, string> funcTypes)
+        public Function(BinaryReader reader, uint ofs, ObjectFile objectFile)
         {
             Address = ofs;
 
@@ -38,8 +38,19 @@ namespace symdump.symfile
             _file = reader.ReadPascalString();
             _name = reader.ReadPascalString();
 
-            if (!funcTypes.TryGetValue(_name, out _returnType))
+            if (!objectFile.FuncTypes.TryGetValue(_name, out var fnType))
+            {
                 _returnType = "__UNKNOWN__";
+            }
+            else
+            {
+                fnType.ResolveTypedef(objectFile);
+                _returnType = fnType.AsCode("").Trim();
+                if (!_returnType.EndsWith("()"))
+                    throw new Exception($"Expected function return type to end with '()', got {_returnType}");
+
+                _returnType = _returnType.Substring(0, _returnType.Length - 2).Trim();
+            }
 
             while (true)
             {
@@ -56,7 +67,7 @@ namespace symdump.symfile
                         _lastLine = reader.ReadUInt32();
                         return;
                     case TypedValue.Block:
-                        _blocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), this));
+                        _blocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), this, objectFile));
                         continue;
                     case TypedValue.Definition:
                         taggedSymbol = reader.ReadTaggedSymbol(false);
@@ -73,10 +84,7 @@ namespace symdump.symfile
                 if (taggedSymbol == null || symbolName == null)
                     break;
 
-                if (taggedSymbol.IsFake)
-                    // FIXME sometimes a simple "typedef struct {} foo;" is replaced by the underlying fake struct name,
-                    //       which needs to be resolved here.
-                    throw new Exception("Function parameters cannot have fake types");
+                if (taggedSymbol.IsFake) taggedSymbol.ResolveTypedef(objectFile);
 
                 switch (taggedSymbol.Type)
                 {
@@ -101,8 +109,7 @@ namespace symdump.symfile
         public void Dump(IndentedTextWriter writer)
         {
             writer.WriteLine("/*");
-            writer.WriteLine($" * Offset 0x{Address:X}");
-            writer.WriteLine($" * {_file} (lines {_line}..{_lastLine})");
+            writer.WriteLine($" * Offset 0x{Address:X}, from {_file} (lines {_line}..{_lastLine})");
             writer.WriteLine($" * Stack frame base ${_stackBase}, size {_stackFrameSize}");
             if (_mask != 0)
                 writer.WriteLine($" * Saved registers at offset {_maskOffs}: {string.Join(" ", SavedRegisters)}");

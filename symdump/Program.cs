@@ -1,6 +1,5 @@
-﻿using System.IO;
-using symdump.exefile;
-using symdump.exefile.util;
+﻿using System;
+using System.IO;
 using symdump.symfile;
 
 namespace symdump
@@ -12,8 +11,8 @@ namespace symdump
             SymFile symFile;
             using (var fs = new FileStream(args[0], FileMode.Open))
             {
-                symFile = new SymFile(new BinaryReader(fs));
-                symFile.Dump(System.Console.Out);
+                symFile = new SymFile(new BinaryReader(fs), false);
+                symFile.Dump(Console.Out);
             }
 
             var exeFilename = Path.ChangeExtension(args[0], "EXE");
@@ -21,11 +20,13 @@ namespace symdump
             if (!File.Exists(exeFilename))
                 return;
 
+#if false
             using (var fs = new EndianBinaryReader(new FileStream(exeFilename, FileMode.Open)))
             {
                 var exeFile = new ExeFile(fs, symFile);
                 exeFile.Disassemble();
             }
+#endif
         }
     }
 }

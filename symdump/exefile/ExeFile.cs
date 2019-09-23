@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using symdump.exefile.disasm;
-using symdump.exefile.instructions;
-using symdump.exefile.operands;
-using symdump.exefile.util;
-using symdump.symfile;
-
-namespace symdump.exefile
+﻿namespace symdump.exefile
 {
+#if false
     public class ExeFile
     {
         private readonly Queue<uint> _analysisQueue = new Queue<uint>();
@@ -43,8 +33,7 @@ namespace symdump.exefile
         {
             addr = (uint) (addr + rel);
 
-            List<Label> lbls;
-            if (!_symFile.Labels.TryGetValue(addr, out lbls))
+            if (!_symFile.Labels.TryGetValue(addr, out var lbls))
                 return $"lbl_{addr:X}";
 
             return lbls.First().Name;
@@ -52,8 +41,7 @@ namespace symdump.exefile
 
         private IEnumerable<string> GetSymbolNames(uint addr)
         {
-            List<Label> lbls;
-            _symFile.Labels.TryGetValue(addr + _header.TAddr, out lbls);
+            _symFile.Labels.TryGetValue(addr + _header.TAddr, out var lbls);
             return lbls?.Select(l => l.Name);
         }
 
@@ -65,8 +53,7 @@ namespace symdump.exefile
 
         private void AddXref(uint from, uint to)
         {
-            HashSet<uint> froms;
-            if (!_xrefs.TryGetValue(to, out froms))
+            if (!_xrefs.TryGetValue(to, out var froms))
                 _xrefs.Add(to, froms = new HashSet<uint>());
 
             froms.Add(from);
@@ -77,8 +64,7 @@ namespace symdump.exefile
 
         private HashSet<uint> GetXrefs(uint to)
         {
-            HashSet<uint> froms;
-            _xrefs.TryGetValue(to, out froms);
+            _xrefs.TryGetValue(to, out var froms);
             return froms;
         }
 
@@ -114,8 +100,7 @@ namespace symdump.exefile
                 index += 4;
                 var insn = _instructions[index - 4] = DecodeInstruction(data, index);
 
-                var cbranchInsn = insn as ConditionalBranchInstruction;
-                if (cbranchInsn != null)
+                if (insn is ConditionalBranchInstruction)
                 {
                     data = DataAt(index);
                     index += 4;
@@ -127,8 +112,7 @@ namespace symdump.exefile
                     continue;
                 }
 
-                var callInsn = insn as CallPtrInstruction;
-                if (callInsn != null)
+                if (insn is CallPtrInstruction)
                 {
                     data = DataAt(index);
                     index += 4;
@@ -718,4 +702,5 @@ namespace symdump.exefile
             }
         }
     }
+#endif
 }

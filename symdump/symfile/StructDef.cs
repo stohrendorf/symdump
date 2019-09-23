@@ -7,23 +7,22 @@ using symdump.util;
 
 namespace symdump.symfile
 {
-    public class StructDef : IEquatable<StructDef>
+    public class StructDef : IEquatable<StructDef>, IComplexType
     {
-        private readonly List<StructMember> _members = new List<StructMember>();
-        private readonly string _name;
+        private readonly List<CompoundMember> _members = new List<CompoundMember>();
 
         public StructDef(BinaryReader stream, string name)
         {
-            _name = name;
+            Name = name;
             while (true)
             {
                 var typedValue = new TypedValue(stream);
 
-                StructMember member;
+                CompoundMember member;
                 if (typedValue.Type == (0x80 | TypedValue.Definition))
-                    member = new StructMember(typedValue, stream, false);
+                    member = new CompoundMember(typedValue, stream, false);
                 else if (typedValue.Type == (0x80 | TypedValue.ArrayDefinition))
-                    member = new StructMember(typedValue, stream, true);
+                    member = new CompoundMember(typedValue, stream, true);
                 else
                     throw new Exception("Unexpected entry");
 
@@ -34,24 +33,19 @@ namespace symdump.symfile
             }
         }
 
-        public bool IsFake => _name.IsFake();
-
-        public bool Equals(StructDef other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return _members.SequenceEqual(other._members) && string.Equals(_name, other._name);
-        }
-
-        public void ApplyInline(IDictionary<string, EnumDef> enums, IDictionary<string, StructDef> structs,
-            IDictionary<string, UnionDef> unions)
-        {
-            foreach (var member in _members) member.ApplyInline(enums, structs, unions);
-        }
+        public string Name { get; }
+        public bool IsFake => Name.IsFake();
+        public IDictionary<string, TaggedSymbol> Typedefs { get; set; } = new SortedDictionary<string, TaggedSymbol>();
 
         public void Dump(IndentedTextWriter writer, bool forInline)
         {
-            writer.WriteLine(forInline ? "struct {" : $"struct {_name} {{");
+            if (forInline && Typedefs.Count > 0)
+            {
+                writer.Write(string.Join(", ", Typedefs.Select(_ => _.Value.AsCode(_.Key, true))));
+                return;
+            }
+
+            writer.WriteLine(forInline ? "struct {" : $"struct {Name} {{");
             ++writer.Indent;
             foreach (var m in _members)
                 writer.WriteLine(m);
@@ -60,6 +54,18 @@ namespace symdump.symfile
                 writer.Write("}");
             else
                 writer.WriteLine("};");
+        }
+
+        public void ResolveTypedefs(ObjectFile objectFile)
+        {
+            foreach (var member in _members) member.ResolveTypedef(objectFile);
+        }
+
+        public bool Equals(StructDef other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _members.SequenceEqual(other._members) && string.Equals(Name, other.Name);
         }
 
         public override bool Equals(object obj)
@@ -74,16 +80,8 @@ namespace symdump.symfile
         {
             unchecked
             {
-                return ((_members != null ? _members.GetHashCode() : 0) * 397) ^ (_name?.GetHashCode() ?? 0);
+                return ((_members != null ? _members.GetHashCode() : 0) * 397) ^ (Name?.GetHashCode() ?? 0);
             }
-        }
-
-        public StructMember ForOffset(uint ofs)
-        {
-            return _members
-                .Where(m => m.MemberType.Type != SymbolType.Bitfield && m.TypedValue.Value <= ofs)
-                .OrderBy(m => m.TypedValue.Value)
-                .FirstOrDefault();
         }
     }
 }
