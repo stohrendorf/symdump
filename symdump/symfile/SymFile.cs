@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using symdump.symfile.util;
 using symdump.util;
 
@@ -24,7 +25,6 @@ namespace symdump.symfile
         //    d) SDL end entry
         //    e) definitions
         // 3. List of filenames (object/library files)
-        private readonly SortedSet<string> _setOverlays = new SortedSet<string>();
         private readonly byte _targetUnit;
         private readonly byte _version;
 
@@ -39,8 +39,6 @@ namespace symdump.symfile
             stream.Skip(3);
             if (!flat)
             {
-                var writer = new IndentedTextWriter(Console.Out);
-
                 while (true)
                 {
                     var basePos = stream.BaseStream.Position;
@@ -56,7 +54,7 @@ namespace symdump.symfile
                     }
                 }
 
-                while (stream.BaseStream.Position < stream.BaseStream.Length) new ObjectFile(stream).Dump(writer);
+                while (stream.BaseStream.Position < stream.BaseStream.Length) _files.Add(new ObjectFile(stream));
             }
             else
             {
@@ -198,6 +196,11 @@ namespace symdump.symfile
             }
         }
 
+        public IEnumerable<KeyValuePair<uint, List<Label>>> Labels =>
+            _files.SelectMany(objectFile => objectFile.Labels);
+
+        public IEnumerable<Function> Functions => _files.SelectMany(_ => _.Functions);
+
         private static SymbolType PrintClass(BinaryReader stream, IndentedTextWriter writer)
         {
             var type = (SymbolType) stream.ReadInt16();
@@ -229,12 +232,8 @@ namespace symdump.symfile
             var writer = new IndentedTextWriter(output);
             writer.WriteLine($"Version = {_version}, targetUnit = {_targetUnit}");
 
-            foreach (var objectFile in _files) objectFile.Dump(writer);
-
-            writer.WriteLine();
-            writer.WriteLine($"// {_setOverlays.Count} set overlays");
-            foreach (var o in _setOverlays)
-                writer.WriteLine(o);
+            foreach (var objectFile in _files)
+                objectFile.Dump(writer);
         }
 
 

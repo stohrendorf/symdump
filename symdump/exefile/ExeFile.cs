@@ -1,9 +1,20 @@
-﻿namespace symdump.exefile
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using symdump.exefile.disasm;
+using symdump.exefile.instructions;
+using symdump.exefile.operands;
+using symdump.exefile.util;
+using symdump.symfile;
+
+namespace symdump.exefile
 {
-#if false
     public class ExeFile
     {
         private readonly Queue<uint> _analysisQueue = new Queue<uint>();
+        private readonly SortedSet<uint> _callees = new SortedSet<uint>();
         private readonly byte[] _data;
         private readonly uint? _gpBase;
 
@@ -12,7 +23,6 @@
         private readonly SortedDictionary<uint, Instruction> _instructions = new SortedDictionary<uint, Instruction>();
         private readonly SymFile _symFile;
         private readonly Dictionary<uint, HashSet<uint>> _xrefs = new Dictionary<uint, HashSet<uint>>();
-        private readonly SortedSet<uint> _callees = new SortedSet<uint>();
 
         public ExeFile(EndianBinaryReader reader, SymFile symFile)
         {
@@ -24,7 +34,7 @@
             _data = reader.ReadBytes((int) _header.TSize);
 
             _gpBase = _symFile.Labels
-                .Where(byOffset => byOffset.Value.Any(lbl => lbl.Name.Equals("__SN_GP_BASE")))
+                .Where(_ => _.Value.Any(lbl => lbl.Name.Equals("__SN_GP_BASE")))
                 .Select(lbl => lbl.Key)
                 .FirstOrDefault();
         }
@@ -33,16 +43,21 @@
         {
             addr = (uint) (addr + rel);
 
-            if (!_symFile.Labels.TryGetValue(addr, out var lbls))
-                return $"lbl_{addr:X}";
+            var lbls = _symFile.Labels
+                .Where(_ => _.Key == addr)
+                .Select(_ => _.Value)
+                .SingleOrDefault();
 
-            return lbls.First().Name;
+            return lbls?.First().Name ?? $"lbl_{addr:X}";
         }
 
         private IEnumerable<string> GetSymbolNames(uint addr)
         {
-            _symFile.Labels.TryGetValue(addr + _header.TAddr, out var lbls);
-            return lbls?.Select(l => l.Name);
+            var lbls = _symFile.Labels
+                .Where(_ => _.Key == addr + _header.TAddr)
+                .Select(_ => _.Value)
+                .SingleOrDefault();
+            return lbls?.Select(_ => _.Name);
         }
 
         private void AddCall(uint from, uint to)
@@ -135,7 +150,7 @@
                 if (insn.Value.AsReadable().Equals("nop"))
                     continue;
 
-                var f = _symFile.FindFunction(insn.Key + _header.TAddr);
+                var f = _symFile.Functions.FirstOrDefault(_ => _.Address == insn.Key + _header.TAddr);
                 if (f != null)
                     Console.WriteLine();
 
@@ -702,5 +717,4 @@
             }
         }
     }
-#endif
 }

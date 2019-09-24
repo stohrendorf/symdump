@@ -35,6 +35,8 @@
         AutoArgument = 19,
         LastEntry = 20,
 
+        MangledName = 30, // str mangled, str unmangled
+
         Block = 100,
         Function = 101,
         EndOfStruct = 102,

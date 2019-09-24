@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using symdump.exefile;
+using symdump.exefile.util;
 using symdump.symfile;
 
 namespace symdump
@@ -20,13 +22,11 @@ namespace symdump
             if (!File.Exists(exeFilename))
                 return;
 
-#if false
             using (var fs = new EndianBinaryReader(new FileStream(exeFilename, FileMode.Open)))
             {
                 var exeFile = new ExeFile(fs, symFile);
                 exeFile.Disassemble();
             }
-#endif
         }
     }
 }

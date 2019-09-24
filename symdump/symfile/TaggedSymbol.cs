@@ -1,8 +1,8 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using symdump.symfile.util;
+using symdump.util;
 
 namespace symdump.symfile
 {
@@ -116,7 +116,16 @@ namespace symdump.symfile
                 return;
 
             var resolved = objectFile.ReverseTypedef(this, out var droppedDerived);
-            Debug.Assert(!string.IsNullOrEmpty(resolved));
+            if (resolved == null)
+            {
+                var sb = new StringWriter();
+                var writer = new IndentedTextWriter(sb);
+                objectFile.ComplexTypes[Tag].Dump(writer, true);
+                objectFile.ComplexTypes.Remove(Tag);
+                InnerCode = sb.ToString();
+                IsResolvedTypedef = true;
+                return;
+            }
 
             Tag = resolved;
             IsResolvedTypedef = true;

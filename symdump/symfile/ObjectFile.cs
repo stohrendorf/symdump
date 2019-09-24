@@ -9,13 +9,14 @@ namespace symdump.symfile
 {
     public class ObjectFile
     {
-        private readonly IDictionary<string, IComplexType> _complexTypes = new Dictionary<string, IComplexType>();
         private readonly IList<ExternStatic> _externStatics = new List<ExternStatic>();
-        private readonly List<Function> _functions = new List<Function>();
-        private readonly Dictionary<uint, List<Label>> _labels = new Dictionary<uint, List<Label>>();
         private readonly ISet<string> _srcFile = new SortedSet<string>();
         private readonly IDictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
+        public readonly IDictionary<string, IComplexType> ComplexTypes = new Dictionary<string, IComplexType>();
+        public readonly List<Function> Functions = new List<Function>();
         public readonly Dictionary<string, TaggedSymbol> FuncTypes = new Dictionary<string, TaggedSymbol>();
+        public readonly Dictionary<uint, List<Label>> Labels = new Dictionary<uint, List<Label>>();
+        private string _objFilename;
         private int? _overlayId;
 
         public ObjectFile(BinaryReader stream)
@@ -30,11 +31,10 @@ namespace symdump.symfile
             //    a) (optional) set overlay
             //    b) List of labels
             ReadOverlayId(stream);
-            SkipSLD(stream);
 
             while (stream.BaseStream.Position < stream.BaseStream.Length && ReadEntry(stream))
-            {
-            }
+                if (_objFilename == null)
+                    _objFilename = string.Empty;
 
             ResolveTypedefs();
         }
@@ -45,13 +45,13 @@ namespace symdump.symfile
 
             foreach (var externStatic in _externStatics) externStatic.ResolveTypedef(this);
 
-            foreach (var complexType in _complexTypes.Values) complexType.ResolveTypedefs(this);
+            foreach (var complexType in ComplexTypes.Values.ToList()) complexType.ResolveTypedefs(this);
         }
 
         public void Dump(TextWriter output)
         {
-            foreach (var k in _complexTypes.Keys.Where(_ => _.IsFake()).ToList())
-                _complexTypes.Remove(k);
+            foreach (var k in ComplexTypes.Keys.Where(_ => _.IsFake()).ToList())
+                ComplexTypes.Remove(k);
 
             var writer = new IndentedTextWriter(output);
 
@@ -59,8 +59,8 @@ namespace symdump.symfile
                 $"Source files {string.Join("+", _srcFile)}, overlay id {_overlayId?.ToString() ?? "<none>"}");
 
             writer.WriteLine();
-            writer.WriteLine($"// {_complexTypes.Count} complex types");
-            foreach (var e in _complexTypes.Values)
+            writer.WriteLine($"// {ComplexTypes.Count} complex types");
+            foreach (var e in ComplexTypes.Values)
                 e.Dump(writer, false);
 
             writer.WriteLine();
@@ -69,8 +69,8 @@ namespace symdump.symfile
                 writer.WriteLine($"typedef {typedef.AsCode(typename)};");
 
             writer.WriteLine();
-            writer.WriteLine($"// {_labels.Count} labels");
-            foreach (var l2 in _labels.SelectMany(_ => _.Value))
+            writer.WriteLine($"// {Labels.Count} labels");
+            foreach (var l2 in Labels.SelectMany(_ => _.Value))
                 writer.WriteLine(l2);
 
             writer.WriteLine();
@@ -79,8 +79,8 @@ namespace symdump.symfile
                 writer.WriteLine(e);
 
             writer.WriteLine();
-            writer.WriteLine($"// {_functions.Count} functions");
-            foreach (var f in _functions)
+            writer.WriteLine($"// {Functions.Count} functions");
+            foreach (var f in Functions)
                 f.Dump(writer);
         }
 
@@ -148,17 +148,20 @@ namespace symdump.symfile
             {
                 var lbl = new Label(typedValue, stream);
 
-                if (!_labels.ContainsKey(lbl.Offset))
-                    _labels.Add(lbl.Offset, new List<Label>());
+                if (!Labels.ContainsKey(lbl.Offset))
+                    Labels.Add(lbl.Offset, new List<Label>());
 
-                _labels[lbl.Offset].Add(lbl);
+                Labels[lbl.Offset].Add(lbl);
                 return true;
             }
 
             switch (typedValue.Type & 0x7f)
             {
-                case TypedValue.SetOverlay:
                 case TypedValue.BeginSLD:
+                    stream.BaseStream.Position = basePos;
+                    SkipSLD(stream);
+                    return true;
+                case TypedValue.SetOverlay:
                 case TypedValue.EndSLDInfo:
                     stream.BaseStream.Position = basePos;
                     return false;
@@ -171,7 +174,8 @@ namespace symdump.symfile
                     ReadFunction(stream, typedValue.Value);
                     break;
                 case TypedValue.Definition:
-                    ReadTopLevelDef(stream, typedValue.Value);
+                    if (!ReadTopLevelDef(stream, typedValue.Value)) return false;
+
                     break;
                 case TypedValue.ArrayDefinition:
                     ReadTopLevelArrayDef(stream, typedValue.Value);
@@ -187,15 +191,15 @@ namespace symdump.symfile
 
         private void ReadFunction(BinaryReader stream, int offset)
         {
-            _functions.Add(new Function(stream, (uint) offset, this));
+            Functions.Add(new Function(stream, (uint) offset, this));
         }
 
         private void AddComplexType(IComplexType type)
         {
-            if (!type.IsFake && _complexTypes.TryGetValue(type.Name, out var already) && !type.Equals(already))
+            if (!type.IsFake && ComplexTypes.TryGetValue(type.Name, out var already) && !type.Equals(already))
                 throw new Exception($"Non-uniform definition of complex type {type.Name}");
 
-            _complexTypes[type.Name] = type;
+            ComplexTypes[type.Name] = type;
         }
 
         private void ReadEnum(BinaryReader reader, string name)
@@ -218,9 +222,9 @@ namespace symdump.symfile
             if (name.IsFake())
                 throw new Exception($"Found fake typedef name {name}");
 
-            if (taggedSymbol.IsFake && _complexTypes.ContainsKey(taggedSymbol.Tag))
+            if (taggedSymbol.IsFake && ComplexTypes.ContainsKey(taggedSymbol.Tag))
                 // found a typedef for a fake symbol, e.g. typedef struct .123fake {} FOO
-                _complexTypes[taggedSymbol.Tag].Typedefs.Add(name, taggedSymbol);
+                ComplexTypes[taggedSymbol.Tag].Typedefs.Add(name, taggedSymbol);
 
             if (_typedefs.TryGetValue(name, out var already))
             {
@@ -233,14 +237,14 @@ namespace symdump.symfile
                 writer.Indent++;
                 writer.WriteLine(already.ToString());
                 writer.WriteLine(already.AsCode(name));
-                _complexTypes[already.Tag].Dump(writer, false);
+                ComplexTypes[already.Tag].Dump(writer, false);
 
                 writer.Indent--;
                 writer.WriteLine("This is the new definition:");
                 writer.Indent++;
                 writer.WriteLine(taggedSymbol.ToString());
                 writer.WriteLine(taggedSymbol.AsCode(name));
-                _complexTypes[taggedSymbol.Tag].Dump(writer, false);
+                ComplexTypes[taggedSymbol.Tag].Dump(writer, false);
 
                 writer.Indent--;
 
@@ -250,7 +254,7 @@ namespace symdump.symfile
             _typedefs.Add(name, taggedSymbol);
         }
 
-        private void ReadTopLevelDef(BinaryReader stream, int offset)
+        private bool ReadTopLevelDef(BinaryReader stream, int offset)
         {
             var taggedSymbol = stream.ReadTaggedSymbol(false);
             var name = stream.ReadPascalString();
@@ -277,9 +281,25 @@ namespace symdump.symfile
                 case SymbolType.Static:
                     _externStatics.Add(new ExternStatic(taggedSymbol, name, offset));
                     break;
+                case SymbolType.FileName:
+                    switch (_objFilename)
+                    {
+                        case null:
+                            _objFilename = name;
+                            return true;
+                        case "":
+                            return false;
+                        default:
+                            if (_objFilename != name)
+                                throw new Exception($"Mismatching object file names, start={_objFilename}, end={name}");
+
+                            return false;
+                    }
                 default:
                     throw new Exception($"Failed to handle {nameof(TaggedSymbol)}");
             }
+
+            return true;
         }
 
         private void ReadTopLevelArrayDef(BinaryReader stream, int offset)
@@ -310,14 +330,14 @@ namespace symdump.symfile
 
         public Function FindFunction(uint addr)
         {
-            return _functions.FirstOrDefault(f => f.Address == addr);
+            return Functions.FirstOrDefault(f => f.Address == addr);
         }
 
         public string ReverseTypedef(TaggedSymbol taggedSymbol, out int droppedDerived)
         {
             droppedDerived = 0;
 
-            var complexType = _complexTypes[taggedSymbol.Tag];
+            var complexType = ComplexTypes[taggedSymbol.Tag];
             var typedefs = complexType.Typedefs
                 .Where(_ => _.Value.Equals(taggedSymbol))
                 .ToList();
