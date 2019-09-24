@@ -61,7 +61,7 @@ namespace symdump.symfile
 
         public bool IsPartOf(TaggedSymbol other, int dropLast)
         {
-            if (dropLast < 1)
+            if (dropLast < 0 || dropLast > DerivedTypeDef.MaxDerivedTypes)
                 throw new ArgumentOutOfRangeException(nameof(dropLast));
 
             if (ReferenceEquals(null, other))
@@ -118,10 +118,53 @@ namespace symdump.symfile
             var resolved = objectFile.ReverseTypedef(this, out var droppedDerived);
             if (resolved == null)
             {
+                var complexType = objectFile.ComplexTypes[Tag];
+                if (complexType.Inlined)
+                    throw new Exception($"Complex type {Tag} is already inlined");
+
+                switch (Type)
+                {
+                    case SymbolType.EndFunction:
+                    case SymbolType.Null:
+                    case SymbolType.External:
+                    case SymbolType.ExternalDefinition:
+                    case SymbolType.Label:
+                    case SymbolType.UndefinedLabel:
+                    case SymbolType.Argument:
+                    case SymbolType.Struct:
+                    case SymbolType.Union:
+                    case SymbolType.Enum:
+                    case SymbolType.EnumMember:
+                    case SymbolType.RegParam:
+                    case SymbolType.Bitfield:
+                    case SymbolType.AutoArgument:
+                    case SymbolType.LastEntry:
+                    case SymbolType.MangledName:
+                    case SymbolType.Block:
+                    case SymbolType.Function:
+                    case SymbolType.EndOfStruct:
+                    case SymbolType.FileName:
+                    case SymbolType.Line:
+                    case SymbolType.Alias:
+                    case SymbolType.Hidden:
+                        throw new Exception($"Attempting to inline complex type into a symbol of type {Type}");
+                    case SymbolType.AutoVar:
+                    case SymbolType.Static:
+                    case SymbolType.Register:
+                    case SymbolType.StructMember:
+                    case SymbolType.UnionMember:
+                    case SymbolType.Typedef:
+                    case SymbolType.UndefinedStatic:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
                 var sb = new StringWriter();
                 var writer = new IndentedTextWriter(sb);
-                objectFile.ComplexTypes[Tag].Dump(writer, true);
-                objectFile.ComplexTypes.Remove(Tag);
+                complexType.Dump(writer, true);
+                complexType.Inlined = true;
+
                 InnerCode = sb.ToString();
                 IsResolvedTypedef = true;
                 return;

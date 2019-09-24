@@ -45,6 +45,7 @@ namespace symdump.symfile
         public string Name { get; }
         public bool IsFake => Name.IsFake();
         public IDictionary<string, TaggedSymbol> Typedefs { get; set; } = new SortedDictionary<string, TaggedSymbol>();
+        public bool Inlined { get; set; }
 
         public void Dump(IndentedTextWriter writer, bool forInline)
         {

@@ -141,37 +141,37 @@ namespace symdump.exefile
             }
         }
 
-        public void Dump()
+        public void Dump(TextWriter output)
         {
-            foreach (var insn in _instructions)
+            foreach (var (addr, insn) in _instructions)
             {
-                if (_callees.Contains(insn.Key))
-                    Console.WriteLine("### FUNCTION");
-                if (insn.Value.AsReadable().Equals("nop"))
+                if (_callees.Contains(addr))
+                    output.WriteLine("### FUNCTION");
+                if (insn.AsReadable().Equals("nop"))
                     continue;
 
-                var f = _symFile.Functions.FirstOrDefault(_ => _.Address == insn.Key + _header.TAddr);
+                var f = _symFile.Functions.FirstOrDefault(_ => _.Address == addr + _header.TAddr);
                 if (f != null)
-                    Console.WriteLine();
+                    output.WriteLine();
 
-                var xrefsHere = GetXrefs(insn.Key);
+                var xrefsHere = GetXrefs(addr);
                 if (xrefsHere != null)
                 {
-                    Console.WriteLine("# XRefs:");
+                    output.WriteLine("# XRefs:");
                     foreach (var xref in xrefsHere)
-                        Console.WriteLine("# - " + GetSymbolName(xref));
-                    var names = GetSymbolNames(insn.Key);
+                        output.WriteLine("# - " + GetSymbolName(xref));
+                    var names = GetSymbolNames(addr);
                     if (names != null)
                         foreach (var name in names)
-                            Console.WriteLine(name + ":");
+                            output.WriteLine(name + ":");
                     else
-                        Console.WriteLine(GetSymbolName(insn.Key) + ":");
+                        output.WriteLine(GetSymbolName(addr) + ":");
                 }
 
                 if (f != null)
-                    Console.WriteLine(f.GetSignature());
+                    output.WriteLine(f.GetSignature());
 
-                Console.WriteLine($"  0x{insn.Key:X}  {insn.Value.AsReadable()}");
+                output.WriteLine($"  0x{addr:X}  {insn.AsReadable()}");
             }
         }
 

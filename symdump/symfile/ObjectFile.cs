@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NLog;
 using symdump.symfile.util;
 using symdump.util;
 
@@ -9,8 +10,10 @@ namespace symdump.symfile
 {
     public class ObjectFile
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         private readonly IList<ExternStatic> _externStatics = new List<ExternStatic>();
-        private readonly ISet<string> _srcFile = new SortedSet<string>();
+        private readonly ISet<string> _srcFiles = new SortedSet<string>();
         private readonly IDictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
         public readonly IDictionary<string, IComplexType> ComplexTypes = new Dictionary<string, IComplexType>();
         public readonly List<Function> Functions = new List<Function>();
@@ -21,6 +24,9 @@ namespace symdump.symfile
 
         public ObjectFile(BinaryReader stream)
         {
+            logger.Info(
+                $"Reading object file debug information at source file offset 0x{stream.BaseStream.Position:x8}");
+
             // For compiler information:
             //    a) (optional) set overlay
             //    b) SLD info with filename
@@ -37,14 +43,20 @@ namespace symdump.symfile
                     _objFilename = string.Empty;
 
             ResolveTypedefs();
+
+            if (_objFilename == "")
+                _objFilename = null;
         }
 
         private void ResolveTypedefs()
         {
+            logger.Info("Resolving typedef typedefs");
             foreach (var typedef in _typedefs.Values) typedef.ResolveTypedef(this);
 
+            logger.Info("Resolving extern/static typedefs");
             foreach (var externStatic in _externStatics) externStatic.ResolveTypedef(this);
 
+            logger.Info("Resolving function typedefs");
             foreach (var complexType in ComplexTypes.Values.ToList()) complexType.ResolveTypedefs(this);
         }
 
@@ -55,8 +67,9 @@ namespace symdump.symfile
 
             var writer = new IndentedTextWriter(output);
 
+            var srcFiles = _srcFiles.Count == 0 ? "<none>" : string.Join("+", _srcFiles);
             writer.WriteLine(
-                $"Source files {string.Join("+", _srcFile)}, overlay id {_overlayId?.ToString() ?? "<none>"}");
+                $"Source file(s) {srcFiles}, object file {_objFilename ?? "<none>"} overlay id {_overlayId?.ToString() ?? "<none>"}");
 
             writer.WriteLine();
             writer.WriteLine($"// {ComplexTypes.Count} complex types");
@@ -96,6 +109,7 @@ namespace symdump.symfile
 
         private void SkipSLD(BinaryReader stream)
         {
+            logger.Info("Skipping source line information");
             while (stream.BaseStream.Position < stream.BaseStream.Length)
             {
                 var basePos = stream.BaseStream.Position;
@@ -114,7 +128,7 @@ namespace symdump.symfile
                 {
                     case TypedValue.BeginSLD:
                         stream.Skip(4);
-                        _srcFile.Add(stream.ReadPascalString());
+                        _srcFiles.Add(stream.ReadPascalString());
                         break;
                     case TypedValue.IncSLD:
                         break;
@@ -162,8 +176,9 @@ namespace symdump.symfile
                     SkipSLD(stream);
                     return true;
                 case TypedValue.SetOverlay:
-                case TypedValue.EndSLDInfo:
                     stream.BaseStream.Position = basePos;
+                    return false;
+                case TypedValue.EndSLDInfo:
                     return false;
                 case TypedValue.IncSLD:
                 case TypedValue.AddSLD1:
@@ -352,7 +367,7 @@ namespace symdump.symfile
              *   FOO* foo;
              */
 
-            for (var i = 1; i <= DerivedTypeDef.MaxDerivedTypes; ++i)
+            for (var i = 0; i <= DerivedTypeDef.MaxDerivedTypes; ++i)
             {
                 droppedDerived = i;
                 var partialTypedefs = complexType.Typedefs
@@ -362,6 +377,7 @@ namespace symdump.symfile
                     return partialTypedefs[0].Key;
             }
 
+            droppedDerived = 0;
             return null;
         }
     }

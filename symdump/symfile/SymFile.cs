@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NLog;
 using symdump.symfile.util;
 using symdump.util;
 
@@ -11,6 +12,8 @@ namespace symdump.symfile
 {
     public class SymFile
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         private readonly IList<ObjectFile> _files = new List<ObjectFile>();
         private readonly string _mxInfo;
 
@@ -28,8 +31,9 @@ namespace symdump.symfile
         private readonly byte _targetUnit;
         private readonly byte _version;
 
-        public SymFile(BinaryReader stream, bool flat)
+        public SymFile(BinaryReader stream, string flatFilename)
         {
+            logger.Info("Loading SYM file...");
             stream.BaseStream.Seek(0, SeekOrigin.Begin);
 
             stream.Skip(3);
@@ -37,11 +41,12 @@ namespace symdump.symfile
             _targetUnit = stream.ReadByte();
 
             stream.Skip(3);
-            if (!flat)
+            if (flatFilename == null)
             {
                 while (true)
                 {
                     var basePos = stream.BaseStream.Position;
+                    logger.Info($"Skipping overlay definitions at source file offset 0x{basePos:x8}");
                     var typedValue = new TypedValue(stream);
                     if (typedValue.Type == (0x80 | TypedValue.Overlay))
                     {
@@ -58,7 +63,7 @@ namespace symdump.symfile
             }
             else
             {
-                using (var f = File.CreateText("foo.txt"))
+                using (var f = File.CreateText(flatFilename))
                 {
                     var writer = new IndentedTextWriter(f);
                     while (stream.BaseStream.Position < stream.BaseStream.Length)

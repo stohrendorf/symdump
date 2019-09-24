@@ -10,6 +10,7 @@ namespace symdump.symfile
         bool IsFake { get; }
 
         IDictionary<string, TaggedSymbol> Typedefs { get; set; }
+        bool Inlined { get; set; }
 
         void Dump(IndentedTextWriter writer, bool forInline);
 
