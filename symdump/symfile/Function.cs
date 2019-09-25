@@ -84,7 +84,7 @@ namespace symdump.symfile
                 if (taggedSymbol == null || symbolName == null)
                     break;
 
-                if (taggedSymbol.IsFake) taggedSymbol.ResolveTypedef(objectFile);
+                taggedSymbol.ResolveTypedef(objectFile);
 
                 switch (taggedSymbol.Type)
                 {

@@ -352,7 +352,9 @@ namespace symdump.symfile
         {
             droppedDerived = 0;
 
-            var complexType = ComplexTypes[taggedSymbol.Tag];
+            if (!ComplexTypes.TryGetValue(taggedSymbol.Tag, out var complexType))
+                return null;
+
             var typedefs = complexType.Typedefs
                 .Where(_ => _.Value.Equals(taggedSymbol))
                 .ToList();

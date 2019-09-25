@@ -61,21 +61,27 @@ namespace symdump.symfile
 
             string cType;
             if (taggedSymbol.IsResolvedTypedef)
-                cType = taggedSymbol.Tag;
+                cType = taggedSymbol.InnerCode ?? taggedSymbol.Tag;
             else
                 switch (Type)
                 {
                     case PrimitiveType.StructDef:
                         Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
-                        cType = taggedSymbol.InnerCode ?? $"struct {taggedSymbol.Tag}";
+                        cType = taggedSymbol.InnerCode ?? (taggedSymbol.IsResolvedTypedef
+                                    ? taggedSymbol.Tag
+                                    : $"struct {taggedSymbol.Tag}");
                         break;
                     case PrimitiveType.UnionDef:
                         Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
-                        cType = taggedSymbol.InnerCode ?? $"union {taggedSymbol.Tag}";
+                        cType = taggedSymbol.InnerCode ?? (taggedSymbol.IsResolvedTypedef
+                                    ? taggedSymbol.Tag
+                                    : $"union {taggedSymbol.Tag}");
                         break;
                     case PrimitiveType.EnumDef:
                         Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
-                        cType = taggedSymbol.InnerCode ?? $"enum {taggedSymbol.Tag}";
+                        cType = taggedSymbol.InnerCode ?? (taggedSymbol.IsResolvedTypedef
+                                    ? taggedSymbol.Tag
+                                    : $"enum {taggedSymbol.Tag}");
                         break;
                     case PrimitiveType.Char:
                         cType = "char";

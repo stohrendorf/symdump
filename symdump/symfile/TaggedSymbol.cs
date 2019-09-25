@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using NLog;
 using symdump.symfile.util;
 using symdump.util;
 
@@ -8,6 +9,8 @@ namespace symdump.symfile
 {
     public class TaggedSymbol : IEquatable<TaggedSymbol>
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         public readonly DerivedTypeDef DerivedTypeDef;
         public readonly uint Size;
         public readonly SymbolType Type;
@@ -112,15 +115,20 @@ namespace symdump.symfile
 
         public void ResolveTypedef(ObjectFile objectFile)
         {
-            if (string.IsNullOrEmpty(Tag) || !IsFake || IsResolvedTypedef)
+            if (string.IsNullOrEmpty(Tag) || IsResolvedTypedef)
                 return;
 
             var resolved = objectFile.ReverseTypedef(this, out var droppedDerived);
             if (resolved == null)
             {
+                if (!IsFake)
+                    return;
+
                 var complexType = objectFile.ComplexTypes[Tag];
                 if (complexType.Inlined)
                     throw new Exception($"Complex type {Tag} is already inlined");
+
+                complexType.ResolveTypedefs(objectFile);
 
                 switch (Type)
                 {
@@ -147,7 +155,9 @@ namespace symdump.symfile
                     case SymbolType.Line:
                     case SymbolType.Alias:
                     case SymbolType.Hidden:
-                        throw new Exception($"Attempting to inline complex type into a symbol of type {Type}");
+                        // throw new Exception($"Attempting to inline complex type into a symbol of type {Type}");
+                        logger.Warn($"Attempting to inline complex type {Tag} into a symbol of type {Type}");
+                        break;
                     case SymbolType.AutoVar:
                     case SymbolType.Static:
                     case SymbolType.Register:
@@ -157,7 +167,7 @@ namespace symdump.symfile
                     case SymbolType.UndefinedStatic:
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(Type));
                 }
 
                 var sb = new StringWriter();
@@ -167,11 +177,15 @@ namespace symdump.symfile
 
                 InnerCode = sb.ToString();
                 IsResolvedTypedef = true;
+                Tag += "/* INLINED */";
                 return;
             }
 
             Tag = resolved;
             IsResolvedTypedef = true;
+
+            if (IsFake)
+                throw new Exception("Typedef resolution led to a fake name");
 
             if (droppedDerived == 0)
                 return;
