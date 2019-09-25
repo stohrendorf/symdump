@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using NLog;
 using symdump.exefile.disasm;
 using symdump.exefile.instructions;
 using symdump.exefile.operands;
 using symdump.exefile.util;
 using symdump.symfile;
+using symdump.util;
 
 namespace symdump.exefile
 {
     public class ExeFile
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         private readonly Queue<uint> _analysisQueue = new Queue<uint>();
         private readonly SortedSet<uint> _callees = new SortedSet<uint>();
         private readonly byte[] _data;
@@ -26,6 +30,7 @@ namespace symdump.exefile
 
         public ExeFile(EndianBinaryReader reader, SymFile symFile)
         {
+            logger.Info("Loading exe file");
             _symFile = symFile;
             reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
@@ -37,6 +42,10 @@ namespace symdump.exefile
                 .Where(_ => _.Value.Any(lbl => lbl.Name.Equals("__SN_GP_BASE")))
                 .Select(lbl => lbl.Key)
                 .FirstOrDefault();
+            if (_gpBase != null)
+                logger.Info("Exe has __SN_GP_BASE");
+            else
+                logger.Info("Exe does not have __SN_GP_BASE");
         }
 
         private string GetSymbolName(uint addr, int rel = 0)
@@ -100,13 +109,22 @@ namespace symdump.exefile
 
         public void Disassemble()
         {
+            logger.Info("Starting disassembly");
             _analysisQueue.Clear();
             _analysisQueue.Enqueue(_header.Pc0 - _header.TAddr);
             foreach (var addr in _symFile.Functions.Select(f => f.Address))
                 _analysisQueue.Enqueue(addr - _header.TAddr);
+            logger.Info($"Initial analysis queue has {_analysisQueue.Count} entries");
+
+            var iteration = 0;
 
             while (_analysisQueue.Count != 0)
             {
+                ++iteration;
+                if (iteration % 1000 == 0)
+                    logger.Info(
+                        $"Disassembly iteration {iteration}, analysis queue has {_analysisQueue.Count} entries, {_instructions.Count} instructions disassembled");
+
                 var index = _analysisQueue.Dequeue();
                 if (_instructions.ContainsKey(index) || index >= _data.Length)
                     continue;
@@ -134,6 +152,8 @@ namespace symdump.exefile
                     var insn2 = _instructions[index - 4] = DecodeInstruction(data, index);
                     insn2.IsBranchDelaySlot = true;
 
+                    _analysisQueue.Enqueue(index);
+
                     continue;
                 }
 
@@ -141,16 +161,21 @@ namespace symdump.exefile
             }
         }
 
-        public void Dump(TextWriter output)
+        public void Dump(IndentedTextWriter output)
         {
+            logger.Info("Dumping exe disassembly");
+            var iteration = 0;
             foreach (var (addr, insn) in _instructions)
             {
+                var realAddr = addr + _header.TAddr;
+                ++iteration;
+                if (iteration % 1000 == 0)
+                    logger.Info(
+                        $"Dumping instruction {iteration} of {_instructions.Count} ({iteration * 100 / _instructions.Count}%)");
                 if (_callees.Contains(addr))
                     output.WriteLine("### FUNCTION");
-                if (insn.AsReadable().Equals("nop"))
-                    continue;
 
-                var f = _symFile.Functions.FirstOrDefault(_ => _.Address == addr + _header.TAddr);
+                var f = _symFile.Functions.FirstOrDefault(_ => _.Address == realAddr);
                 if (f != null)
                     output.WriteLine();
 
@@ -171,7 +196,23 @@ namespace symdump.exefile
                 if (f != null)
                     output.WriteLine(f.GetSignature());
 
+                foreach (var block in _symFile.Functions.Where(_ => _.ContainsAddress(realAddr))
+                    .SelectMany(_ => _.FindBlocksStartingAt(realAddr)))
+                {
+                    output.Indent += 4;
+                    block.DumpStart(output);
+                    output.Indent -= 4;
+                }
+
                 output.WriteLine($"  0x{addr:X}  {insn.AsReadable()}");
+
+                foreach (var block in _symFile.Functions.Where(_ => _.ContainsAddress(realAddr + 4))
+                    .SelectMany(_ => _.FindBlocksEndingAt(realAddr + 4)))
+                {
+                    output.Indent += 4;
+                    block.DumpEnd(output);
+                    output.Indent -= 4;
+                }
             }
         }
 

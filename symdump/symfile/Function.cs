@@ -23,9 +23,24 @@ namespace symdump.symfile
         private readonly Register _stackBase;
         private readonly uint _stackFrameSize;
         public readonly uint Address;
+        private uint _maxCodeAddress;
+
+        private uint _minCodeAddress;
 
         public Function(BinaryReader reader, uint ofs, ObjectFile objectFile)
         {
+            void InitMinMax()
+            {
+                _minCodeAddress =
+                    Math.Min(
+                        _blocks.SelectMany(_ => _.AllBlocks()).Select(_ => _.StartOffset).DefaultIfEmpty(Address).Min(),
+                        Address);
+                _maxCodeAddress =
+                    Math.Max(
+                        _blocks.SelectMany(_ => _.AllBlocks()).Select(_ => _.EndOffset).DefaultIfEmpty(Address).Max(),
+                        Address);
+            }
+
             Address = ofs;
 
             _stackBase = (Register) reader.ReadUInt16();
@@ -65,9 +80,10 @@ namespace symdump.symfile
                 {
                     case TypedValue.FunctionEnd:
                         _lastLine = reader.ReadUInt32();
+                        InitMinMax();
                         return;
                     case TypedValue.Block:
-                        _blocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), this, objectFile));
+                        _blocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), objectFile));
                         continue;
                     case TypedValue.Definition:
                         taggedSymbol = reader.ReadTaggedSymbol(false);
@@ -100,11 +116,18 @@ namespace symdump.symfile
                         throw new Exception($"Unexpected parameter type {taggedSymbol.Type}");
                 }
             }
+
+            InitMinMax();
         }
 
         private IEnumerable<Register> SavedRegisters => Enumerable.Range(0, 32)
             .Where(i => ((1 << i) & _mask) != 0)
             .Select(i => (Register) i);
+
+        public bool ContainsAddress(uint addr)
+        {
+            return addr >= _minCodeAddress && addr <= _maxCodeAddress;
+        }
 
         public void Dump(IndentedTextWriter writer)
         {
@@ -129,6 +152,16 @@ namespace symdump.symfile
         public string GetSignature()
         {
             return $"{_returnType} /*${_register}*/ {_name}({string.Join(", ", _parameters)})";
+        }
+
+        public IEnumerable<Block> FindBlocksStartingAt(uint addr)
+        {
+            return _blocks.SelectMany(_ => _.FindBlocksStartingAt(addr));
+        }
+
+        public IEnumerable<Block> FindBlocksEndingAt(uint addr)
+        {
+            return _blocks.SelectMany(_ => _.FindBlocksEndingAt(addr));
         }
     }
 }

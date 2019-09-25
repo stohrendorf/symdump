@@ -8,6 +8,7 @@ using NLog.Targets;
 using symdump.exefile;
 using symdump.exefile.util;
 using symdump.symfile;
+using symdump.util;
 
 namespace symdump
 {
@@ -106,8 +107,9 @@ namespace symdump
                 var exeFile = new ExeFile(fs, symFile);
                 exeFile.Disassemble();
                 using (var outFs = disassemblyFile == "-" ? Console.Out : File.CreateText(disassemblyFile))
+                using (var writer = new IndentedTextWriter(outFs))
                 {
-                    exeFile.Dump(outFs);
+                    exeFile.Dump(writer);
                 }
             }
         }

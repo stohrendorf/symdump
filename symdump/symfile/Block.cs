@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using symdump.symfile.util;
 using symdump.util;
 
@@ -10,22 +11,20 @@ namespace symdump.symfile
     public class Block
     {
         private readonly uint _endLine;
-        private readonly uint _endOffset;
 
-        private readonly Function _function;
         private readonly List<Label> _labels = new List<Label>();
         private readonly uint _startLine;
 
-        private readonly uint _startOffset;
         private readonly List<Block> _subBlocks = new List<Block>();
         private readonly Dictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
         private readonly List<string> _vars = new List<string>();
+        public readonly uint EndOffset;
+        public readonly uint StartOffset;
 
-        public Block(BinaryReader reader, uint ofs, uint ln, Function f, ObjectFile objectFile)
+        public Block(BinaryReader reader, uint startOffset, uint startLine, ObjectFile objectFile)
         {
-            _startOffset = ofs;
-            _startLine = ln;
-            _function = f;
+            StartOffset = startOffset;
+            _startLine = startLine;
 
             while (true)
             {
@@ -38,11 +37,11 @@ namespace symdump.symfile
                 switch (typedValue.Type & 0x7f)
                 {
                     case TypedValue.Block:
-                        _subBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(), _function,
+                        _subBlocks.Add(new Block(reader, (uint) typedValue.Value, reader.ReadUInt32(),
                             objectFile));
                         break;
                     case TypedValue.BlockEnd:
-                        _endOffset = (uint) typedValue.Value;
+                        EndOffset = (uint) typedValue.Value;
                         _endLine = reader.ReadUInt32();
                         return;
                     case TypedValue.Definition:
@@ -110,18 +109,52 @@ namespace symdump.symfile
             }
         }
 
+        public IEnumerable<Block> FindBlocksStartingAt(uint addr)
+        {
+            if (StartOffset == addr)
+                yield return this;
+
+            foreach (var block in _subBlocks.SelectMany(_ => _.FindBlocksStartingAt(addr))) yield return block;
+        }
+
+        public IEnumerable<Block> FindBlocksEndingAt(uint addr)
+        {
+            if (EndOffset == addr)
+                yield return this;
+
+            foreach (var block in _subBlocks.SelectMany(_ => _.FindBlocksEndingAt(addr))) yield return block;
+        }
+
+        public IEnumerable<Block> AllBlocks()
+        {
+            yield return this;
+            foreach (var block in _subBlocks.SelectMany(_ => _.AllBlocks())) yield return block;
+        }
+
         public void Dump(IndentedTextWriter writer)
         {
-            writer.WriteLine($"{{ // line {_startLine}, offset 0x{_startOffset:x}");
+            DumpStart(writer);
+            ++writer.Indent;
+            _subBlocks.ForEach(b => b.Dump(writer));
+            --writer.Indent;
+            DumpEnd(writer);
+        }
+
+        public void DumpEnd(IndentedTextWriter writer)
+        {
+            writer.WriteLine($"}} // line {_endLine}, offset 0x{EndOffset:x}");
+        }
+
+        public void DumpStart(IndentedTextWriter writer)
+        {
+            writer.WriteLine($"{{ // line {_startLine}, offset 0x{StartOffset:x}");
             ++writer.Indent;
             foreach (var t in _typedefs)
                 writer.WriteLine($"typedef {t.Value.AsCode(t.Key)};");
             _vars.ForEach(writer.WriteLine);
             foreach (var l in _labels)
                 writer.WriteLine(l);
-            _subBlocks.ForEach(b => b.Dump(writer));
             --writer.Indent;
-            writer.WriteLine($"}} // line {_endLine}, offset 0x{_endOffset:x}");
         }
     }
 }
