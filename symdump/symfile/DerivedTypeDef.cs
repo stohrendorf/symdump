@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using NLog;
 
 namespace symdump.symfile
 {
     public class DerivedTypeDef : IEquatable<DerivedTypeDef>
     {
         public const int MaxDerivedTypes = 6;
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         public readonly PrimitiveType Type;
         private IReadOnlyList<DerivedType> _derivedTypes;
 
@@ -115,6 +117,10 @@ namespace symdump.symfile
                         break;
                     case PrimitiveType.Void:
                         cType = "void";
+                        break;
+                    case PrimitiveType.Null:
+                        cType = "__NULL__";
+                        logger.Warn($"Found Null primitive type for symbol {name}");
                         break;
                     default:
                         throw new Exception($"Unexpected base type {Type}");
