@@ -51,12 +51,16 @@ namespace symdump
             catch (OptionException e)
             {
                 logger.Error(e.Message);
+                options.WriteOptionDescriptions(Console.Out);
+                Console.WriteLine("Note that '-' is a valid filename, resulting in outputting to the console");
                 return;
             }
 
             if (extraArgs.Count != 1)
             {
                 logger.Error("Please provide a .SYM file for processing");
+                options.WriteOptionDescriptions(Console.Out);
+                Console.WriteLine("Note that '-' is a valid filename, resulting in outputting to the console");
                 return;
             }
 
@@ -79,7 +83,10 @@ namespace symdump
                 if (structuredOut != null)
                 {
                     logger.Info($"Dumping {extraArgs[0]} to {structuredOut} in structured format");
-                    symFile.Dump(structuredOut == "-" ? Console.Out : File.CreateText(structuredOut));
+                    using (var outFs = structuredOut == "-" ? Console.Out : File.CreateText(structuredOut))
+                    {
+                        symFile.Dump(outFs);
+                    }
                 }
             }
 
@@ -98,7 +105,10 @@ namespace symdump
             {
                 var exeFile = new ExeFile(fs, symFile);
                 exeFile.Disassemble();
-                exeFile.Dump(disassemblyFile == "-" ? Console.Out : File.CreateText(disassemblyFile));
+                using (var outFs = disassemblyFile == "-" ? Console.Out : File.CreateText(disassemblyFile))
+                {
+                    exeFile.Dump(outFs);
+                }
             }
         }
     }
