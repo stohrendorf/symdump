@@ -62,7 +62,15 @@ namespace symdump.exefile
                 .Select(_ => _.Value)
                 .SingleOrDefault();
 
-            return lbls?.First().Name ?? $"lbl_{addr:X}";
+            var result = lbls?.First().Name;
+
+            if (result == null)
+                result = _symFile.Functions
+                    .Where(_ => _.Address == addr + _header.TAddr)
+                    .Select(_ => _.Name)
+                    .SingleOrDefault();
+
+            return result ?? $"lbl_{addr:X}";
         }
 
         private IEnumerable<string> GetSymbolNames(uint addr)
@@ -243,13 +251,15 @@ namespace symdump.exefile
                 case Opcode.PCRelative:
                     return DecodePcRelative(index, data);
                 case Opcode.j:
-                    AddCall(index, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
+                    AddXref(index, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
                     _analysisQueue.Enqueue(((data & 0x03FFFFFF) << 2) - _header.TAddr);
-                    return new CallPtrInstruction(new LabelOperand(GetSymbolName((data & 0x03FFFFFF) << 2)), null);
+                    return new CallPtrInstruction(
+                        new LabelOperand(GetSymbolName(((data & 0x03FFFFFF) << 2) - _header.TAddr)), null);
                 case Opcode.jal:
                     AddCall(index, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
                     _analysisQueue.Enqueue(((data & 0x03FFFFFF) << 2) - _header.TAddr);
-                    return new CallPtrInstruction(new LabelOperand(GetSymbolName((data & 0x03FFFFFF) << 2)),
+                    return new CallPtrInstruction(
+                        new LabelOperand(GetSymbolName(((data & 0x03FFFFFF) << 2) - _header.TAddr)),
                         new RegisterOperand(Register.ra));
                 case Opcode.beq:
                     AddXref(index, AddrRel(index, (short) data << 2));

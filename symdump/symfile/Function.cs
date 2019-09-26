@@ -15,7 +15,6 @@ namespace symdump.symfile
         private readonly uint _line;
         private readonly uint _mask;
         private readonly int _maskOffs;
-        private readonly string _name;
 
         private readonly List<string> _parameters = new List<string>();
         private readonly Register _register;
@@ -23,6 +22,7 @@ namespace symdump.symfile
         private readonly Register _stackBase;
         private readonly uint _stackFrameSize;
         public readonly uint Address;
+        public readonly string Name;
         private uint _maxCodeAddress;
 
         private uint _minCodeAddress;
@@ -51,9 +51,9 @@ namespace symdump.symfile
 
             _line = reader.ReadUInt32();
             _file = reader.ReadPascalString();
-            _name = reader.ReadPascalString();
+            Name = reader.ReadPascalString();
 
-            if (!objectFile.FuncTypes.TryGetValue(_name, out var fnType))
+            if (!objectFile.FuncTypes.TryGetValue(Name, out var fnType))
             {
                 _returnType = "__UNKNOWN__";
             }
@@ -151,7 +151,7 @@ namespace symdump.symfile
 
         public string GetSignature()
         {
-            return $"{_returnType} /*${_register}*/ {_name}({string.Join(", ", _parameters)})";
+            return $"{_returnType} /*${_register}*/ {Name}({string.Join(", ", _parameters)})";
         }
 
         public IEnumerable<Block> FindBlocksStartingAt(uint addr)
