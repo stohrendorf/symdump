@@ -48,9 +48,14 @@ namespace symdump.exefile
                 logger.Info("Exe does not have __SN_GP_BASE");
         }
 
+        private static uint AddrRel(uint addr, int rel)
+        {
+            return (uint) (addr + rel);
+        }
+
         private string GetSymbolName(uint addr, int rel = 0)
         {
-            addr = (uint) (addr + rel);
+            addr = AddrRel(addr, rel);
 
             var lbls = _symFile.Labels
                 .Where(_ => _.Key == addr)
@@ -69,27 +74,27 @@ namespace symdump.exefile
             return lbls?.Select(_ => _.Name);
         }
 
-        private void AddCall(uint from, uint to)
+        private void AddCall(uint src, uint dest)
         {
-            AddXref(from, to);
-            _callees.Add(to);
+            AddXref(src, dest);
+            _callees.Add(dest);
         }
 
-        private void AddXref(uint from, uint to)
+        private void AddXref(uint src, uint dest)
         {
-            if (!_xrefs.TryGetValue(to, out var froms))
-                _xrefs.Add(to, froms = new HashSet<uint>());
+            if (!_xrefs.TryGetValue(dest, out var srcs))
+                _xrefs.Add(dest, srcs = new HashSet<uint>());
 
-            froms.Add(from);
+            srcs.Add(src);
 
-            if (!_instructions.ContainsKey(to))
-                _analysisQueue.Enqueue(to);
+            if (!_instructions.ContainsKey(dest))
+                _analysisQueue.Enqueue(dest);
         }
 
-        private HashSet<uint> GetXrefs(uint to)
+        private HashSet<uint> GetXrefsTo(uint dest)
         {
-            _xrefs.TryGetValue(to, out var froms);
-            return froms;
+            _xrefs.TryGetValue(dest, out var srcs);
+            return srcs;
         }
 
         private uint DataAt(uint ofs)
@@ -145,14 +150,15 @@ namespace symdump.exefile
                     continue;
                 }
 
-                if (insn is CallPtrInstruction)
+                if (insn is CallPtrInstruction callPtr)
                 {
                     data = DataAt(index);
                     index += 4;
                     var insn2 = _instructions[index - 4] = DecodeInstruction(data, index);
                     insn2.IsBranchDelaySlot = true;
 
-                    _analysisQueue.Enqueue(index);
+                    if (callPtr.ReturnAddressTarget != null)
+                        _analysisQueue.Enqueue(index);
 
                     continue;
                 }
@@ -179,7 +185,7 @@ namespace symdump.exefile
                 if (f != null)
                     output.WriteLine();
 
-                var xrefsHere = GetXrefs(addr);
+                var xrefsHere = GetXrefsTo(addr);
                 if (xrefsHere != null)
                 {
                     output.WriteLine("# XRefs:");
@@ -237,17 +243,17 @@ namespace symdump.exefile
                 case Opcode.PCRelative:
                     return DecodePcRelative(index, data);
                 case Opcode.j:
-                    AddCall(index - 4, (data & 0x03FFFFFF) << 2);
-                    _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
+                    AddCall(index, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
+                    _analysisQueue.Enqueue(((data & 0x03FFFFFF) << 2) - _header.TAddr);
                     return new CallPtrInstruction(new LabelOperand(GetSymbolName((data & 0x03FFFFFF) << 2)), null);
                 case Opcode.jal:
-                    AddCall(index - 4, (data & 0x03FFFFFF) << 2);
-                    _analysisQueue.Enqueue((data & 0x03FFFFFF) << 2);
+                    AddCall(index, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
+                    _analysisQueue.Enqueue(((data & 0x03FFFFFF) << 2) - _header.TAddr);
                     return new CallPtrInstruction(new LabelOperand(GetSymbolName((data & 0x03FFFFFF) << 2)),
                         new RegisterOperand(Register.ra));
                 case Opcode.beq:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Equal,
                             new RegisterOperand(data, 21),
@@ -259,8 +265,8 @@ namespace symdump.exefile
                             new RegisterOperand(data, 16),
                             new LabelOperand(GetSymbolName(index, (short) data << 2)));
                 case Opcode.bne:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.NotEqual,
                             new RegisterOperand(data, 21),
@@ -272,15 +278,15 @@ namespace symdump.exefile
                             new RegisterOperand(data, 16),
                             new LabelOperand(GetSymbolName(index, (short) data << 2)));
                 case Opcode.blez:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.LessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(GetSymbolName(index, (short) data << 2)));
                 case Opcode.bgtz:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
@@ -383,29 +389,29 @@ namespace symdump.exefile
                 case Opcode.cop3:
                     return new SimpleInstruction("cop3", null, new ImmediateOperand(data & ((1 << 26) - 1)));
                 case Opcode.beql:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Equal,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
                         new LabelOperand(GetSymbolName(index, (short) data << 2)));
                 case Opcode.bnel:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.NotEqual,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
                         new LabelOperand(GetSymbolName(index, (short) data << 2)));
                 case Opcode.blezl:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedLessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
                         new LabelOperand(GetSymbolName(index, (short) data << 2)));
                 case Opcode.bgtzl:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
@@ -535,11 +541,11 @@ namespace symdump.exefile
                     switch ((data >> 16) & 0x1f)
                     {
                         case 0:
-                            AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                            AddXref(index, AddrRel(index, (short) data << 2));
                             return new SimpleInstruction("bc0f", null,
                                 new LabelOperand(GetSymbolName(index, (ushort) data << 2)));
                         case 1:
-                            AddXref(index - 4, (uint) ((index + (short) data) << 2));
+                            AddXref(index, AddrRel(index, (short) data << 2));
                             return new SimpleInstruction("bc0t", null,
                                 new LabelOperand(GetSymbolName(index, (ushort) data << 2)));
                         default:
@@ -580,30 +586,30 @@ namespace symdump.exefile
             var offset = new LabelOperand(GetSymbolName(index, (ushort) data << 2));
             switch ((data >> 16) & 0x1f)
             {
-                case 0:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                case 0: // bltz
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
-                case 1:
-                    AddXref(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                case 1: // bgez
+                    AddXref(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
                         offset);
-                case 16:
-                    AddCall(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                case 16: // bltzal
+                    AddCall(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalCallInstruction(ConditionalBranchInstruction.Operation.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
-                case 17:
-                    AddCall(index - 4, (uint) ((index + (short) data) << 2));
-                    _analysisQueue.Enqueue(index + (uint) ((short) data << 2));
+                case 17: // bgezal
+                    AddCall(index, AddrRel(index, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
                     return new ConditionalCallInstruction(ConditionalBranchInstruction.Operation.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
