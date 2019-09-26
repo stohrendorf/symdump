@@ -19,7 +19,7 @@ namespace symdump.exefile.instructions
             BitXor
         }
 
-        private readonly Operation _operation;
+        public readonly Operation _operation;
 
         public ArithmeticInstruction(Operation operation, IOperand dest, IOperand lhs, IOperand rhs)
         {
@@ -33,7 +33,7 @@ namespace symdump.exefile.instructions
         private IOperand Lhs => Operands[1];
         private IOperand Rhs => Operands[2];
 
-        private bool IsInplace => Destination.Equals(Lhs);
+        public bool IsInplace => Destination.Equals(Lhs);
 
         public override string AsReadable()
         {

@@ -17,6 +17,18 @@ namespace symdump.exefile
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
+        private static readonly string[] SimpleMoveOps =
+        {
+            "lb",
+            "lh",
+            "lw",
+            "lbu",
+            "lhu",
+            "sb",
+            "sh",
+            "sw"
+        };
+
         private readonly Queue<uint> _analysisQueue = new Queue<uint>();
         private readonly SortedSet<uint> _callees = new SortedSet<uint>();
         private readonly byte[] _data;
@@ -173,6 +185,47 @@ namespace symdump.exefile
 
                 _analysisQueue.Enqueue(index);
             }
+
+            logger.Info("Restoring immediate value assignments");
+            foreach (var (addr, insn1) in _instructions.ToList().SkipLast(1))
+            {
+                if (!_instructions.TryGetValue(addr + 4, out var insn2))
+                    continue;
+
+                // $reg = imm
+                if (!(insn1 is SimpleInstruction insn1Simple)
+                    || insn1Simple.Mnemonic != "lui"
+                    || insn1Simple.Operands.Length != 2
+                    || !(insn1Simple.Operands[0] is RegisterOperand regOp)
+                    || !(insn1Simple.Operands[1] is ImmediateOperand immOp))
+                    continue;
+
+                // lw xxx, imm($reg)
+                // sw xxx, imm($reg)
+                if (insn2 is SimpleInstruction insn2Simple
+                    && SimpleMoveOps.Contains(insn2Simple.Mnemonic)
+                    && insn2Simple.Operands.Length == 2
+                    && insn2Simple.Operands[1] is RegisterOffsetOperand regOffsOp
+                    && regOffsOp.Register == regOp.Register)
+                {
+                    _instructions[addr + 4] = new SimpleInstruction(insn2Simple.Mnemonic, insn2Simple.Format,
+                        insn2Simple.Operands[0],
+                        new LabelOperand(GetSymbolName((uint) (immOp.Value + regOffsOp.Offset))));
+                    continue;
+                }
+
+                if (insn2 is ArithmeticInstruction insn2A
+                    && (insn2A._operation == ArithmeticInstruction.Operation.Add ||
+                        insn2A._operation == ArithmeticInstruction.Operation.BitOr)
+                    && insn2A.Operands.Length == 3
+                    && insn2A.Operands[1] is RegisterOperand regOp2
+                    && regOp2.Register == regOp.Register
+                    && insn2A.Operands[2] is ImmediateOperand imm2)
+                    _instructions[addr + 4] = new SimpleInstruction("lw", "{0} = {1} // {2}",
+                        insn2A.Operands[0],
+                        new ImmediateOperand((uint) (immOp.Value + imm2.Value)),
+                        new LabelOperand(GetSymbolName((uint) (immOp.Value + imm2.Value))));
+            }
         }
 
         public void Dump(IndentedTextWriter output)
@@ -187,7 +240,10 @@ namespace symdump.exefile
                     logger.Info(
                         $"Dumping instruction {iteration} of {_instructions.Count} ({iteration * 100 / _instructions.Count}%)");
                 if (_callees.Contains(addr))
+                {
+                    output.Indent = 0;
                     output.WriteLine("### FUNCTION");
+                }
 
                 var f = _symFile.Functions.FirstOrDefault(_ => _.Address == realAddr);
                 if (f != null)
@@ -213,9 +269,9 @@ namespace symdump.exefile
                 foreach (var block in _symFile.Functions.Where(_ => _.ContainsAddress(realAddr))
                     .SelectMany(_ => _.FindBlocksStartingAt(realAddr)))
                 {
-                    output.Indent += 4;
+                    output.Indent += 2;
                     block.DumpStart(output);
-                    output.Indent -= 4;
+                    output.Indent -= 1;
                 }
 
                 output.WriteLine($"  0x{addr:X}  {insn.AsReadable()}");
@@ -223,9 +279,9 @@ namespace symdump.exefile
                 foreach (var block in _symFile.Functions.Where(_ => _.ContainsAddress(realAddr + 4))
                     .SelectMany(_ => _.FindBlocksEndingAt(realAddr + 4)))
                 {
-                    output.Indent += 4;
+                    output.Indent += 2;
                     block.DumpEnd(output);
-                    output.Indent -= 4;
+                    output.Indent -= 3;
                 }
             }
         }
