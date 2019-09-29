@@ -100,12 +100,14 @@ namespace symdump.exefile
             _callees.Add(dest);
         }
 
-        private void AddXref(uint src, uint dest)
+        private void AddXref(uint nextIp, uint dest)
         {
+            nextIp -= 4;
+
             if (!_xrefs.TryGetValue(dest, out var srcs))
                 _xrefs.Add(dest, srcs = new HashSet<uint>());
 
-            srcs.Add(src);
+            srcs.Add(nextIp);
 
             if (!_instructions.ContainsKey(dest))
                 _analysisQueue.Enqueue(dest);
@@ -150,40 +152,40 @@ namespace symdump.exefile
                     logger.Info(
                         $"Disassembly iteration {iteration}, analysis queue has {_analysisQueue.Count} entries, {_instructions.Count} instructions disassembled");
 
-                var index = _analysisQueue.Dequeue();
-                if (_instructions.ContainsKey(index) || index >= _data.Length)
+                var ip = _analysisQueue.Dequeue();
+                if (_instructions.ContainsKey(ip) || ip >= _data.Length)
                     continue;
 
-                var data = DataAt(index);
-                index += 4;
-                var insn = _instructions[index - 4] = DecodeInstruction(data, index);
+                var data = DataAt(ip);
+                ip += 4;
+                var insn = _instructions[ip - 4] = DecodeInstruction(data, ip);
 
                 if (insn is ConditionalBranchInstruction)
                 {
-                    data = DataAt(index);
-                    index += 4;
-                    var insn2 = _instructions[index - 4] = DecodeInstruction(data, index);
+                    data = DataAt(ip);
+                    ip += 4;
+                    var insn2 = _instructions[ip - 4] = DecodeInstruction(data, ip);
                     insn2.IsBranchDelaySlot = true;
 
-                    _analysisQueue.Enqueue(index);
+                    _analysisQueue.Enqueue(ip);
 
                     continue;
                 }
 
                 if (insn is CallPtrInstruction callPtr)
                 {
-                    data = DataAt(index);
-                    index += 4;
-                    var insn2 = _instructions[index - 4] = DecodeInstruction(data, index);
+                    data = DataAt(ip);
+                    ip += 4;
+                    var insn2 = _instructions[ip - 4] = DecodeInstruction(data, ip);
                     insn2.IsBranchDelaySlot = true;
 
                     if (callPtr.ReturnAddressTarget != null)
-                        _analysisQueue.Enqueue(index);
+                        _analysisQueue.Enqueue(ip);
 
                     continue;
                 }
 
-                _analysisQueue.Enqueue(index);
+                _analysisQueue.Enqueue(ip);
             }
 
             logger.Info("Restoring immediate value assignments");
@@ -298,65 +300,65 @@ namespace symdump.exefile
             return regofs;
         }
 
-        private Instruction DecodeInstruction(uint data, uint index)
+        private Instruction DecodeInstruction(uint data, uint nextIp)
         {
             switch (ExtractOpcode(data))
             {
                 case Opcode.RegisterFormat:
                     return DecodeRegisterFormat(data);
                 case Opcode.PCRelative:
-                    return DecodePcRelative(index, data);
+                    return DecodePcRelative(nextIp, data);
                 case Opcode.j:
-                    AddXref(index, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
+                    AddXref(nextIp, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
                     _analysisQueue.Enqueue(((data & 0x03FFFFFF) << 2) - _header.TAddr);
                     return new CallPtrInstruction(
                         new LabelOperand(GetSymbolName(((data & 0x03FFFFFF) << 2) - _header.TAddr)), null);
                 case Opcode.jal:
-                    AddCall(index, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
+                    AddCall(nextIp, ((data & 0x03FFFFFF) << 2) - _header.TAddr);
                     _analysisQueue.Enqueue(((data & 0x03FFFFFF) << 2) - _header.TAddr);
                     return new CallPtrInstruction(
                         new LabelOperand(GetSymbolName(((data & 0x03FFFFFF) << 2) - _header.TAddr)),
                         new RegisterOperand(Register.ra));
                 case Opcode.beq:
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Equal,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                            new LabelOperand(GetSymbolName(nextIp, (short) data << 2)));
                     else
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Equal,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                            new LabelOperand(GetSymbolName(nextIp, (short) data << 2)));
                 case Opcode.bne:
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.NotEqual,
                             new RegisterOperand(data, 21),
                             new ImmediateOperand(0),
-                            new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                            new LabelOperand(GetSymbolName(nextIp, (short) data << 2)));
                     else
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.NotEqual,
                             new RegisterOperand(data, 21),
                             new RegisterOperand(data, 16),
-                            new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                            new LabelOperand(GetSymbolName(nextIp, (short) data << 2)));
                 case Opcode.blez:
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.LessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                        new LabelOperand(GetSymbolName(nextIp, (short) data << 2)));
                 case Opcode.bgtz:
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                        new LabelOperand(GetSymbolName(nextIp, (short) data << 2)));
                 case Opcode.addi:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Add,
                         new RegisterOperand(data, 16),
@@ -401,7 +403,7 @@ namespace symdump.exefile
                         new RegisterOperand(data, 16),
                         new ImmediateOperand((ushort) data << 16));
                 case Opcode.CpuControl:
-                    return DecodeCpuControl(index, data);
+                    return DecodeCpuControl(nextIp, data);
                 case Opcode.FloatingPoint:
                     return new WordData(data);
                 case Opcode.lb:
@@ -455,33 +457,37 @@ namespace symdump.exefile
                 case Opcode.cop3:
                     return new SimpleInstruction("cop3", null, new ImmediateOperand(data & ((1 << 26) - 1)));
                 case Opcode.beql:
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Equal,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                        new LabelOperand(GetSymbolName(nextIp, (short) data << 2)),
+                        true);
                 case Opcode.bnel:
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.NotEqual,
                         new RegisterOperand(data, 21),
                         new RegisterOperand(data, 16),
-                        new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                        new LabelOperand(GetSymbolName(nextIp, (short) data << 2)),
+                        true);
                 case Opcode.blezl:
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedLessEqual,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                        new LabelOperand(GetSymbolName(nextIp, (short) data << 2)),
+                        true);
                 case Opcode.bgtzl:
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.Greater,
                         new RegisterOperand(data, 21),
                         new ImmediateOperand(0),
-                        new LabelOperand(GetSymbolName(index, (short) data << 2)));
+                        new LabelOperand(GetSymbolName(nextIp, (short) data << 2)),
+                        true);
                 default:
                     return new WordData(data);
             }
@@ -596,7 +602,7 @@ namespace symdump.exefile
             }
         }
 
-        private Instruction DecodeCpuControl(uint index, uint data)
+        private Instruction DecodeCpuControl(uint nextIp, uint data)
         {
             switch ((CpuControlOpcode) ((data >> 21) & 0x1f))
             {
@@ -607,13 +613,13 @@ namespace symdump.exefile
                     switch ((data >> 16) & 0x1f)
                     {
                         case 0:
-                            AddXref(index, AddrRel(index, (short) data << 2));
+                            AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
                             return new SimpleInstruction("bc0f", null,
-                                new LabelOperand(GetSymbolName(index, (ushort) data << 2)));
+                                new LabelOperand(GetSymbolName(nextIp, (ushort) data << 2)));
                         case 1:
-                            AddXref(index, AddrRel(index, (short) data << 2));
+                            AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
                             return new SimpleInstruction("bc0t", null,
-                                new LabelOperand(GetSymbolName(index, (ushort) data << 2)));
+                                new LabelOperand(GetSymbolName(nextIp, (ushort) data << 2)));
                         default:
                             return new WordData(data);
                     }
@@ -646,36 +652,36 @@ namespace symdump.exefile
             }
         }
 
-        private Instruction DecodePcRelative(uint index, uint data)
+        private Instruction DecodePcRelative(uint nextIp, uint data)
         {
             var rs = new RegisterOperand(data, 21);
-            var offset = new LabelOperand(GetSymbolName(index, (ushort) data << 2));
+            var offset = new LabelOperand(GetSymbolName(nextIp, (ushort) data << 2));
             switch ((data >> 16) & 0x1f)
             {
                 case 0: // bltz
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 1: // bgez
-                    AddXref(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.Operation.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 16: // bltzal
-                    AddCall(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddCall(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalCallInstruction(ConditionalBranchInstruction.Operation.SignedLess,
                         rs,
                         new ImmediateOperand(0),
                         offset);
                 case 17: // bgezal
-                    AddCall(index, AddrRel(index, (short) data << 2));
-                    _analysisQueue.Enqueue(AddrRel(index, (short) data << 2));
+                    AddCall(nextIp, AddrRel(nextIp, (short) data << 2));
+                    _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalCallInstruction(ConditionalBranchInstruction.Operation.SignedGreaterEqual,
                         rs,
                         new ImmediateOperand(0),

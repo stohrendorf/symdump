@@ -19,12 +19,16 @@ namespace symdump.exefile.instructions
             SignedGreaterEqual
         }
 
+        private readonly bool _likely;
+
         private readonly Operation _operation;
 
-        public ConditionalBranchInstruction(Operation operation, IOperand lhs, IOperand rhs, IOperand target)
+        public ConditionalBranchInstruction(Operation operation, IOperand lhs, IOperand rhs, IOperand target,
+            bool likely = false)
         {
             _operation = operation;
             Operands = new[] {lhs, rhs, target};
+            _likely = likely;
         }
 
         private IOperand Lhs => Operands[0];
@@ -72,7 +76,7 @@ namespace symdump.exefile.instructions
                     throw new ArgumentOutOfRangeException();
             }
 
-            return $"if({Lhs} {op} {Rhs}) goto {Target}";
+            return $"if{(_likely ? " likely" : "")}({Lhs} {op} {Rhs}) goto {Target}";
         }
     }
 }
