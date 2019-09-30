@@ -5,7 +5,7 @@ namespace symdump.exefile.instructions
 {
     public class ArithmeticInstruction : Instruction
     {
-        public enum Operation
+        public enum MathOperation
         {
             Add,
             Sub,
@@ -19,12 +19,14 @@ namespace symdump.exefile.instructions
             BitXor
         }
 
-        public readonly Operation _operation;
         private readonly bool _unchecked;
 
-        public ArithmeticInstruction(Operation operation, IOperand dest, IOperand lhs, IOperand rhs, bool @unchecked)
+        public readonly MathOperation Operation;
+
+        public ArithmeticInstruction(MathOperation operation, IOperand dest, IOperand lhs, IOperand rhs,
+            bool @unchecked)
         {
-            _operation = operation;
+            Operation = operation;
             Operands = new[] {dest, lhs, rhs};
             _unchecked = @unchecked;
         }
@@ -40,36 +42,36 @@ namespace symdump.exefile.instructions
         public override string AsReadable()
         {
             string op;
-            switch (_operation)
+            switch (Operation)
             {
-                case Operation.Add:
+                case MathOperation.Add:
                     op = "+";
                     break;
-                case Operation.Sub:
+                case MathOperation.Sub:
                     op = "-";
                     break;
-                case Operation.Mul:
+                case MathOperation.Mul:
                     op = "*";
                     break;
-                case Operation.Div:
+                case MathOperation.Div:
                     op = "/";
                     break;
-                case Operation.Shl:
+                case MathOperation.Shl:
                     op = "<<";
                     break;
-                case Operation.Shr:
+                case MathOperation.Shr:
                     op = ">>>";
                     break;
-                case Operation.Sar:
+                case MathOperation.Sar:
                     op = ">>";
                     break;
-                case Operation.BitAnd:
+                case MathOperation.BitAnd:
                     op = "&";
                     break;
-                case Operation.BitOr:
+                case MathOperation.BitOr:
                     op = "|";
                     break;
-                case Operation.BitXor:
+                case MathOperation.BitXor:
                     op = "^";
                     break;
                 default:

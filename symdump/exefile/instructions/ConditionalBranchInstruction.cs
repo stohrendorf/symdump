@@ -5,7 +5,7 @@ namespace symdump.exefile.instructions
 {
     public class ConditionalBranchInstruction : Instruction
     {
-        public enum Operation
+        public enum BoolOperation
         {
             Equal,
             NotEqual,
@@ -21,12 +21,12 @@ namespace symdump.exefile.instructions
 
         private readonly bool _likely;
 
-        private readonly Operation _operation;
+        public readonly BoolOperation Operation;
 
-        public ConditionalBranchInstruction(Operation operation, IOperand lhs, IOperand rhs, IOperand target,
+        public ConditionalBranchInstruction(BoolOperation boolOperation, IOperand lhs, IOperand rhs, IOperand target,
             bool likely = false)
         {
-            _operation = operation;
+            Operation = boolOperation;
             Operands = new[] {lhs, rhs, target};
             _likely = likely;
         }
@@ -40,36 +40,36 @@ namespace symdump.exefile.instructions
         public override string AsReadable()
         {
             string op;
-            switch (_operation)
+            switch (Operation)
             {
-                case Operation.Less:
+                case BoolOperation.Less:
                     op = "<";
                     break;
-                case Operation.SignedLess:
+                case BoolOperation.SignedLess:
                     op = "<";
                     break;
-                case Operation.LessEqual:
+                case BoolOperation.LessEqual:
                     op = "<=";
                     break;
-                case Operation.SignedLessEqual:
+                case BoolOperation.SignedLessEqual:
                     op = "<=";
                     break;
-                case Operation.Equal:
+                case BoolOperation.Equal:
                     op = "==";
                     break;
-                case Operation.NotEqual:
+                case BoolOperation.NotEqual:
                     op = "!=";
                     break;
-                case Operation.Greater:
+                case BoolOperation.Greater:
                     op = ">";
                     break;
-                case Operation.SignedGreater:
+                case BoolOperation.SignedGreater:
                     op = ">";
                     break;
-                case Operation.GreaterEqual:
+                case BoolOperation.GreaterEqual:
                     op = ">=";
                     break;
-                case Operation.SignedGreaterEqual:
+                case BoolOperation.SignedGreaterEqual:
                     op = ">=";
                     break;
                 default:
