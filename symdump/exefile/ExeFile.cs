@@ -363,7 +363,8 @@ namespace symdump.exefile
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Add,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                        new ImmediateOperand((short) data),
+                        false);
                 case Opcode.addiu:
                     if (((data >> 21) & 0x1F) == 0)
                         return new SimpleInstruction("li", "{0} = {1}", new RegisterOperand(data, 16),
@@ -372,14 +373,15 @@ namespace symdump.exefile
                         return new ArithmeticInstruction(ArithmeticInstruction.Operation.Add,
                             new RegisterOperand(data, 16),
                             new RegisterOperand(data, 21),
-                            new ImmediateOperand((ushort) data));
-                case Opcode.subi:
-                    return new ArithmeticInstruction(ArithmeticInstruction.Operation.Sub,
+                            new ImmediateOperand((short) data),
+                            true);
+                case Opcode.slti:
+                    return new SimpleInstruction("slti", "{0} = {1} < {2} ? 1 : 0",
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
                         new ImmediateOperand((short) data));
-                case Opcode.subiu:
-                    return new ArithmeticInstruction(ArithmeticInstruction.Operation.Sub,
+                case Opcode.sltiu:
+                    return new SimpleInstruction("slti", "{0} = {1} < {2} ? 1 : 0",
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
                         new ImmediateOperand((ushort) data));
@@ -387,17 +389,20 @@ namespace symdump.exefile
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.BitAnd,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                        new ImmediateOperand((short) data),
+                        true);
                 case Opcode.ori:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.BitOr,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                        new ImmediateOperand((short) data),
+                        true);
                 case Opcode.xori:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.BitXor,
                         new RegisterOperand(data, 16),
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand((short) data));
+                        new ImmediateOperand((short) data),
+                        true);
                 case Opcode.lui:
                     return new SimpleInstruction("lui", "{0} = {1}",
                         new RegisterOperand(data, 16),
@@ -506,27 +511,33 @@ namespace symdump.exefile
                     else
                         return new ArithmeticInstruction(ArithmeticInstruction.Operation.Shl,
                             rd, rs2,
-                            new ImmediateOperand((int) (data >> 6) & 0x1F));
+                            new ImmediateOperand((int) (data >> 6) & 0x1F),
+                            true);
                 case OpcodeFunction.srl:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Shr,
                         rd, rs2,
-                        new ImmediateOperand((int) (data >> 6) & 0x1F));
+                        new ImmediateOperand((int) (data >> 6) & 0x1F),
+                        true);
                 case OpcodeFunction.sra:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Sar,
                         rd, rs2,
-                        new ImmediateOperand((int) (data >> 6) & 0x1F));
+                        new ImmediateOperand((int) (data >> 6) & 0x1F),
+                        true);
                 case OpcodeFunction.sllv:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Shl,
                         rd, rs2,
-                        rs1);
+                        rs1,
+                        true);
                 case OpcodeFunction.srlv:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Shr,
                         rd, rs2,
-                        rs1);
+                        rs1,
+                        true);
                 case OpcodeFunction.srav:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Sar,
                         rd, rs2,
-                        rs1);
+                        rs1,
+                        true);
                 case OpcodeFunction.jr:
                     return new CallPtrInstruction(rs1, null);
                 case OpcodeFunction.jalr:
@@ -563,29 +574,36 @@ namespace symdump.exefile
                         rs1, rs2);
                 case OpcodeFunction.add:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Add,
-                        rd, rs1, rs2);
+                        rd, rs1, rs2,
+                        false);
                 case OpcodeFunction.addu:
                     if (((data >> 16) & 0x1F) == 0)
                         return new SimpleInstruction("move", "{0} = {1}", rd,
                             rs1);
                     else
                         return new ArithmeticInstruction(ArithmeticInstruction.Operation.Add,
-                            rd, rs1, rs2);
+                            rd, rs1, rs2,
+                            true);
                 case OpcodeFunction.sub:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Sub,
-                        rd, rs1, rs2);
+                        rd, rs1, rs2,
+                        false);
                 case OpcodeFunction.subu:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.Sub,
-                        rd, rs1, rs2);
+                        rd, rs1, rs2,
+                        true);
                 case OpcodeFunction.and:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.BitAnd,
-                        rd, rs1, rs2);
+                        rd, rs1, rs2,
+                        true);
                 case OpcodeFunction.or:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.BitOr,
-                        rd, rs1, rs2);
+                        rd, rs1, rs2,
+                        true);
                 case OpcodeFunction.xor:
                     return new ArithmeticInstruction(ArithmeticInstruction.Operation.BitXor,
-                        rd, rs1, rs2);
+                        rd, rs1, rs2,
+                        true);
                 case OpcodeFunction.nor:
                     return new SimpleInstruction("nor", "{0} = ~({1} | {2})", rd,
                         rs1, rs2);

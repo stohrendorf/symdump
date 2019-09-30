@@ -20,11 +20,13 @@ namespace symdump.exefile.instructions
         }
 
         public readonly Operation _operation;
+        private readonly bool _unchecked;
 
-        public ArithmeticInstruction(Operation operation, IOperand dest, IOperand lhs, IOperand rhs)
+        public ArithmeticInstruction(Operation operation, IOperand dest, IOperand lhs, IOperand rhs, bool @unchecked)
         {
             _operation = operation;
             Operands = new[] {dest, lhs, rhs};
+            _unchecked = @unchecked;
         }
 
         public override IOperand[] Operands { get; }
@@ -74,9 +76,13 @@ namespace symdump.exefile.instructions
                     throw new ArgumentOutOfRangeException();
             }
 
-            return IsInplace
+            var result = IsInplace
                 ? $"{Destination} {op}= {Rhs}"
                 : $"{Destination} = {Lhs} {op} {Rhs}";
+
+            if (!_unchecked)
+                return result + " // exception on overflow";
+            return result;
         }
     }
 }
