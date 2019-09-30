@@ -14,6 +14,7 @@ namespace symdump.exefile.operands
         {
             Pc = pc;
             _instructions = instructions;
+            Savepoint();
         }
 
         public uint Pc { get; private set; }
@@ -52,8 +53,7 @@ namespace symdump.exefile.operands
 
         public void Retry()
         {
-            Restore();
-            Savepoint();
+            (Pc, Matches) = _pcs.Peek();
         }
     }
 }

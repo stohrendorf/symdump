@@ -168,100 +168,226 @@ namespace symdump.exefile
             {
                 var matcher = new Matcher(pc, _instructions);
 
-                // $v0 = $v1 < 0x5 ? 1 : 0
-                matcher.NextInsn<SimpleInstruction>()
-                    .Where(_ => _.Mnemonic == "sltiu")
-                    .Arg<RegisterOperand>(out var boolTest)
-                    .Arg<RegisterOperand>(out var caseValue)
-                    .Arg<ImmediateOperand>(out var upperRange, (insn, op) => op.Value > 0)
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                // if($v0 == 0x0) goto lbl_388EC
-                matcher.NextInsn<ConditionalBranchInstruction>()
-                    .Where(_ => _.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
-                    .Arg<RegisterOperand>((insn, op) => op.Register == boolTest.Register)
-                    .Arg<ImmediateOperand>((insn, op) => op.Value == 0)
-                    .Arg<LabelOperand>(out var defaultLabel)
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                // $v0 = 0xA0000
-                // $v0 = 0x9FB44 // lbl_9FB44
-                matcher.NextInsn<SimpleInstruction>()
-                    .Where(_ => _.Mnemonic == "lui")
-                    .Arg<RegisterOperand>(out var caseTableRegister, (insn, op) => op.Register == boolTest.Register)
-                    .Arg<ImmediateOperand>()
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                matcher.NextInsn<SimpleInstruction>()
-                    .Where(_ => _.Mnemonic == "lw")
-                    .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
-                    .Arg<ImmediateOperand>()
-                    .Arg<LabelOperand>(out var caseTable)
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                // $v1 <<= 0x2
-                matcher.NextInsn<ArithmeticInstruction>()
-                    .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Shl)
-                    .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
-                    .AnyArg()
-                    .Arg<ImmediateOperand>((insn, op) => op.Value == 2)
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                // $v1 += $v0
-                matcher.NextInsn<ArithmeticInstruction>()
-                    .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Add)
-                    .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
-                    .AnyArg()
-                    .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                // $a0 = (int)0($v1)
-                matcher.NextInsn<SimpleInstruction>()
-                    .Where(_ => _.Mnemonic == "lw")
-                    .Arg<RegisterOperand>(out var jmpRegister)
-                    .Arg<RegisterOffsetOperand>((insn, op) => op.Register == caseValue.Register && op.Offset == 0)
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                // nop
-                matcher.NextInsn<SimpleInstruction>()
-                    .Where(_ => _.Mnemonic == "nop")
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                // goto $a0
-                matcher.NextInsn<CallPtrInstruction>()
-                    .Where(_ => _.ReturnAddressTarget == null)
-                    .Arg<RegisterOperand>((insn, op) => op.Register == jmpRegister.Register)
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                // nop
-                matcher.NextInsn<SimpleInstruction>()
-                    .Where(_ => _.Mnemonic == "nop")
-                    .ArgsDone();
-                if (!matcher.Matches) continue;
-
-                if (!_processedCaseTables.Add(caseTable.Offset))
-                    continue;
-
-                logger.Info($"Switch/case at 0x{pc:X}, {upperRange.Value} cases");
-
-                var offset = caseTable.Offset;
-                for (long i = 0; i < upperRange.Value; ++i, offset += 4)
+                matcher.Retry();
+                if (FindSwitchCase1(matcher, out var caseCount, out var caseTableAddr))
                 {
-                    var target = DataAt(offset - _header.TAddr) - _header.TAddr;
-                    _instructions[offset] = new CaseTableEntry(MakeLabelOperand(target));
-                    _analysisQueue.Enqueue(target);
-                    AddXref(matcher.Pc, target);
+                    ProcessCaseTable(caseTableAddr, pc, caseCount, matcher);
+                    matcher.Continue();
+                    continue;
+                }
+
+                matcher.Retry();
+                if (FindSwitchCase2(matcher, out caseCount, out caseTableAddr))
+                {
+                    ProcessCaseTable(caseTableAddr, pc, caseCount, matcher);
+                    matcher.Continue();
                 }
             }
+        }
+
+        private void ProcessCaseTable(uint caseTableAddr, uint pc, long caseCount, Matcher matcher)
+        {
+            if (!_processedCaseTables.Add(caseTableAddr))
+                return;
+
+            logger.Info($"Switch/case at 0x{pc:X}, {caseCount} cases");
+
+            var offset = caseTableAddr;
+            for (long i = 0; i < caseCount; ++i, offset += 4)
+            {
+                var target = DataAt(offset - _header.TAddr) - _header.TAddr;
+                _instructions[offset] = new CaseTableEntry(MakeLabelOperand(target));
+                _analysisQueue.Enqueue(target);
+                AddXref(matcher.Pc, target);
+            }
+        }
+
+        private static bool FindSwitchCase1(Matcher matcher, out long caseCount,
+            out uint caseTableAddr)
+        {
+            caseCount = 0;
+            caseTableAddr = 0;
+
+            // $v0 = $v1 < 0x5 ? 1 : 0
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "sltiu")
+                .Arg<RegisterOperand>(out var boolTest)
+                .Arg<RegisterOperand>(out var caseValue)
+                .Arg<ImmediateOperand>(out var upperRange, (insn, op) => op.Value > 0)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // if($v0 == 0x0) goto lbl_388EC
+            matcher.NextInsn<ConditionalBranchInstruction>()
+                .Where(_ => _.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
+                .Arg<RegisterOperand>((insn, op) => op.Register == boolTest.Register)
+                .Arg<ImmediateOperand>((insn, op) => op.Value == 0)
+                .Arg<LabelOperand>(out var defaultLabel)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // $v0 = 0xA0000
+            // $v0 = 0x9FB44 // lbl_9FB44
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "lui")
+                .Arg<RegisterOperand>(out var caseTableRegister, (insn, op) => op.Register == boolTest.Register)
+                .Arg<ImmediateOperand>()
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "lw")
+                .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
+                .Arg<ImmediateOperand>()
+                .Arg<LabelOperand>(out var caseTable)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // $v1 <<= 0x2
+            matcher.NextInsn<ArithmeticInstruction>()
+                .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Shl)
+                .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
+                .AnyArg()
+                .Arg<ImmediateOperand>((insn, op) => op.Value == 2)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // $v1 += $v0
+            matcher.NextInsn<ArithmeticInstruction>()
+                .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Add)
+                .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
+                .AnyArg()
+                .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // $a0 = (int)0($v1)
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "lw")
+                .Arg<RegisterOperand>(out var jmpRegister)
+                .Arg<RegisterOffsetOperand>((insn, op) => op.Register == caseValue.Register && op.Offset == 0)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // nop
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "nop")
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // goto $a0
+            matcher.NextInsn<CallPtrInstruction>()
+                .Where(_ => _.ReturnAddressTarget == null)
+                .Arg<RegisterOperand>((insn, op) => op.Register == jmpRegister.Register)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // nop
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "nop")
+                .ArgsDone();
+
+            if (matcher.Matches)
+            {
+                caseCount = upperRange.Value;
+                caseTableAddr = caseTable.Offset;
+            }
+
+            return matcher.Matches;
+        }
+
+        private static bool FindSwitchCase2(Matcher matcher, out long caseCount,
+            out uint caseTableAddr)
+        {
+            caseCount = 0;
+            caseTableAddr = 0;
+
+            // $v0 = $v1 < 0x5 ? 1 : 0
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "sltiu")
+                .Arg<RegisterOperand>(out var boolTest)
+                .Arg<RegisterOperand>(out var caseValue)
+                .Arg<ImmediateOperand>(out var upperRange, (insn, op) => op.Value > 0)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // if($v0 == 0x0) goto lbl_388EC
+            matcher.NextInsn<ConditionalBranchInstruction>()
+                .Where(_ => _.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
+                .Arg<RegisterOperand>((insn, op) => op.Register == boolTest.Register)
+                .Arg<ImmediateOperand>((insn, op) => op.Value == 0)
+                .Arg<LabelOperand>(out var defaultLabel)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // $v1 <<= 0x2
+            matcher.NextInsn<ArithmeticInstruction>()
+                .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Shl)
+                .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
+                .AnyArg()
+                .Arg<ImmediateOperand>((insn, op) => op.Value == 2)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // $v0 = 0xA0000
+            // $v0 = 0x9FB44 // lbl_9FB44
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "lui")
+                .Arg<RegisterOperand>(out var caseTableRegister, (insn, op) => op.Register == boolTest.Register)
+                .Arg<ImmediateOperand>()
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "lw")
+                .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
+                .Arg<ImmediateOperand>()
+                .Arg<LabelOperand>(out var caseTable)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // $v1 += $v0
+            matcher.NextInsn<ArithmeticInstruction>()
+                .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Add)
+                .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
+                .AnyArg()
+                .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // $a0 = (int)0($v1)
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "lw")
+                .Arg<RegisterOperand>(out var jmpRegister)
+                .Arg<RegisterOffsetOperand>((insn, op) => op.Register == caseValue.Register && op.Offset == 0)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // nop
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "nop")
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // goto $a0
+            matcher.NextInsn<CallPtrInstruction>()
+                .Where(_ => _.ReturnAddressTarget == null)
+                .Arg<RegisterOperand>((insn, op) => op.Register == jmpRegister.Register)
+                .ArgsDone();
+            if (!matcher.Matches) return false;
+
+            // nop
+            matcher.NextInsn<SimpleInstruction>()
+                .Where(_ => _.Mnemonic == "nop")
+                .ArgsDone();
+
+            if (matcher.Matches)
+            {
+                caseCount = upperRange.Value;
+                caseTableAddr = caseTable.Offset;
+            }
+
+            return matcher.Matches;
         }
 
         private void Analyze(ref int iteration)
