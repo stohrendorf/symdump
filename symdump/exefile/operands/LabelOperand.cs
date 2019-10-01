@@ -24,7 +24,7 @@ namespace symdump.exefile.operands
 
         public override string ToString()
         {
-            return _label;
+            return $"&{_label}";
         }
     }
 }
