@@ -26,7 +26,7 @@ namespace symdump.exefile.operands
 
         public override string ToString()
         {
-            return $"{Offset}(${Register})";
+            return Offset == 0 ? $"${Register}" : $"({Offset}+${Register})";
         }
     }
 }

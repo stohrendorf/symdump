@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using symdump.exefile.operands;
 
 namespace symdump.exefile.instructions
@@ -23,17 +24,17 @@ namespace symdump.exefile.instructions
 
         public readonly BoolOperation Operation;
 
-        public ConditionalBranchInstruction(BoolOperation boolOperation, IOperand lhs, IOperand rhs, IOperand target,
-            bool likely = false)
+        public ConditionalBranchInstruction(BoolOperation boolOperation, [NotNull] IOperand lhs, [NotNull] IOperand rhs,
+            [NotNull] IOperand target, bool likely = false)
         {
             Operation = boolOperation;
             Operands = new[] {lhs, rhs, target};
             _likely = likely;
         }
 
-        private IOperand Lhs => Operands[0];
-        private IOperand Rhs => Operands[1];
-        private IOperand Target => Operands[2];
+        [NotNull] private IOperand Lhs => Operands[0];
+        [NotNull] private IOperand Rhs => Operands[1];
+        [NotNull] private IOperand Target => Operands[2];
 
         public override IOperand[] Operands { get; }
 

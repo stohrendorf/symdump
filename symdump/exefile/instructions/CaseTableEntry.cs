@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using symdump.exefile.operands;
 
 namespace symdump.exefile.instructions
@@ -6,7 +7,7 @@ namespace symdump.exefile.instructions
     {
         private readonly LabelOperand _labelOperand;
 
-        public CaseTableEntry(LabelOperand labelOperand)
+        public CaseTableEntry([NotNull] LabelOperand labelOperand)
         {
             _labelOperand = labelOperand;
         }

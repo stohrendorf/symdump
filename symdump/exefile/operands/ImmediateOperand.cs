@@ -2,6 +2,8 @@
 {
     public class ImmediateOperand : IOperand
     {
+        public static readonly ImmediateOperand Zero = new ImmediateOperand(0);
+
         public readonly long Value;
 
         public ImmediateOperand(long value)

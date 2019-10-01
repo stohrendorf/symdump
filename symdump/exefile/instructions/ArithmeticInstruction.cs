@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using symdump.exefile.operands;
 
 namespace symdump.exefile.instructions
@@ -23,8 +24,8 @@ namespace symdump.exefile.instructions
 
         public readonly MathOperation Operation;
 
-        public ArithmeticInstruction(MathOperation operation, IOperand dest, IOperand lhs, IOperand rhs,
-            bool @unchecked)
+        public ArithmeticInstruction(MathOperation operation, [NotNull] IOperand dest, [NotNull] IOperand lhs,
+            [NotNull] IOperand rhs, bool @unchecked)
         {
             Operation = operation;
             Operands = new[] {dest, lhs, rhs};
@@ -33,9 +34,9 @@ namespace symdump.exefile.instructions
 
         public override IOperand[] Operands { get; }
 
-        private IOperand Destination => Operands[0];
-        private IOperand Lhs => Operands[1];
-        private IOperand Rhs => Operands[2];
+        [NotNull] private IOperand Destination => Operands[0];
+        [NotNull] private IOperand Lhs => Operands[1];
+        [NotNull] private IOperand Rhs => Operands[2];
 
         public bool IsInplace => Destination.Equals(Lhs);
 

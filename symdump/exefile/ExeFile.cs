@@ -17,18 +17,6 @@ namespace symdump.exefile
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        private static readonly string[] SimpleMoveOps =
-        {
-            "lb",
-            "lh",
-            "lw",
-            "lbu",
-            "lhu",
-            "sb",
-            "sh",
-            "sw"
-        };
-
         private readonly Queue<uint> _analysisQueue = new Queue<uint>();
         private readonly SortedSet<uint> _callees = new SortedSet<uint>();
         private readonly byte[] _data;
@@ -187,16 +175,18 @@ namespace symdump.exefile
 
         private void ProcessCaseTable(uint caseTableAddr, uint pc, long caseCount, Matcher matcher)
         {
+            caseTableAddr -= _header.TAddr;
+
             if (!_processedCaseTables.Add(caseTableAddr))
                 return;
 
-            logger.Info($"Switch/case at 0x{pc:X}, {caseCount} cases");
+            logger.Info($"Switch/case at 0x{matcher.Pc:X}, {caseCount} cases @ 0x{caseTableAddr:X}");
+            AddXref(matcher.Pc, caseTableAddr);
 
-            var offset = caseTableAddr;
-            for (long i = 0; i < caseCount; ++i, offset += 4)
+            for (long i = 0; i < caseCount; ++i, caseTableAddr += 4)
             {
-                var target = DataAt(offset - _header.TAddr) - _header.TAddr;
-                _instructions[offset] = new CaseTableEntry(MakeLabelOperand(target));
+                var target = DataAt(caseTableAddr) - _header.TAddr;
+                _instructions[caseTableAddr] = new CaseTableEntry(MakeLabelOperand(target));
                 _analysisQueue.Enqueue(target);
                 AddXref(matcher.Pc, target);
             }
@@ -228,18 +218,15 @@ namespace symdump.exefile
 
             // $v0 = 0xA0000
             // $v0 = 0x9FB44 // lbl_9FB44
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "lui")
+            matcher.NextInsn<CopyInstruction>()
                 .Arg<RegisterOperand>(out var caseTableRegister, (insn, op) => op.Register == boolTest.Register)
                 .Arg<ImmediateOperand>()
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "lw")
+            matcher.NextInsn<CopyInstruction>()
                 .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
-                .Arg<ImmediateOperand>()
-                .Arg<LabelOperand>(out var caseTable)
+                .Arg<ImmediateOperand>(out var caseTable)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
@@ -262,8 +249,7 @@ namespace symdump.exefile
             if (!matcher.Matches) return false;
 
             // $a0 = (int)0($v1)
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "lw")
+            matcher.NextInsn<CopyInstruction>()
                 .Arg<RegisterOperand>(out var jmpRegister)
                 .Arg<RegisterOffsetOperand>((insn, op) => op.Register == caseValue.Register && op.Offset == 0)
                 .ArgsDone();
@@ -290,7 +276,7 @@ namespace symdump.exefile
             if (matcher.Matches)
             {
                 caseCount = upperRange.Value;
-                caseTableAddr = caseTable.Offset;
+                caseTableAddr = checked((uint) caseTable.Value);
             }
 
             return matcher.Matches;
@@ -331,18 +317,15 @@ namespace symdump.exefile
 
             // $v0 = 0xA0000
             // $v0 = 0x9FB44 // lbl_9FB44
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "lui")
+            matcher.NextInsn<CopyInstruction>()
                 .Arg<RegisterOperand>(out var caseTableRegister, (insn, op) => op.Register == boolTest.Register)
                 .Arg<ImmediateOperand>()
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "lw")
+            matcher.NextInsn<CopyInstruction>()
                 .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
-                .Arg<ImmediateOperand>()
-                .Arg<LabelOperand>(out var caseTable)
+                .Arg<ImmediateOperand>(out var caseTable)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
@@ -356,8 +339,7 @@ namespace symdump.exefile
             if (!matcher.Matches) return false;
 
             // $a0 = (int)0($v1)
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "lw")
+            matcher.NextInsn<CopyInstruction>()
                 .Arg<RegisterOperand>(out var jmpRegister)
                 .Arg<RegisterOffsetOperand>((insn, op) => op.Register == caseValue.Register && op.Offset == 0)
                 .ArgsDone();
@@ -384,7 +366,7 @@ namespace symdump.exefile
             if (matcher.Matches)
             {
                 caseCount = upperRange.Value;
-                caseTableAddr = caseTable.Offset;
+                caseTableAddr = checked((uint) caseTable.Value);
             }
 
             return matcher.Matches;
@@ -446,8 +428,7 @@ namespace symdump.exefile
 
                 var matcher = new Matcher(pc, _instructions);
                 // $reg = imm
-                matcher.NextInsn<SimpleInstruction>()
-                    .Where(_ => _.Mnemonic == "lui")
+                matcher.NextInsn<CopyInstruction>()
                     .Arg<RegisterOperand>(out var regOp)
                     .Arg<ImmediateOperand>(out var immOp)
                     .ArgsDone();
@@ -473,6 +454,20 @@ namespace symdump.exefile
                     continue;
                 }
 
+                matcher.Retry();
+                if (RestorePtrWrite(matcher, regOp.Register, pc, immOp.Value))
+                {
+                    matcher.Continue();
+                    continue;
+                }
+
+                matcher.Retry();
+                if (RestorePtrRead(matcher, regOp.Register, pc, immOp.Value))
+                {
+                    matcher.Continue();
+                    continue;
+                }
+
                 matcher.Continue();
             }
         }
@@ -483,15 +478,41 @@ namespace symdump.exefile
                 .Where(_ => _.Operation == ArithmeticInstruction.MathOperation.Add ||
                             _.Operation == ArithmeticInstruction.MathOperation.BitOr)
                 .AnyArg(out var op0)
-                .Arg<RegisterOperand>(out var regOp2)
-                .Where(_ => regOp2.Register == register)
+                .Arg<RegisterOperand>((insn, op) => op.Register == register)
                 .Arg<ImmediateOperand>(out var imm2);
 
             if (matcher.Matches)
-                _instructions[pc + 4] = new SimpleInstruction("lw", "{0} = {1} // {2}",
-                    op0,
-                    new ImmediateOperand((uint) (immOp + imm2.Value)),
-                    MakeLabelOperand((uint) (immOp + imm2.Value)));
+                _instructions[pc + 4] = new CopyInstruction(op0, new ImmediateOperand((uint) (immOp + imm2.Value)));
+
+            return matcher.Matches;
+        }
+
+        private bool RestorePtrWrite(Matcher matcher, Register register, uint pc, long immOp)
+        {
+            // *((type*)(imm+$reg)) = ...
+            matcher.NextInsn<CopyInstruction>(out var copyInsn)
+                .Arg<RegisterOffsetOperand>(out var target, (insn, op) => op.Register == register)
+                .AnyArg(out var source)
+                .ArgsDone();
+
+            if (matcher.Matches)
+                _instructions[pc + 4] = new CopyInstruction(MakeLabelOperand((uint) (target.Offset + immOp)), source,
+                    copyInsn.CastTarget, copyInsn.CastSource);
+
+            return matcher.Matches;
+        }
+
+        private bool RestorePtrRead(Matcher matcher, Register register, uint pc, long immOp)
+        {
+            // ... = *((type*)(imm+$reg))
+            matcher.NextInsn<CopyInstruction>(out var copyInsn)
+                .AnyArg(out var target)
+                .Arg<RegisterOffsetOperand>(out var source, (insn, op) => op.Register == register)
+                .ArgsDone();
+
+            if (matcher.Matches)
+                _instructions[pc + 4] = new CopyInstruction(target, MakeLabelOperand((uint) (source.Offset + immOp)),
+                    copyInsn.CastTarget, copyInsn.CastSource);
 
             return matcher.Matches;
         }
@@ -501,17 +522,18 @@ namespace symdump.exefile
             // lw xxx, imm($reg)
             // sw xxx, imm($reg)
 
-            matcher.NextInsn<SimpleInstruction>(out var insn2Simple)
-                .Where(_ => SimpleMoveOps.Contains(_.Mnemonic))
+            matcher.NextInsn<CopyInstruction>(out var insn2Simple)
                 .AnyArg()
                 .Arg<RegisterOffsetOperand>(out var regOffsOp)
                 .Where(_ => regOffsOp.Register == reg)
                 .ArgsDone();
 
             if (matcher.Matches)
-                _instructions[pc + 4] = new SimpleInstruction(insn2Simple.Mnemonic, insn2Simple.Format,
-                    insn2Simple.Operands[0],
-                    MakeLabelOperand((uint) (immOp + regOffsOp.Offset)));
+                _instructions[pc + 4] = new CopyInstruction(insn2Simple.Target,
+                    MakeLabelOperand((uint) (immOp + regOffsOp.Offset)),
+                    insn2Simple.CastTarget,
+                    insn2Simple.CastSource
+                );
 
             return matcher.Matches;
         }
@@ -611,7 +633,7 @@ namespace symdump.exefile
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.BoolOperation.Equal,
                             new RegisterOperand(data, 21),
-                            new ImmediateOperand(0),
+                            ImmediateOperand.Zero,
                             MakeLabelOperand(nextIp, (short) data << 2));
                     else
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.BoolOperation.Equal,
@@ -624,7 +646,7 @@ namespace symdump.exefile
                     if (((data >> 16) & 0x1F) == 0)
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.BoolOperation.NotEqual,
                             new RegisterOperand(data, 21),
-                            new ImmediateOperand(0),
+                            ImmediateOperand.Zero,
                             MakeLabelOperand(nextIp, (short) data << 2));
                     else
                         return new ConditionalBranchInstruction(ConditionalBranchInstruction.BoolOperation.NotEqual,
@@ -636,14 +658,14 @@ namespace symdump.exefile
                     _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.BoolOperation.LessEqual,
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand(0),
+                        ImmediateOperand.Zero,
                         MakeLabelOperand(nextIp, (short) data << 2));
                 case Opcode.bgtz:
                     AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
                     _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.BoolOperation.Greater,
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand(0),
+                        ImmediateOperand.Zero,
                         MakeLabelOperand(nextIp, (short) data << 2));
                 case Opcode.addi:
                     return new ArithmeticInstruction(ArithmeticInstruction.MathOperation.Add,
@@ -653,7 +675,7 @@ namespace symdump.exefile
                         false);
                 case Opcode.addiu:
                     if (((data >> 21) & 0x1F) == 0)
-                        return new SimpleInstruction("li", "{0} = {1}", new RegisterOperand(data, 16),
+                        return new CopyInstruction(new RegisterOperand(data, 16),
                             new ImmediateOperand((short) data));
                     else
                         return new ArithmeticInstruction(ArithmeticInstruction.MathOperation.Add,
@@ -690,48 +712,53 @@ namespace symdump.exefile
                         new ImmediateOperand((short) data),
                         true);
                 case Opcode.lui:
-                    return new SimpleInstruction("lui", "{0} = {1}",
-                        new RegisterOperand(data, 16),
+                    return new CopyInstruction(new RegisterOperand(data, 16),
                         new ImmediateOperand((ushort) data << 16));
                 case Opcode.CpuControl:
                     return DecodeCpuControl(nextIp, data);
                 case Opcode.FloatingPoint:
                     return new WordData(data);
                 case Opcode.lb:
-                    return new SimpleInstruction("lb", "{0} = (signed char){1}", new RegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    return new CopyInstruction(new RegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data),
+                        castSource: "signed char");
                 case Opcode.lh:
-                    return new SimpleInstruction("lh", "{0} = (short){1}", new RegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    return new CopyInstruction(new RegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data),
+                        castSource: "short");
                 case Opcode.lwl:
                     return new SimpleInstruction("lwl", null, new RegisterOperand(data, 16),
                         MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.lw:
-                    return new SimpleInstruction("lw", "{0} = (int){1}", new RegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    return new CopyInstruction(new RegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data),
+                        castSource: "int");
                 case Opcode.lbu:
-                    return new SimpleInstruction("lbu", "{0} = (unsigned char){1}",
-                        new RegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    return new CopyInstruction(new RegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data),
+                        castSource: "unsigned char");
                 case Opcode.lhu:
-                    return new SimpleInstruction("lhu", "{0} = (unsigned short){1}",
-                        new RegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    return new CopyInstruction(new RegisterOperand(data, 16),
+                        MakeGpBasedOperand(data, 21, (short) data),
+                        castSource: "unsigned short");
                 case Opcode.lwr:
                     return new SimpleInstruction("lwr", null, new RegisterOperand(data, 16),
                         MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sb:
-                    return new SimpleInstruction("sb", "{1} = (char){0}", new RegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    return new CopyInstruction(MakeGpBasedOperand(data, 21, (short) data),
+                        new RegisterOperand(data, 16),
+                        "char");
                 case Opcode.sh:
-                    return new SimpleInstruction("sh", "{1} = (short){0}", new RegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    return new CopyInstruction(MakeGpBasedOperand(data, 21, (short) data),
+                        new RegisterOperand(data, 16),
+                        "short");
                 case Opcode.swl:
                     return new SimpleInstruction("swl", null, new RegisterOperand(data, 16),
                         MakeGpBasedOperand(data, 21, (short) data));
                 case Opcode.sw:
-                    return new SimpleInstruction("sw", "{1} = (int){0}", new RegisterOperand(data, 16),
-                        MakeGpBasedOperand(data, 21, (short) data));
+                    return new CopyInstruction(MakeGpBasedOperand(data, 21, (short) data),
+                        new RegisterOperand(data, 16),
+                        "int");
                 case Opcode.swr:
                     return new SimpleInstruction("swr", null, new RegisterOperand(data, 16),
                         MakeGpBasedOperand(data, 21, (short) data));
@@ -771,7 +798,7 @@ namespace symdump.exefile
                     return new ConditionalBranchInstruction(
                         ConditionalBranchInstruction.BoolOperation.SignedLessEqual,
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand(0),
+                        ImmediateOperand.Zero,
                         MakeLabelOperand(nextIp, (short) data << 2),
                         true);
                 case Opcode.bgtzl:
@@ -779,7 +806,7 @@ namespace symdump.exefile
                     _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.BoolOperation.Greater,
                         new RegisterOperand(data, 21),
-                        new ImmediateOperand(0),
+                        ImmediateOperand.Zero,
                         MakeLabelOperand(nextIp, (short) data << 2),
                         true);
                 default:
@@ -867,8 +894,7 @@ namespace symdump.exefile
                         false);
                 case OpcodeFunction.addu:
                     if (((data >> 16) & 0x1F) == 0)
-                        return new SimpleInstruction("move", "{0} = {1}", rd,
-                            rs1);
+                        return new CopyInstruction(rd, rs1);
                     else
                         return new ArithmeticInstruction(ArithmeticInstruction.MathOperation.Add,
                             rd, rs1, rs2,
@@ -970,7 +996,7 @@ namespace symdump.exefile
                     _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalBranchInstruction(ConditionalBranchInstruction.BoolOperation.SignedLess,
                         rs,
-                        new ImmediateOperand(0),
+                        ImmediateOperand.Zero,
                         offset);
                 case 1: // bgez
                     AddXref(nextIp, AddrRel(nextIp, (short) data << 2));
@@ -978,14 +1004,14 @@ namespace symdump.exefile
                     return new ConditionalBranchInstruction(
                         ConditionalBranchInstruction.BoolOperation.SignedGreaterEqual,
                         rs,
-                        new ImmediateOperand(0),
+                        ImmediateOperand.Zero,
                         offset);
                 case 16: // bltzal
                     AddCall(nextIp, AddrRel(nextIp, (short) data << 2));
                     _analysisQueue.Enqueue(AddrRel(nextIp, (short) data << 2));
                     return new ConditionalCallInstruction(ConditionalBranchInstruction.BoolOperation.SignedLess,
                         rs,
-                        new ImmediateOperand(0),
+                        ImmediateOperand.Zero,
                         offset);
                 case 17: // bgezal
                     AddCall(nextIp, AddrRel(nextIp, (short) data << 2));
@@ -993,7 +1019,7 @@ namespace symdump.exefile
                     return new ConditionalCallInstruction(
                         ConditionalBranchInstruction.BoolOperation.SignedGreaterEqual,
                         rs,
-                        new ImmediateOperand(0),
+                        ImmediateOperand.Zero,
                         offset);
                 default:
                     return new WordData(data);

@@ -1,14 +1,16 @@
 ﻿using System.Linq;
+using JetBrains.Annotations;
 using symdump.exefile.operands;
 
 namespace symdump.exefile.instructions
 {
     public class SimpleInstruction : Instruction
     {
-        public readonly string Format;
-        public readonly string Mnemonic;
+        [CanBeNull] public readonly string Format;
+        [NotNull] public readonly string Mnemonic;
 
-        private SimpleInstruction(string mnemonic, string format, bool isBranchDelaySlot, params IOperand[] operands)
+        private SimpleInstruction([NotNull] string mnemonic, [CanBeNull] string format, bool isBranchDelaySlot,
+            [NotNull] [ItemNotNull] params IOperand[] operands)
             : base(isBranchDelaySlot)
         {
             Mnemonic = mnemonic;
@@ -16,7 +18,8 @@ namespace symdump.exefile.instructions
             Format = format;
         }
 
-        public SimpleInstruction(string mnemonic, string format, params IOperand[] operands)
+        public SimpleInstruction([NotNull] string mnemonic, [CanBeNull] string format,
+            [NotNull] [ItemNotNull] params IOperand[] operands)
             : this(mnemonic, format, false, operands)
         {
         }

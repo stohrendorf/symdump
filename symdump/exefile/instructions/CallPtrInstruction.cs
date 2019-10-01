@@ -1,18 +1,21 @@
-﻿using symdump.exefile.operands;
+﻿using JetBrains.Annotations;
+using symdump.exefile.operands;
 using symdump.symfile;
 
 namespace symdump.exefile.instructions
 {
     public class CallPtrInstruction : Instruction
     {
-        public CallPtrInstruction(IOperand target, IOperand returnAddressTarget)
+        public CallPtrInstruction([NotNull] IOperand target, [CanBeNull] IOperand returnAddressTarget)
         {
             Operands = returnAddressTarget == null ? new[] {target} : new[] {target, returnAddressTarget};
         }
 
         public override IOperand[] Operands { get; }
 
-        private IOperand Target => Operands[0];
+        [NotNull] private IOperand Target => Operands[0];
+
+        [CanBeNull]
         public RegisterOperand ReturnAddressTarget => (RegisterOperand) (Operands.Length > 1 ? Operands[1] : null);
 
         public override string AsReadable()

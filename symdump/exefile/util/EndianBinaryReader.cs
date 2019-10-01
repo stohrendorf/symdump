@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace symdump.exefile.util
 {
@@ -7,12 +8,12 @@ namespace symdump.exefile.util
     {
         private BinaryReader _stream;
 
-        public EndianBinaryReader(Stream s)
+        public EndianBinaryReader([NotNull] Stream s)
             : this(new BinaryReader(s))
         {
         }
 
-        private EndianBinaryReader(BinaryReader stream)
+        private EndianBinaryReader([NotNull] BinaryReader stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -21,7 +22,7 @@ namespace symdump.exefile.util
             _stream = stream;
         }
 
-        public Stream BaseStream => _stream.BaseStream;
+        [NotNull] public Stream BaseStream => _stream.BaseStream;
 
         public void Dispose()
         {

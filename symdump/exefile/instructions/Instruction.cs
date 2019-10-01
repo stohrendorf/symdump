@@ -1,4 +1,5 @@
-﻿using symdump.exefile.operands;
+﻿using JetBrains.Annotations;
+using symdump.exefile.operands;
 
 namespace symdump.exefile.instructions
 {
@@ -11,8 +12,9 @@ namespace symdump.exefile.instructions
             IsBranchDelaySlot = isBranchDelaySlot;
         }
 
-        public abstract IOperand[] Operands { get; }
+        [NotNull] [ItemNotNull] public abstract IOperand[] Operands { get; }
 
+        [NotNull]
         public abstract string AsReadable();
     }
 }
