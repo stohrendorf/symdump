@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -59,20 +60,13 @@ namespace symdump.exefile
         {
             addr = AddrRel(addr, rel);
 
-            var lbls = _symFile.Labels
-                .Where(_ => _.Key == addr)
-                .Select(_ => _.Value)
-                .SingleOrDefault();
+            if (_symFile.Labels.TryGetValue(addr, out var labels))
+                return labels[0].Name;
 
-            var result = lbls?.First().Name;
+            if (_symFile.Functions.TryGetValue(addr + _header.TAddr, out var functions))
+                return functions[0].Name;
 
-            if (result == null)
-                result = _symFile.Functions
-                    .Where(_ => _.Address == addr + _header.TAddr)
-                    .Select(_ => _.Name)
-                    .SingleOrDefault();
-
-            return result ?? $"lbl_{addr:X}";
+            return $"lbl_{addr:X}";
         }
 
         private LabelOperand MakeLabelOperand(uint addr, int rel = 0)
@@ -82,11 +76,10 @@ namespace symdump.exefile
 
         private IEnumerable<string> GetSymbolNames(uint addr)
         {
-            var lbls = _symFile.Labels
-                .Where(_ => _.Key == addr + _header.TAddr)
-                .Select(_ => _.Value)
-                .SingleOrDefault();
-            return lbls?.Select(_ => _.Name);
+            if (_symFile.Labels.TryGetValue(addr + _header.TAddr, out var labels))
+                return labels.Select(_ => _.Name);
+
+            return Enumerable.Empty<string>();
         }
 
         private void AddCall(uint src, uint dest)
@@ -134,7 +127,7 @@ namespace symdump.exefile
             logger.Info("Starting disassembly");
             _analysisQueue.Clear();
             _analysisQueue.Enqueue(_header.Pc0 - _header.TAddr);
-            foreach (var addr in _symFile.Functions.Select(f => f.Address))
+            foreach (var addr in _symFile.Functions.Keys)
                 _analysisQueue.Enqueue(addr - _header.TAddr);
             logger.Info($"Initial analysis queue has {_analysisQueue.Count} entries");
 
@@ -157,23 +150,28 @@ namespace symdump.exefile
                 var matcher = new Matcher(pc, _instructions);
 
                 matcher.Retry();
-                if (FindSwitchCase1(matcher, out var caseCount, out var caseTableAddr))
+                if (FindSwitchCase1(matcher, out var caseCount, out var caseTableAddr, out var defaultLabel,
+                    out var caseValueRegister, out var boolTestRegister))
                 {
-                    ProcessCaseTable(caseTableAddr, pc, caseCount, matcher);
+                    ProcessCaseTable(caseTableAddr, caseCount, matcher, defaultLabel, caseValueRegister,
+                        boolTestRegister);
                     matcher.Continue();
                     continue;
                 }
 
                 matcher.Retry();
-                if (FindSwitchCase2(matcher, out caseCount, out caseTableAddr))
+                if (FindSwitchCase2(matcher, out caseCount, out caseTableAddr, out defaultLabel, out caseValueRegister,
+                    out boolTestRegister))
                 {
-                    ProcessCaseTable(caseTableAddr, pc, caseCount, matcher);
+                    ProcessCaseTable(caseTableAddr, caseCount, matcher, defaultLabel, caseValueRegister,
+                        boolTestRegister);
                     matcher.Continue();
                 }
             }
         }
 
-        private void ProcessCaseTable(uint caseTableAddr, uint pc, long caseCount, Matcher matcher)
+        private void ProcessCaseTable(uint caseTableAddr, long caseCount, Matcher matcher, LabelOperand defaultLabel,
+            Register caseValueRegister, Register boolTestRegister)
         {
             caseTableAddr -= _header.TAddr;
 
@@ -183,36 +181,52 @@ namespace symdump.exefile
             logger.Info($"Switch/case at 0x{matcher.Pc:X}, {caseCount} cases @ 0x{caseTableAddr:X}");
             AddXref(matcher.Pc, caseTableAddr);
 
+            var switchInsn = new SwitchInstruction(
+                MakeLabelOperand(caseTableAddr + _header.TAddr),
+                checked((uint) caseCount),
+                defaultLabel,
+                caseValueRegister,
+                boolTestRegister
+            );
+            _instructions[matcher.Pc - 8] = switchInsn;
+
             for (long i = 0; i < caseCount; ++i, caseTableAddr += 4)
             {
                 var target = DataAt(caseTableAddr) - _header.TAddr;
-                _instructions[caseTableAddr] = new CaseTableEntry(MakeLabelOperand(target));
+                var caseTarget = MakeLabelOperand(target);
+                _instructions[caseTableAddr] = new CaseTableEntry(caseTarget);
                 _analysisQueue.Enqueue(target);
                 AddXref(matcher.Pc, target);
+                switchInsn.Cases.Add(caseTarget);
             }
         }
 
-        private static bool FindSwitchCase1(Matcher matcher, out long caseCount,
-            out uint caseTableAddr)
+        private static bool FindSwitchCase1(Matcher matcher, out long caseCount, out uint caseTableAddr,
+            out LabelOperand defaultLabel, out Register caseValueRegister, out Register boolTestRegister)
         {
             caseCount = 0;
             caseTableAddr = 0;
+            defaultLabel = null;
+            caseValueRegister = Register.zero;
+            boolTestRegister = Register.zero;
 
             // $v0 = $v1 < 0x5 ? 1 : 0
             matcher.NextInsn<SimpleInstruction>()
                 .Where(_ => _.Mnemonic == "sltiu")
                 .Arg<RegisterOperand>(out var boolTest)
                 .Arg<RegisterOperand>(out var caseValue)
-                .Arg<ImmediateOperand>(out var upperRange, (insn, op) => op.Value > 0)
+                .Arg<ImmediateOperand>(out var caseCountOp, (insn, op) => op.Value > 0)
                 .ArgsDone();
             if (!matcher.Matches) return false;
+            boolTestRegister = boolTest.Register;
+            caseValueRegister = caseValue.Register;
 
             // if($v0 == 0x0) goto lbl_388EC
             matcher.NextInsn<ConditionalBranchInstruction>()
                 .Where(_ => _.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
                 .Arg<RegisterOperand>((insn, op) => op.Register == boolTest.Register)
                 .Arg<ImmediateOperand>((insn, op) => op.Value == 0)
-                .Arg<LabelOperand>(out var defaultLabel)
+                .Arg(out defaultLabel)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
@@ -275,18 +289,21 @@ namespace symdump.exefile
 
             if (matcher.Matches)
             {
-                caseCount = upperRange.Value;
+                caseCount = caseCountOp.Value;
                 caseTableAddr = checked((uint) caseTable.Value);
             }
 
             return matcher.Matches;
         }
 
-        private static bool FindSwitchCase2(Matcher matcher, out long caseCount,
-            out uint caseTableAddr)
+        private static bool FindSwitchCase2(Matcher matcher, out long caseCount, out uint caseTableAddr,
+            out LabelOperand defaultLabel, out Register caseValueRegister, out Register boolTestRegister)
         {
             caseCount = 0;
             caseTableAddr = 0;
+            defaultLabel = null;
+            caseValueRegister = Register.zero;
+            boolTestRegister = Register.zero;
 
             // $v0 = $v1 < 0x5 ? 1 : 0
             matcher.NextInsn<SimpleInstruction>()
@@ -296,13 +313,15 @@ namespace symdump.exefile
                 .Arg<ImmediateOperand>(out var upperRange, (insn, op) => op.Value > 0)
                 .ArgsDone();
             if (!matcher.Matches) return false;
+            boolTestRegister = boolTest.Register;
+            caseValueRegister = caseValue.Register;
 
             // if($v0 == 0x0) goto lbl_388EC
             matcher.NextInsn<ConditionalBranchInstruction>()
                 .Where(_ => _.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
                 .Arg<RegisterOperand>((insn, op) => op.Register == boolTest.Register)
                 .Arg<ImmediateOperand>((insn, op) => op.Value == 0)
-                .Arg<LabelOperand>(out var defaultLabel)
+                .Arg(out defaultLabel)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
@@ -541,6 +560,19 @@ namespace symdump.exefile
         public void Dump(IndentedTextWriter output)
         {
             logger.Info("Dumping exe disassembly");
+
+            var startBlocks = _symFile.Functions
+                .SelectMany(_ => _.Value)
+                .SelectMany(_ => _.AllBlocks)
+                .GroupBy(_ => _.StartOffset)
+                .ToImmutableDictionary(group => group.Key, _ => _.ToList());
+
+            var endingBlocks = _symFile.Functions
+                .SelectMany(_ => _.Value)
+                .SelectMany(_ => _.AllBlocks)
+                .GroupBy(_ => _.EndOffset)
+                .ToImmutableDictionary(group => group.Key, _ => _.ToList());
+
             var iteration = 0;
             foreach (var (addr, insn) in _instructions)
             {
@@ -555,7 +587,7 @@ namespace symdump.exefile
                     output.WriteLine("### FUNCTION");
                 }
 
-                var f = _symFile.Functions.FirstOrDefault(_ => _.Address == realAddr);
+                var f = _symFile.Functions.TryGetValue(realAddr, out var functions) ? functions.FirstOrDefault() : null;
                 if (f != null)
                     output.WriteLine();
 
@@ -576,23 +608,23 @@ namespace symdump.exefile
                 if (f != null)
                     output.WriteLine(f.GetSignature());
 
-                foreach (var block in _symFile.Functions.Where(_ => _.ContainsAddress(realAddr))
-                    .SelectMany(_ => _.FindBlocksStartingAt(realAddr)))
-                {
-                    output.Indent += 2;
-                    block.DumpStart(output);
-                    output.Indent -= 1;
-                }
+                if (startBlocks.TryGetValue(realAddr, out var starts))
+                    foreach (var block in starts)
+                    {
+                        output.Indent += 2;
+                        block.DumpStart(output);
+                        output.Indent -= 1;
+                    }
 
                 output.WriteLine($"  0x{addr:X}  {insn.AsReadable()}");
 
-                foreach (var block in _symFile.Functions.Where(_ => _.ContainsAddress(realAddr + 4))
-                    .SelectMany(_ => _.FindBlocksEndingAt(realAddr + 4)))
-                {
-                    output.Indent += 2;
-                    block.DumpEnd(output);
-                    output.Indent -= 3;
-                }
+                if (endingBlocks.TryGetValue(realAddr + 4, out var ends))
+                    foreach (var block in ends)
+                    {
+                        output.Indent += 2;
+                        block.DumpEnd(output);
+                        output.Indent -= 3;
+                    }
             }
         }
 

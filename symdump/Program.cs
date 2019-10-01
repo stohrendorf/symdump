@@ -70,6 +70,7 @@ namespace symdump
                 logger.Info($"Dumping {extraArgs[0]} to {flatFilename} in flat format");
                 using (var fs = new FileStream(extraArgs[0], FileMode.Open))
                 {
+                    // ReSharper disable once ObjectCreationAsStatement
                     new SymFile(new BinaryReader(fs), flatFilename);
                 }
             }

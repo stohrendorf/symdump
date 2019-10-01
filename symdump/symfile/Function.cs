@@ -120,6 +120,8 @@ namespace symdump.symfile
             InitMinMax();
         }
 
+        public IEnumerable<Block> AllBlocks => _blocks.SelectMany(_ => _.AllBlocks());
+
         private IEnumerable<Register> SavedRegisters => Enumerable.Range(0, 32)
             .Where(i => ((1 << i) & _mask) != 0)
             .Select(i => (Register) i);

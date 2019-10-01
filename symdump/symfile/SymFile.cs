@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using NLog;
@@ -30,6 +31,10 @@ namespace symdump.symfile
         // 3. List of filenames (object/library files)
         private readonly byte _targetUnit;
         private readonly byte _version;
+
+        public readonly IDictionary<uint, List<Function>> Functions;
+
+        public readonly IDictionary<uint, IList<Label>> Labels;
 
         public SymFile(BinaryReader stream, string flatFilename)
         {
@@ -60,6 +65,18 @@ namespace symdump.symfile
                 }
 
                 while (stream.BaseStream.Position < stream.BaseStream.Length) _files.Add(new ObjectFile(stream));
+
+                Labels = _files
+                    .SelectMany(_ => _.Labels)
+                    .GroupBy(_ => _.Key)
+                    .Select(group =>
+                        new KeyValuePair<uint, IList<Label>>(group.Key, group.SelectMany(_ => _.Value).ToList()))
+                    .ToImmutableDictionary(kv => kv.Key, kv => kv.Value);
+
+                Functions = _files
+                    .SelectMany(_ => _.Functions)
+                    .GroupBy(_ => _.Address)
+                    .ToImmutableDictionary(kv => kv.Key, kv => kv.ToList());
             }
             else
             {
@@ -200,11 +217,6 @@ namespace symdump.symfile
                 }
             }
         }
-
-        public IEnumerable<KeyValuePair<uint, List<Label>>> Labels =>
-            _files.SelectMany(objectFile => objectFile.Labels);
-
-        public IEnumerable<Function> Functions => _files.SelectMany(_ => _.Functions);
 
         private static SymbolType PrintClass(BinaryReader stream, IndentedTextWriter writer)
         {
