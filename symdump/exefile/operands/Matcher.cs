@@ -55,5 +55,15 @@ namespace symdump.exefile.operands
         {
             (Pc, Matches) = _pcs.Peek();
         }
+
+        public OptionalMatching Optional()
+        {
+            return new OptionalMatching(this, false);
+        }
+
+        public OptionalMatching OptionalExcept()
+        {
+            return new OptionalMatching(this, true);
+        }
     }
 }

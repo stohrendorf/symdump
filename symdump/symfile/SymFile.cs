@@ -66,6 +66,7 @@ namespace symdump.symfile
 
                 while (stream.BaseStream.Position < stream.BaseStream.Length) _files.Add(new ObjectFile(stream));
 
+                logger.Info("Preparing symbol lookups");
                 Labels = _files
                     .SelectMany(_ => _.Labels)
                     .GroupBy(_ => _.Key)

@@ -150,43 +150,34 @@ namespace symdump.exefile
                 var matcher = new Matcher(pc, _instructions);
 
                 matcher.Retry();
-                if (FindSwitchCase1(matcher, out var caseCount, out var caseTableAddr, out var defaultLabel,
-                    out var caseValueRegister, out var boolTestRegister))
+                if (FindSwitchCase(matcher, out var caseCount, out var caseTableAddr, out var defaultLabel,
+                    out var caseValueRegister, out var boolTestRegister, out var shiftedCaseValue))
                 {
                     ProcessCaseTable(caseTableAddr, caseCount, matcher, defaultLabel, caseValueRegister,
-                        boolTestRegister);
-                    matcher.Continue();
-                    continue;
-                }
-
-                matcher.Retry();
-                if (FindSwitchCase2(matcher, out caseCount, out caseTableAddr, out defaultLabel, out caseValueRegister,
-                    out boolTestRegister))
-                {
-                    ProcessCaseTable(caseTableAddr, caseCount, matcher, defaultLabel, caseValueRegister,
-                        boolTestRegister);
+                        boolTestRegister, shiftedCaseValue);
                     matcher.Continue();
                 }
             }
         }
 
         private void ProcessCaseTable(uint caseTableAddr, long caseCount, Matcher matcher, LabelOperand defaultLabel,
-            Register caseValueRegister, Register boolTestRegister)
+            Register caseValueRegister, Register boolTestRegister, Register shiftedCaseValue)
         {
             caseTableAddr -= _header.TAddr;
 
             if (!_processedCaseTables.Add(caseTableAddr))
                 return;
 
-            logger.Info($"Switch/case at 0x{matcher.Pc:X}, {caseCount} cases @ 0x{caseTableAddr:X}");
-            AddXref(matcher.Pc, caseTableAddr);
+            logger.Info($"Switch/case at 0x{matcher.Pc - 8:X}, {caseCount} cases @ 0x{caseTableAddr:X}");
+            AddXref(matcher.Pc - 8, caseTableAddr);
 
             var switchInsn = new SwitchInstruction(
                 MakeLabelOperand(caseTableAddr + _header.TAddr),
                 checked((uint) caseCount),
                 defaultLabel,
                 caseValueRegister,
-                boolTestRegister
+                boolTestRegister,
+                shiftedCaseValue
             );
             _instructions[matcher.Pc - 8] = switchInsn;
 
@@ -201,111 +192,18 @@ namespace symdump.exefile
             }
         }
 
-        private static bool FindSwitchCase1(Matcher matcher, out long caseCount, out uint caseTableAddr,
-            out LabelOperand defaultLabel, out Register caseValueRegister, out Register boolTestRegister)
+        private static bool FindSwitchCase(Matcher matcher, out long caseCount, out uint caseTableAddr,
+            out LabelOperand defaultLabel, out Register caseValueRegister, out Register boolTestRegister,
+            out Register shiftedCaseValue)
         {
             caseCount = 0;
             caseTableAddr = 0;
             defaultLabel = null;
             caseValueRegister = Register.zero;
             boolTestRegister = Register.zero;
+            shiftedCaseValue = Register.zero;
 
-            // $v0 = $v1 < 0x5 ? 1 : 0
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "sltiu")
-                .Arg<RegisterOperand>(out var boolTest)
-                .Arg<RegisterOperand>(out var caseValue)
-                .Arg<ImmediateOperand>(out var caseCountOp, (insn, op) => op.Value > 0)
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-            boolTestRegister = boolTest.Register;
-            caseValueRegister = caseValue.Register;
-
-            // if($v0 == 0x0) goto lbl_388EC
-            matcher.NextInsn<ConditionalBranchInstruction>()
-                .Where(_ => _.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
-                .Arg<RegisterOperand>((insn, op) => op.Register == boolTest.Register)
-                .Arg<ImmediateOperand>((insn, op) => op.Value == 0)
-                .Arg(out defaultLabel)
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-
-            // $v0 = 0xA0000
-            // $v0 = 0x9FB44 // lbl_9FB44
-            matcher.NextInsn<CopyInstruction>()
-                .Arg<RegisterOperand>(out var caseTableRegister, (insn, op) => op.Register == boolTest.Register)
-                .Arg<ImmediateOperand>()
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-
-            matcher.NextInsn<CopyInstruction>()
-                .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
-                .Arg<ImmediateOperand>(out var caseTable)
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-
-            // $v1 <<= 0x2
-            matcher.NextInsn<ArithmeticInstruction>()
-                .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Shl)
-                .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
-                .AnyArg()
-                .Arg<ImmediateOperand>((insn, op) => op.Value == 2)
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-
-            // $v1 += $v0
-            matcher.NextInsn<ArithmeticInstruction>()
-                .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Add)
-                .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
-                .AnyArg()
-                .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-
-            // $a0 = (int)0($v1)
-            matcher.NextInsn<CopyInstruction>()
-                .Arg<RegisterOperand>(out var jmpRegister)
-                .Arg<RegisterOffsetOperand>((insn, op) => op.Register == caseValue.Register && op.Offset == 0)
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-
-            // nop
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "nop")
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-
-            // goto $a0
-            matcher.NextInsn<CallPtrInstruction>()
-                .Where(_ => _.ReturnAddressTarget == null)
-                .Arg<RegisterOperand>((insn, op) => op.Register == jmpRegister.Register)
-                .ArgsDone();
-            if (!matcher.Matches) return false;
-
-            // nop
-            matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "nop")
-                .ArgsDone();
-
-            if (matcher.Matches)
-            {
-                caseCount = caseCountOp.Value;
-                caseTableAddr = checked((uint) caseTable.Value);
-            }
-
-            return matcher.Matches;
-        }
-
-        private static bool FindSwitchCase2(Matcher matcher, out long caseCount, out uint caseTableAddr,
-            out LabelOperand defaultLabel, out Register caseValueRegister, out Register boolTestRegister)
-        {
-            caseCount = 0;
-            caseTableAddr = 0;
-            defaultLabel = null;
-            caseValueRegister = Register.zero;
-            boolTestRegister = Register.zero;
-
-            // $v0 = $v1 < 0x5 ? 1 : 0
+            // $v1 = $a0 < 0x20 ? 1 : 0
             matcher.NextInsn<SimpleInstruction>()
                 .Where(_ => _.Mnemonic == "sltiu")
                 .Arg<RegisterOperand>(out var boolTest)
@@ -316,7 +214,7 @@ namespace symdump.exefile
             boolTestRegister = boolTest.Register;
             caseValueRegister = caseValue.Register;
 
-            // if($v0 == 0x0) goto lbl_388EC
+            // if($v1 == 0x0) goto &lbl_2B04
             matcher.NextInsn<ConditionalBranchInstruction>()
                 .Where(_ => _.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
                 .Arg<RegisterOperand>((insn, op) => op.Register == boolTest.Register)
@@ -325,19 +223,23 @@ namespace symdump.exefile
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
-            // $v1 <<= 0x2
-            matcher.NextInsn<ArithmeticInstruction>()
-                .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Shl)
-                .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
-                .AnyArg()
-                .Arg<ImmediateOperand>((insn, op) => op.Value == 2)
-                .ArgsDone();
-            if (!matcher.Matches) return false;
+            var shiftedCaseValueReg = MatchShift2(caseValue, matcher);
+
+            // optional branch delay
+            RegisterOperand caseTableRegister;
+            using (matcher.OptionalExcept())
+            {
+                // FIXME: false positive if this matches because of setting a register value
+                matcher.NextInsn<CopyInstruction>()
+                    .Arg(out caseTableRegister, (insn, op) => op.Register != caseValue.Register)
+                    .Arg<ImmediateOperand>()
+                    .ArgsDone();
+            }
 
             // $v0 = 0xA0000
-            // $v0 = 0x9FB44 // lbl_9FB44
+            // $v0 = 0x9F940
             matcher.NextInsn<CopyInstruction>()
-                .Arg<RegisterOperand>(out var caseTableRegister, (insn, op) => op.Register == boolTest.Register)
+                .Arg(out caseTableRegister, (insn, op) => op.Register != caseValue.Register)
                 .Arg<ImmediateOperand>()
                 .ArgsDone();
             if (!matcher.Matches) return false;
@@ -348,19 +250,25 @@ namespace symdump.exefile
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
+            if (!shiftedCaseValueReg.HasValue &&
+                !(shiftedCaseValueReg = MatchShift2(caseValue, matcher)).HasValue) return false;
+
+            shiftedCaseValue = shiftedCaseValueReg.Value;
+
             // $v1 += $v0
+            var shiftedCaseValueLocal = shiftedCaseValue;
             matcher.NextInsn<ArithmeticInstruction>()
                 .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Add)
-                .Arg<RegisterOperand>((insn, op) => op.Register == caseValue.Register)
+                .Arg<RegisterOperand>((insn, op) => op.Register == shiftedCaseValueLocal)
                 .AnyArg()
                 .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
-            // $a0 = (int)0($v1)
+            // $a0 = *((int*)$v1)
             matcher.NextInsn<CopyInstruction>()
                 .Arg<RegisterOperand>(out var jmpRegister)
-                .Arg<RegisterOffsetOperand>((insn, op) => op.Register == caseValue.Register && op.Offset == 0)
+                .Arg<RegisterOffsetOperand>((insn, op) => op.Register == shiftedCaseValueLocal && op.Offset == 0)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
@@ -391,12 +299,27 @@ namespace symdump.exefile
             return matcher.Matches;
         }
 
+        private static Register? MatchShift2(RegisterOperand source, Matcher matcher)
+        {
+            // $v1 = $a0 << 0x2
+            using (matcher.Optional())
+            {
+                matcher.NextInsn<ArithmeticInstruction>()
+                    .Where(_ => _.Operation == ArithmeticInstruction.MathOperation.Shl)
+                    .Arg<RegisterOperand>(out var shiftedOp)
+                    .Arg<RegisterOperand>((insn, op) => op.Register == source.Register)
+                    .Arg<ImmediateOperand>((insn, op) => op.Value == 2)
+                    .ArgsDone();
+                return matcher.Matches ? (Register?) shiftedOp.Register : null;
+            }
+        }
+
         private void Analyze(ref int iteration)
         {
             while (_analysisQueue.Count != 0)
             {
                 ++iteration;
-                if (iteration % 1000 == 0)
+                if (iteration % 10000 == 0)
                     logger.Info(
                         $"Disassembly iteration {iteration}, analysis queue has {_analysisQueue.Count} entries, {_instructions.Count} instructions disassembled");
 
@@ -578,7 +501,7 @@ namespace symdump.exefile
             {
                 var realAddr = addr + _header.TAddr;
                 ++iteration;
-                if (iteration % 1000 == 0)
+                if (iteration % 10000 == 0)
                     logger.Info(
                         $"Dumping instruction {iteration} of {_instructions.Count} ({iteration * 100 / _instructions.Count}%)");
                 if (_callees.Contains(addr))
