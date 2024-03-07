@@ -189,7 +189,8 @@ namespace symdump.symfile
                                 writer.Write("dims=");
                                 var n = stream.ReadInt16();
                                 if (n < 0) throw new Exception();
-                                while (n-- != 0) writer.Write($"{stream.ReadInt32()}");
+                                writer.Write(string.Join(',',
+                                    Enumerable.Repeat(0, n).Select(_ => $"{stream.ReadInt32()}")));
 
                                 writer.Write($" tag={stream.ReadPascalString()} ");
                                 writer.Write($"name={stream.ReadPascalString()}");
