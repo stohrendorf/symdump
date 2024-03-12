@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using NLog;
 using symdump.symfile.util;
 using symdump.util;
@@ -43,6 +44,7 @@ namespace symdump.symfile
         public string? InnerCode { get; private set; }
         public bool IsFake => Tag?.IsFake() ?? false;
 
+        [Pure]
         public bool Equals(TaggedSymbol? other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -62,6 +64,7 @@ namespace symdump.symfile
                    && Extents.SequenceEqual(other.Extents);
         }
 
+        [Pure]
         public bool IsPartOf(TaggedSymbol other, int dropLast)
         {
             if (dropLast < 0 || dropLast > DerivedTypeDef.MaxDerivedTypes)
@@ -81,17 +84,20 @@ namespace symdump.symfile
                    && Extents.SequenceEqual(other.Extents.SkipLast(droppedExtents));
         }
 
+        [Pure]
         public override string ToString()
         {
             return
                 $"{nameof(Tag)}={Tag} {nameof(Type)}={Type} {nameof(DerivedTypeDef)}={DerivedTypeDef} {nameof(Size)}={Size}, {nameof(Extents)}=[{string.Join(",", Extents)}]";
         }
 
+        [Pure]
         public string AsCode(string? name, bool onlyDecorated = false)
         {
             return DerivedTypeDef.AsCode(name, this, onlyDecorated);
         }
 
+        [Pure]
         public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -100,6 +106,7 @@ namespace symdump.symfile
             return Equals((TaggedSymbol) obj);
         }
 
+        [Pure]
         public override int GetHashCode()
         {
             unchecked

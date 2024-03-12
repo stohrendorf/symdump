@@ -4,16 +4,10 @@ using System.Text;
 
 namespace symdump.util
 {
-    public class IndentedTextWriter : TextWriter
+    public class IndentedTextWriter(TextWriter inner) : TextWriter
     {
-        private readonly TextWriter _inner;
         private bool _indent = true;
         private int _indentSize;
-
-        public IndentedTextWriter(TextWriter inner)
-        {
-            _inner = inner;
-        }
 
         public int Indent
         {
@@ -21,7 +15,7 @@ namespace symdump.util
             set => _indentSize = Math.Max(value, 0);
         }
 
-        public override Encoding Encoding => _inner.Encoding;
+        public override Encoding Encoding => inner.Encoding;
 
         public override void Write(char ch)
         {
@@ -29,10 +23,10 @@ namespace symdump.util
             {
                 _indent = false;
                 for (var i = 0; i < Indent; ++i)
-                    _inner.Write("  ");
+                    inner.Write("  ");
             }
 
-            _inner.Write(ch);
+            inner.Write(ch);
             if (ch == '\n')
                 _indent = true;
         }
