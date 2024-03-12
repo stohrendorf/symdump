@@ -1,17 +1,12 @@
 ﻿namespace symdump.exefile.operands
 {
-    public class ImmediateOperand : IOperand
+    public class ImmediateOperand(long value) : IOperand
     {
-        public static readonly ImmediateOperand Zero = new ImmediateOperand(0);
+        public static readonly ImmediateOperand? Zero = new ImmediateOperand(0);
 
-        public readonly long Value;
+        public readonly long Value = value;
 
-        public ImmediateOperand(long value)
-        {
-            Value = value;
-        }
-
-        public bool Equals(IOperand other)
+        public bool Equals(IOperand? other)
         {
             var o = other as ImmediateOperand;
             return Value == o?.Value;

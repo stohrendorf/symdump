@@ -16,7 +16,7 @@ namespace symdump.symfile
         public readonly SymbolType Type;
         public uint[] Extents;
         public bool IsResolvedTypedef;
-        public string Tag;
+        public string? Tag;
 
         public TaggedSymbol(BinaryReader reader, bool isArray)
         {
@@ -35,15 +35,15 @@ namespace symdump.symfile
             }
             else
             {
-                Extents = new uint[0];
+                Extents = Array.Empty<uint>();
                 Tag = null;
             }
         }
 
-        public string InnerCode { get; private set; }
+        public string? InnerCode { get; private set; }
         public bool IsFake => Tag?.IsFake() ?? false;
 
-        public bool Equals(TaggedSymbol other)
+        public bool Equals(TaggedSymbol? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -87,12 +87,12 @@ namespace symdump.symfile
                 $"{nameof(Tag)}={Tag} {nameof(Type)}={Type} {nameof(DerivedTypeDef)}={DerivedTypeDef} {nameof(Size)}={Size}, {nameof(Extents)}=[{string.Join(",", Extents)}]";
         }
 
-        public string AsCode(string name, bool onlyDecorated = false)
+        public string AsCode(string? name, bool onlyDecorated = false)
         {
             return DerivedTypeDef.AsCode(name, this, onlyDecorated);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

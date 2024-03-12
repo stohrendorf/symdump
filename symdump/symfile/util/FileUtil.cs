@@ -44,22 +44,22 @@ namespace symdump.symfile.util
         {
             switch (typedValue.Type & 0x7f)
             {
-                case TypedValue.IncSLD:
+                case TypedValue.IncSld:
                     return true;
-                case TypedValue.AddSLD1:
+                case TypedValue.AddSld1:
                     reader.Skip(1);
                     return true;
-                case TypedValue.AddSLD2:
+                case TypedValue.AddSld2:
                     reader.Skip(2);
                     return true;
-                case TypedValue.SetSLD:
+                case TypedValue.SetSld:
                     reader.Skip(4);
                     return true;
-                case TypedValue.BeginSLD:
+                case TypedValue.BeginSld:
                     reader.Skip(4);
                     reader.Skip(reader.ReadByte());
                     return true;
-                case TypedValue.EndSLDInfo:
+                case TypedValue.EndSldInfo:
                     return true;
             }
 

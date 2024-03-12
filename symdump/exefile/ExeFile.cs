@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -35,14 +36,16 @@ namespace symdump.exefile
         {
             logger.Info("Loading exe file");
             _symFile = symFile;
+            Debug.Assert(reader.BaseStream != null);
             reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
             _header = new Header(reader);
             reader.BaseStream.Seek(0x800, SeekOrigin.Begin);
             _data = reader.ReadBytes((int) _header.TSize);
 
+            Debug.Assert(_symFile.Labels != null);
             _gpBase = _symFile.Labels
-                .Where(_ => _.Value.Any(lbl => lbl.Name.Equals("__SN_GP_BASE")))
+                .Where(label => label.Value.Any(lbl => lbl.Name.Equals("__SN_GP_BASE")))
                 .Select(lbl => lbl.Key)
                 .FirstOrDefault();
             if (_gpBase != null)
@@ -56,14 +59,14 @@ namespace symdump.exefile
             return (uint) (addr + rel);
         }
 
-        private string GetSymbolName(uint addr, int rel = 0)
+        private string? GetSymbolName(uint addr, int rel = 0)
         {
             addr = AddrRel(addr, rel);
 
-            if (_symFile.Labels.TryGetValue(addr, out var labels))
+            if (_symFile.Labels?.TryGetValue(addr, out var labels) ?? false)
                 return labels[0].Name;
 
-            if (_symFile.Functions.TryGetValue(addr + _header.TAddr, out var functions))
+            if (_symFile.Functions?.TryGetValue(addr + _header.TAddr, out var functions) ?? false)
                 return functions[0].Name;
 
             return $"lbl_{addr:X}";
@@ -76,8 +79,8 @@ namespace symdump.exefile
 
         private IEnumerable<string> GetSymbolNames(uint addr)
         {
-            if (_symFile.Labels.TryGetValue(addr + _header.TAddr, out var labels))
-                return labels.Select(_ => _.Name);
+            if (_symFile.Labels?.TryGetValue(addr + _header.TAddr, out var labels) ?? false)
+                return labels.Select(label => label.Name);
 
             return Enumerable.Empty<string>();
         }
@@ -101,7 +104,7 @@ namespace symdump.exefile
                 _analysisQueue.Enqueue(dest);
         }
 
-        private HashSet<uint> GetXrefsTo(uint dest)
+        private HashSet<uint>? GetXrefsTo(uint dest)
         {
             _xrefs.TryGetValue(dest, out var srcs);
             return srcs;
@@ -127,8 +130,9 @@ namespace symdump.exefile
             logger.Info("Starting disassembly");
             _analysisQueue.Clear();
             _analysisQueue.Enqueue(_header.Pc0 - _header.TAddr);
-            foreach (var addr in _symFile.Functions.Keys)
-                _analysisQueue.Enqueue(addr - _header.TAddr);
+            if (_symFile.Functions != null)
+                foreach (var addr in _symFile.Functions.Keys)
+                    _analysisQueue.Enqueue(addr - _header.TAddr);
             logger.Info($"Initial analysis queue has {_analysisQueue.Count} entries");
 
             var iteration = 0;
@@ -160,7 +164,7 @@ namespace symdump.exefile
             }
         }
 
-        private void ProcessCaseTable(uint caseTableAddr, long caseCount, Matcher matcher, LabelOperand defaultLabel,
+        private void ProcessCaseTable(uint caseTableAddr, long caseCount, Matcher matcher, LabelOperand? defaultLabel,
             Register caseValueRegister, Register boolTestRegister, Register shiftedCaseValue)
         {
             caseTableAddr -= _header.TAddr;
@@ -193,7 +197,7 @@ namespace symdump.exefile
         }
 
         private static bool FindSwitchCase(Matcher matcher, out long caseCount, out uint caseTableAddr,
-            out LabelOperand defaultLabel, out Register caseValueRegister, out Register boolTestRegister,
+            out LabelOperand? defaultLabel, out Register caseValueRegister, out Register boolTestRegister,
             out Register shiftedCaseValue)
         {
             caseCount = 0;
@@ -205,20 +209,22 @@ namespace symdump.exefile
 
             // $v1 = $a0 < 0x20 ? 1 : 0
             matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "sltiu")
+                .Where(insn => insn.Mnemonic == "sltiu")
                 .Arg<RegisterOperand>(out var boolTest)
                 .Arg<RegisterOperand>(out var caseValue)
-                .Arg<ImmediateOperand>(out var upperRange, (insn, op) => op.Value > 0)
+                .Arg<ImmediateOperand>(out var upperRange, (_, op) => op.Value > 0)
                 .ArgsDone();
             if (!matcher.Matches) return false;
+            Debug.Assert(boolTest != null);
             boolTestRegister = boolTest.Register;
+            Debug.Assert(caseValue != null);
             caseValueRegister = caseValue.Register;
 
             // if($v1 == 0x0) goto &lbl_2B04
             matcher.NextInsn<ConditionalBranchInstruction>()
-                .Where(_ => _.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
-                .Arg<RegisterOperand>((insn, op) => op.Register == boolTest.Register)
-                .Arg<ImmediateOperand>((insn, op) => op.Value == 0)
+                .Where(insn => insn.Operation == ConditionalBranchInstruction.BoolOperation.Equal)
+                .Arg<RegisterOperand>((_, op) => op.Register == boolTest.Register)
+                .Arg<ImmediateOperand>((_, op) => op.Value == 0)
                 .Arg(out defaultLabel)
                 .ArgsDone();
             if (!matcher.Matches) return false;
@@ -226,12 +232,12 @@ namespace symdump.exefile
             var shiftedCaseValueReg = MatchShift2(caseValue, matcher);
 
             // optional branch delay
-            RegisterOperand caseTableRegister;
+            RegisterOperand? caseTableRegister;
             using (matcher.OptionalExcept())
             {
                 // FIXME: false positive if this matches because of setting a register value
                 matcher.NextInsn<CopyInstruction>()
-                    .Arg(out caseTableRegister, (insn, op) => op.Register != caseValue.Register)
+                    .Arg(out caseTableRegister, (_, op) => op.Register != caseValue.Register)
                     .Arg<ImmediateOperand>()
                     .ArgsDone();
             }
@@ -239,13 +245,14 @@ namespace symdump.exefile
             // $v0 = 0xA0000
             // $v0 = 0x9F940
             matcher.NextInsn<CopyInstruction>()
-                .Arg(out caseTableRegister, (insn, op) => op.Register != caseValue.Register)
+                .Arg(out caseTableRegister, (_, op) => op.Register != caseValue.Register)
                 .Arg<ImmediateOperand>()
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
+            Debug.Assert(caseTableRegister != null);
             matcher.NextInsn<CopyInstruction>()
-                .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
+                .Arg<RegisterOperand>((_, op) => op.Register == caseTableRegister.Register)
                 .Arg<ImmediateOperand>(out var caseTable)
                 .ArgsDone();
             if (!matcher.Matches) return false;
@@ -257,42 +264,46 @@ namespace symdump.exefile
 
             // $v1 += $v0
             var shiftedCaseValueLocal = shiftedCaseValue;
+            Debug.Assert(caseTableRegister != null);
             matcher.NextInsn<ArithmeticInstruction>()
-                .Where(_ => _.IsInplace && _.Operation == ArithmeticInstruction.MathOperation.Add)
-                .Arg<RegisterOperand>((insn, op) => op.Register == shiftedCaseValueLocal)
+                .Where(insn => insn.IsInplace && insn.Operation == ArithmeticInstruction.MathOperation.Add)
+                .Arg<RegisterOperand>((_, op) => op.Register == shiftedCaseValueLocal)
                 .AnyArg()
-                .Arg<RegisterOperand>((insn, op) => op.Register == caseTableRegister.Register)
+                .Arg<RegisterOperand>((_, op) => op.Register == caseTableRegister.Register)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
             // $a0 = *((int*)$v1)
             matcher.NextInsn<CopyInstruction>()
                 .Arg<RegisterOperand>(out var jmpRegister)
-                .Arg<RegisterOffsetOperand>((insn, op) => op.Register == shiftedCaseValueLocal && op.Offset == 0)
+                .Arg<RegisterOffsetOperand>((_, op) => op.Register == shiftedCaseValueLocal && op.Offset == 0)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
             // nop
             matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "nop")
+                .Where(insn => insn.Mnemonic == "nop")
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
             // goto $a0
+            Debug.Assert(jmpRegister != null);
             matcher.NextInsn<CallPtrInstruction>()
-                .Where(_ => _.ReturnAddressTarget == null)
-                .Arg<RegisterOperand>((insn, op) => op.Register == jmpRegister.Register)
+                .Where(insn => insn.ReturnAddressTarget == null)
+                .Arg<RegisterOperand>((_, op) => op.Register == jmpRegister.Register)
                 .ArgsDone();
             if (!matcher.Matches) return false;
 
             // nop
             matcher.NextInsn<SimpleInstruction>()
-                .Where(_ => _.Mnemonic == "nop")
+                .Where(insn => insn.Mnemonic == "nop")
                 .ArgsDone();
 
             if (matcher.Matches)
             {
+                Debug.Assert(upperRange != null);
                 caseCount = upperRange.Value;
+                Debug.Assert(caseTable != null);
                 caseTableAddr = checked((uint) caseTable.Value);
             }
 
@@ -305,12 +316,16 @@ namespace symdump.exefile
             using (matcher.Optional())
             {
                 matcher.NextInsn<ArithmeticInstruction>()
-                    .Where(_ => _.Operation == ArithmeticInstruction.MathOperation.Shl)
+                    .Where(insn => insn.Operation == ArithmeticInstruction.MathOperation.Shl)
                     .Arg<RegisterOperand>(out var shiftedOp)
-                    .Arg<RegisterOperand>((insn, op) => op.Register == source.Register)
-                    .Arg<ImmediateOperand>((insn, op) => op.Value == 2)
+                    .Arg<RegisterOperand>((_, op) => op.Register == source.Register)
+                    .Arg<ImmediateOperand>((_, op) => op.Value == 2)
                     .ArgsDone();
-                return matcher.Matches ? (Register?) shiftedOp.Register : null;
+                if (!matcher.Matches)
+                    return null;
+
+                Debug.Assert(shiftedOp != null);
+                return shiftedOp.Register;
             }
         }
 
@@ -383,6 +398,8 @@ namespace symdump.exefile
                 }
 
                 matcher.Retry();
+                Debug.Assert(regOp != null);
+                Debug.Assert(immOp != null);
                 if (RestoreLargeLoadStore(matcher, regOp.Register, pc, immOp.Value))
                 {
                     matcher.Continue();
@@ -417,14 +434,17 @@ namespace symdump.exefile
         private bool RestoreLargeImmLoad(Matcher matcher, Register register, uint pc, long immOp)
         {
             matcher.NextInsn<ArithmeticInstruction>()
-                .Where(_ => _.Operation == ArithmeticInstruction.MathOperation.Add ||
-                            _.Operation == ArithmeticInstruction.MathOperation.BitOr)
+                .Where(insn => insn.Operation == ArithmeticInstruction.MathOperation.Add ||
+                               insn.Operation == ArithmeticInstruction.MathOperation.BitOr)
                 .AnyArg(out var op0)
-                .Arg<RegisterOperand>((insn, op) => op.Register == register)
+                .Arg<RegisterOperand>((_, op) => op.Register == register)
                 .Arg<ImmediateOperand>(out var imm2);
 
             if (matcher.Matches)
+            {
+                Debug.Assert(imm2 != null);
                 _instructions[pc + 4] = new CopyInstruction(op0, new ImmediateOperand((uint) (immOp + imm2.Value)));
+            }
 
             return matcher.Matches;
         }
@@ -433,13 +453,17 @@ namespace symdump.exefile
         {
             // *((type*)(imm+$reg)) = ...
             matcher.NextInsn<CopyInstruction>(out var copyInsn)
-                .Arg<RegisterOffsetOperand>(out var target, (insn, op) => op.Register == register)
+                .Arg<RegisterOffsetOperand>(out var target, (_, op) => op.Register == register)
                 .AnyArg(out var source)
                 .ArgsDone();
 
             if (matcher.Matches)
+            {
+                Debug.Assert(target != null);
+                Debug.Assert(copyInsn != null);
                 _instructions[pc + 4] = new CopyInstruction(MakeLabelOperand((uint) (target.Offset + immOp)), source,
                     copyInsn.CastTarget, copyInsn.CastSource);
+            }
 
             return matcher.Matches;
         }
@@ -449,12 +473,16 @@ namespace symdump.exefile
             // ... = *((type*)(imm+$reg))
             matcher.NextInsn<CopyInstruction>(out var copyInsn)
                 .AnyArg(out var target)
-                .Arg<RegisterOffsetOperand>(out var source, (insn, op) => op.Register == register)
+                .Arg<RegisterOffsetOperand>(out var source, (_, op) => op.Register == register)
                 .ArgsDone();
 
             if (matcher.Matches)
+            {
+                Debug.Assert(source != null);
+                Debug.Assert(copyInsn != null);
                 _instructions[pc + 4] = new CopyInstruction(target, MakeLabelOperand((uint) (source.Offset + immOp)),
                     copyInsn.CastTarget, copyInsn.CastSource);
+            }
 
             return matcher.Matches;
         }
@@ -467,15 +495,23 @@ namespace symdump.exefile
             matcher.NextInsn<CopyInstruction>(out var insn2Simple)
                 .AnyArg()
                 .Arg<RegisterOffsetOperand>(out var regOffsOp)
-                .Where(_ => regOffsOp.Register == reg)
+                .Where(_ =>
+                {
+                    Debug.Assert(regOffsOp != null);
+                    return regOffsOp.Register == reg;
+                })
                 .ArgsDone();
 
-            if (matcher.Matches)
-                _instructions[pc + 4] = new CopyInstruction(insn2Simple.Target,
-                    MakeLabelOperand((uint) (immOp + regOffsOp.Offset)),
-                    insn2Simple.CastTarget,
-                    insn2Simple.CastSource
-                );
+            if (!matcher.Matches)
+                return matcher.Matches;
+
+            Debug.Assert(insn2Simple != null);
+            Debug.Assert(regOffsOp != null);
+            _instructions[pc + 4] = new CopyInstruction(insn2Simple.Target,
+                MakeLabelOperand((uint) (immOp + regOffsOp.Offset)),
+                insn2Simple.CastTarget,
+                insn2Simple.CastSource
+            );
 
             return matcher.Matches;
         }
@@ -484,17 +520,18 @@ namespace symdump.exefile
         {
             logger.Info("Dumping exe disassembly");
 
+            Debug.Assert(_symFile.Functions != null);
             var startBlocks = _symFile.Functions
-                .SelectMany(_ => _.Value)
-                .SelectMany(_ => _.AllBlocks)
-                .GroupBy(_ => _.StartOffset)
-                .ToImmutableDictionary(group => group.Key, _ => _.ToList());
+                .SelectMany(fn => fn.Value)
+                .SelectMany(fn => fn.AllBlocks)
+                .GroupBy(block => block.StartOffset)
+                .ToImmutableDictionary(group => group.Key, group => group.ToList());
 
             var endingBlocks = _symFile.Functions
-                .SelectMany(_ => _.Value)
-                .SelectMany(_ => _.AllBlocks)
-                .GroupBy(_ => _.EndOffset)
-                .ToImmutableDictionary(group => group.Key, _ => _.ToList());
+                .SelectMany(fn => fn.Value)
+                .SelectMany(fn => fn.AllBlocks)
+                .GroupBy(block => block.EndOffset)
+                .ToImmutableDictionary(group => group.Key, group => group.ToList());
 
             var iteration = 0;
             foreach (var (addr, insn) in _instructions)
@@ -521,11 +558,8 @@ namespace symdump.exefile
                     foreach (var xref in xrefsHere)
                         output.WriteLine("# - " + GetSymbolName(xref));
                     var names = GetSymbolNames(addr);
-                    if (names != null)
-                        foreach (var name in names)
-                            output.WriteLine(name + ":");
-                    else
-                        output.WriteLine(GetSymbolName(addr) + ":");
+                    foreach (var name in names)
+                        output.WriteLine(name + ":");
                 }
 
                 if (f != null)
@@ -1086,7 +1120,7 @@ namespace symdump.exefile
             public readonly uint Data;
             public readonly uint DSize;
             public readonly uint Gp0;
-            public readonly char[] ID;
+            public readonly char[] Id;
             public readonly uint Pc0;
             public readonly uint SAddr;
             public readonly uint SavedFp;
@@ -1095,15 +1129,19 @@ namespace symdump.exefile
             public readonly uint SavedS0;
             public readonly uint SavedSp;
             public readonly uint SSize;
+
+            // ReSharper disable once InconsistentNaming
             public readonly uint TAddr;
             public readonly uint Text;
+
+            // ReSharper disable once InconsistentNaming
             public readonly uint TSize;
 
             public Header(EndianBinaryReader reader)
             {
-                ID = reader.ReadBytes(8).Select(b => (char) b).ToArray();
+                Id = reader.ReadBytes(8).Select(b => (char) b).ToArray();
 
-                if (!"PS-X EXE".Equals(new string(ID)))
+                if (!"PS-X EXE".Equals(new string(Id)))
                     throw new Exception("Header ID mismatch");
 
                 Text = reader.ReadUInt32();

@@ -9,7 +9,7 @@ namespace symdump.symfile
 {
     public class UnionDef : IEquatable<UnionDef>, IComplexType
     {
-        private readonly List<CompoundMember> _members = new List<CompoundMember>();
+        private readonly List<CompoundMember> _members = [];
 
         public UnionDef(BinaryReader stream, string name)
         {
@@ -51,7 +51,7 @@ namespace symdump.symfile
         {
             if (forInline && Typedefs.Count > 0)
             {
-                writer.Write(string.Join(", ", Typedefs.Select(_ => _.Value.AsCode(_.Key, true))));
+                writer.Write(string.Join(", ", Typedefs.Select(typedef => typedef.Value.AsCode(typedef.Key, true))));
                 return;
             }
 
@@ -71,14 +71,14 @@ namespace symdump.symfile
             foreach (var member in _members) member.ResolveTypedef(objectFile);
         }
 
-        public bool Equals(UnionDef other)
+        public bool Equals(UnionDef? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return _members.SequenceEqual(other._members) && string.Equals(Name, other.Name);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -90,8 +90,8 @@ namespace symdump.symfile
         {
             unchecked
             {
-                return ((_members != null ? _members.GetHashCode() : 0) * 397) ^
-                       (Name != null ? Name.GetHashCode() : 0);
+                return ((_members.GetHashCode()) * 397) ^
+                       (Name.GetHashCode());
             }
         }
     }

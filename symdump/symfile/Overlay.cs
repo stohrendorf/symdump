@@ -2,20 +2,14 @@ using System.IO;
 
 namespace symdump.symfile
 {
-    public class Overlay
+    public class Overlay(BinaryReader fs)
     {
-        public readonly int Id;
-        public readonly int Length;
-
-        public Overlay(BinaryReader fs)
-        {
-            Length = fs.ReadInt32();
-            Id = fs.ReadInt32();
-        }
+        private readonly int _id = fs.ReadInt32();
+        private readonly int _length = fs.ReadInt32();
 
         public override string ToString()
         {
-            return $"length={Length} id={Id}";
+            return $"length={_length} id={_id}";
         }
     }
 }

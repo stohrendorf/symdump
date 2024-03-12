@@ -1,18 +1,17 @@
-using JetBrains.Annotations;
 using symdump.exefile.operands;
 
 namespace symdump.exefile.instructions
 {
     public class CaseTableEntry : Instruction
     {
-        private readonly LabelOperand _labelOperand;
+        private readonly LabelOperand? _labelOperand;
 
-        public CaseTableEntry([NotNull] LabelOperand labelOperand)
+        public CaseTableEntry(LabelOperand? labelOperand)
         {
             _labelOperand = labelOperand;
         }
 
-        public override IOperand[] Operands { get; } = new IOperand[0];
+        public override IOperand?[] Operands { get; } = new IOperand[0];
 
         public override string ToString()
         {

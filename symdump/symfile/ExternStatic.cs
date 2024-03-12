@@ -4,11 +4,11 @@ namespace symdump.symfile
 {
     public class ExternStatic
     {
-        private readonly string _name;
+        private readonly string? _name;
         private readonly int _offset;
         private readonly TaggedSymbol _taggedSymbol;
 
-        public ExternStatic(TaggedSymbol taggedSymbol, string name, int offset)
+        public ExternStatic(TaggedSymbol taggedSymbol, string? name, int offset)
         {
             _taggedSymbol = taggedSymbol;
             _name = name;

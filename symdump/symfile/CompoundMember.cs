@@ -9,15 +9,15 @@ namespace symdump.symfile
     /// </summary>
     public class CompoundMember : IEquatable<CompoundMember>
     {
-        private readonly string _name;
+        private readonly string? _name;
         public readonly TaggedSymbol MemberType;
-        public readonly TypedValue TypedValue;
+        private readonly TypedValue _typedValue;
 
         public CompoundMember(TypedValue typedValue, BinaryReader reader, bool isArray)
         {
             MemberType = reader.ReadTaggedSymbol(isArray);
             _name = reader.ReadPascalString();
-            TypedValue = typedValue;
+            _typedValue = typedValue;
 
             if (MemberType.Type != SymbolType.Bitfield
                 && MemberType.Type != SymbolType.StructMember
@@ -26,13 +26,13 @@ namespace symdump.symfile
                 throw new Exception($"Unexpected {nameof(SymbolType)} {MemberType.Type}");
         }
 
-        public bool Equals(CompoundMember other)
+        public bool Equals(CompoundMember? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return string.Equals(_name, other._name)
                    && MemberType.Equals(other.MemberType)
-                   && TypedValue.Equals(other.TypedValue);
+                   && _typedValue.Equals(other._typedValue);
         }
 
         public override string ToString()
@@ -41,17 +41,17 @@ namespace symdump.symfile
             {
                 case SymbolType.Bitfield:
                     return MemberType.AsCode(_name) +
-                           $" : {MemberType.Size}; // offset={TypedValue.Value / 8}.{TypedValue.Value % 8}";
+                           $" : {MemberType.Size}; // offset={_typedValue.Value / 8}.{_typedValue.Value % 8}";
                 case SymbolType.StructMember:
                 case SymbolType.UnionMember:
                     return MemberType.AsCode(_name) +
-                           $"; // size={MemberType.Size}, offset={TypedValue.Value}";
+                           $"; // size={MemberType.Size}, offset={_typedValue.Value}";
                 default:
                     throw new Exception($"Unexpected {nameof(SymbolType)} {MemberType.Type}");
             }
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -64,8 +64,8 @@ namespace symdump.symfile
             unchecked
             {
                 var hashCode = _name != null ? _name.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (MemberType != null ? MemberType.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (TypedValue != null ? TypedValue.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ MemberType.GetHashCode();
+                hashCode = (hashCode * 397) ^ _typedValue.GetHashCode();
                 return hashCode;
             }
         }

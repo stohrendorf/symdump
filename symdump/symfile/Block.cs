@@ -17,7 +17,7 @@ namespace symdump.symfile
 
         private readonly List<Block> _subBlocks = new List<Block>();
         private readonly Dictionary<string, TaggedSymbol> _typedefs = new Dictionary<string, TaggedSymbol>();
-        private readonly List<string> _vars = new List<string>();
+        private readonly List<string> _vars = [];
         public readonly uint EndOffset;
         public readonly uint StartOffset;
 
@@ -114,7 +114,7 @@ namespace symdump.symfile
             if (StartOffset == addr)
                 yield return this;
 
-            foreach (var block in _subBlocks.SelectMany(_ => _.FindBlocksStartingAt(addr))) yield return block;
+            foreach (var block in _subBlocks.SelectMany(block => block.FindBlocksStartingAt(addr))) yield return block;
         }
 
         public IEnumerable<Block> FindBlocksEndingAt(uint addr)
@@ -122,13 +122,13 @@ namespace symdump.symfile
             if (EndOffset == addr)
                 yield return this;
 
-            foreach (var block in _subBlocks.SelectMany(_ => _.FindBlocksEndingAt(addr))) yield return block;
+            foreach (var block in _subBlocks.SelectMany(block => block.FindBlocksEndingAt(addr))) yield return block;
         }
 
         public IEnumerable<Block> AllBlocks()
         {
             yield return this;
-            foreach (var block in _subBlocks.SelectMany(_ => _.AllBlocks())) yield return block;
+            foreach (var block in _subBlocks.SelectMany(block => block.AllBlocks())) yield return block;
         }
 
         public void Dump(IndentedTextWriter writer)

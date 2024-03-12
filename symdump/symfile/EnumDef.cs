@@ -71,7 +71,7 @@ namespace symdump.symfile
         {
             if (forInline && Typedefs.Count > 0)
             {
-                writer.Write(string.Join(", ", Typedefs.Select(_ => _.Value.AsCode(_.Key, true))));
+                writer.Write(string.Join(", ", Typedefs.Select(typedef => typedef.Value.AsCode(typedef.Key, true))));
                 return;
             }
 
@@ -106,14 +106,14 @@ namespace symdump.symfile
         {
         }
 
-        public bool Equals(EnumDef other)
+        public bool Equals(EnumDef? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return _members.SequenceEqual(other._members) && string.Equals(Name, other.Name);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

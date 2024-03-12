@@ -2,7 +2,5 @@
 
 namespace symdump.exefile.operands
 {
-    public interface IOperand : IEquatable<IOperand>
-    {
-    }
+    public interface IOperand : IEquatable<IOperand>;
 }

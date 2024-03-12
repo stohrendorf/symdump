@@ -10,7 +10,7 @@ namespace symdump.symfile
     public class Function
     {
         private readonly List<Block> _blocks = new List<Block>();
-        private readonly string _file;
+        private readonly string? _file;
         private readonly uint _lastLine;
         private readonly uint _line;
         private readonly uint _mask;
@@ -22,7 +22,7 @@ namespace symdump.symfile
         private readonly Register _stackBase;
         private readonly uint _stackFrameSize;
         public readonly uint Address;
-        public readonly string Name;
+        public readonly string? Name;
         private uint _maxCodeAddress;
 
         private uint _minCodeAddress;
@@ -33,11 +33,11 @@ namespace symdump.symfile
             {
                 _minCodeAddress =
                     Math.Min(
-                        _blocks.SelectMany(_ => _.AllBlocks()).Select(_ => _.StartOffset).DefaultIfEmpty(Address).Min(),
+                        _blocks.SelectMany(block => block.AllBlocks()).Select(block => block.StartOffset).DefaultIfEmpty(Address).Min(),
                         Address);
                 _maxCodeAddress =
                     Math.Max(
-                        _blocks.SelectMany(_ => _.AllBlocks()).Select(_ => _.EndOffset).DefaultIfEmpty(Address).Max(),
+                        _blocks.SelectMany(block => block.AllBlocks()).Select(block => block.EndOffset).DefaultIfEmpty(Address).Max(),
                         Address);
             }
 
@@ -74,8 +74,8 @@ namespace symdump.symfile
                 if (reader.SkipSld(typedValue))
                     continue;
 
-                TaggedSymbol taggedSymbol;
-                string symbolName;
+                TaggedSymbol? taggedSymbol;
+                string? symbolName;
                 switch (typedValue.Type & 0x7f)
                 {
                     case TypedValue.FunctionEnd:
@@ -97,9 +97,6 @@ namespace symdump.symfile
                         throw new Exception($"Unexpected function definition type {typedValue.Type}");
                 }
 
-                if (taggedSymbol == null || symbolName == null)
-                    break;
-
                 taggedSymbol.ResolveTypedef(objectFile);
 
                 switch (taggedSymbol.Type)
@@ -116,11 +113,9 @@ namespace symdump.symfile
                         throw new Exception($"Unexpected parameter type {taggedSymbol.Type}");
                 }
             }
-
-            InitMinMax();
         }
 
-        public IEnumerable<Block> AllBlocks => _blocks.SelectMany(_ => _.AllBlocks());
+        public IEnumerable<Block> AllBlocks => _blocks.SelectMany(block => block.AllBlocks());
 
         private IEnumerable<Register> SavedRegisters => Enumerable.Range(0, 32)
             .Where(i => ((1 << i) & _mask) != 0)
@@ -158,12 +153,12 @@ namespace symdump.symfile
 
         public IEnumerable<Block> FindBlocksStartingAt(uint addr)
         {
-            return _blocks.SelectMany(_ => _.FindBlocksStartingAt(addr));
+            return _blocks.SelectMany(block => block.FindBlocksStartingAt(addr));
         }
 
         public IEnumerable<Block> FindBlocksEndingAt(uint addr)
         {
-            return _blocks.SelectMany(_ => _.FindBlocksEndingAt(addr));
+            return _blocks.SelectMany(block => block.FindBlocksEndingAt(addr));
         }
     }
 }

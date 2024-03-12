@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NLog;
@@ -19,7 +20,7 @@ namespace symdump.symfile
         public readonly List<Function> Functions = new List<Function>();
         public readonly Dictionary<string, TaggedSymbol> FuncTypes = new Dictionary<string, TaggedSymbol>();
         public readonly Dictionary<uint, List<Label>> Labels = new Dictionary<uint, List<Label>>();
-        private string _objFilename;
+        private string? _objFilename;
         private int? _overlayId;
 
         public ObjectFile(BinaryReader stream)
@@ -39,8 +40,7 @@ namespace symdump.symfile
             ReadOverlayId(stream);
 
             while (stream.BaseStream.Position < stream.BaseStream.Length && ReadEntry(stream))
-                if (_objFilename == null)
-                    _objFilename = string.Empty;
+                _objFilename ??= string.Empty;
 
             ResolveTypedefs();
 
@@ -62,7 +62,7 @@ namespace symdump.symfile
 
         public void Dump(TextWriter output)
         {
-            foreach (var k in ComplexTypes.Keys.Where(_ => _.IsFake()).ToList())
+            foreach (var k in ComplexTypes.Keys.Where(typename => typename.IsFake()).ToList())
                 ComplexTypes.Remove(k);
 
             var writer = new IndentedTextWriter(output);
@@ -83,7 +83,7 @@ namespace symdump.symfile
 
             writer.WriteLine();
             writer.WriteLine($"// {Labels.Count} labels");
-            foreach (var l2 in Labels.SelectMany(_ => _.Value))
+            foreach (var l2 in Labels.SelectMany(label => label.Value))
                 writer.WriteLine(l2);
 
             writer.WriteLine();
@@ -107,7 +107,7 @@ namespace symdump.symfile
                 stream.BaseStream.Position = pos;
         }
 
-        private void SkipSLD(BinaryReader stream)
+        private void SkipSld(BinaryReader stream)
         {
             logger.Info("Skipping source line information");
             while (stream.BaseStream.Position < stream.BaseStream.Length)
@@ -126,22 +126,22 @@ namespace symdump.symfile
 
                 switch (typedValue.Type & 0x7f)
                 {
-                    case TypedValue.BeginSLD:
+                    case TypedValue.BeginSld:
                         stream.Skip(4);
                         _srcFiles.Add(stream.ReadPascalString());
                         break;
-                    case TypedValue.IncSLD:
+                    case TypedValue.IncSld:
                         break;
-                    case TypedValue.AddSLD1:
+                    case TypedValue.AddSld1:
                         stream.Skip(1);
                         break;
-                    case TypedValue.AddSLD2:
+                    case TypedValue.AddSld2:
                         stream.Skip(2);
                         break;
-                    case TypedValue.SetSLD:
+                    case TypedValue.SetSld:
                         stream.Skip(4);
                         break;
-                    case TypedValue.EndSLDInfo:
+                    case TypedValue.EndSldInfo:
                         return;
                     default:
                         throw new Exception($"Unhandled SLD type 0x{typedValue.Type:X}");
@@ -171,19 +171,19 @@ namespace symdump.symfile
 
             switch (typedValue.Type & 0x7f)
             {
-                case TypedValue.BeginSLD:
+                case TypedValue.BeginSld:
                     stream.BaseStream.Position = basePos;
-                    SkipSLD(stream);
+                    SkipSld(stream);
                     return true;
                 case TypedValue.SetOverlay:
                     stream.BaseStream.Position = basePos;
                     return false;
-                case TypedValue.EndSLDInfo:
+                case TypedValue.EndSldInfo:
                     return false;
-                case TypedValue.IncSLD:
-                case TypedValue.AddSLD1:
-                case TypedValue.AddSLD2:
-                case TypedValue.SetSLD:
+                case TypedValue.IncSld:
+                case TypedValue.AddSld1:
+                case TypedValue.AddSld2:
+                case TypedValue.SetSld:
                     throw new Exception($"Unexpected SLD entry 0x{typedValue.Type & 0x7f:X}");
                 case TypedValue.Function:
                     ReadFunction(stream, typedValue.Value);
@@ -237,9 +237,9 @@ namespace symdump.symfile
             if (name.IsFake())
                 throw new Exception($"Found fake typedef name {name}");
 
-            if (taggedSymbol.IsFake && ComplexTypes.ContainsKey(taggedSymbol.Tag))
+            if (taggedSymbol.IsFake && taggedSymbol.Tag != null && ComplexTypes.TryGetValue(taggedSymbol.Tag, out var type))
                 // found a typedef for a fake symbol, e.g. typedef struct .123fake {} FOO
-                ComplexTypes[taggedSymbol.Tag].Typedefs.Add(name, taggedSymbol);
+                type.Typedefs.Add(name, taggedSymbol);
 
             if (_typedefs.TryGetValue(name, out var already))
             {
@@ -252,6 +252,7 @@ namespace symdump.symfile
                 writer.Indent++;
                 writer.WriteLine(already.ToString());
                 writer.WriteLine(already.AsCode(name));
+                Debug.Assert(already.Tag != null);
                 ComplexTypes[already.Tag].Dump(writer, false);
 
                 writer.Indent--;
@@ -343,20 +344,21 @@ namespace symdump.symfile
             }
         }
 
-        public Function FindFunction(uint addr)
+        public Function? FindFunction(uint addr)
         {
             return Functions.FirstOrDefault(f => f.Address == addr);
         }
 
-        public string ReverseTypedef(TaggedSymbol taggedSymbol, out int droppedDerived)
+        public string? ReverseTypedef(TaggedSymbol taggedSymbol, out int droppedDerived)
         {
             droppedDerived = 0;
 
+            Debug.Assert(taggedSymbol.Tag != null);
             if (!ComplexTypes.TryGetValue(taggedSymbol.Tag, out var complexType))
                 return null;
 
             var typedefs = complexType.Typedefs
-                .Where(_ => _.Value.Equals(taggedSymbol))
+                .Where(typedef => typedef.Value.Equals(taggedSymbol))
                 .ToList();
             if (typedefs.Count >= 1)
                 return typedefs[0].Key;
@@ -373,7 +375,7 @@ namespace symdump.symfile
             {
                 droppedDerived = i;
                 var partialTypedefs = complexType.Typedefs
-                    .Where(_ => _.Value.IsPartOf(taggedSymbol, i))
+                    .Where(typedef => typedef.Value.IsPartOf(taggedSymbol, i))
                     .ToList();
                 if (partialTypedefs.Count >= 1)
                     return partialTypedefs[0].Key;

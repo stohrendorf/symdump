@@ -5,12 +5,12 @@ namespace symdump.symfile
 {
     public class TypedValue : IEquatable<TypedValue>
     {
-        public const int IncSLD = 0;
-        public const int AddSLD1 = 2;
-        public const int AddSLD2 = 4;
-        public const int SetSLD = 6;
-        public const int BeginSLD = 8;
-        public const int EndSLDInfo = 10;
+        public const int IncSld = 0;
+        public const int AddSld1 = 2;
+        public const int AddSld2 = 4;
+        public const int SetSld = 6;
+        public const int BeginSld = 8;
+        public const int EndSldInfo = 10;
         public const int Function = 12;
         public const int FunctionEnd = 14;
         public const int Block = 16;
@@ -32,7 +32,7 @@ namespace symdump.symfile
 
         public bool IsLabel => (Type & 0x80) == 0;
 
-        public bool Equals(TypedValue other)
+        public bool Equals(TypedValue? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -44,7 +44,7 @@ namespace symdump.symfile
             return $"value={Value} type={Type} isLabel={IsLabel}";
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

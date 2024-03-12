@@ -1,16 +1,15 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using symdump.exefile.instructions;
 
 namespace symdump.exefile.operands
 {
     public class Matcher
     {
-        [NotNull] private readonly IReadOnlyDictionary<uint, Instruction> _instructions;
-        [NotNull] private readonly Stack<KeyValuePair<uint, bool>> _pcs = new Stack<KeyValuePair<uint, bool>>();
+        private readonly IReadOnlyDictionary<uint, Instruction> _instructions;
+        private readonly Stack<KeyValuePair<uint, bool>> _pcs = new Stack<KeyValuePair<uint, bool>>();
         internal bool Matches = true;
 
-        public Matcher(uint pc, [NotNull] IReadOnlyDictionary<uint, Instruction> instructions)
+        public Matcher(uint pc, IReadOnlyDictionary<uint, Instruction> instructions)
         {
             Pc = pc;
             _instructions = instructions;
@@ -19,7 +18,7 @@ namespace symdump.exefile.operands
 
         public uint Pc { get; private set; }
 
-        internal InsnMatcher<T> NextInsn<T>(out T typedInsn) where T : Instruction
+        internal InsnMatcher<T> NextInsn<T>(out T? typedInsn) where T : Instruction
         {
             typedInsn = null;
 

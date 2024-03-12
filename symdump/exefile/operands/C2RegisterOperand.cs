@@ -16,7 +16,7 @@ namespace symdump.exefile.operands
         {
         }
 
-        public bool Equals(IOperand other)
+        public bool Equals(IOperand? other)
         {
             var o = other as C2RegisterOperand;
             return _register == o?._register;

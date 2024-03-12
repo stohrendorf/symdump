@@ -1,14 +1,13 @@
 using System;
-using JetBrains.Annotations;
 
 namespace symdump.exefile.operands
 {
     public class OptionalMatching : IDisposable
     {
         private readonly bool _except;
-        [NotNull] private readonly Matcher _matcher;
+        private readonly Matcher _matcher;
 
-        public OptionalMatching([NotNull] Matcher matcher, bool except)
+        public OptionalMatching(Matcher matcher, bool except)
         {
             _matcher = matcher;
             _except = except;

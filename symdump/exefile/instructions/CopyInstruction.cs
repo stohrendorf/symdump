@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using symdump.exefile.operands;
 using symdump.symfile;
 
@@ -6,25 +5,25 @@ namespace symdump.exefile.instructions
 {
     public class CopyInstruction : Instruction
     {
-        public CopyInstruction([NotNull] IOperand target, [NotNull] IOperand source,
-            [CanBeNull] string castTarget = null, [CanBeNull] string castSource = null)
+        public CopyInstruction(IOperand? target, IOperand? source,
+            string? castTarget = null, string? castSource = null)
         {
             if (source is RegisterOperand regOp && regOp.Register == Register.zero)
                 source = ImmediateOperand.Zero;
 
-            Operands = new[] {target, source};
+            Operands = [target, source];
             CastTarget = castTarget;
             CastSource = castSource;
         }
 
-        [CanBeNull] public string CastTarget { get; }
+        public string? CastTarget { get; }
 
-        [CanBeNull] public string CastSource { get; }
+        public string? CastSource { get; }
 
-        public override IOperand[] Operands { get; }
+        public override IOperand?[] Operands { get; }
 
-        public IOperand Target => Operands[0];
-        public IOperand Source => Operands[1];
+        public IOperand? Target => Operands[0];
+        public IOperand? Source => Operands[1];
 
         public override string AsReadable()
         {

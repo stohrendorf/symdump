@@ -9,14 +9,14 @@ namespace symdump.exefile.instructions
     {
         private readonly Register _boolTestRegister;
         private readonly uint _caseCount;
-        private readonly LabelOperand _caseTable;
+        private readonly LabelOperand? _caseTable;
         private readonly Register _caseValueRegister;
-        private readonly LabelOperand _defaultLabel;
+        private readonly LabelOperand? _defaultLabel;
         private readonly Register _shiftedCaseValue;
 
-        public readonly IList<LabelOperand> Cases = new List<LabelOperand>();
+        public readonly IList<LabelOperand?> Cases = new List<LabelOperand?>();
 
-        public SwitchInstruction(LabelOperand caseTable, uint caseCount, LabelOperand defaultLabel,
+        public SwitchInstruction(LabelOperand? caseTable, uint caseCount, LabelOperand? defaultLabel,
             Register caseValueRegister, Register boolTestRegister, Register shiftedCaseValue)
         {
             _caseTable = caseTable;
@@ -26,17 +26,17 @@ namespace symdump.exefile.instructions
             _boolTestRegister = boolTestRegister;
             _shiftedCaseValue = shiftedCaseValue;
 
-            Operands = new IOperand[]
-            {
+            Operands =
+            [
                 caseTable,
                 new ImmediateOperand(caseCount),
                 defaultLabel,
                 new RegisterOperand(caseValueRegister),
                 new RegisterOperand(boolTestRegister)
-            };
+            ];
         }
 
-        public override IOperand[] Operands { get; }
+        public override IOperand?[] Operands { get; }
 
         public override string ToString()
         {

@@ -33,15 +33,21 @@ namespace symdump
         {
             ConfigureLogging();
 
-            string flatFilename = null;
-            string structuredOut = null;
-            string disassemblyFile = null;
+            string? flatFilename = null;
+            string? structuredOut = null;
+            string? disassemblyFile = null;
 
             var options = new OptionSet
             {
-                {"f|flat=", "Dump flat output to file", _ => flatFilename = _},
-                {"o|out=", "Dump structured output to file", _ => structuredOut = _},
-                {"d|disassembly=", "Disassemble associated .exe when available to file", _ => disassemblyFile = _}
+                {
+                    "f|flat=", "Dump flat output to file", value => flatFilename = value
+                },
+                {
+                    "o|out=", "Dump structured output to file", value => structuredOut = value
+                },
+                {
+                    "d|disassembly=", "Disassemble associated .exe when available to file", value => disassemblyFile = value
+                }
             };
 
             IList<string> extraArgs;
@@ -68,11 +74,9 @@ namespace symdump
             if (flatFilename != null)
             {
                 logger.Info($"Dumping {extraArgs[0]} to {flatFilename} in flat format");
-                using (var fs = new FileStream(extraArgs[0], FileMode.Open))
-                {
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new SymFile(new BinaryReader(fs), flatFilename);
-                }
+                using var fs = new FileStream(extraArgs[0], FileMode.Open);
+                // ReSharper disable once ObjectCreationAsStatement
+                new SymFile(new BinaryReader(fs), flatFilename);
             }
 
             if (structuredOut == null && disassemblyFile == null)
@@ -85,10 +89,8 @@ namespace symdump
                 if (structuredOut != null)
                 {
                     logger.Info($"Dumping {extraArgs[0]} to {structuredOut} in structured format");
-                    using (var outFs = structuredOut == "-" ? Console.Out : File.CreateText(structuredOut))
-                    {
-                        symFile.Dump(outFs);
-                    }
+                    using var outFs = structuredOut == "-" ? Console.Out : File.CreateText(structuredOut);
+                    symFile.Dump(outFs);
                 }
             }
 

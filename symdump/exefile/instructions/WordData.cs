@@ -11,7 +11,7 @@ namespace symdump.exefile.instructions
             _data = data;
         }
 
-        public override IOperand[] Operands { get; } = new IOperand[0];
+        public override IOperand?[] Operands { get; } = new IOperand[0];
 
         public override string ToString()
         {

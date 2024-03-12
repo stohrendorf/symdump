@@ -16,7 +16,7 @@ namespace symdump.symfile
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly IList<ObjectFile> _files = new List<ObjectFile>();
-        private readonly string _mxInfo;
+        private readonly string? _mxInfo;
 
         private readonly ISet<string> _overlays = new SortedSet<string>();
 
@@ -32,11 +32,11 @@ namespace symdump.symfile
         private readonly byte _targetUnit;
         private readonly byte _version;
 
-        public readonly IDictionary<uint, List<Function>> Functions;
+        public readonly IDictionary<uint, List<Function>>? Functions;
 
-        public readonly IDictionary<uint, IList<Label>> Labels;
+        public readonly IDictionary<uint, IList<Label>>? Labels;
 
-        public SymFile(BinaryReader stream, string flatFilename)
+        public SymFile(BinaryReader stream, string? flatFilename)
         {
             logger.Info("Loading SYM file...");
             stream.BaseStream.Seek(0, SeekOrigin.Begin);
@@ -68,15 +68,15 @@ namespace symdump.symfile
 
                 logger.Info("Preparing symbol lookups");
                 Labels = _files
-                    .SelectMany(_ => _.Labels)
-                    .GroupBy(_ => _.Key)
+                    .SelectMany(file => file.Labels)
+                    .GroupBy(label => label.Key)
                     .Select(group =>
-                        new KeyValuePair<uint, IList<Label>>(group.Key, group.SelectMany(_ => _.Value).ToList()))
+                        new KeyValuePair<uint, IList<Label>>(group.Key, group.SelectMany(labels => labels.Value).ToList()))
                     .ToImmutableDictionary(kv => kv.Key, kv => kv.Value);
 
                 Functions = _files
-                    .SelectMany(_ => _.Functions)
-                    .GroupBy(_ => _.Address)
+                    .SelectMany(file => file.Functions)
+                    .GroupBy(fn => fn.Address)
                     .ToImmutableDictionary(kv => kv.Key, kv => kv.ToList());
             }
             else
@@ -105,25 +105,25 @@ namespace symdump.symfile
 
                         switch (typedValue.Type & 0x7f)
                         {
-                            case TypedValue.IncSLD:
+                            case TypedValue.IncSld:
                                 writer.WriteLine("SLD++");
                                 break;
-                            case TypedValue.AddSLD1:
+                            case TypedValue.AddSld1:
                                 writer.WriteLine($"SLD += {stream.ReadByte()}");
                                 break;
-                            case TypedValue.AddSLD2:
+                            case TypedValue.AddSld2:
                                 writer.WriteLine($"SLD += {stream.ReadUInt16()}");
                                 break;
-                            case TypedValue.SetSLD:
+                            case TypedValue.SetSld:
                                 writer.WriteLine($"SLD = {stream.ReadUInt32()}");
                                 break;
-                            case TypedValue.BeginSLD:
+                            case TypedValue.BeginSld:
                                 writer.Indent = 0;
                                 writer.Write($"Begin SLD = {stream.ReadUInt32()} ; ");
                                 writer.WriteLine(stream.ReadPascalString());
                                 writer.Indent++;
                                 break;
-                            case TypedValue.EndSLDInfo:
+                            case TypedValue.EndSldInfo:
                                 writer.Indent--;
                                 writer.WriteLine("SLD End.");
                                 break;

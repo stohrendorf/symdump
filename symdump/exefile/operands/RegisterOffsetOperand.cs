@@ -18,7 +18,7 @@ namespace symdump.exefile.operands
         {
         }
 
-        public bool Equals(IOperand other)
+        public bool Equals(IOperand? other)
         {
             var o = other as RegisterOffsetOperand;
             return Register == o?.Register && Offset == o.Offset;

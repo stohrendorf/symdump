@@ -31,7 +31,7 @@ namespace symdump.symfile
 
         public bool IsFunctionReturnType => _derivedTypes.Contains(DerivedType.FunctionReturnType);
 
-        public bool Equals(DerivedTypeDef other)
+        public bool Equals(DerivedTypeDef? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -47,7 +47,7 @@ namespace symdump.symfile
             if (dropLast > other._derivedTypes.Count)
                 return false;
 
-            droppedExtents = other._derivedTypes.TakeLast(dropLast).Count(_ => _ == DerivedType.Array);
+            droppedExtents = other._derivedTypes.TakeLast(dropLast).Count(type => type == DerivedType.Array);
             return Type == other.Type && _derivedTypes.SequenceEqual(other._derivedTypes.SkipLast(dropLast));
         }
 
@@ -57,11 +57,11 @@ namespace symdump.symfile
             return modifiers.Length == 0 ? Type.ToString() : $"{Type}({modifiers})";
         }
 
-        public string AsCode(string name, TaggedSymbol taggedSymbol, bool onlyDecorated = false)
+        public string AsCode(string? name, TaggedSymbol taggedSymbol, bool onlyDecorated = false)
         {
             var dimIdx = 0;
 
-            string cType;
+            string? cType;
             if (taggedSymbol.IsResolvedTypedef)
                 cType = taggedSymbol.InnerCode ?? taggedSymbol.Tag;
             else
@@ -70,20 +70,20 @@ namespace symdump.symfile
                     case PrimitiveType.StructDef:
                         Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
                         cType = taggedSymbol.InnerCode ?? (taggedSymbol.IsResolvedTypedef
-                                    ? taggedSymbol.Tag
-                                    : $"struct {taggedSymbol.Tag}");
+                            ? taggedSymbol.Tag
+                            : $"struct {taggedSymbol.Tag}");
                         break;
                     case PrimitiveType.UnionDef:
                         Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
                         cType = taggedSymbol.InnerCode ?? (taggedSymbol.IsResolvedTypedef
-                                    ? taggedSymbol.Tag
-                                    : $"union {taggedSymbol.Tag}");
+                            ? taggedSymbol.Tag
+                            : $"union {taggedSymbol.Tag}");
                         break;
                     case PrimitiveType.EnumDef:
                         Debug.Assert(!string.IsNullOrEmpty(taggedSymbol.Tag));
                         cType = taggedSymbol.InnerCode ?? (taggedSymbol.IsResolvedTypedef
-                                    ? taggedSymbol.Tag
-                                    : $"enum {taggedSymbol.Tag}");
+                            ? taggedSymbol.Tag
+                            : $"enum {taggedSymbol.Tag}");
                         break;
                     case PrimitiveType.Char:
                         cType = "char";
@@ -163,7 +163,7 @@ namespace symdump.symfile
             return onlyDecorated ? decorated : $"{cType} {decorated}";
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -175,16 +175,15 @@ namespace symdump.symfile
         {
             unchecked
             {
-                return ((int) Type * 397) ^ (_derivedTypes?.GetHashCode() ?? 0);
+                return ((int) Type * 397) ^ _derivedTypes.GetHashCode();
             }
         }
 
         public int RetainDerived(int n)
         {
-            if (n > _derivedTypes.Count)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(n, _derivedTypes.Count);
 
-            var droppedArrays = _derivedTypes.SkipLast(n).Count(_ => _ == DerivedType.Array);
+            var droppedArrays = _derivedTypes.SkipLast(n).Count(type => type == DerivedType.Array);
             _derivedTypes = _derivedTypes.TakeLast(n).ToList();
             return droppedArrays;
         }
