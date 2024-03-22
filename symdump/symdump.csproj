@@ -4,11 +4,12 @@
     <RootNamespace>symdump</RootNamespace>
     <AssemblyName>symdump</AssemblyName>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp6.0</TargetFramework>
+      <TargetFramework>net8.0</TargetFramework>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <LangVersion>7</LangVersion>
+      <LangVersion>default</LangVersion>
+      <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
